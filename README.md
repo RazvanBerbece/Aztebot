@@ -1,6 +1,10 @@
 # azteca-discord
 The ambitious and robust Discord bot which powers the <INSERT DISCORD NAME HERE ONCE WE KNOW IT> Discord community. Written in Go.
 
+Composing services:
+- `mysql-db` (Containerised MySQL service for the data layer)
+- `bot-service` (Handles Discord interactions like new messages, slash commands, join events, reaction adding or removing, etc.)
+
 # How to Run
 ## Prerequisites
 In order to run the application, a few prerequisites must be met.
