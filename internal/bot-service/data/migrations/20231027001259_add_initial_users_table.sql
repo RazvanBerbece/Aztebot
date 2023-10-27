@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS Users (
 INSERT INTO Users
   (discordTag, userId, currentRole, currentLevel, currentExperience)
 VALUES
-  ('antoniozrd', '573659533361020941', 'none', 'nil', 'nil'),
+  ('antoniozrd', '573659533361020941', 'none', 'nil', 'nil');
 
 -- +goose Down
 DROP TABLE Users;
