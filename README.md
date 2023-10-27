@@ -14,7 +14,7 @@ In order to run the application, a few prerequisites must be met.
 
 ## Running the full service composition
 1. Run a freshly built full service composition (app, DBs, etc.) with the `docker compose up -d --remove-orphans --build` command.
-2. Run the existing DB migrations with the command specified in the `bot-service/data`[README.md](./internal/bot-service/data/README.md).
+2. Run the existing DB migrations with the `goose mysql ... up` command specified in the `bot-service/data` [README.md](./internal/bot-service/data/README.md).
     - This is required so the local development database is configured with all the necessary default data.   
 3. Bring down all the services by running `docker compose down`.
 
