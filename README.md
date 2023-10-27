@@ -5,9 +5,8 @@ The ambitious and robust Discord bot which powers the <INSERT DISCORD NAME HERE>
 ## Prerequisites
 In order to run the application, a few prerequisites must be met.
 1. Have the repository cloned locally.
-2. Have the bot join a server and give it all the right permissions.
 2. Have Docker installed.
-3. Have a fully-configured `.env` file saved in the root of the repository. (contact @RazvanBerbece for the configuration)
+3. Have a fully-configured `.env` file saved in the root of the repository. (contact [@RazvanBerbece](https://github.com/RazvanBerbece) for the configuration)
 
 ## Running the full service composition
 1. Run a built full service composition (app, DBs, etc.) with the `docker compose up -d --remove-orphans --build` command.
