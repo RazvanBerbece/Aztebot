@@ -13,8 +13,10 @@ In order to run the application, a few prerequisites must be met.
 3. Have a fully-configured `.env` file saved in the root of the repository. (contact [@RazvanBerbece](https://github.com/RazvanBerbece) for the configuration)
 
 ## Running the full service composition
-1. Run a built full service composition (app, DBs, etc.) with the `docker compose up -d --remove-orphans --build` command.
-2. Bring down all the services by running `docker compose down`.
+1. Run a freshly built full service composition (app, DBs, etc.) with the `docker compose up -d --remove-orphans --build` command.
+2. Run the existing DB migrations with the command specified in the `bot-service/data`[README.md](./internal/bot-service/data/README.md).
+    - This is required so the local development database is configured with all the necessary default data.   
+3. Bring down all the services by running `docker compose down`.
 
 # CI/CD
 This project will employ CI/CD through the use of GitHub Actions and (probably?) Microsoft Azure. 
