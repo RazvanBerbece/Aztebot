@@ -19,3 +19,9 @@
 
 # Go workspace file
 go.work
+
+# Other
+build/
+.env
+logs/
+.DS_Store
