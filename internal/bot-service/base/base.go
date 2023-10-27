@@ -30,15 +30,8 @@ func (b *DiscordBotBase) Configure(handlers []interface{}) {
 		session.AddHandler(handler)
 	}
 
-	// Register intents
-	// TODO: Make these more granular depending on bot features
-	intents := discordgo.IntentsGuilds |
-		discordgo.IntentsGuildMessages |
-		discordgo.IntentsGuildMessageReactions |
-		discordgo.PermissionManageMessages |
-		discordgo.PermissionManageServer |
-		discordgo.IntentsDirectMessages
-	session.Identify.Intents = intents
+	// Register intents to allow bot operations on the Discord server (read chats, write messages, react, DM, etc.)
+	session.Identify.Intents = getBotIntents()
 
 	// Register slash commands
 	// TODO
@@ -76,4 +69,16 @@ func (b *DiscordBotBase) CloseConnection() {
 func (b *DiscordBotBase) Cleanup() {
 	// Cleanup resources
 	// TODO
+}
+
+// Gets the available bot intents.
+// TODO: Make these more granular depending on bot features
+func getBotIntents() discordgo.Intent {
+	intents := discordgo.IntentsGuilds |
+		discordgo.IntentsGuildMessages |
+		discordgo.IntentsGuildMessageReactions |
+		discordgo.PermissionManageMessages |
+		discordgo.PermissionManageServer |
+		discordgo.IntentsDirectMessages
+	return intents
 }

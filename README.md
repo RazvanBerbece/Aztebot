@@ -1,5 +1,5 @@
 # azteca-discord
-The ambitious and robust Discord bot which powers the <INSERT DISCORD NAME HERE> Discord community. Written in Go.
+The ambitious and robust Discord bot which powers the <INSERT DISCORD NAME HERE ONCE WE KNOW IT> Discord community. Written in Go.
 
 # How to Run
 ## Prerequisites
@@ -13,10 +13,13 @@ In order to run the application, a few prerequisites must be met.
 2. Bring down all the services by running `docker compose down`.
 
 # CI/CD
+This project will employ CI/CD through the use of GitHub Actions and (probably?) Microsoft Azure. 
 
 ## CI
+Continuous integration will be implemented through a workflow script which sets up a Go environment and then runs the internal logic tests on all pull request and pushes to main.
 
 ## CD
+The continuous deployment process has not been determined yet.
 
 # Contribution Guide
 ## Folder Structure
