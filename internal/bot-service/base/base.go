@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	"github.com/LxrdVixxeN/azteca-discord/internal/bot-service/globals"
+	slashCommands "github.com/LxrdVixxeN/azteca-discord/internal/bot-service/handlers/slashCommandEvent"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -34,7 +35,10 @@ func (b *DiscordBotBase) Configure(handlers []interface{}) {
 	session.Identify.Intents = getBotIntents()
 
 	// Register slash commands
-	// TODO
+	err = slashCommands.RegisterSlashCommands(session)
+	if err != nil {
+		log.Fatal("Error registering slash commands: ", err)
+	}
 
 	b.botSession = session
 
@@ -68,7 +72,7 @@ func (b *DiscordBotBase) CloseConnection() {
 // Cleans up any used resources by the bot service.
 func (b *DiscordBotBase) Cleanup() {
 	// Cleanup resources
-	// TODO
+	slashCommands.CleanupSlashCommands(b.botSession)
 }
 
 // Gets the available bot intents.
