@@ -13,9 +13,9 @@ CREATE TABLE IF NOT EXISTS Users (
 INSERT INTO Users
   (discordTag, userId, currentRoleIds, currentCircle, currentInnerOrder, currentLevel, currentExperience)
 VALUES
-  ('antoniozrd', '573659533361020941', '4, 10', 'OUTER', NULL, 1, 0),
-  ('lordvixxen1337', '1077147870655950908', '1, 10, 20', 'INNER', 3, 100, 999),
-  ('aztegramul', '526512064794066945', '1, 10, 20', 'INNER', 3, 100, 999);
+  ('antoniozrd', '573659533361020941', '4,10', 'OUTER', NULL, 1, 0),
+  ('lordvixxen1337', '1077147870655950908', '1,10,20', 'INNER', 3, 100, 999),
+  ('aztegramul', '526512064794066945', '1,10,20', 'INNER', 3, 100, 999);
 
 -- +goose Down
 DROP TABLE Users;
