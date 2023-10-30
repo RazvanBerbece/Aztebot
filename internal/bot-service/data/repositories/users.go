@@ -25,19 +25,19 @@ func NewUsersRepository() *UsersRepository {
 
 func (r UsersRepository) GetRolesForUser(userId string) ([]dataModels.Role, error) {
 
-	// Get role IDs for given user
+	// Get assigned role IDs for given user from the DB
 	rows, err := r.conn.Db.Query("SELECT currentRoleIds FROM Users WHERE userId = ?", userId)
 	if err != nil {
 		return nil, fmt.Errorf("GetRolesForUser %s - User: %v", userId, err)
 	}
 	defer rows.Close()
 
-	// Loop through rows, using Scan to assign column data to variable fields.
-	var inRolesSqlList string
+	// Scan the role IDs and process them into query arguments to use
+	// in the Roles table
+	var roleIdsString string
 	var placeholders string
-	var ids []any
+	var ids []int
 	for rows.Next() {
-		var roleIdsString string
 		if err := rows.Scan(&roleIdsString); err != nil {
 			return nil, fmt.Errorf("GetRolesForUser %s - User: %v", userId, err)
 		}
@@ -47,41 +47,54 @@ func (r UsersRepository) GetRolesForUser(userId string) ([]dataModels.Role, erro
 		return nil, fmt.Errorf("GetRolesForUser %s - User: %v", userId, err)
 	}
 	// Check for zero rows - if the query arg only has the opening paranthesis
-	if len(inRolesSqlList) == 1 {
+	if len(roleIdsString) == 0 {
 		return nil, fmt.Errorf("GetRolesForUser %s - User: No roles found for user. User may not exist", userId)
 	}
 
-	// Get roles with found roleIds and return
-	var roles []dataModels.Role
-
-	query := fmt.Sprintf("SELECT * FROM Roles WHERE id IN (%s)", placeholders)
-	rowsRoles, err := r.conn.Db.Query(query, ids...)
+	// Get roles from DB with found role IDs and return a list of them
+	roles, err := r.GetRolesByIds(placeholders, ids)
 	if err != nil {
-		return nil, fmt.Errorf("GetRolesForUser %s - Roles <%s>: %v", userId, inRolesSqlList, err)
-	}
-	defer rowsRoles.Close()
-	for rowsRoles.Next() {
-		var role dataModels.Role
-		if err := rowsRoles.Scan(&role.Id, &role.RoleName, &role.DisplayName, &role.Colour, &role.Info, &role.Perms); err != nil {
-			return nil, fmt.Errorf("GetRolesForUser %s - User: %v", userId, err)
-		}
-		roles = append(roles, role)
-	}
-	if err := rowsRoles.Err(); err != nil {
-		return nil, fmt.Errorf("GetRolesForUser %s - User: %v", userId, err)
-	}
-	// Check for zero rows - if the query arg only has the opening paranthesis
-	if len(inRolesSqlList) == 1 {
-		return nil, fmt.Errorf("GetRolesForUser %s - User: No roles found for user. User may not exist", userId)
+		return nil, fmt.Errorf("GetRolesForUser %s - Roles: %v", userId, err)
 	}
 
 	return roles, nil
 }
 
-func getSqlFriendlyListOfStringIDs(roleIdsString string) (string, []any) {
-	// SQL inclusion queries are used to then get the Role details.
-	// So we need to build the argument for the `in` SQL clause
-	// (example: (1, 2, 3) as in SELECT * FROM table WHERE id in (1, 2, 3))
+func (r UsersRepository) GetRolesByIds(placeholders string, ids []int) ([]dataModels.Role, error) {
+
+	// Convert roleIDIntegers to a slice of interface{} to use as variadic args in Db.Query()
+	var rolesAsListOfAny []interface{}
+	for _, id := range ids {
+		rolesAsListOfAny = append(rolesAsListOfAny, id)
+	}
+
+	var roles []dataModels.Role
+	query := fmt.Sprintf("SELECT * FROM Roles WHERE id IN (%s)", placeholders)
+	rowsRoles, err := r.conn.Db.Query(query, rolesAsListOfAny...)
+	if err != nil {
+		return nil, fmt.Errorf("GetRolesByIds <%d>: %v", ids, err)
+	}
+	defer rowsRoles.Close()
+	for rowsRoles.Next() {
+		var role dataModels.Role
+		if err := rowsRoles.Scan(&role.Id, &role.RoleName, &role.DisplayName, &role.Colour, &role.Info, &role.Perms); err != nil {
+			return nil, fmt.Errorf("GetRolesByIds: %v", err)
+		}
+		roles = append(roles, role)
+	}
+	if err := rowsRoles.Err(); err != nil {
+		return nil, fmt.Errorf("GetRolesByIds: %v", err)
+	}
+	// Check for zero rows - if the query arg has no IDs retrieved from the Users table
+	if len(roles) == 0 {
+		return nil, fmt.Errorf("GetRolesByIds: No roles found for ids %d", ids)
+	}
+	return roles, nil
+}
+
+// Method that returns a list of placeholders (?) and a list of IDs to be used in a
+// `Select * From T Where k in (...)` SQL query.
+func getSqlFriendlyListOfStringIDs(roleIdsString string) (string, []int) {
 	roles := strings.Split(roleIdsString, ",")
 	var placeholders []string
 	for range roles {
@@ -95,11 +108,5 @@ func getSqlFriendlyListOfStringIDs(roleIdsString string) (string, []any) {
 		}
 		roleIdIntegers = append(roleIdIntegers, roleID)
 	}
-	// Convert roleIDIntegers to a slice of interface{} to use as variadic asrgs in Db.Query()
-	var rolesAsListOfAny []interface{}
-	for _, id := range roleIdIntegers {
-		rolesAsListOfAny = append(rolesAsListOfAny, id)
-	}
-
-	return strings.Join(placeholders, ","), rolesAsListOfAny
+	return strings.Join(placeholders, ","), roleIdIntegers
 }
