@@ -1,6 +1,9 @@
 package slashHandlers
 
 import (
+	"log"
+
+	"github.com/LxrdVixxeN/azteca-discord/internal/bot-service/data/repositories"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -14,5 +17,20 @@ func HandleSlashMyRoles(s *discordgo.Session, i *discordgo.InteractionCreate) {
 }
 
 func roleDisplayNameListForUser(userId string) string {
-	return ""
+	usersRepository := repositories.NewUsersRepository()
+	roles, err := usersRepository.GetRolesForUser(userId)
+	if err != nil {
+		log.Fatalf("Cannot display role names for user with id %s: %v", userId, err)
+	}
+
+	displayString := "Your roles are: "
+	for index, role := range roles {
+		if index == len(roles)-1 {
+			displayString += role.DisplayName
+			break
+		}
+		displayString += role.DisplayName + ", "
+	}
+
+	return displayString
 }

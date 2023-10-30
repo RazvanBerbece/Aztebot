@@ -2,11 +2,10 @@ package repositories
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
+	databaseconn "github.com/LxrdVixxeN/azteca-discord/internal/bot-service/data/connection"
 	dataModels "github.com/LxrdVixxeN/azteca-discord/internal/bot-service/data/models"
-	databaseconn "github.com/RazvanBerbece/UnifyFootballBot/internal/database-conn"
 )
 
 type UsersRepositoryInterface interface {
@@ -31,40 +30,41 @@ func (r UsersRepository) GetRolesForUser(userId string) ([]dataModels.Role, erro
 	}
 	defer rows.Close()
 
-	// Loop through rows, using Scan to assign column data to struct fields.
-	var roleIds []int
+	// Loop through rows, using Scan to assign column data to variable fields.
+	var inRolesSqlList = "("
 	for rows.Next() {
 		var roleIdsString string
 		if err := rows.Scan(&roleIdsString); err != nil {
 			return nil, fmt.Errorf("GetRolesForUser %s: %v", userId, err)
 		}
 
-		// Split string on whitespace to get a lsit of int role IDs
+		// SQL inclusion queries are used to then get the Role details. So we need to build the argument for the `in` SQL clause.
+		// example: SELECT * FROM table WHERE id in (1, 2, 3)
 		roles := strings.Split(roleIdsString, " ")
-		for _, roleId := range roles {
-			idAsInt, err := strconv.Atoi(roleId)
-			if err != nil {
-				return nil, fmt.Errorf("GetRolesForUser %s: %v", userId, err)
+		for index, roleId := range roles {
+			if index == len(roles)-1 {
+				inRolesSqlList = inRolesSqlList + fmt.Sprintf("\"%s\")", roleId)
+				break
 			}
-			roleIds = append(roleIds, int(idAsInt))
+			inRolesSqlList = inRolesSqlList + fmt.Sprintf("\"%s\",", roleId)
 		}
 	}
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("GetRolesForUser %s: %v", userId, err)
 	}
-	// Check for zero rows
-	if len(roleIds) == 0 {
+	// Check for zero rows - if the query arg only has the opening paranthesis
+	if len(inRolesSqlList) == 1 {
 		return nil, fmt.Errorf("GetRolesForUser %s: No roles found for user. User may not exist.", userId)
 	}
 
 	// Get roles with found roleIds and return
 	var roles []dataModels.Role
 
-	rowsRoles, err := r.conn.Db.Query("SELECT * FROM Roles WHERE roleId in = ?", roleIds)
+	rowsRoles, err := r.conn.Db.Query("SELECT * FROM Roles WHERE roleId in ?", inRolesSqlList)
 	if err != nil {
 		return nil, fmt.Errorf("GetRolesForUser %s: %v", userId, err)
 	}
-	defer rows.Close()
+	defer rowsRoles.Close()
 
 	return roles, nil
 }
