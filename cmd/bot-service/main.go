@@ -1,8 +1,8 @@
 package main
 
 import (
-	discordBotBaseModule "github.com/LxrdVixxeN/azteca-discord/internal/bot-service/base"
-	"github.com/LxrdVixxeN/azteca-discord/internal/bot-service/handlers"
+	discordBotBaseModule "github.com/LxrdVixxeN/Aztebot/internal/bot-service/base"
+	"github.com/LxrdVixxeN/Aztebot/internal/bot-service/handlers"
 )
 
 func main() {

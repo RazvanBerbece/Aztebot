@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	messageEventHandlers "github.com/LxrdVixxeN/azteca-discord/internal/bot-service/handlers/messageEvent"
+	messageEventHandlers "github.com/LxrdVixxeN/Aztebot/internal/bot-service/handlers/messageEvent"
 )
 
 func GetHandlersAsList() []interface{} {

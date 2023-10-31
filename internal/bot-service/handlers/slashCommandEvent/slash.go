@@ -3,8 +3,8 @@ package slashCommandEvent
 import (
 	"log"
 
-	"github.com/LxrdVixxeN/azteca-discord/internal/bot-service/globals"
-	commands "github.com/LxrdVixxeN/azteca-discord/internal/bot-service/handlers/slashCommandEvent/commands"
+	"github.com/LxrdVixxeN/Aztebot/internal/bot-service/globals"
+	commands "github.com/LxrdVixxeN/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands"
 	"github.com/bwmarrin/discordgo"
 )
 

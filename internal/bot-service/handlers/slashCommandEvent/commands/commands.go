@@ -1,7 +1,7 @@
 package commands
 
 import (
-	commandHandlers "github.com/LxrdVixxeN/azteca-discord/internal/bot-service/handlers/slashCommandEvent/commands/slashHandlers"
+	commandHandlers "github.com/LxrdVixxeN/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/slashHandlers"
 	"github.com/bwmarrin/discordgo"
 )
 
