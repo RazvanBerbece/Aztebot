@@ -7,7 +7,7 @@ import (
 
 func main() {
 
-	// Configure handler functions
+	// Retrieve list of implemented handler functions
 	handlers := handlers.GetHandlersAsList()
 
 	// Configure the bot base with the key, intents and handlers
