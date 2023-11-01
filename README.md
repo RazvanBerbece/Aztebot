@@ -22,10 +22,10 @@ In order to run the application, a few prerequisites must be met.
 This project will employ CI/CD through the use of GitHub Actions and (probably?) Microsoft Azure. 
 
 ## CI
-Continuous integration will be implemented through a workflow script which sets up a Go environment and then runs the internal logic tests on all pull request and pushes to main.
+Continuous integration will be implemented through a workflow script which sets up a Go environment and then runs the internal logic tests on all pull request and pushes to main. The workflow file for CI can be seen in [test.yml](.github/workflows/test.yml).
 
 ## CD
-The continuous deployment process has not been determined yet.
+Continuous deployment will be implemented through a workflow script which builds all the project artifacts and pushes them to Google Cloud on pushes to the main branch. The workflow file for CD can be seen in [deploy.yml](.github/workflows/deploy.yml).
 
 # Contribution Guide
 ## Folder Structure

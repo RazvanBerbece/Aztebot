@@ -1,12 +1,11 @@
-# This workflow is ran on all PRs and pushes to main. It builds the project and runs the automated tests.
-# In the future it could also build and push the containers to the Google Container Registry.
+# This workflow is ran only on pushes to main. It builds the project artifact and deploys it to Google Cloud Compute Engine.
+# It also generates releases and tags the commits.
 
-name: test
+name: deploy
 
 on:
   push:
     branches: [ 'main' ]
-  pull_request:
 
 jobs:
 
