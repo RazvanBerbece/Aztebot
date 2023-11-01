@@ -27,7 +27,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    
+
     permissions:
      contents: 'read'
      id-token: 'write'
@@ -55,6 +55,8 @@ jobs:
           registry: '${{ env.GCE_INSTANCE_ZONE }}-docker.pkg.dev'
           username: 'oauth2accesstoken'
           password: '${{ steps.auth.outputs.access_token }}'
+        run: |
+          echo "oauth2accesstoken::${{ steps.auth.outputs.access_token }}"
 
       - name: 'Docker build'
         run: |
