@@ -34,10 +34,6 @@ jobs:
       - name: Set outputs
         id: vars
         run: echo "GITHUB_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
-      - name: 'Docker build'
-        run: |
-          docker build --tag "${{ env.GCE_INSTANCE_ZONE }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}" -f cmd/bot-service/Dockerfile .
       
       - name: 'Authenticate to Google Cloud'
         id: auth
@@ -52,6 +48,10 @@ jobs:
           registry: '${{ env.GCE_INSTANCE_ZONE }}-docker.pkg.dev'
           username: 'oauth2accesstoken'
           password: '${{ steps.auth.outputs.access_token }}'
+
+      - name: 'Docker build'
+        run: |
+          docker build --tag "${{ env.GCE_INSTANCE_ZONE }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}" -f cmd/bot-service/Dockerfile .
 
       - name: 'Docker push'
         run: |
