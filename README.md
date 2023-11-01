@@ -1,5 +1,5 @@
 # Aztebot
-The ambitious and robust Discord bot which powers the <INSERT DISCORD NAME HERE ONCE WE KNOW IT> Discord community. Written in Go.
+The ambitious and robust Discord bot which powers the OTA (Ordinul Templierilor Azteci) Discord community. Written in Go.
 
 Composing services:
 - `mysql-db` (Containerised MySQL service for the data layer)
