@@ -37,8 +37,8 @@ jobs:
       - name: Display Go version
         run: go version
       
-      # - name: Build Go application
-      #   run: go build -o build ./cmd/... && go build ./internal/...
+      - name: Build Go application
+        run: go build -o tmp ./cmd/... && go build ./internal/...
 
       - name: 'Docker build'
         run: |
