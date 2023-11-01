@@ -37,7 +37,7 @@ jobs:
 
       - name: 'Docker build'
         run: |
-          docker build --tag "${{ env.GCE_INSTANCE_ZONE }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}" -f cmd/bot-service/ .
+          docker build --tag "${{ env.GCE_INSTANCE_ZONE }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}" -f cmd/bot-service/Dockerfile .
       
       - name: 'Authenticate to Google Cloud'
         id: auth
