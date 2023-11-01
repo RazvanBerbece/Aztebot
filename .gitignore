@@ -26,3 +26,5 @@ build/
 logs/
 .DS_Store
 .data/
+misc/
+keys/
