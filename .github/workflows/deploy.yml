@@ -44,6 +44,7 @@ jobs:
         uses: 'google-github-actions/auth@v1'
         with:
           create_credentials_file: 'true'
+          token_format: 'id_token'
           workload_identity_provider: 'projects/${{env.PROJECT_ID}}/locations/global/\
           workloadIdentityPools/gh-identity-pool/providers/gh-provider'
 
