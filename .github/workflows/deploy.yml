@@ -13,6 +13,8 @@ on:
       - '.gitignore'
       - '.gitmodules'
     branches: [ 'main' ]
+    
+  workflow_dispatch:
 
 env:
   PROJECT_ID: ${{ secrets.GCE_PROJECT }}
@@ -29,9 +31,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set outputs
+        id: vars
+        run: echo "GITHUB_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
       - name: 'Docker build'
         run: |
-          docker build --tag "${{ env.GCE_INSTANCE_ZONE }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ GITHUB_SHA }}" cmd/bot-service/
+          docker build --tag "${{ env.GCE_INSTANCE_ZONE }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}" cmd/bot-service/
       
       - name: 'Authenticate to Google Cloud'
         id: auth
@@ -49,4 +55,4 @@ jobs:
 
       - name: 'Docker push'
         run: |
-         docker push "${{ env.GCE_INSTANCE_ZONE }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ GITHUB_SHA }}"
+         docker push "${{ env.GCE_INSTANCE_ZONE }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}"
