@@ -47,7 +47,7 @@ jobs:
           token_format: 'id_token'
           workload_identity_provider: 'projects/${{env.PROJECT_ID}}/locations/global/\
           workloadIdentityPools/gh-identity-pool/providers/gh-provider'
-          id_token_audience: 'https://compute.googleapis.com/'
+          id_token_audience: 'projects/${{env.PROJECT_ID}}/locations/global/workloadIdentityPools/gh-identity-pool/providers/gh-provider'
           service_account: 'gcp-github-access@${{env.PROJECT_ID}}.iam.gserviceaccount.com'
       
       - uses: 'docker/login-action@v1'
