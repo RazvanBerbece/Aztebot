@@ -20,7 +20,8 @@ env:
   PROJECT_ID: ${{ secrets.GCE_PROJECT }}
   GCE_VM_INSTANCE: ${{ secrets.GCE_PROJECT_VM_NAME }}
   DOCKER_ARTIFACT_REPOSITORY: ${{ secrets.GCE_PROJECT_DOCKER_ARTIFACT_REGISTRY }} # TODO: Try and make this follow the instance zone declared in the infrastructure repo ?
-  GCE_INSTANCE_ZONE: europe-west2-c # TODO: Try and make this follow the instance zone declared in the infrastructure repo ?
+  GCE_INSTANCE_FULL_ZONE: europe-west2-c # TODO: Try and make this follow the instance zone declared in the infrastructure repo ?
+  GCE_INSTANCE_ZONE: europe-west2 # TODO: Try and make this follow the instance zone declared in the infrastructure repo ?
   IMAGE: main
 
 jobs:
