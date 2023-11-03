@@ -81,7 +81,7 @@ jobs:
       
       - name: Deploy New Image to DKE
         run: |
-          envsubst < deployment.yaml | kubectl apply -f -
+          envsubst < deployment.yml | kubectl apply -f -
 
       - name: Show created Pods
         run: |
