@@ -36,12 +36,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install kubectl
-        run: sudo apt-get install -y kubectl
-
-      - name: Set outputs
+      - name: Generate SHA output
         id: vars
         run: echo "GITHUB_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Setup environment
+        run: |
+          touch .env
+          echo "${{ secrets.ENV_FILE }}" >> .env
       
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
