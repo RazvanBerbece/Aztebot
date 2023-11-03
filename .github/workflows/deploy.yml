@@ -76,8 +76,8 @@ jobs:
       
       - name: Export deployment variables
         run: |
-          export GCE_PROJECT=${{ env.PROJECT_ID }}
-          export GCE_PROJECT_DOCKER_ARTIFACT_REGISTRY=${{ env.DOCKER_ARTIFACT_REPOSITORY }}
+          export GCE_PROJECT="${{ env.PROJECT_ID }}"
+          export GCE_PROJECT_DOCKER_ARTIFACT_REGISTRY="${{ env.DOCKER_ARTIFACT_REPOSITORY }}"
       
       - name: Deploy New Image to DKE
         run: |
