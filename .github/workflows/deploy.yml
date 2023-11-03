@@ -60,27 +60,19 @@ jobs:
           username: 'oauth2accesstoken'
           password: '${{ steps.auth.outputs.access_token }}'
 
-      - name: 'Docker build'
+      - name: 'Docker build & push to Google Artifact Registry'
         run: |
-          docker build --tag "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}" -f cmd/bot-service/Dockerfile .
-
-      - name: 'Docker push'
-        run: |
-          docker push "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}"
+          gcloud builds submit --tag "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}" -f cmd/bot-service/Dockerfile .
       
       - name: Connect to GKE
         uses: google-github-actions/get-gke-credentials@v0
         with:
           cluster_name: ${{ env.CLUSTER_NAME }}
           location: ${{ env.GKE_ZONE }}
-      
-      - name: Create Kubernetes Deployment for Docker Image
-        run: |
-          kubectl create deployment ${{ env.IMAGE }} --image=${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}
 
-      - name: Set baseline Kubernetes Deployment replicas
+      - name: Deploy New Image to DKE
         run: |
-          kubectl scale deployment ${{ env.IMAGE }} --replicas=1
+          kubectl apply -f ./deployment.yaml
 
       - name: Show created Pods
         run: |
