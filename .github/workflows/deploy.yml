@@ -79,9 +79,13 @@ jobs:
           export GCE_PROJECT="${{ env.PROJECT_ID }}"
           export GCE_PROJECT_DOCKER_ARTIFACT_REGISTRY="${{ env.DOCKER_ARTIFACT_REPOSITORY }}"
       
-      - name: Deploy New Image to DKE
+      - name: Create GKE Deployment for new image
         run: |
-          envsubst < deployment.yml | kubectl apply -f -
+          kubectl create deployment aztebot-bot-service --image="${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}"
+
+      - name: Scale deployment
+        run: |
+          kubectl scale --replicas=3 deployment/aztebot-bot-service
 
       - name: Show created Pods
         run: |
