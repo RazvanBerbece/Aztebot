@@ -7,12 +7,9 @@ import (
 
 func main() {
 
-	// Retrieve list of implemented handler functions
-	handlers := handlers.GetHandlersAsList()
-
 	// Configure the bot base with the key, intents and handlers
 	bot := discordBotBaseModule.DiscordBotBase{}
-	bot.Configure(handlers)
+	bot.Configure(handlers.GetHandlersAsList())
 
 	// Connect to the Discord servers
 	bot.Connect()
