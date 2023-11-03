@@ -94,7 +94,7 @@ jobs:
 
       - name: Scale deployment
         run: |
-          kubectl scale --replicas=3 deployment/aztebot-bot-service
+          kubectl scale --replicas=1 deployment/aztebot-bot-service-${{ steps.tag_version.outputs.new_tag }}
 
       - name: Show created Pods
         run: |
