@@ -90,7 +90,7 @@ jobs:
       
       - name: Remove previous deployment
         run: |
-          kubectl delete deployment aztebot-bot-service-${{ steps.tag_version.outputs.previous_tag }}
+          kubectl delete deployment --ignore-not-found=true aztebot-bot-service-${{ steps.tag_version.outputs.previous_tag }}
       
       - name: Create GKE Deployment for new image
         run: |
