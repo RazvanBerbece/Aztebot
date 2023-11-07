@@ -15,8 +15,6 @@ services:
   
   bot-service:
     container_name: bot-service
-    env_file:
-      ./.env
     build:
       dockerfile: ./cmd/bot-service/Dockerfile
     volumes: 

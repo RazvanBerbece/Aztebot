@@ -40,6 +40,7 @@ jobs:
         run: |
           touch .env
           echo "${{ secrets.ENV_FILE }}" >> .env
+          source .env
 
       - name: Generate next release number
         id: tag_version
