@@ -22,7 +22,7 @@ go.work
 
 # Other
 build/
-.env
+*.env
 logs/
 .DS_Store
 .data/
