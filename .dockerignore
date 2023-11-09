@@ -4,3 +4,4 @@ build/
 .DS_Store
 *.md
 docker-compose.yml
+.prod.env

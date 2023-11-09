@@ -9,10 +9,9 @@ func GetHandlersAsList() []interface{} {
 	return []interface{}{
 		// <---- On Ready ---->
 		// <---- On Message Created ---->
-		messageEventHandlers.Ping,
+		messageEventHandlers.Ping, messageEventHandlers.SimpleMsgReply,
 		// <---- On Reaction Added ---->
 		// <---- On Reaction Removed ---->
 		// <---- On New Join ---->
-		// <---- On Slash Command ---->
 	}
 }
