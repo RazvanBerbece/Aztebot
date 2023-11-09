@@ -36,10 +36,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup environment (.env file)
+      - name: Setup environment
         run: |
-          touch .env
-          echo "${{ secrets.ENV_FILE }}" >> .env
+          echo ${{ secrets.ENV_BASE64_STRING }} | base64 --decode > .env
 
       - name: Generate next release number
         id: tag_version

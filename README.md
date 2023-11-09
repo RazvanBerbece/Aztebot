@@ -27,6 +27,9 @@ Continuous integration will be implemented through a workflow script which sets 
 ## CD
 Continuous deployment will be implemented through a workflow script which builds all the project artifacts and pushes them to Google Cloud on pushes to the main branch. The workflow file for CD can be seen in [deploy.yml](.github/workflows/deploy.yml).
 
+Notes:
+1. The production environment secret is base64 encoded using `openssl base64 -A -in input_env -out output_env`
+
 # Contribution Guide
 ## Folder Structure
 1. `cmd` folder -- contains multiple folders, each one representing a service making the `Aztebot` system. For example, the `bot-service` folder is the main entry point of the bot application (and it contains the Dockerfile associated with it) that starts the connection to Discord and actions on the various events emitted by it. More services can be added here by adding new folders (e.g.: `leveling-service/`) with `main.go` entry points and `Dockerfile`s which leverage these services.

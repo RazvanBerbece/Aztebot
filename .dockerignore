@@ -5,3 +5,4 @@ build/
 *.md
 docker-compose.yml
 .prod.env
+prodEnvString.txt
