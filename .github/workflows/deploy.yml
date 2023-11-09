@@ -40,6 +40,9 @@ jobs:
         run: |
           echo ${{ secrets.ENV_BASE64_STRING }} | base64 --decode > .env
 
+          connString=$(echo ${{ secrets.DB_ROOT_CONNSTRING_BASE64 }} | base64 --decode)
+          echo "DB_ROOT_CONNSTRING=$connString" >> $GITHUB_ENV
+
       - name: Generate next release number
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.1
@@ -71,7 +74,7 @@ jobs:
       - name: 'Docker build'
         run: |
           docker build \
-          --build-arg db_conn_string=${{ secrets.DB_ROOT_CONNSTRING }} \
+          --build-arg db_conn_string=${{ env.DB_ROOT_CONNSTRING }} \
           --tag "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}" -f cmd/bot-service/Dockerfile .
 
       - name: 'Docker push'

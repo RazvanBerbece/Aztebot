@@ -29,6 +29,7 @@ Continuous deployment will be implemented through a workflow script which builds
 
 Notes:
 1. The production environment secret is base64 encoded using `openssl base64 -A -in input_env -out output_env`
+2. The production DB conection string is base64 encoded using `echo -n "CONN_STRING" | openssl base64`
 
 # Contribution Guide
 ## Folder Structure
