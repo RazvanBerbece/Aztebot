@@ -5,12 +5,10 @@ import (
 	"log"
 
 	"github.com/LxrdVixxeN/Aztebot/internal/bot-service/globals"
-	"github.com/go-sql-driver/mysql"
 )
 
 type Database struct {
-	cfg mysql.Config
-	Db  *sql.DB
+	Db *sql.DB
 }
 
 func (d *Database) ConnectDatabaseHandle() {

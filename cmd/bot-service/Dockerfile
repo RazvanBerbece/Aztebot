@@ -31,4 +31,4 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o build/main ./cmd/bot-service/main.go
 VOLUME /app/logs
 
 # Apply migrations against the peer database and then run the application
-CMD sh -c "make migrate-up && make run-services"
+CMD sh -c "make migrate-up-cli && make run-services"
