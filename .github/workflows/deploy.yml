@@ -40,6 +40,7 @@ jobs:
         run: |
           echo ${{ secrets.ENV_BASE64_STRING }} | base64 --decode > .env
           echo "DB_ROOT_CONNSTRING=${{ secrets.DB_ROOT_CONNSTRING }}" >> $GITHUB_ENV
+          echo "DB_ROOT_CONNSTRING_TCP_PUBLIC=${{ secrets.DB_ROOT_CONNSTRING }}" >> $GITHUB_ENV
 
       - name: Generate next release number
         id: tag_version
@@ -72,7 +73,7 @@ jobs:
       - name: 'Docker build'
         run: |
           docker build \
-          --build-arg db_conn_string="${{ env.DB_ROOT_CONNSTRING }}" \
+          --build-arg db_conn_string="${{ env.DB_ROOT_CONNSTRING_TCP_PUBLIC }}" \
           --tag "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}" -f cmd/bot-service/Dockerfile .
 
       - name: 'Docker push'
