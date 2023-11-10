@@ -16,7 +16,7 @@ var embedMigrations embed.FS
 
 func main() {
 
-	db, err := sql.Open("mysql", globals.MySqlRootPublicTcpConnectionString)
+	db, err := sql.Open("mysql", globals.MySqlRootPrivateTcpConnectionString)
 	if err != nil {
 		log.Fatal("Connection to database cannot be established :", err)
 	}
