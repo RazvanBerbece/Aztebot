@@ -5,6 +5,8 @@ import (
 	"log"
 
 	"github.com/LxrdVixxeN/Aztebot/internal/bot-service/globals"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type Database struct {
