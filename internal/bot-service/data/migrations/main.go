@@ -18,21 +18,21 @@ func main() {
 
 	db, err := sql.Open("mysql", globals.MySqlRootPrivateTcpConnectionString)
 	if err != nil {
-		log.Fatal("Connection to database cannot be established :", err)
+		log.Fatal("Connection to database cannot be established:", err)
 	}
 
 	pingErr := db.Ping()
 	if pingErr != nil {
-		log.Fatal("Database cannot be reached :", pingErr)
+		log.Fatal("Database cannot be reached:", pingErr)
 	}
 
 	goose.SetBaseFS(embedMigrations)
 
 	if err := goose.SetDialect("mysql"); err != nil {
-		panic(err)
+		log.Fatal("Cannot set mysql dialect for Goose DB migration:", err)
 	}
 
 	if err := goose.Up(db, "history"); err != nil {
-		panic(err)
+		log.Fatal("Cannot run UP migration:", err)
 	}
 }
