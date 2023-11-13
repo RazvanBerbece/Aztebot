@@ -22,7 +22,7 @@ func (d *Database) ConnectDatabaseHandle() {
 
 	pingErr := db.Ping()
 	if pingErr != nil {
-		log.Fatal("Database cannot be reached :", pingErr)
+		log.Fatalf("Database at %s cannot be reached : %s", globals.MySqlRootConnectionString, pingErr)
 	}
 
 	d.Db = db

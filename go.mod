@@ -10,7 +10,6 @@ require (
 
 require (
 	github.com/gorilla/websocket v1.4.2 // indirect
-	github.com/pressly/goose/v3 v3.15.1 // indirect
 	golang.org/x/crypto v0.13.0 // indirect
 	golang.org/x/sys v0.13.0 // indirect
 )
