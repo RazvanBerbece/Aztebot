@@ -39,9 +39,6 @@ jobs:
       - name: Setup environment
         run: |
           echo ${{ secrets.ENV_BASE64_STRING }} | base64 --decode > .env
-          echo "DB_ROOT_CONNSTRING=${{ secrets.DB_ROOT_CONNSTRING }}" >> $GITHUB_ENV
-          echo "DB_ROOT_CONNSTRING_TCP_PUBLIC=${{ secrets.DB_ROOT_CONNSTRING_TCP_PUBLIC }}" >> $GITHUB_ENV
-          echo "DB_ROOT_CONNSTRING_TCP_PRIVATE=${{ secrets.DB_ROOT_CONNSTRING_TCP_PRIVATE }}" >> $GITHUB_ENV
 
       - name: Generate next release number
         id: tag_version
