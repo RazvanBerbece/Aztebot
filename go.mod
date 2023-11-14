@@ -1,4 +1,4 @@
-module github.com/LxrdVixxeN/Aztebot
+module github.com/RazvanBerbece/Aztebot
 
 go 1.20
 

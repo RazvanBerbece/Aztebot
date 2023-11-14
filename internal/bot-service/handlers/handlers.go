@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	messageEventHandlers "github.com/LxrdVixxeN/Aztebot/internal/bot-service/handlers/messageEvent"
+	messageEventHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/messageEvent"
 )
 
-func GetHandlersAsList() []interface{} {
-	// Add new handler methods here
+// Handler functions for the AzteBot.
+func GetAztebotHandlersAsList() []interface{} {
 	return []interface{}{
 		// <---- On Ready ---->
 		// <---- On Message Created ---->
@@ -13,5 +13,16 @@ func GetHandlersAsList() []interface{} {
 		// <---- On Reaction Added ---->
 		// <---- On Reaction Removed ---->
 		// <---- On New Join ---->
+	}
+}
+
+// Handler functions for the AzteRadio.
+func GetAzteradioHandlersAsList() []interface{} {
+	return []interface{}{
+		// <---- On Ready ---->
+		// <---- On Message Created ---->
+		messageEventHandlers.Ping,
+		// <---- On Reaction Added ---->
+		// <---- On Reaction Removed ---->
 	}
 }

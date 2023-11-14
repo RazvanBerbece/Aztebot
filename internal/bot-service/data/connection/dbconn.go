@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"log"
 
-	"github.com/LxrdVixxeN/Aztebot/internal/bot-service/globals"
+	"github.com/RazvanBerbece/Aztebot/pkg/shared/globals"
 
 	_ "github.com/go-sql-driver/mysql"
 )

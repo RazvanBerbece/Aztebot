@@ -9,7 +9,6 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y iputils-ping && apt install -y make
 COPY go.mod go.sum ./
 RUN go mod download
-RUN go install github.com/pressly/goose/v3/cmd/goose@latest
 
 # Copy rest of source code files
 COPY . ./
