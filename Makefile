@@ -2,10 +2,10 @@
 migrate-up:
 	sql-migrate up -config=local.dbconfig.yml -env="staging"
 
-migrate-up-dry-run:
+migrate-up-dry:
 	sql-migrate up -config=local.dbconfig.yml -env="staging" -dryrun
 
-run:
+run-all:
 	docker compose up -d --remove-orphans --build
 
 down:
