@@ -1,7 +1,7 @@
 # This workflow is ran on all PRs and pushes to main. It builds the project and runs the automated tests.
 # In the future it could also build and push the containers to the Google Container Registry.
 
-name: test-aztebot
+name: test
 
 on:
   push:
