@@ -37,8 +37,8 @@ jobs:
       - name: Display Go version
         run: go version
       
-      - name: Build Go application
-        run: go build -o tmp ./cmd/... && go build ./internal/...
+      - name: Build Go application(s)
+        run: go build -o build ./cmd/... && go build ./internal/...
 
       - name: 'Docker build'
         run: |
@@ -67,4 +67,4 @@ jobs:
           echo ${{ secrets.ENV_BASE64_STRING }} | base64 --decode > .env
       
       - name: Run unit tests
-        run: go test ./internal/...
+        run: go test ./internal/... && go test ./pkg/shared/...
