@@ -10,8 +10,9 @@ Composing services:
 In order to run the application, a few prerequisites must be met.
 1. Have the repository cloned locally.
 2. Have Docker installed.
-3. Have a fully-configured `.env` file saved in the root of the repository. (contact [@RazvanBerbece](https://github.com/RazvanBerbece) for the configuration)
-4. Additionally, for full local development capabilities, have the [Aztebot-Infrastructure](https://github.com/RazvanBerbece/Aztebot-Infrastructure) repository cloned locally in a folder which also contains the `Aztebot` repository - i.e. Folder `Project` should contain both the `Aztebot` and the `Aztebot-Infrastructure` repository folders.
+3. Have Make installed.
+4. Have a fully-configured `.env` file saved in the root of the repository. (contact [@RazvanBerbece](https://github.com/RazvanBerbece) for the configuration)
+5. Additionally, for full local development capabilities, have the [Aztebot-Infrastructure](https://github.com/RazvanBerbece/Aztebot-Infrastructure) repository cloned locally in a folder which also contains the `Aztebot` repository - i.e. Folder `Project` should contain both the `Aztebot` and the `Aztebot-Infrastructure` repository folders.
 
 ## Running the full service composition
 1. Run a freshly built full service composition (app, DBs, etc.) with the `docker compose up -d --remove-orphans --build` command.
