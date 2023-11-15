@@ -12,16 +12,21 @@ var AzteradioSlashCommands = []*discordgo.ApplicationCommand{
 	},
 	{
 		Name:        "azteradio_join",
-		Description: "Commands which instructs AzteRadio to join the designated Radio channel.",
+		Description: "Command which instructs AzteRadio to join the designated Radio channel.",
 	},
 	{
 		Name:        "azteradio_disconnect",
-		Description: "Commands which instructs AzteRadio to disconnect from the designated Radio channel.",
+		Description: "Command which instructs AzteRadio to disconnect from the designated Radio channel.",
+	},
+	{
+		Name:        "azteradio_play",
+		Description: "Command which instructs AzteRadio to start playing music to the designated Radio channel.",
 	},
 }
 
 var AzteradioSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
-	"azteradio_ping":       slashHandlers.HandleSlashPingAzteradio,
+	"azteradio_ping":       slashHandlers.HandleSlashRadioPing,
 	"azteradio_join":       slashHandlers.HandleSlashRadioJoin,
 	"azteradio_disconnect": slashHandlers.HandleSlashRadioDisconnect,
+	"azteradio_play":       slashHandlers.HandleSlashRadioPlay,
 }

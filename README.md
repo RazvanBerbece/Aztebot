@@ -22,7 +22,7 @@ In order to run the application, a few prerequisites must be met.
     - This is required so the local development database is configured with all the necessary default data.   
 2. Run migrations locally by executing the following commands from the root of this repository
     - To execute a dryrun and double-check the to-be-applied migrations: `make migrate-up-dry` 
-    - To apply the migrations `make make migrate-up`
+    - To apply the migrations `make migrate-up`
 3. Bring down all the services by running `make down`.
 
 # CI/CD
