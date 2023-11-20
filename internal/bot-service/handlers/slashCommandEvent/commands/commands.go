@@ -14,6 +14,10 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		Name:        "my_roles",
 		Description: "Get a list of your assigned roles",
 	},
+	{
+		Name:        "aztebot_help",
+		Description: "Get a help guide for the available AzteBot slash commands",
+	},
 }
 
 var AzteradioSlashCommands = []*discordgo.ApplicationCommand{
@@ -26,4 +30,5 @@ var AzteradioSlashCommands = []*discordgo.ApplicationCommand{
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
 	"ping_aztebot": slashHandlers.HandleSlashPingAztebot,
 	"my_roles":     slashHandlers.HandleSlashMyRoles,
+	"aztebot_help": slashHandlers.HandleSlashAztebotHelp,
 }
