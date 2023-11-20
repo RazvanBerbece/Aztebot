@@ -5,6 +5,7 @@ import (
 
 	streams "github.com/RazvanBerbece/Aztebot/internal/azteradio-service/stream"
 	youtubeApi "github.com/RazvanBerbece/Aztebot/internal/azteradio-service/stream/platforms/apis/youtube"
+	"github.com/RazvanBerbece/Aztebot/pkg/shared/globals"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -37,12 +38,8 @@ func playRadio(s *discordgo.Session, platform string) (err error) {
 		youtubeApi := youtubeApi.YouTubeApi{
 			ApiName: "youtube",
 		}
-		stream := streams.Stream{
-			PlatformName: platform,
-			PlatformApi:  youtubeApi,
-		}
-		stream.DownloadSongs()
-		stream.Play(s)
+		stream := streams.NewStream(youtubeApi.ApiName, youtubeApi, globals.AzteradioApp.VoiceChannel)
+		stream.WithUrlsSourceFile().PlayFromSource(s)
 		return nil
 	}
 

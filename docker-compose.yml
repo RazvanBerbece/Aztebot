@@ -22,15 +22,22 @@ services:
     volumes: 
       - "./internal/bot-service/logs:/app/logs"
 
-  azteradio-service:
-    container_name: azteradio-service
+  # azteradio-service:
+  #   container_name: azteradio-service
+  #   env_file:
+  #     ./.env
+  #   build:
+  #     dockerfile: ./cmd/azteradio-service/Dockerfile
+  #   volumes: 
+  #     - "./internal/azteradio-service/logs:/app/logs"
+  #     - "./downloads:/app/downloads"
+  
+  azteradio-service-java:
+    container_name: azteradio-service-java
     env_file:
       ./.env
     build:
-      dockerfile: ./cmd/azteradio-service/Dockerfile
-    volumes: 
-      - "./internal/azteradio-service/logs:/app/logs"
-      - "./downloads:/app/downloads"
+      dockerfile: ./cmd/azteradio-service-java/Dockerfile
 
 networks:
   default:

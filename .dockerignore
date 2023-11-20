@@ -11,3 +11,5 @@ local.dbconfig.yml
 Dockerfile
 *.log
 downloads/
+.prod.jar-config.txt
+.prod.config.txt
