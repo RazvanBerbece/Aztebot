@@ -1,25 +1,11 @@
 # syntax=docker/dockerfile:1
 
 # Base Image
-FROM golang:1.20
+FROM eclipse-temurin:17-jdk-jammy
 
 WORKDIR /app
 
-# Install project dependencies
-RUN apt-get update && apt-get install -y iputils-ping && apt install -y make
-COPY go.mod go.sum ./
-RUN go mod download
+# Copy source files
+COPY ./cmd/azteradio-service ./
 
-# Copy rest of source code files
-COPY . ./
-COPY ./.env ./.env
-
-# Build project
-RUN CGO_ENABLED=0 GOOS=linux go build -o build/azteradio/main ./cmd/azteradio-service/main.go 
-
-# Other configs
-VOLUME /app/logs
-VOLUME /app/downloads
-
-# Run the Discord bot service application
-CMD sh -c "make run-azteradio-service"
+CMD ["java", "-Dnogui=true", "-jar", "JMusicBot-0.3.9.jar"]
