@@ -26,7 +26,6 @@ build/
 logs/
 .DS_Store
 .data/
-!cmd/azteradio-service/src/commands/Misc
 keys/
 prodEnvString.txt
 downloads/
@@ -34,3 +33,4 @@ config.txt
 .prod.config.txt
 cmd/azteradio-service/config.prod.yml
 cmd/azteradio-service/config.yml
+!internal/aztemusic-service/src/commands/Misc
