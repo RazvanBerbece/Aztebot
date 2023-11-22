@@ -27,19 +27,10 @@ services:
     build:
       dockerfile: ./cmd/azteradio-service/Dockerfile
 
-  # aztemusic-service-1:
-  #   container_name: aztemusic-service-1
-  #   # env_file:
-  #   #   ./cmd/aztemusic-service-rawon/1/.config.env
-  #   build:
-  #     dockerfile: ./cmd/aztemusic-service-new/1/Dockerfile
-
-  # aztemusic-service-1:
-  #   container_name: aztemusic-service-1
-  #   env_file:
-  #     ./.env
-  #   build:
-  #     dockerfile: ./cmd/aztemusic-service/1/Dockerfile
+  aztemusic-service-1:
+    container_name: aztemusic-service-1
+    build:
+      dockerfile: ./cmd/aztemusic-service/1/Dockerfile
 
   # aztemusic-service-2:
   #   container_name: aztemusic-service-2
