@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { EmbedBuilder } = require("discord.js");
-const { Player, useMasterPlayer, QueryType } = require("discord-player");
+const { Player, useMainPlayer, QueryType } = require("discord-player");
 const logger = require("../../utils/logger");
 const config = require("../../config");
 
@@ -94,7 +94,7 @@ module.exports = {
         return await interaction.editReply({ embeds: [embed] });
     },
     async autocompleteRun(interaction) {
-        const player = useMasterPlayer();
+        const player = useMainPlayer();
         const query = interaction.options.getString("query", true);
         const resultsYouTube = await player.search(query, { searchEngine: QueryType.YOUTUBE });
         const resultsSpotify = await player.search(query, { searchEngine: QueryType.SPOTIFY_SEARCH });
