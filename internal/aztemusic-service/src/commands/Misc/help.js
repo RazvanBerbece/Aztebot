@@ -3,7 +3,7 @@ const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } = require("dis
 const config = require("../../config");
 
 module.exports = {
-    data: new SlashCommandBuilder().setName("help").setDescription(`Shows all ${config.appName} commands available.`),
+    data: new SlashCommandBuilder().setName("help").setDescription(`Shows all the available commands for the ${config.appName}.`),
     async execute(interaction) {
         const embed = new EmbedBuilder();
         embed.setTitle(`${config.appName} Help`);
