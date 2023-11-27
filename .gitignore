@@ -21,6 +21,8 @@
 go.work
 
 # Other
+!internal/aztemusic-service/src/commands/Misc
+
 build/
 *.env
 logs/
@@ -31,10 +33,13 @@ prodEnvString.txt
 downloads/
 config.txt
 config.prod.txt
-.prod.config.txt
-cmd/azteradio-service/config.prod.yml
-cmd/azteradio-service/config.yml
-cmd/aztemusic-service/1/config.prod.yml
-cmd/aztemusic-service/1/config.yml
-!internal/aztemusic-service/src/commands/Misc
 base64.config.prod.txt
+
+cmd/aztemusic-service-go/azteradio-service/config.prod.yml
+cmd/aztemusic-service-go/azteradio-service/config.yml
+cmd/aztemusic-service-go/aztemusic-service-1/config.prod.yml
+cmd/aztemusic-service-go/aztemusic-service-1/config.yml
+cmd/aztemusic-service-go/aztemusic-service-2/config.prod.yml
+cmd/aztemusic-service-go/aztemusic-service-2/config.yml
+cmd/aztemusic-service-go/aztemusic-service-3/config.prod.yml
+cmd/aztemusic-service-go/aztemusic-service-3/config.yml
