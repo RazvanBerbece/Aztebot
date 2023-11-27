@@ -1,4 +1,4 @@
-package botbase
+package base
 
 import (
 	"fmt"
@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	aztemusicSlashCommands "github.com/RazvanBerbece/Aztebot/internal/aztemusic-service/handlers/slashCommandEvent"
 	aztebotSlashCommands "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent"
 
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/globals"
@@ -15,7 +16,6 @@ import (
 
 // A base API which integrates a Discord bot session and various helper methods to setup any specific bot application.
 type DiscordBotBase struct {
-	id          int
 	botSession  *discordgo.Session
 	isConnected bool
 	appName     string
@@ -32,13 +32,10 @@ func (b *DiscordBotBase) ConfigureBase(appName string) {
 		log.Fatal("Could not create an AzteBot session: ", err)
 	}
 	b.botSession = session
-	b.id = 0
-
-	configureAppGlobal(*b)
 
 }
 
-func (b *DiscordBotBase) ConfigureBaseWithTokenAndId(id int, appName string, token string) {
+func (b *DiscordBotBase) ConfigureBaseWithToken(appName string, token string) {
 
 	// Create session based on the required app
 	b.appName = appName
@@ -51,17 +48,19 @@ func (b *DiscordBotBase) ConfigureBaseWithTokenAndId(id int, appName string, tok
 			log.Fatal("Could not create an AzteBot session: ", err)
 		}
 		b.botSession = session
-		b.id = id
 	case "aztemusic":
 		session, err := discordgo.New("Bot " + token)
 		if err != nil {
 			log.Fatal("Could not create an AzteMusic session: ", err)
 		}
 		b.botSession = session
-		b.id = id
+	case "azteradio":
+		session, err := discordgo.New("Bot " + token)
+		if err != nil {
+			log.Fatal("Could not create an AzteRadio session: ", err)
+		}
+		b.botSession = session
 	}
-
-	configureAppGlobal(*b)
 
 }
 
@@ -76,10 +75,23 @@ func (b *DiscordBotBase) AddHandlers(handlers []interface{}) {
 	// Register intents to allow bot operations on the Discord server (read chats, write messages, react, DM, etc.)
 	b.botSession.Identify.Intents = getBotIntents()
 
-	// Register slash commands
-	err := aztebotSlashCommands.RegisterAztebotSlashCommands(b.botSession)
-	if err != nil {
-		log.Fatal("Error registering slash commands for AzteBot: ", err)
+	// Register slash commands based on app type
+	switch b.appName {
+	case "aztebot":
+		err := aztebotSlashCommands.RegisterAztebotSlashCommands(b.botSession)
+		if err != nil {
+			log.Fatal("Error registering slash commands for AzteBot: ", err)
+		}
+	case "aztemusic":
+		err := aztemusicSlashCommands.RegisterAzteradioSlashCommands(b.botSession)
+		if err != nil {
+			log.Fatal("Error registering slash commands for AzteMusic bot: ", err)
+		}
+	case "azteradio":
+		err := aztemusicSlashCommands.RegisterAzteradioSlashCommands(b.botSession)
+		if err != nil {
+			log.Fatal("Error registering slash commands for AzteRadio: ", err)
+		}
 	}
 
 }
@@ -112,7 +124,14 @@ func (b *DiscordBotBase) CloseConnection() {
 // Cleans up any used resources by the bot service.
 func (b *DiscordBotBase) Cleanup() {
 	// Cleanup resources
-	aztebotSlashCommands.CleanupAztebotSlashCommands(b.botSession)
+	switch b.appName {
+	case "aztebot":
+		aztebotSlashCommands.CleanupAztebotSlashCommands(b.botSession)
+	case "aztemusic":
+		aztemusicSlashCommands.CleanupAzteradioSlashCommands(b.botSession)
+	case "azteradio":
+		aztemusicSlashCommands.CleanupAzteradioSlashCommands(b.botSession)
+	}
 }
 
 // Gets the available bot intents.
@@ -126,16 +145,4 @@ func getBotIntents() discordgo.Intent {
 		discordgo.IntentsDirectMessages |
 		discordgo.IntentsGuildVoiceStates
 	return intents
-}
-
-func configureAppGlobal(base DiscordBotBase) {
-	switch base.appName {
-	case "aztebot":
-		fmt.Println("Not implemented yet. (configureAppGlobal - aztebot)")
-	case "aztemusic":
-		globals.AztemusicApps[base.id].AppName = base.appName
-		globals.AztemusicApps[base.id].BaseApp = base
-		globals.AztemusicApps[base.id].VoiceChannel = nil
-		globals.AztemusicApps[base.id].IsJoined = false
-	}
 }
