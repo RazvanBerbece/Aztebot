@@ -24,7 +24,6 @@ env:
   CLUSTER_NAME: ${{ secrets.GKE_CLUSTER_NAME }}
   AZTEBOT_IMAGE: aztebot-service
   # TODO: These will be removed from this deployment pipeline once the Go version of AzteMusic is released
-  AZTERADIO_IMAGE: azteradio-service
   AZTEMUSIC_IMAGE_1: aztemusic-service-1
   AZTEMUSIC_IMAGE_2: aztemusic-service-2
   AZTEMUSIC_IMAGE_3: aztemusic-service-3
@@ -55,11 +54,9 @@ jobs:
 
           : # Environment variables for AzteMusic services (in Golang)
           : # INACTIVE FOR NOW
-          : # echo ${{ secrets.AZTERADIO_ENV_BASE64 }} | base64 --decode > cmd/azteradio-service/config.yml
           : # echo ${{ secrets.AZTEMUSIC_1_ENV_BASE64 }} | base64 --decode > cmd/aztemusic-service/1/config.yml
 
           : # Environment variables for AzteMusic services (in Java)
-          echo ${{ secrets.JAR_AZTERADIO_CONFIG }} | base64 --decode > cmd/aztemusic-service-jar/azteradio-service/config.txt
           echo ${{ secrets.JAR_AZTEMUSIC_1_CONFIG }} | base64 --decode > cmd/aztemusic-service-jar/aztemusic-service-1/config.txt
           echo ${{ secrets.JAR_AZTEMUSIC_2_CONFIG }} | base64 --decode > cmd/aztemusic-service-jar/aztemusic-service-2/config.txt
           echo ${{ secrets.JAR_AZTEMUSIC_3_CONFIG }} | base64 --decode > cmd/aztemusic-service-jar/aztemusic-service-3/config.txt
@@ -89,8 +86,6 @@ jobs:
         run: |
           docker build --tag "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTEBOT_IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}" -f cmd/bot-service/Dockerfile .
 
-          docker build --tag "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTERADIO_IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}" -f cmd/aztemusic-service-jar/azteradio-service/Dockerfile .
-
           docker build --tag "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTEMUSIC_IMAGE_1 }}:${{ steps.vars.outputs.GITHUB_SHA }}" -f cmd/aztemusic-service-jar/aztemusic-service-1/Dockerfile .
           docker build --tag "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTEMUSIC_IMAGE_2 }}:${{ steps.vars.outputs.GITHUB_SHA }}" -f cmd/aztemusic-service-jar/aztemusic-service-2/Dockerfile .
           docker build --tag "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTEMUSIC_IMAGE_3 }}:${{ steps.vars.outputs.GITHUB_SHA }}" -f cmd/aztemusic-service-jar/aztemusic-service-3/Dockerfile .
@@ -98,8 +93,6 @@ jobs:
       - name: 'Docker push'
         run: |
           docker push "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTEBOT_IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}"
-
-          docker push "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTERADIO_IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}"
 
           docker push "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTEMUSIC_IMAGE_1 }}:${{ steps.vars.outputs.GITHUB_SHA }}"
           docker push "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTEMUSIC_IMAGE_2 }}:${{ steps.vars.outputs.GITHUB_SHA }}"
@@ -120,8 +113,6 @@ jobs:
         run: |
           kubectl delete deployment --ignore-not-found=true aztebot-service-${{ steps.tag_version.outputs.previous_tag }}
 
-          kubectl delete deployment --ignore-not-found=true azteradio-service-${{ steps.tag_version.outputs.previous_tag }}
-
           kubectl delete deployment --ignore-not-found=true aztemusic-service-1-${{ steps.tag_version.outputs.previous_tag }}
           kubectl delete deployment --ignore-not-found=true aztemusic-service-2-${{ steps.tag_version.outputs.previous_tag }}
           kubectl delete deployment --ignore-not-found=true aztemusic-service-3-${{ steps.tag_version.outputs.previous_tag }}
@@ -130,8 +121,6 @@ jobs:
         run: |
           kubectl create deployment aztebot-service-${{ steps.tag_version.outputs.new_tag }} --image="${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTEBOT_IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}"
 
-          kubectl create deployment azteradio-service-${{ steps.tag_version.outputs.new_tag }} --image="${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTERADIO_IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}"
-
           kubectl create deployment aztemusic-service-1-${{ steps.tag_version.outputs.new_tag }} --image="${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTEMUSIC_IMAGE_1 }}:${{ steps.vars.outputs.GITHUB_SHA }}"
           kubectl create deployment aztemusic-service-2-${{ steps.tag_version.outputs.new_tag }} --image="${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTEMUSIC_IMAGE_2 }}:${{ steps.vars.outputs.GITHUB_SHA }}"
           kubectl create deployment aztemusic-service-3-${{ steps.tag_version.outputs.new_tag }} --image="${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTEMUSIC_IMAGE_3 }}:${{ steps.vars.outputs.GITHUB_SHA }}"
@@ -139,8 +128,6 @@ jobs:
       - name: Scale deployments
         run: |
           kubectl scale --replicas=1 deployment/aztebot-service-${{ steps.tag_version.outputs.new_tag }}
-
-          kubectl scale --replicas=1 deployment/azteradio-service-${{ steps.tag_version.outputs.new_tag }}
 
           kubectl scale --replicas=1 deployment/aztemusic-service-1-${{ steps.tag_version.outputs.new_tag }}
           kubectl scale --replicas=1 deployment/aztemusic-service-2-${{ steps.tag_version.outputs.new_tag }}

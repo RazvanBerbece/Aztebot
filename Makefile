@@ -15,7 +15,6 @@ update-conf-jar:
 	openssl base64 -A -in ./cmd/aztemusic-service-jar/aztemusic-service-1/config.prod.txt -out ./cmd/aztemusic-service-jar/aztemusic-service-1/base64.config.prod.txt
 	openssl base64 -A -in ./cmd/aztemusic-service-jar/aztemusic-service-2/config.prod.txt -out ./cmd/aztemusic-service-jar/aztemusic-service-2/base64.config.prod.txt
 	openssl base64 -A -in ./cmd/aztemusic-service-jar/aztemusic-service-3/config.prod.txt -out ./cmd/aztemusic-service-jar/aztemusic-service-3/base64.config.prod.txt
-	openssl base64 -A -in ./cmd/aztemusic-service-jar/azteradio-service/config.prod.txt -out ./cmd/aztemusic-service-jar/azteradio-service/base64.config.prod.txt
 
 update-env:
 	openssl base64 -A -in .prod.env -out base64.prod.env.out
