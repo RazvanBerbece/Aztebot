@@ -15,6 +15,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 
 	// Other setups
 
-	// Register user details and initial roles into DB
+	// Cron func to sync users and their DB entity
+	// TODO
 
 }
