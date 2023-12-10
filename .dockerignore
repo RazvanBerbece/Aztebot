@@ -14,7 +14,4 @@ base64.config.prod.txt
 *.prod.env
 base64.prod.env.out
 
-*.prod.env.out
-.env.out
-
 .DS_Store

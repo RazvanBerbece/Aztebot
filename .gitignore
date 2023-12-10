@@ -28,7 +28,3 @@ logs/
 .data/
 keys/
 prodEnvString.txt
-downloads/
-config.txt
-config.prod.txt
-base64.config.prod.txt
