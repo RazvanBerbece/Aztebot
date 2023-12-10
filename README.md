@@ -20,7 +20,7 @@ In order to run the application, a few prerequisites must be met.
 5. Additionally, for full local development capabilities, have the [Aztebot-Infrastructure](https://github.com/RazvanBerbece/Aztebot-Infrastructure) repository cloned locally in a folder which also contains the `Aztebot` repository - i.e. Folder `Project` should contain both the `Aztebot` and the `Aztebot-Infrastructure` repository folders.
 
 ## Running the full service composition
-1. Run a freshly built full service composition (app, DBs, etc.) with the `make run-all` command.
+1. Run a freshly built full service composition (app, DBs, etc.) with the `make up` command.
     - This is required so the local development database is configured with all the necessary default data.   
 2. Run migrations locally by executing the following commands from the root of this repository
     - To execute a dryrun and double-check the to-be-applied migrations: `make migrate-up-dry` 

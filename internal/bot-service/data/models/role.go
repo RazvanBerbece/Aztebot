@@ -4,10 +4,6 @@ type Role struct {
 	Id          int
 	RoleName    string
 	DisplayName string
-	Colour      int
+	Emoji       string
 	Info        string
-	Perms       string
-	Owner	    string
-	Cfgs        string
-	Attrib      int
 }
