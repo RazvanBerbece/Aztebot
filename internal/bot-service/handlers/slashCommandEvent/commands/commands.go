@@ -19,6 +19,10 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		Description: "Get a summary of your profile details which are linked to the OTA guild",
 	},
 	{
+		Name:        "sync",
+		Description: "Syncs the user profile data (roles, etc.) with the OTA servers. This is a restricted command",
+	},
+	{
 		Name:        "help",
 		Description: "Get a help guide for the available AzteBot slash commands",
 	},
@@ -29,4 +33,5 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"my_roles": slashHandlers.HandleSlashMyRoles,
 	"me":       slashHandlers.HandleSlashMe,
 	"help":     slashHandlers.HandleSlashAztebotHelp,
+	"sync":     slashHandlers.HandleSlashSync,
 }
