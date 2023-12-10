@@ -17,7 +17,7 @@ func HandleSlashMyRoles(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
-				Content: "An error ocurred while trying to fetch your profile card.",
+				Content: "An error ocurred while trying to fetch your roles.",
 			},
 		})
 	}
