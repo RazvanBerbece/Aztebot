@@ -8,7 +8,7 @@ The powerful Discord bot which powers the OTA (Ordinul Templierilor Azteci) Disc
 - `mysql-db` (Containerised MySQL instance for local development)
 
 ### External
-- `aztemusic-service` (New standalone music orchestrator bot application which will replace `aztemusic-service-jar` - see development here [AzteMusic](https://github.com/AzteBot-Developments/AzteMusic))
+- `aztemusic-service` (Standalone music orchestrator bot application - see development here [AzteMusic](https://github.com/AzteBot-Developments/AzteMusic))
 
 # How to Run
 ## Prerequisites
