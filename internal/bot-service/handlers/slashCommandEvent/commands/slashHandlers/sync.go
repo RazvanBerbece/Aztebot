@@ -62,8 +62,10 @@ func ProcessUserUpdate(userId string, s *discordgo.Session, event *discordgo.Int
 			}
 			roleDax, err := rolesRepository.GetRole(userRoleObj.Name)
 			if err != nil {
-				log.Println("Error getting role from DB:", err)
+				log.Printf("Error getting role %s from DB: %v", userRoleObj.Name, err)
 				if err == sql.ErrNoRows {
+					// This will probably be a role which is assigned to the three orders or something, so we can ignore
+					// and move on to the other roles of the user
 					continue
 				} else {
 					return err
@@ -87,7 +89,6 @@ func ProcessUserUpdate(userId string, s *discordgo.Session, event *discordgo.Int
 		var maxInnerOrderId int = -1
 		for _, roleId := range roleIds {
 			circle, order := getCircleAndOrderFromRoleId(roleId)
-			fmt.Println(circle, order)
 			if circle == 1 {
 				hasInnerCircleId = true
 				if order > maxInnerOrderId {
@@ -113,7 +114,7 @@ func ProcessUserUpdate(userId string, s *discordgo.Session, event *discordgo.Int
 			log.Println("Error udpating user in DB:", err)
 			return err
 		}
-		fmt.Printf("User with CurrentRoleIds: %s\n", updatedUser.CurrentRoleIds)
+		fmt.Printf("User synced with CurrentRoleIds: %s\n", updatedUser.CurrentRoleIds)
 
 		return nil
 	}
