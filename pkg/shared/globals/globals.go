@@ -2,6 +2,7 @@ package globals
 
 import (
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -23,6 +24,8 @@ var MySqlRootConnectionString = os.Getenv("DB_ROOT_CONNSTRING") // in MySQL form
 // =============== RUNTIME VARIABLES (BOT APPLICATIONS) ===============
 var RestrictedCommands = strings.Split(os.Getenv("RESTRICTED_COMMANDS"), ",")
 var AllowedRoles = strings.Split(os.Getenv("ALLOWED_ROLES"), ",")
+
+var UserSyncInterval, UserSyncIntervalErr = strconv.Atoi(os.Getenv("USER_SYNC_INTERVAL")) // in seconds
 
 // =============== RUNTIME VARIABLES (SLASH COMMANDS) ===============
 var AztebotRegisteredCommands []*discordgo.ApplicationCommand

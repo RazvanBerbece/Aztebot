@@ -1,4 +1,4 @@
-package slashHandlers
+package utils
 
 import (
 	"database/sql"
@@ -7,42 +7,24 @@ import (
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
-	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
 
-func HandleSlashSync(s *discordgo.Session, i *discordgo.InteractionCreate) {
-
-	err := ProcessUserUpdate(i.Interaction.Member.User.ID, s, i)
-	if err != nil {
-		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{
-				Content: "An error ocurred while trying to sync your data.",
-			},
-		})
-	}
-
-	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Content: "Successfully synced data with the internal records.",
-		},
-	})
-}
-
-func ProcessUserUpdate(userId string, s *discordgo.Session, event *discordgo.InteractionCreate) error {
+// Takes in a discord member and syncs the database User with the current member details
+// as they appear on the Discord guild.
+func SyncUser(s *discordgo.Session, guildId string, userId string, member *discordgo.Member) error {
 
 	rolesRepository := repositories.NewRolesRepository()
 	usersRepository := repositories.NewUsersRepository()
+
 	user, err := usersRepository.GetUser(userId)
 	if err != nil {
 		log.Printf("Cannot retrieve user with id %s: %v", userId, err)
 		if err == sql.ErrNoRows {
 			log.Printf("Storing user with id %s", userId)
-			user, err = usersRepository.SaveInitialUserDetails(event.Member.User.Username, userId)
+			user, err = usersRepository.SaveInitialUserDetails(member.User.Username, userId)
 			if err != nil {
-				log.Fatalf("Cannot store user %s with id %s: %v", event.Member.User.Username, userId, err)
+				log.Fatalf("Cannot store user %s with id %s: %v", member.User.Username, userId, err)
 				return err
 			}
 		}
@@ -53,10 +35,10 @@ func ProcessUserUpdate(userId string, s *discordgo.Session, event *discordgo.Int
 		// Get current roles from user (as they appear on the Discord guild)
 		var currentRoleIds string
 		var roleIds []int
-		for _, role := range event.Member.Roles {
+		for _, role := range member.Roles {
 			// Build a list of roles taken from the Discord guild
 			// and then use the list to update the role IDs, circle and order in the database
-			userRoleObj, err := s.State.Role(event.GuildID, role) // role DisplayName in OTA DB
+			userRoleObj, err := s.State.Role(guildId, role) // role DisplayName in OTA DB
 			if err != nil {
 				log.Println("Error getting role from Discord servers:", err)
 				return err
@@ -89,7 +71,7 @@ func ProcessUserUpdate(userId string, s *discordgo.Session, event *discordgo.Int
 		var hasInnerCircleId bool = false
 		var maxInnerOrderId int = -1
 		for _, roleId := range roleIds {
-			circle, order := utils.GetCircleAndOrderFromRoleId(roleId)
+			circle, order := GetCircleAndOrderFromRoleId(roleId)
 			if circle == 1 {
 				hasInnerCircleId = true
 				if order > maxInnerOrderId {
@@ -120,5 +102,5 @@ func ProcessUserUpdate(userId string, s *discordgo.Session, event *discordgo.Int
 		return nil
 	}
 
-	return nil
+	return fmt.Errorf("no update was executed")
 }

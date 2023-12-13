@@ -20,7 +20,7 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 	},
 	{
 		Name:        "sync",
-		Description: "Syncs the user profile data (roles, etc.) with the OTA servers. This is a restricted command",
+		Description: "Syncs the user profile data (roles, etc.) with the OTA servers",
 	},
 	{
 		Name:        "help",
