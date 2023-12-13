@@ -12,10 +12,7 @@ import (
 
 // Takes in a discord member and syncs the database User with the current member details
 // as they appear on the Discord guild.
-func SyncUser(s *discordgo.Session, guildId string, userId string, member *discordgo.Member) error {
-
-	rolesRepository := repositories.NewRolesRepository()
-	usersRepository := repositories.NewUsersRepository()
+func SyncUser(s *discordgo.Session, guildId string, userId string, member *discordgo.Member, rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository) error {
 
 	user, err := usersRepository.GetUser(userId)
 	if err != nil {
@@ -45,7 +42,6 @@ func SyncUser(s *discordgo.Session, guildId string, userId string, member *disco
 			}
 			roleDax, err := rolesRepository.GetRole(userRoleObj.Name)
 			if err != nil {
-				log.Printf("Error getting role %s from DB: %v", userRoleObj.Name, err)
 				if err == sql.ErrNoRows {
 					// This will probably be a role which is assigned to the three orders or something, so we can ignore
 					// and move on to the other roles of the user
@@ -97,7 +93,7 @@ func SyncUser(s *discordgo.Session, guildId string, userId string, member *disco
 			log.Println("Error updating user in DB:", err)
 			return err
 		}
-		fmt.Printf("User synced with CurrentRoleIds: %s\n", updatedUser.CurrentRoleIds)
+		fmt.Printf("Synced user %s\n", updatedUser.DiscordTag)
 
 		return nil
 	}

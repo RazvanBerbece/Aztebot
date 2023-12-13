@@ -20,8 +20,6 @@ func NewRolesRepository() *RolesRepository {
 
 func (r RolesRepository) GetRole(displayName string) (*dataModels.Role, error) {
 
-	r.conn.ConnectDatabaseHandle()
-
 	// Get assigned role IDs for given user from the DB
 	query := "SELECT * FROM Roles WHERE displayName = ?"
 	row := r.conn.Db.QueryRow(query, displayName)
@@ -40,8 +38,6 @@ func (r RolesRepository) GetRole(displayName string) (*dataModels.Role, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	defer r.conn.Db.Close()
 
 	return &role, nil
 }

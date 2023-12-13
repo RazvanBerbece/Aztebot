@@ -24,8 +24,6 @@ func NewUsersRepository() *UsersRepository {
 
 func (r UsersRepository) GetUser(userId string) (*dataModels.User, error) {
 
-	r.conn.ConnectDatabaseHandle()
-
 	// Get assigned role IDs for given user from the DB
 	query := "SELECT * FROM Users WHERE userId = ?"
 	row := r.conn.Db.QueryRow(query, userId)
@@ -48,14 +46,10 @@ func (r UsersRepository) GetUser(userId string) (*dataModels.User, error) {
 		return nil, err
 	}
 
-	defer r.conn.Db.Close()
-
 	return &user, nil
 }
 
 func (r UsersRepository) SaveInitialUserDetails(tag string, userId string) (*dataModels.User, error) {
-
-	r.conn.ConnectDatabaseHandle()
 
 	user := &dataModels.User{
 		DiscordTag:        tag,
@@ -91,15 +85,11 @@ func (r UsersRepository) SaveInitialUserDetails(tag string, userId string) (*dat
 		return nil, err
 	}
 
-	defer r.conn.Db.Close()
-
 	return user, nil
 
 }
 
 func (r UsersRepository) UpdateUser(user dataModels.User) (*dataModels.User, error) {
-
-	r.conn.ConnectDatabaseHandle()
 
 	stmt, err := r.conn.Db.Prepare(`
 		UPDATE Users SET 
@@ -121,14 +111,10 @@ func (r UsersRepository) UpdateUser(user dataModels.User) (*dataModels.User, err
 		return nil, err
 	}
 
-	defer r.conn.Db.Close()
-
 	return &user, nil
 }
 
 func (r UsersRepository) GetRolesForUser(userId string) ([]dataModels.Role, error) {
-
-	r.conn.ConnectDatabaseHandle()
 
 	// Get assigned role IDs for given user from the DB
 	rows, err := r.conn.Db.Query("SELECT currentRoleIds FROM Users WHERE userId = ?", userId)
@@ -162,14 +148,10 @@ func (r UsersRepository) GetRolesForUser(userId string) ([]dataModels.Role, erro
 		return nil, fmt.Errorf("GetRolesForUser %s - Roles: %v", userId, err)
 	}
 
-	defer r.conn.Db.Close()
-
 	return roles, nil
 }
 
 func (r UsersRepository) GetRolesByIds(placeholders string, ids []int) ([]dataModels.Role, error) {
-
-	r.conn.ConnectDatabaseHandle()
 
 	// Convert roleIDIntegers to a slice of interface{} to use as variadic args in Db.Query()
 	var rolesAsListOfAny []interface{}
@@ -198,8 +180,6 @@ func (r UsersRepository) GetRolesByIds(placeholders string, ids []int) ([]dataMo
 	if len(roles) == 0 {
 		return nil, fmt.Errorf("GetRolesByIds: No roles found for ids %d", ids)
 	}
-
-	defer r.conn.Db.Close()
 
 	return roles, nil
 }
