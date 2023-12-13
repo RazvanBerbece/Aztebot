@@ -45,6 +45,8 @@ func (r UsersRepository) GetUser(userId string) (*dataModels.User, error) {
 		return nil, err
 	}
 
+	defer r.conn.Db.Close()
+
 	return &user, nil
 }
 
@@ -84,6 +86,8 @@ func (r UsersRepository) SaveInitialUserDetails(tag string, userId string) (*dat
 		return nil, err
 	}
 
+	defer r.conn.Db.Close()
+
 	return user, nil
 
 }
@@ -108,6 +112,8 @@ func (r UsersRepository) UpdateUser(user dataModels.User) (*dataModels.User, err
 	if err != nil {
 		return nil, err
 	}
+
+	defer r.conn.Db.Close()
 
 	return &user, nil
 }
@@ -146,6 +152,8 @@ func (r UsersRepository) GetRolesForUser(userId string) ([]dataModels.Role, erro
 		return nil, fmt.Errorf("GetRolesForUser %s - Roles: %v", userId, err)
 	}
 
+	defer r.conn.Db.Close()
+
 	return roles, nil
 }
 
@@ -178,6 +186,9 @@ func (r UsersRepository) GetRolesByIds(placeholders string, ids []int) ([]dataMo
 	if len(roles) == 0 {
 		return nil, fmt.Errorf("GetRolesByIds: No roles found for ids %d", ids)
 	}
+
+	defer r.conn.Db.Close()
+
 	return roles, nil
 }
 
