@@ -13,7 +13,7 @@ import (
 func RegisterAztebotSlashCommands(s *discordgo.Session) error {
 
 	// For each guild ID, register the commands
-	guildIds := strings.Fields(globals.DiscordGuildId)
+	guildIds := strings.Fields(globals.DiscordGuildIds)
 	for _, guildId := range guildIds {
 		globals.AztebotRegisteredCommands = make([]*discordgo.ApplicationCommand, len(commands.AztebotSlashCommands))
 		for index, cmd := range commands.AztebotSlashCommands {
@@ -73,7 +73,7 @@ func RegisterAztebotSlashCommands(s *discordgo.Session) error {
 
 func CleanupAztebotSlashCommands(s *discordgo.Session) {
 	// For each guild ID, cleanup the commands
-	guildIds := strings.Fields(globals.DiscordGuildId)
+	guildIds := strings.Fields(globals.DiscordGuildIds)
 	for _, guildId := range guildIds {
 		for _, cmd := range globals.AztebotRegisteredCommands {
 			err := s.ApplicationCommandDelete(globals.DiscordAztebotAppId, guildId, cmd.ID)
