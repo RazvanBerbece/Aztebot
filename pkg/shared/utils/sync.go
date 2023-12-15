@@ -88,12 +88,13 @@ func SyncUserPersistent(s *discordgo.Session, guildId string, userId string, mem
 			user.CurrentInnerOrder = &maxInnerOrderId
 		}
 
-		updatedUser, updateErr := usersRepository.UpdateUser(*user)
+		_, updateErr := usersRepository.UpdateUser(*user)
 		if updateErr != nil {
 			log.Println("Error updating user in DB:", err)
 			return err
 		}
-		fmt.Printf("Synced user %s\n", updatedUser.DiscordTag)
+
+		// fmt.Printf("Synced user %s\n", updatedUser.DiscordTag)
 
 		return nil
 	}

@@ -22,6 +22,36 @@ func NewUsersRepository() *UsersRepository {
 	return repo
 }
 
+func (r UsersRepository) GetAllDiscordUids() ([]string, error) {
+
+	var userIds []string
+	rowsUsers, err := r.conn.Db.Query("SELECT userId FROM Users")
+	if err != nil {
+		return nil, fmt.Errorf("GetAll: %v", err)
+	}
+	defer rowsUsers.Close()
+	for rowsUsers.Next() {
+		var id string
+		if err := rowsUsers.Scan(&id); err != nil {
+			return nil, fmt.Errorf("GetAll: %v", err)
+		}
+		userIds = append(userIds, id)
+	}
+	if err := rowsUsers.Err(); err != nil {
+		return nil, fmt.Errorf("GetAll: %v", err)
+	}
+	// Check for zero rows - if the query arg has no IDs retrieved from the Users table
+	if len(userIds) == 0 {
+		return nil, fmt.Errorf("GetAll: No users found in Users table")
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return userIds, nil
+}
+
 func (r UsersRepository) GetUser(userId string) (*dataModels.User, error) {
 
 	// Get assigned role IDs for given user from the DB
@@ -47,6 +77,18 @@ func (r UsersRepository) GetUser(userId string) (*dataModels.User, error) {
 	}
 
 	return &user, nil
+}
+
+func (r UsersRepository) DeleteUser(userId string) error {
+
+	query := "DELETE FROM Users WHERE userId = ?"
+
+	_, err := r.conn.Db.Exec(query, userId)
+	if err != nil {
+		return fmt.Errorf("error deleting user: %w", err)
+	}
+
+	return nil
 }
 
 func (r UsersRepository) SaveInitialUserDetails(tag string, userId string) (*dataModels.User, error) {
