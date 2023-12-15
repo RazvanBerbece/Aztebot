@@ -33,11 +33,13 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	var syncInterval int
 	var cleanupInterval int
 	if globals.UserSyncIntervalErr != nil {
+		fmt.Printf("Could not parse UserSyncInterval environment variable: %v\n", globals.UserSyncIntervalErr)
 		syncInterval = 60
 	} else {
 		syncInterval = globals.UserSyncInterval
 	}
 	if globals.UserCleanupIntervalErr != nil {
+		fmt.Printf("Could not parse UserCleanupInterval environment variable: %v\n", globals.UserCleanupIntervalErr)
 		cleanupInterval = 60
 	} else {
 		cleanupInterval = globals.UserCleanupInterval
