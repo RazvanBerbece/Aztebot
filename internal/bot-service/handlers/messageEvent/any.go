@@ -3,7 +3,7 @@ package messageEvent
 import (
 	"fmt"
 
-	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
+	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -15,8 +15,7 @@ func Any(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	// Increase stats for user
-	userStatsRepo := repositories.NewUsersStatsRepository()
-	err := userStatsRepo.IncrementMessagesSentForUser(m.Author.ID)
+	err := globalsRepo.UserStatsRepository.IncrementMessagesSentForUser(m.Author.ID)
 	if err != nil {
 		fmt.Printf("An error ocurred while updating user (%s) message count: %v", m.Author.ID, err)
 	}

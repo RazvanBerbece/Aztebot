@@ -9,9 +9,6 @@ import (
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/bot-service/data/models"
 )
 
-type UsersRepositoryInterface interface {
-}
-
 type UsersRepository struct {
 	conn databaseconn.Database
 }

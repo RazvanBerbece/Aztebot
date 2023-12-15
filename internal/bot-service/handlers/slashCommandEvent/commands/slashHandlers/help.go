@@ -5,8 +5,8 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
+	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/dm"
-	"github.com/RazvanBerbece/Aztebot/pkg/shared/globals"
 )
 
 func HandleSlashAztebotHelp(s *discordgo.Session, i *discordgo.InteractionCreate) {

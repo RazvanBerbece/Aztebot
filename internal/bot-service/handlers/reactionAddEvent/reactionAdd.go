@@ -3,7 +3,7 @@ package messageEvent
 import (
 	"fmt"
 
-	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
+	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -22,8 +22,7 @@ func ReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 
 	messageOwnerUid := message.Author.ID
 
-	userStatsRepo := repositories.NewUsersStatsRepository()
-	err = userStatsRepo.IncrementReactionsReceivedForUser(messageOwnerUid)
+	err = globalsRepo.UserStatsRepository.IncrementReactionsReceivedForUser(messageOwnerUid)
 	if err != nil {
 		fmt.Printf("An error ocurred while updating user (%s) reaction count: %v", messageOwnerUid, err)
 	}

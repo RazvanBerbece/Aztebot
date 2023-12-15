@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
+	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
@@ -33,14 +33,12 @@ func HandleSlashSync(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 func ProcessUserUpdate(userId string, s *discordgo.Session, event *discordgo.InteractionCreate) error {
 
-	rolesRepository := repositories.NewRolesRepository()
-	usersRepository := repositories.NewUsersRepository()
-	user, err := usersRepository.GetUser(userId)
+	user, err := globalsRepo.UsersRepository.GetUser(userId)
 	if err != nil {
 		log.Printf("Cannot retrieve user with id %s: %v", userId, err)
 		if err == sql.ErrNoRows {
 			log.Printf("Storing user with id %s", userId)
-			user, err = usersRepository.SaveInitialUserDetails(event.Member.User.Username, userId)
+			user, err = globalsRepo.UsersRepository.SaveInitialUserDetails(event.Member.User.Username, userId)
 			if err != nil {
 				log.Fatalf("Cannot store user %s with id %s: %v", event.Member.User.Username, userId, err)
 				return err
@@ -61,7 +59,7 @@ func ProcessUserUpdate(userId string, s *discordgo.Session, event *discordgo.Int
 				log.Println("Error getting role from Discord servers:", err)
 				return err
 			}
-			roleDax, err := rolesRepository.GetRole(userRoleObj.Name)
+			roleDax, err := globalsRepo.RolesRepository.GetRole(userRoleObj.Name)
 			if err != nil {
 				log.Printf("Error getting role %s from DB: %v", userRoleObj.Name, err)
 				if err == sql.ErrNoRows {
@@ -110,7 +108,7 @@ func ProcessUserUpdate(userId string, s *discordgo.Session, event *discordgo.Int
 			user.CurrentInnerOrder = &maxInnerOrderId
 		}
 
-		_, updateErr := usersRepository.UpdateUser(*user)
+		_, updateErr := globalsRepo.UsersRepository.UpdateUser(*user)
 		if updateErr != nil {
 			log.Println("Error udpating user in DB:", err)
 			return err

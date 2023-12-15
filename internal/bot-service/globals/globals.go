@@ -22,12 +22,13 @@ var DiscordGuildIds = os.Getenv("DISCORD_GUILD_IDS")
 
 var MySqlRootConnectionString = os.Getenv("DB_ROOT_CONNSTRING") // in MySQL format (i.e. `root_username:root_password@<unix/tcp>(host:port)/db_name`)
 
-// =============== RUNTIME VARIABLES (BOT APPLICATIONS) ===============
 var RestrictedCommands = strings.Split(os.Getenv("RESTRICTED_COMMANDS"), ",")
 var AllowedRoles = strings.Split(os.Getenv("ALLOWED_ROLES"), ",")
 
 var UserSyncInterval, UserSyncIntervalErr = strconv.Atoi(os.Getenv("USER_SYNC_INTERVAL"))          // in seconds
 var UserCleanupInterval, UserCleanupIntervalErr = strconv.Atoi(os.Getenv("USER_CLEANUP_INTERVAL")) // in seconds
+
+// =============== RUNTIME VARIABLES (BOT APPLICATIONS) ===============
 
 // =============== RUNTIME VARIABLES (SLASH COMMANDS) ===============
 var AztebotRegisteredCommands []*discordgo.ApplicationCommand

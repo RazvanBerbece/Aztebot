@@ -7,9 +7,6 @@ import (
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/bot-service/data/models"
 )
 
-type UsersStatsRepositoryInterface interface {
-}
-
 type UsersStatsRepository struct {
 	conn databaseconn.Database
 }

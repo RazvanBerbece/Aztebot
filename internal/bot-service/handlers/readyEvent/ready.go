@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
-	"github.com/RazvanBerbece/Aztebot/pkg/shared/globals"
+	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/logging"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -19,7 +19,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	logging.LogHandlerCall("Ready", "")
 
 	// Define the repositories here for the cron functions (and reuse their connections)
-	// in order to not flood the DB with connection attempts
+	// in order to not flood the DB with connection attempts and also have different connections to the core ones
 	rolesRepository := repositories.NewRolesRepository()
 	usersRepository := repositories.NewUsersRepository()
 	userStatsRepository := repositories.NewUsersStatsRepository()
