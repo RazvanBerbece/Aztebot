@@ -18,12 +18,6 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 
 	logging.LogHandlerCall("Ready", "")
 
-	// Define the repositories here for the cron functions (and reuse their connections)
-	// in order to not flood the DB with connection attempts and also have different connections to the core ones
-	rolesRepository := repositories.NewRolesRepository()
-	usersRepository := repositories.NewUsersRepository()
-	userStatsRepository := repositories.NewUsersStatsRepository()
-
 	// Set initial status for the AzteBot
 	s.UpdateGameStatus(0, "/help")
 
@@ -51,14 +45,32 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	// Periodic sync of the members on the server with the DB
 	go func() {
 		for range syncTicker.C {
+			// Define the repositories here for the cron functions (and reuse their connections)
+			// in order to not flood the DB with connection attempts and also have different connections to the core ones
+			rolesRepository := repositories.NewRolesRepository()
+			usersRepository := repositories.NewUsersRepository()
+			userStatsRepository := repositories.NewUsersStatsRepository()
+
+			// Process
 			UpdateUsersInCron(s, rolesRepository, usersRepository, userStatsRepository)
+
+			// Cleanup DB connections after cron run
+			cleanupCronRepositories(rolesRepository, usersRepository, userStatsRepository)
 		}
 	}()
 
 	// Periodic cleanup of users from the DB
 	go func() {
 		for range cleanupTicker.C {
+			// Inject new connections
+			usersRepository := repositories.NewUsersRepository()
+			userStatsRepository := repositories.NewUsersStatsRepository()
+
+			// Process
 			CleanupUsersInCron(s, usersRepository, userStatsRepository)
+
+			// Cleanup DB connections after cron run
+			cleanupCronRepositories(nil, usersRepository, userStatsRepository)
 		}
 	}()
 
@@ -150,4 +162,20 @@ func processMembers(s *discordgo.Session, members []*discordgo.Member, rolesRepo
 			fmt.Printf("Error syncinc member %s: %v", member.User.Username, err)
 		}
 	}
+}
+
+func cleanupCronRepositories(rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository) {
+
+	if rolesRepository != nil {
+		rolesRepository.Conn.Db.Close()
+	}
+
+	if usersRepository != nil {
+		usersRepository.Conn.Db.Close()
+	}
+
+	if userStatsRepository != nil {
+		userStatsRepository.Conn.Db.Close()
+	}
+
 }

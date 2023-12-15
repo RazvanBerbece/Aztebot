@@ -10,19 +10,19 @@ import (
 )
 
 type UsersRepository struct {
-	conn databaseconn.Database
+	Conn databaseconn.Database
 }
 
 func NewUsersRepository() *UsersRepository {
 	repo := new(UsersRepository)
-	repo.conn.ConnectDatabaseHandle()
+	repo.Conn.ConnectDatabaseHandle()
 	return repo
 }
 
 func (r UsersRepository) GetAllDiscordUids() ([]string, error) {
 
 	var userIds []string
-	rowsUsers, err := r.conn.Db.Query("SELECT userId FROM Users")
+	rowsUsers, err := r.Conn.Db.Query("SELECT userId FROM Users")
 	if err != nil {
 		return nil, fmt.Errorf("GetAll: %v", err)
 	}
@@ -53,7 +53,7 @@ func (r UsersRepository) GetUser(userId string) (*dataModels.User, error) {
 
 	// Get assigned role IDs for given user from the DB
 	query := "SELECT * FROM Users WHERE userId = ?"
-	row := r.conn.Db.QueryRow(query, userId)
+	row := r.Conn.Db.QueryRow(query, userId)
 
 	// Scan the role IDs and process them into query arguments to use
 	// in the Roles table
@@ -80,7 +80,7 @@ func (r UsersRepository) DeleteUser(userId string) error {
 
 	query := "DELETE FROM Users WHERE userId = ?"
 
-	_, err := r.conn.Db.Exec(query, userId)
+	_, err := r.Conn.Db.Exec(query, userId)
 	if err != nil {
 		return fmt.Errorf("error deleting user: %w", err)
 	}
@@ -101,7 +101,7 @@ func (r UsersRepository) SaveInitialUserDetails(tag string, userId string) (*dat
 		CreatedAt:         nil,
 	}
 
-	stmt, err := r.conn.Db.Prepare(`
+	stmt, err := r.Conn.Db.Prepare(`
 		INSERT INTO 
 			Users(
 				discordTag, 
@@ -130,7 +130,7 @@ func (r UsersRepository) SaveInitialUserDetails(tag string, userId string) (*dat
 
 func (r UsersRepository) UpdateUser(user dataModels.User) (*dataModels.User, error) {
 
-	stmt, err := r.conn.Db.Prepare(`
+	stmt, err := r.Conn.Db.Prepare(`
 		UPDATE Users SET 
 			discordTag = ?, 
 			currentRoleIds = ?, 
@@ -156,7 +156,7 @@ func (r UsersRepository) UpdateUser(user dataModels.User) (*dataModels.User, err
 func (r UsersRepository) GetRolesForUser(userId string) ([]dataModels.Role, error) {
 
 	// Get assigned role IDs for given user from the DB
-	rows, err := r.conn.Db.Query("SELECT currentRoleIds FROM Users WHERE userId = ?", userId)
+	rows, err := r.Conn.Db.Query("SELECT currentRoleIds FROM Users WHERE userId = ?", userId)
 	if err != nil {
 		return nil, fmt.Errorf("GetRolesForUser %s - User: %v", userId, err)
 	}
@@ -200,7 +200,7 @@ func (r UsersRepository) GetRolesByIds(placeholders string, ids []int) ([]dataMo
 
 	var roles []dataModels.Role
 	query := fmt.Sprintf("SELECT * FROM Roles WHERE id IN (%s)", placeholders)
-	rowsRoles, err := r.conn.Db.Query(query, rolesAsListOfAny...)
+	rowsRoles, err := r.Conn.Db.Query(query, rolesAsListOfAny...)
 	if err != nil {
 		return nil, fmt.Errorf("GetRolesByIds <%d>: %v", ids, err)
 	}

@@ -8,12 +8,12 @@ import (
 )
 
 type UsersStatsRepository struct {
-	conn databaseconn.Database
+	Conn databaseconn.Database
 }
 
 func NewUsersStatsRepository() *UsersStatsRepository {
 	repo := new(UsersStatsRepository)
-	repo.conn.ConnectDatabaseHandle()
+	repo.Conn.ConnectDatabaseHandle()
 	return repo
 }
 
@@ -27,7 +27,7 @@ func (r UsersStatsRepository) SaveInitialUserStats(userId string) error {
 		NumberActiveDayStreak:   0,
 	}
 
-	stmt, err := r.conn.Db.Prepare(`
+	stmt, err := r.Conn.Db.Prepare(`
 		INSERT INTO 
 			UserStats(
 				userId, 
@@ -55,7 +55,7 @@ func (r UsersStatsRepository) GetStatsForUser(userId string) (*dataModels.UserSt
 
 	// Get assigned role IDs for given user from the DB
 	query := "SELECT * FROM UserStats WHERE userId = ?"
-	row := r.conn.Db.QueryRow(query, userId)
+	row := r.Conn.Db.QueryRow(query, userId)
 
 	// Scan the role IDs and process them into query arguments to use
 	// in the Roles table
@@ -80,7 +80,7 @@ func (r UsersStatsRepository) DeleteUserStats(userId string) error {
 
 	query := "DELETE FROM UserStats WHERE userId = ?"
 
-	_, err := r.conn.Db.Exec(query, userId)
+	_, err := r.Conn.Db.Exec(query, userId)
 	if err != nil {
 		return fmt.Errorf("error deleting user stats: %w", err)
 	}
@@ -89,7 +89,7 @@ func (r UsersStatsRepository) DeleteUserStats(userId string) error {
 }
 
 func (r UsersStatsRepository) IncrementMessagesSentForUser(userId string) error {
-	stmt, err := r.conn.Db.Prepare(`
+	stmt, err := r.Conn.Db.Prepare(`
 		UPDATE UserStats SET 
 			messagesSent = messagesSent + 1
 		WHERE userId = ?`)
@@ -109,7 +109,7 @@ func (r UsersStatsRepository) IncrementMessagesSentForUser(userId string) error 
 }
 
 func (r UsersStatsRepository) DecrementMessagesSentForUser(userId string) error {
-	stmt, err := r.conn.Db.Prepare(`
+	stmt, err := r.Conn.Db.Prepare(`
 		UPDATE UserStats SET 
 			messagesSent = messagesSent - 1
 		WHERE userId = ?`)
@@ -129,7 +129,7 @@ func (r UsersStatsRepository) DecrementMessagesSentForUser(userId string) error 
 }
 
 func (r UsersStatsRepository) IncrementSlashCommandsUsedForUser(userId string) error {
-	stmt, err := r.conn.Db.Prepare(`
+	stmt, err := r.Conn.Db.Prepare(`
 		UPDATE UserStats SET 
 			slashCommandsUsed = slashCommandsUsed + 1
 		WHERE userId = ?`)
@@ -149,7 +149,7 @@ func (r UsersStatsRepository) IncrementSlashCommandsUsedForUser(userId string) e
 }
 
 func (r UsersStatsRepository) IncrementReactionsReceivedForUser(userId string) error {
-	stmt, err := r.conn.Db.Prepare(`
+	stmt, err := r.Conn.Db.Prepare(`
 		UPDATE UserStats SET 
 			reactionsReceived = reactionsReceived + 1
 		WHERE userId = ?`)
@@ -169,7 +169,7 @@ func (r UsersStatsRepository) IncrementReactionsReceivedForUser(userId string) e
 }
 
 func (r UsersStatsRepository) DecrementReactionsReceivedForUser(userId string) error {
-	stmt, err := r.conn.Db.Prepare(`
+	stmt, err := r.Conn.Db.Prepare(`
 		UPDATE UserStats SET 
 			reactionsReceived = reactionsReceived - 1
 		WHERE userId = ?`)
@@ -189,7 +189,7 @@ func (r UsersStatsRepository) DecrementReactionsReceivedForUser(userId string) e
 }
 
 func (r UsersStatsRepository) IncrementActiveDayStreakForUser(userId string) error {
-	stmt, err := r.conn.Db.Prepare(`
+	stmt, err := r.Conn.Db.Prepare(`
 		UPDATE UserStats SET 
 			activeDayStreak = activeDayStreak + 1
 		WHERE userId = ?`)
@@ -209,7 +209,7 @@ func (r UsersStatsRepository) IncrementActiveDayStreakForUser(userId string) err
 }
 
 func (r UsersStatsRepository) ResetActiveDayStreakForUser(userId string) error {
-	stmt, err := r.conn.Db.Prepare(`
+	stmt, err := r.Conn.Db.Prepare(`
 		UPDATE UserStats SET 
 			activeDayStreak = 0
 		WHERE userId = ?`)
