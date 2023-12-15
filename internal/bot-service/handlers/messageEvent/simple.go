@@ -7,11 +7,6 @@ import (
 
 func SimpleMsgReply(s *discordgo.Session, m *discordgo.MessageCreate) {
 
-	// Ignore all messages created by the bot itself
-	if m.Author.ID == s.State.User.ID {
-		return
-	}
-
 	if m.Content == "robotel" {
 		logging.LogHandlerCall("SimpleMsgReply (robotel)", "")
 		s.ChannelMessageSend(m.ChannelID, "Prezent! Cu ce te pot ajuta?")

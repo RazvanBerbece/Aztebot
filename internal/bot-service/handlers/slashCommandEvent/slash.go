@@ -1,9 +1,11 @@
 package slashCommandEvent
 
 import (
+	"fmt"
 	"log"
 	"strings"
 
+	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
 	commands "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/globals"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
@@ -61,6 +63,12 @@ func RegisterAztebotSlashCommands(s *discordgo.Session) error {
 					return
 				}
 			}
+		}
+
+		userStatsRepo := repositories.NewUsersStatsRepository()
+		err := userStatsRepo.IncrementSlashCommandsUsedForUser(i.Member.User.ID)
+		if err != nil {
+			fmt.Printf("Error ocurred while incrementing slash commands for user %s: %v", i.Member.User.ID, err)
 		}
 
 		if handlerFunc, ok := commands.AztebotSlashCommandHandlers[i.ApplicationCommandData().Name]; ok {

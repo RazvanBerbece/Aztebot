@@ -110,12 +110,11 @@ func ProcessUserUpdate(userId string, s *discordgo.Session, event *discordgo.Int
 			user.CurrentInnerOrder = &maxInnerOrderId
 		}
 
-		updatedUser, updateErr := usersRepository.UpdateUser(*user)
+		_, updateErr := usersRepository.UpdateUser(*user)
 		if updateErr != nil {
 			log.Println("Error udpating user in DB:", err)
 			return err
 		}
-		fmt.Printf("User synced with CurrentRoleIds: %s\n", updatedUser.CurrentRoleIds)
 
 		return nil
 	}
