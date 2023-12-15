@@ -88,6 +88,10 @@ jobs:
           export GCE_PROJECT="${{ env.PROJECT_ID }}"
           export GCE_PROJECT_DOCKER_ARTIFACT_REGISTRY="${{ env.DOCKER_ARTIFACT_REPOSITORY }}"
       
+      - name: Deploy Metrics Server
+        run: |
+          kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.3.6/components.yaml
+      
       - name: Remove previous deployments
         run: |
           kubectl delete deployment --ignore-not-found=true aztebot-service-${{ steps.tag_version.outputs.previous_tag }}
