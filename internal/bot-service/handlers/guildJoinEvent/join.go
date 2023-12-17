@@ -10,7 +10,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-// Called once the Discord servers confirms a new joined member.
+// Called once the Discord servers confirm a new joined member.
 func GuildJoin(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
 
 	logging.LogHandlerCall("GuildJoin", "")

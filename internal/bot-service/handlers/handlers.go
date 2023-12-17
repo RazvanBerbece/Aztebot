@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	joinEvent "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/guildJoinEvent"
+	"github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/guildRemoveEvent"
 	messageDeleteEventHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/messageDeleteEvent"
 	messageEventHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/messageEvent"
 	reactionAddEventHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/reactionAddEvent"
@@ -22,5 +24,8 @@ func GetAztebotHandlersAsList() []interface{} {
 		// <---- On Reaction Removed ---->
 		reactionRemoveEventHandlers.ReactionRemove,
 		// <---- On New Join ---->
+		joinEvent.GuildJoin,
+		// <---- On Member Leaving Guild ---->
+		guildRemoveEvent.GuildRemove,
 	}
 }
