@@ -51,8 +51,14 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 	}
 
 	// Format CreatedAt
-	userCreatedTime := time.Unix(*user.CreatedAt, 0).UTC()
-	userCreatedTimeString := userCreatedTime.Format("January 2, 2006")
+	var userCreatedTime time.Time
+	var userCreatedTimeString string
+	if user.CreatedAt != nil {
+		userCreatedTime = time.Unix(*user.CreatedAt, 0).UTC()
+		userCreatedTimeString = userCreatedTime.Format("January 2, 2006")
+	} else {
+		userCreatedTimeString = ""
+	}
 
 	// Process highest role
 	var highestRole dataModels.Role
@@ -101,8 +107,15 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 		SetTitle(fmt.Sprintf("🤖   `%s`'s Profile Card", user.DiscordTag)).
 		SetDescription(fmt.Sprintf("`%s CIRCLE`", user.CurrentCircle)).
 		SetThumbnail(fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.png", userId, apiUser.Avatar)).
-		SetColor(000000).
-		AddField(fmt.Sprintf("🩸 Aztec since:  `%s`", userCreatedTimeString), "", false).
+		SetColor(000000)
+
+	if userCreatedTimeString != "" {
+		embed.AddField(fmt.Sprintf("🩸 Aztec since:  `%s`", userCreatedTimeString), "", false)
+	} else {
+		embed.AddField("Member hasn't verified yet.", "", false)
+	}
+
+	embed.
 		AddField(fmt.Sprintf("⭐ Highest obtained role:  `%s`", highestRole.DisplayName), "", false).
 		AddLineBreakField().
 		AddField(fmt.Sprintf("✉️ Total messages sent:  `%d`", stats.NumberMessagesSent), "", false).

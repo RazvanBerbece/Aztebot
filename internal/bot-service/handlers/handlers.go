@@ -3,6 +3,7 @@ package handlers
 import (
 	joinEvent "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/guildJoinEvent"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/guildRemoveEvent"
+	"github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/memberUpdateEvent"
 	messageDeleteEventHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/messageDeleteEvent"
 	messageEventHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/messageEvent"
 	reactionAddEventHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/reactionAddEvent"
@@ -30,5 +31,7 @@ func GetAztebotHandlersAsList() []interface{} {
 		guildRemoveEvent.GuildRemove,
 		// <---- On Voice State Update ---->
 		voiceStateUpdateEvent.VoiceStateUpdate,
+		// <---- On Member Update ---->
+		memberUpdateEvent.MemberRoleUpdate,
 	}
 }

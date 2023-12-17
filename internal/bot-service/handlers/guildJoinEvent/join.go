@@ -13,12 +13,12 @@ import (
 // Called once the Discord servers confirm a new joined member.
 func GuildJoin(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
 
-	logging.LogHandlerCall("GuildJoin", "")
-
 	// If it's a bot, skip
 	if m.Member.User.Bot {
 		return
 	}
+
+	logging.LogHandlerCall("GuildJoin", "")
 
 	// Store newly-joined user to DB tables (probably only the initial details and awaiting for verification and cron sync)
 	err := utils.SyncUser(s, globals.DiscordMainGuildId, m.Member.User.ID, m.Member)

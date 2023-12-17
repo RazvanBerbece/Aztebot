@@ -36,6 +36,6 @@ func sendHelpGuideToUser(s *discordgo.Session, i *discordgo.InteractionCreate, u
 		fmt.Println("Error sending DM: ", errDm)
 		return "An error occured while DMing you the help guide."
 	}
-	return "You should have received a help guide for the `@AzteBot` in your DMs."
+	return "You should have received a help guide for the `AzteBot` in your DMs."
 
 }
