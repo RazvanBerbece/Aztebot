@@ -4,6 +4,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
@@ -31,6 +32,7 @@ var UserCleanupInterval, UserCleanupIntervalErr = strconv.Atoi(os.Getenv("USER_C
 var FavourableActivitiesThreshold, FavourableActivitiesThresholdErr = strconv.Atoi(os.Getenv("FAVOURABLE_ACTIVITIES_THRESHOLD"))
 
 // =============== RUNTIME VARIABLES (BOT APPLICATIONS) ===============
+var VoiceSessions = make(map[string]time.Time)
 
 // =============== RUNTIME VARIABLES (SLASH COMMANDS) ===============
 var AztebotRegisteredCommands []*discordgo.ApplicationCommand

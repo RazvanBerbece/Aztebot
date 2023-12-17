@@ -21,13 +21,15 @@ func NewUsersStatsRepository() *UsersStatsRepository {
 func (r UsersStatsRepository) SaveInitialUserStats(userId string) error {
 
 	userStats := &dataModels.UserStats{
-		UserId:                  userId,
-		NumberMessagesSent:      0,
-		NumberSlashCommandsUsed: 0,
-		NumberReactionsReceived: 0,
-		NumberActiveDayStreak:   0,
-		LastActiveTimestamp:     0,
-		NumberActivitiesToday:   1,
+		UserId:                   userId,
+		NumberMessagesSent:       0,
+		NumberSlashCommandsUsed:  0,
+		NumberReactionsReceived:  0,
+		NumberActiveDayStreak:    0,
+		LastActiveTimestamp:      0,
+		NumberActivitiesToday:    1,
+		TimeSpentInVoiceChannels: 0,
+		TimeSpentInEvents:        0,
 	}
 
 	stmt, err := r.Conn.Db.Prepare(`
@@ -39,15 +41,17 @@ func (r UsersStatsRepository) SaveInitialUserStats(userId string) error {
 				reactionsReceived, 
 				activeDayStreak,
 				lastActivityTimestamp,
-				numberActivitiesToday
+				numberActivitiesToday,
+				timeSpentInVoiceChannels,
+				timeSpentInEvents
 			)
-		VALUES(?, ?, ?, ?, ?, ?, ?);`)
+		VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);`)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(userStats.UserId, userStats.NumberMessagesSent, userStats.NumberSlashCommandsUsed, userStats.NumberReactionsReceived, userStats.NumberActiveDayStreak, userStats.LastActiveTimestamp, userStats.NumberActivitiesToday)
+	_, err = stmt.Exec(userStats.UserId, userStats.NumberMessagesSent, userStats.NumberSlashCommandsUsed, userStats.NumberReactionsReceived, userStats.NumberActiveDayStreak, userStats.LastActiveTimestamp, userStats.NumberActivitiesToday, userStats.TimeSpentInVoiceChannels, userStats.TimeSpentInEvents)
 	if err != nil {
 		return err
 	}
@@ -73,6 +77,8 @@ func (r UsersStatsRepository) GetStatsForUser(userId string) (*dataModels.UserSt
 		&userStats.NumberActiveDayStreak,
 		&userStats.LastActiveTimestamp,
 		&userStats.NumberActivitiesToday,
+		&userStats.TimeSpentInVoiceChannels,
+		&userStats.TimeSpentInEvents,
 	)
 
 	if err != nil {
@@ -296,6 +302,46 @@ func (r UsersStatsRepository) ResetActivitiesTodayForUser(userId string) error {
 			fmt.Printf("Error ocurred while resetting activities number stat for user %s: %v\nRetrying...", userId, err)
 		}
 		time.Sleep(time.Second * 2)
+	}
+
+	return nil
+}
+
+func (r UsersStatsRepository) AddToTimeSpentInVoiceChannels(userId string, sTimeLength int) error {
+	stmt, err := r.Conn.Db.Prepare(`
+		UPDATE UserStats SET 
+			timeSpentInVoiceChannels = timeSpentInVoiceChannels + ?
+		WHERE userId = ?`)
+	if err != nil {
+		fmt.Printf("Error ocurred while preparing VC spent time increase for user %s: %v\n", userId, err)
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(sTimeLength, userId)
+	if err != nil {
+		fmt.Printf("Error ocurred while increasing VC spent time stat for user %s: %v\n", userId, err)
+		return err
+	}
+
+	return nil
+}
+
+func (r UsersStatsRepository) AddToTimeSpentInEvents(userId string, sTimeLength int) error {
+	stmt, err := r.Conn.Db.Prepare(`
+		UPDATE UserStats SET 
+			timeSpentInEvents = timeSpentInEvents + ?
+		WHERE userId = ?`)
+	if err != nil {
+		fmt.Printf("Error ocurred while preparing event spent time increase for user %s: %v\n", userId, err)
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(userId, sTimeLength)
+	if err != nil {
+		fmt.Printf("Error ocurred while increasing event spent time stat for user %s: %v\n", userId, err)
+		return err
 	}
 
 	return nil

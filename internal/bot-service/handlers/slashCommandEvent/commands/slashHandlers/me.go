@@ -82,6 +82,13 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 		return nil
 	}
 
+	// Process the time spent in VCs in a nice format
+	// TODO: Make it compatible for durations longer than a day !!
+	sTimeSpentInVc := int64(stats.TimeSpentInVoiceChannels)
+	var t time.Time
+	t = t.Add(time.Duration(sTimeSpentInVc) * time.Second)
+	timeSpentInVcs := t.Format("15:04:05")
+
 	// Get the profile picture url
 	// Fetch user information from Discord API.
 	apiUser, err := s.User(userId)
@@ -91,7 +98,7 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 	}
 
 	embed := embed.NewEmbed().
-		SetTitle(fmt.Sprintf("🤖    `%s`'s Profile Card", user.DiscordTag)).
+		SetTitle(fmt.Sprintf("🤖   `%s`'s Profile Card", user.DiscordTag)).
 		SetDescription(fmt.Sprintf("`%s CIRCLE`", user.CurrentCircle)).
 		SetThumbnail(fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.png", userId, apiUser.Avatar)).
 		SetColor(000000).
@@ -102,6 +109,7 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 		AddField(fmt.Sprintf("⚙️ Total slash commands used:  `%d`", stats.NumberSlashCommandsUsed), "", false).
 		AddField(fmt.Sprintf("💯 Total reactions received:  `%d`", stats.NumberReactionsReceived), "", false).
 		AddField(fmt.Sprintf("⭐ Active day streak:  `%d`", stats.NumberActiveDayStreak), "", false).
+		AddField(fmt.Sprintf("🎤 Time spent in voice channels:  `%s`", timeSpentInVcs), "", false).
 		AddLineBreakField().
 		AddField("", "_(Stats collected after 15/12/2023)_", false)
 
