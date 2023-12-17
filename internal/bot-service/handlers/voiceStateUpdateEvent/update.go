@@ -26,9 +26,10 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 
 	userId := member.User.ID
 
-	if vs.ChannelID != "" {
-		// User joined a voice channel
-		globals.VoiceSessions[userId] = time.Now()
+	if vs.SelfStream {
+		// User started streaming
+		now := time.Now()
+		globals.StreamSessions[userId] = &now
 
 		err = globalsRepo.UserStatsRepository.IncrementActivitiesTodayForUser(userId)
 		if err != nil {
@@ -40,14 +41,33 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 			fmt.Printf("An error ocurred while udpating user (%s) last timestamp: %v", userId, err)
 		}
 	} else {
-		// User left a voice channel
-		if joinTime, ok := globals.VoiceSessions[userId]; ok {
-			duration := time.Since(joinTime)
-			err := globalsRepo.UserStatsRepository.AddToTimeSpentInVoiceChannels(userId, int(duration.Seconds()))
+		if vs.ChannelID != "" && globals.StreamSessions[userId] == nil {
+			// User joined a voice channel
+			globals.VoiceSessions[userId] = time.Now()
+
+			err = globalsRepo.UserStatsRepository.IncrementActivitiesTodayForUser(userId)
 			if err != nil {
-				fmt.Printf("An error ocurred while adding time spent to voice channels for user with id %s: %v", userId, err)
+				fmt.Printf("An error ocurred while incrementing user (%s) activities count: %v", userId, err)
 			}
-			delete(globals.VoiceSessions, userId)
+
+			err = globalsRepo.UserStatsRepository.UpdateLastActiveTimestamp(userId, time.Now().Unix())
+			if err != nil {
+				fmt.Printf("An error ocurred while udpating user (%s) last timestamp: %v", userId, err)
+			}
+		} else if vs.ChannelID != "" && globals.StreamSessions[userId] != nil {
+			// User stopped streaming
+			delete(globals.StreamSessions, userId)
+		} else if vs.ChannelID == "" && globals.StreamSessions[userId] == nil {
+			// User left a voice channel
+			if joinTime, ok := globals.VoiceSessions[userId]; ok {
+				duration := time.Since(joinTime)
+				err := globalsRepo.UserStatsRepository.AddToTimeSpentInVoiceChannels(userId, int(duration.Seconds()))
+				if err != nil {
+					fmt.Printf("An error ocurred while adding time spent to voice channels for user with id %s: %v", userId, err)
+				}
+				delete(globals.VoiceSessions, userId)
+			}
 		}
 	}
+
 }

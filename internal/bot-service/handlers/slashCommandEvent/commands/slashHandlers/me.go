@@ -61,13 +61,14 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 	}
 
 	// Process highest role
-	var highestRole dataModels.Role
+	var highestRole *dataModels.Role
 	roles, err := globalsRepo.UsersRepository.GetRolesForUser(userId)
 	if err != nil {
 		log.Printf("Cannot retrieve roles for user with id %s: %v", userId, err)
-		return nil
+		highestRole = nil
+	} else {
+		highestRole = &roles[len(roles)-1] // role IDs for users are stored in DB in ascending order by rank, so the last one is the highest
 	}
-	highestRole = roles[len(roles)-1] // role IDs for users are stored in DB in ascending order by rank, so the last one is the highest
 
 	// Setup user stats if the user doesn't have an entity in UserStats
 	_, errStats := globalsRepo.UserStatsRepository.GetStatsForUser(userId)
@@ -115,8 +116,15 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 		embed.AddField("Member hasn't verified yet.", "", false)
 	}
 
+	if highestRole == nil {
+		embed.
+			AddField("Member hasn't verified yet.", "", false)
+	} else {
+		embed.
+			AddField(fmt.Sprintf("⭐ Highest obtained role:  `%s`", highestRole.DisplayName), "", false)
+	}
+
 	embed.
-		AddField(fmt.Sprintf("⭐ Highest obtained role:  `%s`", highestRole.DisplayName), "", false).
 		AddLineBreakField().
 		AddField(fmt.Sprintf("✉️ Total messages sent:  `%d`", stats.NumberMessagesSent), "", false).
 		AddField(fmt.Sprintf("⚙️ Total slash commands used:  `%d`", stats.NumberSlashCommandsUsed), "", false).
