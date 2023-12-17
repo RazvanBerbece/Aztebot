@@ -110,7 +110,7 @@ func ProcessUserUpdate(userId string, s *discordgo.Session, event *discordgo.Int
 
 		_, updateErr := globalsRepo.UsersRepository.UpdateUser(*user)
 		if updateErr != nil {
-			log.Println("Error udpating user in DB:", err)
+			log.Println("Error updating user in DB:", err)
 			return err
 		}
 
