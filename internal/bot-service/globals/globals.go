@@ -28,6 +28,8 @@ var AllowedRoles = strings.Split(os.Getenv("ALLOWED_ROLES"), ",")
 var UserSyncInterval, UserSyncIntervalErr = strconv.Atoi(os.Getenv("USER_SYNC_INTERVAL"))          // in seconds
 var UserCleanupInterval, UserCleanupIntervalErr = strconv.Atoi(os.Getenv("USER_CLEANUP_INTERVAL")) // in seconds
 
+var FavourableActivitiesThreshold, FavourableActivitiesThresholdErr = strconv.Atoi(os.Getenv("FAVOURABLE_ACTIVITIES_THRESHOLD"))
+
 // =============== RUNTIME VARIABLES (BOT APPLICATIONS) ===============
 
 // =============== RUNTIME VARIABLES (SLASH COMMANDS) ===============

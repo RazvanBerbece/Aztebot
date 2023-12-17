@@ -24,22 +24,22 @@ func (r UsersRepository) GetAllDiscordUids() ([]string, error) {
 	var userIds []string
 	rowsUsers, err := r.Conn.Db.Query("SELECT userId FROM Users")
 	if err != nil {
-		return nil, fmt.Errorf("GetAll: %v", err)
+		return nil, fmt.Errorf("GetAllUids: %v", err)
 	}
 	defer rowsUsers.Close()
 	for rowsUsers.Next() {
 		var id string
 		if err := rowsUsers.Scan(&id); err != nil {
-			return nil, fmt.Errorf("GetAll: %v", err)
+			return nil, fmt.Errorf("GetAllUids: %v", err)
 		}
 		userIds = append(userIds, id)
 	}
 	if err := rowsUsers.Err(); err != nil {
-		return nil, fmt.Errorf("GetAll: %v", err)
+		return nil, fmt.Errorf("GetAllUids: %v", err)
 	}
 	// Check for zero rows - if the query arg has no IDs retrieved from the Users table
 	if len(userIds) == 0 {
-		return nil, fmt.Errorf("GetAll: No users found in Users table")
+		return nil, fmt.Errorf("GetAllUids: No users found in Users table")
 	}
 
 	if err != nil {

@@ -7,4 +7,6 @@ type UserStats struct {
 	NumberSlashCommandsUsed int
 	NumberReactionsReceived int
 	NumberActiveDayStreak   int
+	LastActiveTimestamp     int64
+	NumberActivitiesToday   int
 }

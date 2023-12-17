@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
@@ -68,6 +69,15 @@ func RegisterAztebotSlashCommands(s *discordgo.Session) error {
 		err := globalsRepo.UserStatsRepository.IncrementSlashCommandsUsedForUser(i.Member.User.ID)
 		if err != nil {
 			fmt.Printf("Error ocurred while incrementing slash commands for user %s: %v", i.Member.User.ID, err)
+		}
+
+		err = globalsRepo.UserStatsRepository.IncrementActivitiesTodayForUser(i.Member.User.ID)
+		if err != nil {
+			fmt.Printf("An error ocurred while incrementing user (%s) activities count: %v", i.Member.User.ID, err)
+		}
+		err = globalsRepo.UserStatsRepository.UpdateLastActiveTimestamp(i.Member.User.ID, time.Now().Unix())
+		if err != nil {
+			fmt.Printf("An error ocurred while udpating user (%s) last timestamp: %v", i.Member.User.ID, err)
 		}
 
 		if handlerFunc, ok := commands.AztebotSlashCommandHandlers[i.ApplicationCommandData().Name]; ok {
