@@ -6,8 +6,10 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
+	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 
 	aztebotSlashCommands "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent"
 
@@ -84,6 +86,8 @@ func (b *DiscordBotBase) CloseConnection() {
 
 // Cleans up any used resources by the bot service.
 func (b *DiscordBotBase) Cleanup() {
+	// Store in-process data (runtime maps, etc.)
+	storeInProgressData()
 	// Cleanup resources
 	aztebotSlashCommands.CleanupAztebotSlashCommands(b.botSession)
 }
@@ -104,4 +108,19 @@ func (b *DiscordBotBase) setBotIntents() {
 func (b *DiscordBotBase) setBotStateTrackers() {
 	b.botSession.State.TrackVoice = true
 	b.botSession.State.MaxMessageCount = 250
+}
+
+func storeInProgressData() {
+
+	fmt.Println("Storing data at cleanup time")
+
+	for uid, joinTime := range globals.VoiceSessions {
+		duration := time.Since(joinTime)
+		err := globalsRepo.UserStatsRepository.AddToTimeSpentInVoiceChannels(uid, int(duration.Seconds()))
+		if err != nil {
+			fmt.Printf("An error ocurred while adding time spent to voice channels for user with id %s: %v", uid, err)
+		}
+		delete(globals.VoiceSessions, uid)
+	}
+
 }
