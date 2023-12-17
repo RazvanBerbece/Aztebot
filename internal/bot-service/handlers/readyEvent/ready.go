@@ -113,6 +113,27 @@ func CleanupMemberAtStartup(s *discordgo.Session) error {
 
 	// For each tag in the DB, delete user from table
 	uidsLength := len(uids)
+	// SERIAL
+	// for i := 0; i < uidsLength; i++ {
+	// 	uid := uids[i]
+	// 	_, err := s.GuildMember(globals.DiscordMainGuildId, uid)
+	// 	if err != nil {
+	// 		// if the member does not exist on the main server, delete from the database
+	// 		// delete user stats
+	// 		err := userStatsRepository.DeleteUserStats(uid)
+	// 		if err != nil {
+	// 			fmt.Println("Failed Task CleanupMemberAtStartup() at", time.Now(), "with error", err)
+	// 			return err
+	// 		}
+	// 		// delete user
+	// 		errUsers := usersRepository.DeleteUser(uid)
+	// 		if errUsers != nil {
+	// 			fmt.Println("Failed Task CleanupMemberAtStartup() at", time.Now(), "with error", errUsers)
+	// 			return err
+	// 		}
+	// 	}
+	// }
+	// PARALLEL
 	var wg sync.WaitGroup
 	wg.Add(uidsLength)
 	for i := 0; i < uidsLength; i++ {
@@ -125,13 +146,13 @@ func CleanupMemberAtStartup(s *discordgo.Session) error {
 				// delete user stats
 				err := userStatsRepository.DeleteUserStats(uid)
 				if err != nil {
-					fmt.Println("Failed Task CleanupUsersInCron() at", time.Now(), "with error", err)
+					fmt.Println("Failed Task CleanupMemberAtStartup() at", time.Now(), "with error", err)
 					return
 				}
 				// delete user
 				errUsers := usersRepository.DeleteUser(uid)
 				if errUsers != nil {
-					fmt.Println("Failed Task CleanupUsersInCron() at", time.Now(), "with error", errUsers)
+					fmt.Println("Failed Task CleanupMemberAtStartup() at", time.Now(), "with error", errUsers)
 					return
 				}
 			}
