@@ -131,7 +131,7 @@ func SyncUser(s *discordgo.Session, guildId string, userId string, member *disco
 	user, err := globalsRepo.UsersRepository.GetUser(userId)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			fmt.Printf("Adding new user %s to DB\n", member.User.Username)
+			fmt.Printf("Adding new member %s to the OTA DB\n", member.User.Username)
 			user, err = globalsRepo.UsersRepository.SaveInitialUserDetails(member.User.Username, userId)
 			if err != nil {
 				log.Fatalf("Cannot store user %s with id %s: %v", member.User.Username, userId, err)
