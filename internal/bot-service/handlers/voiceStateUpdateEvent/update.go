@@ -38,7 +38,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 
 		err = globalsRepo.UserStatsRepository.UpdateLastActiveTimestamp(userId, time.Now().Unix())
 		if err != nil {
-			fmt.Printf("An error ocurred while udpating user (%s) last timestamp: %v", userId, err)
+			fmt.Printf("An error ocurred while updating user (%s) last timestamp: %v", userId, err)
 		}
 	} else {
 		if vs.ChannelID != "" && globals.StreamSessions[userId] == nil {

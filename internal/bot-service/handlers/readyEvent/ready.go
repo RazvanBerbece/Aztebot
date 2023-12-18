@@ -29,6 +29,9 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	// Initial cleanup of members from database against the Discord server
 	go CleanupMemberAtStartup(s)
 
+	// Initial re-process of leftover streaks
+	go UpdateActivityStreaks(globalsRepo.UsersRepository, globalsRepo.UserStatsRepository)
+
 	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, XP gaining?, etc.)
 	initialDelay, activityTicker := getDelayAndTickerForActivityStreakCron(24, 0, 0) // H, m, s
 	go func() {
