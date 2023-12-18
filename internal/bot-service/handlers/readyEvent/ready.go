@@ -29,9 +29,6 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	// Initial cleanup of members from database against the Discord server
 	go CleanupMemberAtStartup(s)
 
-	// Initial re-process of leftover streaks
-	go UpdateActivityStreaks(globalsRepo.UsersRepository, globalsRepo.UserStatsRepository)
-
 	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, XP gaining?, etc.)
 	initialDelay, activityTicker := getDelayAndTickerForActivityStreakCron(24, 0, 0) // H, m, s
 	go func() {
@@ -180,7 +177,9 @@ func UpdateActivityStreaks(usersRepository *repositories.UsersRepository, userSt
 	if err != nil {
 		fmt.Println("Failed Task UpdateActivityStreaks() at", time.Now(), "with error", err)
 	}
+
 	// For all users in the database
+	fmt.Println("Checkpoint Task UpdateActivityStreaks() at", time.Now(), "-> Updating", len(uids), "streaks")
 	for _, uid := range uids {
 		stats, err := userStatsRepository.GetStatsForUser(uid)
 		if err != nil {
