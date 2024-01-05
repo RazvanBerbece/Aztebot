@@ -432,3 +432,39 @@ func (r UsersStatsRepository) GetTopUsersByTimeSpentInVC(count int) ([]dataModel
 	return topUsers, nil
 
 }
+
+func (r UsersStatsRepository) GetTopUsersByActiveDayStreak(count int) ([]dataModels.TopUserADS, error) {
+
+	// This could use something similar to a strategy pattern
+	// and only pass the column we want to filter on as a parameter to a more generic function
+
+	query := `SELECT Users.discordTag, UserStats.userId, UserStats.activeDayStreak
+		FROM UserStats
+		JOIN Users ON UserStats.userId = Users.userId
+		ORDER BY UserStats.activeDayStreak DESC
+		LIMIT ?`
+
+	rows, err := r.Conn.Db.Query(query, count)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var topUsers []dataModels.TopUserADS
+
+	for rows.Next() {
+		var user dataModels.TopUserADS
+		err := rows.Scan(&user.DiscordTag, &user.UserId, &user.Streak)
+		if err != nil {
+			return nil, err
+		}
+		topUsers = append(topUsers, user)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return topUsers, nil
+
+}
