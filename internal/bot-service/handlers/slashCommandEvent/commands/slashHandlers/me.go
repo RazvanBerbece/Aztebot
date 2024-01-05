@@ -9,6 +9,7 @@ import (
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/bot-service/data/models"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
+	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -89,12 +90,19 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 		return nil
 	}
 
+	// Staff text segment (is user a member of staff?) in embed description
+	var isStaffMember bool = false
+	for _, role := range roles {
+		if role.Id == 3 || role.Id == 5 || role.Id == 6 || role.Id == 7 || role.Id == 18 {
+			// User is a staff member if they belong to any of the roles above
+			isStaffMember = true
+		}
+	}
+
 	// Process the time spent in VCs in a nice format
-	// TODO: Make it compatible for durations longer than a day !!
 	sTimeSpentInVc := int64(stats.TimeSpentInVoiceChannels)
-	var t time.Time
-	t = t.Add(time.Duration(sTimeSpentInVc) * time.Second)
-	timeSpentInVcs := t.Format("15:04:05")
+	daysVC, hoursVC, minutesVC, secondsVC := utils.HumanReadableTimeLength(float64(sTimeSpentInVc))
+	timeSpentInVcs := fmt.Sprintf("%dd, %dh:%dm:%ds", daysVC, hoursVC, minutesVC, secondsVC)
 
 	// Get the profile picture url
 	// Fetch user information from Discord API.
@@ -111,6 +119,11 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 		SetColor(000000)
 
 	if userCreatedTimeString != "" && highestRole != nil {
+
+		if isStaffMember {
+			embed.AddField("💎 OTA Staff Member", "", false)
+		}
+
 		embed.
 			AddField(fmt.Sprintf("🩸 Aztec since:  `%s`", userCreatedTimeString), "", false).
 			AddField(fmt.Sprintf("⭐ Highest obtained role:  `%s`", highestRole.DisplayName), "", false).
@@ -122,6 +135,7 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 			AddField(fmt.Sprintf("🎙️ Time spent in voice channels:  `%s`", timeSpentInVcs), "", false).
 			AddLineBreakField().
 			AddField("", "_(Stats collected after 15/12/2023)_", false)
+
 	} else {
 		embed.AddField("Member hasn't verified yet.", "", false)
 	}

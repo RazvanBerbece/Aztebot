@@ -18,6 +18,16 @@ func NewUsersStatsRepository() *UsersStatsRepository {
 	return repo
 }
 
+func (r UsersRepository) UserStatsExist(userId string) (bool, error) {
+	query := "SELECT COUNT(*) FROM Users WHERE userId = ?"
+	var count int
+	err := r.Conn.Db.QueryRow(query, userId).Scan(&count)
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
+
 func (r UsersStatsRepository) SaveInitialUserStats(userId string) error {
 
 	userStats := &dataModels.UserStats{
