@@ -90,7 +90,7 @@ func processTopCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		embed.AddField("", "No members in this category", false)
 	} else {
 		for idx, user := range topStreaks {
-			embed.AddField("", fmt.Sprintf("**%d.** **%s** (active for %d days in a row 💯)", idx+1, user.DiscordTag, user.Streak), false)
+			embed.AddField("", fmt.Sprintf("**%d.** **%s** (active for `%d` days in a row 💯)", idx+1, user.DiscordTag, user.Streak), false)
 		}
 	}
 	updateInteraction(s, *i.Interaction, *embed)
