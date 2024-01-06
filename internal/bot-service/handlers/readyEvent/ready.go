@@ -13,12 +13,19 @@ import (
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/logging"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
+	"github.com/schollz/progressbar/v3"
 )
 
 // Called once the Discord servers confirm a succesful connection.
 func Ready(s *discordgo.Session, event *discordgo.Ready) {
 
 	logging.LogHandlerCall("Ready", "")
+
+	// Retrieve list of DB users at startup time (for convenience and some optimisation further down the line)
+	uids, err := globalsRepo.UsersRepository.GetAllDiscordUids()
+	if err != nil {
+		fmt.Printf("Failed to load users at startup time: %v", err)
+	}
 
 	// Set initial status for the AzteBot
 	s.UpdateGameStatus(0, "/help")
@@ -29,7 +36,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	go SyncUsersAtStartup(s)
 
 	// Initial cleanup of members from database against the Discord server
-	go CleanupMemberAtStartup(s)
+	go CleanupMemberAtStartup(s, uids)
 
 	// Initial informative messages on certain channels
 	go SendInformationEmbedsToTextChannels(s)
@@ -101,7 +108,7 @@ func SyncUsersAtStartup(s *discordgo.Session) error {
 
 }
 
-func CleanupMemberAtStartup(s *discordgo.Session) error {
+func CleanupMemberAtStartup(s *discordgo.Session, uids []string) error {
 
 	fmt.Println("Starting Task CleanupMemberAtStartup() at", time.Now())
 
@@ -109,15 +116,10 @@ func CleanupMemberAtStartup(s *discordgo.Session) error {
 	usersRepository := repositories.NewUsersRepository()
 	userStatsRepository := repositories.NewUsersStatsRepository()
 
-	// Retrieve all members from the DB
-	uids, err := usersRepository.GetAllDiscordUids()
-	if err != nil {
-		fmt.Println("Failed Task CleanupMemberAtStartup() at", time.Now(), "with error", err)
-		return err
-	}
+	uidsLength := len(uids)
 
 	// For each tag in the DB, delete user from table
-	uidsLength := len(uids)
+	progressBar := progressbar.Default(int64(uidsLength), "pruning hanging users...")
 	var wg sync.WaitGroup
 	wg.Add(uidsLength)
 	for i := 0; i < uidsLength; i++ {
@@ -140,6 +142,7 @@ func CleanupMemberAtStartup(s *discordgo.Session) error {
 					return
 				}
 			}
+			progressBar.Add(1)
 		}(i)
 	}
 	wg.Wait()
