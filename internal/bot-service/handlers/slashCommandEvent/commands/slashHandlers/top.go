@@ -25,7 +25,7 @@ func HandleSlashTop(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		return
 	}
 
-	go processTopCommand(s, *i)
+	go processTopCommand(s, i)
 
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
@@ -35,7 +35,10 @@ func HandleSlashTop(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	})
 }
 
-func processTopCommand(s *discordgo.Session, i discordgo.InteractionCreate) {
+func processTopCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
+
+	// Leaderboard parameterisation
+	topCount := 5
 
 	embed := embed.NewEmbed().
 		SetTitle("🤖   OTA Server Leaderboard").
@@ -43,73 +46,19 @@ func processTopCommand(s *discordgo.Session, i discordgo.InteractionCreate) {
 		SetColor(000000)
 
 	// Top by messages sent
-	topCount := 5
-	topMessagesSent, err := globalsRepo.UserStatsRepository.GetTopUsersByMessageSent(topCount)
-	if err != nil {
-		log.Printf("Cannot retrieve OTA leaderboard top messages sent from the Discord API: %v", err)
-	}
-	embed.
-		AddLineBreakField().
-		AddField(fmt.Sprintf("✉️ Top %d By Messages Sent", topCount), "", false)
-	if len(topMessagesSent) == 0 {
-		embed.AddField("", "No members in this category", false)
-	} else {
-		for idx, topUser := range topMessagesSent {
-			embed.AddField("", fmt.Sprintf("**%d.** **%s**    (sent `%d` ✉️)", idx+1, topUser.DiscordTag, topUser.MessagesSent), false)
-		}
-	}
+	ProcessTopMessagesPartialEmbed(topCount, s, i.Interaction, embed)
 	updateInteraction(s, *i.Interaction, *embed)
 
 	// Top by time spent in VCs
-	topTimeInVCs, err := globalsRepo.UserStatsRepository.GetTopUsersByTimeSpentInVC(topCount)
-	if err != nil {
-		log.Printf("Cannot retrieve OTA leaderboard top times spent in VC from the Discord API: %v", err)
-	}
-	embed.
-		AddLineBreakField().
-		AddField(fmt.Sprintf("🎙️ Top %d By Time Spent in Voice Channels", topCount), "", false)
-	if len(topTimeInVCs) == 0 {
-		embed.AddField("", "No members in this category", false)
-	} else {
-		for idx, topUser := range topTimeInVCs {
-			days, hours, minutes, seconds := utils.HumanReadableTimeLength(float64(topUser.TimeSpentInVCs))
-			embed.AddField("", fmt.Sprintf("**%d.** **%s** (spent `%dd, %dh:%dm:%ds` in voice channels 🎙️)", idx+1, topUser.DiscordTag, days, hours, minutes, seconds), false)
-		}
-	}
+	ProcessTopVCSpentPartialEmbed(topCount, s, i.Interaction, embed)
 	updateInteraction(s, *i.Interaction, *embed)
 
 	// Top by active day streak
-	topStreaks, err := globalsRepo.UserStatsRepository.GetTopUsersByActiveDayStreak(topCount)
-	if err != nil {
-		log.Printf("Cannot retrieve OTA leaderboard top streaks from the Discord API: %v", err)
-	}
-	embed.
-		AddLineBreakField().
-		AddField(fmt.Sprintf("🔄 Top %d By Active Day Streak", topCount), "", false)
-	if len(topTimeInVCs) == 0 {
-		embed.AddField("", "No members in this category", false)
-	} else {
-		for idx, user := range topStreaks {
-			embed.AddField("", fmt.Sprintf("**%d.** **%s** (active for `%d` days in a row 🔄)", idx+1, user.DiscordTag, user.Streak), false)
-		}
-	}
+	ProcessTopActiveDayStreakPartialEmbed(topCount, s, i.Interaction, embed)
 	updateInteraction(s, *i.Interaction, *embed)
 
 	// Top by reactions received
-	topReactions, err := globalsRepo.UserStatsRepository.GetTopUsersByReceivedReactions(topCount)
-	if err != nil {
-		log.Printf("Cannot retrieve OTA leaderboard top reactions received from the Discord API: %v", err)
-	}
-	embed.
-		AddLineBreakField().
-		AddField(fmt.Sprintf("💯 Top %d By Total Reactions Received", topCount), "", false)
-	if len(topReactions) == 0 {
-		embed.AddField("", "No members in this category", false)
-	} else {
-		for idx, user := range topReactions {
-			embed.AddField("", fmt.Sprintf("**%d.** **%s** (received a total of `%d` reactions 💯)", idx+1, user.DiscordTag, user.ReactionsReceived), false)
-		}
-	}
+	ProcessTopReactionsReceivedPartialEmbed(topCount, s, i.Interaction, embed)
 	updateInteraction(s, *i.Interaction, *embed)
 
 	globals.LastUsedTopTimestamp = time.Now()
@@ -128,4 +77,73 @@ func updateInteraction(s *discordgo.Session, i discordgo.Interaction, embed embe
 
 	s.InteractionResponseEdit(&i, &editWebhook)
 
+}
+
+func ProcessTopMessagesPartialEmbed(topCount int, s *discordgo.Session, i *discordgo.Interaction, embed *embed.Embed) {
+	topMessagesSent, err := globalsRepo.UserStatsRepository.GetTopUsersByMessageSent(topCount)
+	if err != nil {
+		log.Printf("Cannot retrieve OTA leaderboard top messages sent from the Discord API: %v", err)
+	}
+	embed.
+		AddLineBreakField().
+		AddField(fmt.Sprintf("✉️ Top %d By Messages Sent", topCount), "", false)
+	if len(topMessagesSent) == 0 {
+		embed.AddField("", "No members in this category", false)
+	} else {
+		for idx, topUser := range topMessagesSent {
+			embed.AddField("", fmt.Sprintf("**%d.** **%s**    (sent `%d` ✉️)", idx+1, topUser.DiscordTag, topUser.MessagesSent), false)
+		}
+	}
+}
+
+func ProcessTopVCSpentPartialEmbed(topCount int, s *discordgo.Session, i *discordgo.Interaction, embed *embed.Embed) {
+	topTimeInVCs, err := globalsRepo.UserStatsRepository.GetTopUsersByTimeSpentInVC(topCount)
+	if err != nil {
+		log.Printf("Cannot retrieve OTA leaderboard top times spent in VC from the Discord API: %v", err)
+	}
+	embed.
+		AddLineBreakField().
+		AddField(fmt.Sprintf("🎙️ Top %d By Time Spent in Voice Channels", topCount), "", false)
+	if len(topTimeInVCs) == 0 {
+		embed.AddField("", "No members in this category", false)
+	} else {
+		for idx, topUser := range topTimeInVCs {
+			days, hours, minutes, seconds := utils.HumanReadableTimeLength(float64(topUser.TimeSpentInVCs))
+			embed.AddField("", fmt.Sprintf("**%d.** **%s** (spent `%dd, %dh:%dm:%ds` in voice channels 🎙️)", idx+1, topUser.DiscordTag, days, hours, minutes, seconds), false)
+		}
+	}
+}
+
+func ProcessTopActiveDayStreakPartialEmbed(topCount int, s *discordgo.Session, i *discordgo.Interaction, embed *embed.Embed) {
+	topStreaks, err := globalsRepo.UserStatsRepository.GetTopUsersByActiveDayStreak(topCount)
+	if err != nil {
+		log.Printf("Cannot retrieve OTA leaderboard top streaks from the Discord API: %v", err)
+	}
+	embed.
+		AddLineBreakField().
+		AddField(fmt.Sprintf("🔄 Top %d By Active Day Streak", topCount), "", false)
+	if len(topStreaks) == 0 {
+		embed.AddField("", "No members in this category", false)
+	} else {
+		for idx, user := range topStreaks {
+			embed.AddField("", fmt.Sprintf("**%d.** **%s** (active for `%d` days in a row 🔄)", idx+1, user.DiscordTag, user.Streak), false)
+		}
+	}
+}
+
+func ProcessTopReactionsReceivedPartialEmbed(topCount int, s *discordgo.Session, i *discordgo.Interaction, embed *embed.Embed) {
+	topReactions, err := globalsRepo.UserStatsRepository.GetTopUsersByReceivedReactions(topCount)
+	if err != nil {
+		log.Printf("Cannot retrieve OTA leaderboard top reactions received from the Discord API: %v", err)
+	}
+	embed.
+		AddLineBreakField().
+		AddField(fmt.Sprintf("💯 Top %d By Total Reactions Received", topCount), "", false)
+	if len(topReactions) == 0 {
+		embed.AddField("", "No members in this category", false)
+	} else {
+		for idx, user := range topReactions {
+			embed.AddField("", fmt.Sprintf("**%d.** **%s** (received a total of `%d` reactions 💯)", idx+1, user.DiscordTag, user.ReactionsReceived), false)
+		}
+	}
 }
