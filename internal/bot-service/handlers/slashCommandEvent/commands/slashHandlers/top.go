@@ -25,7 +25,7 @@ func HandleSlashTop(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		return
 	}
 
-	go processTopCommand(s, i)
+	go processTopCommand(s, *i)
 
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
@@ -35,7 +35,7 @@ func HandleSlashTop(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	})
 }
 
-func processTopCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
+func processTopCommand(s *discordgo.Session, i discordgo.InteractionCreate) {
 
 	embed := embed.NewEmbed().
 		SetTitle("🤖   OTA Server Leaderboard").
