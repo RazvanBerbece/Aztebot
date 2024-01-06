@@ -30,6 +30,10 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		Name:        "top",
 		Description: "See the OTA leaderboard tops by activity category",
 	},
+	{
+		Name:        "dice",
+		Description: "Roll a 6-sided dice and try your luck",
+	},
 }
 
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -39,4 +43,5 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"help":     slashHandlers.HandleSlashAztebotHelp,
 	"sync":     slashHandlers.HandleSlashSync,
 	"top":      slashHandlers.HandleSlashTop,
+	"dice":     slashHandlers.HandleSlashDice,
 }
