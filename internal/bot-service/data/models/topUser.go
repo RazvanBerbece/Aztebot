@@ -17,3 +17,9 @@ type TopUserADS struct {
 	UserId     string
 	Streak     int // in days
 }
+
+type TopUserRCT struct {
+	DiscordTag        string
+	UserId            string
+	ReactionsReceived int
+}

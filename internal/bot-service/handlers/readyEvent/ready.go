@@ -29,7 +29,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	go SyncUsersAtStartup(s)
 
 	// Initial cleanup of members from database against the Discord server
-	go CleanupMemberAtStartup(s)
+	// go CleanupMemberAtStartup(s)
 
 	// Initial informative messages on certain channels
 	go SendInformationEmbedsToTextChannels(s)

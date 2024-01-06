@@ -18,14 +18,14 @@ func NewUsersStatsRepository() *UsersStatsRepository {
 	return repo
 }
 
-func (r UsersRepository) UserStatsExist(userId string) (bool, error) {
+func (r UsersStatsRepository) UserStatsExist(userId string) int {
 	query := "SELECT COUNT(*) FROM Users WHERE userId = ?"
 	var count int
 	err := r.Conn.Db.QueryRow(query, userId).Scan(&count)
 	if err != nil {
-		return false, err
+		return -1
 	}
-	return count > 0, nil
+	return count
 }
 
 func (r UsersStatsRepository) SaveInitialUserStats(userId string) error {
@@ -455,6 +455,42 @@ func (r UsersStatsRepository) GetTopUsersByActiveDayStreak(count int) ([]dataMod
 	for rows.Next() {
 		var user dataModels.TopUserADS
 		err := rows.Scan(&user.DiscordTag, &user.UserId, &user.Streak)
+		if err != nil {
+			return nil, err
+		}
+		topUsers = append(topUsers, user)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return topUsers, nil
+
+}
+
+func (r UsersStatsRepository) GetTopUsersByReceivedReactions(count int) ([]dataModels.TopUserRCT, error) {
+
+	// This could use something similar to a strategy pattern
+	// and only pass the column we want to filter on as a parameter to a more generic function
+
+	query := `SELECT Users.discordTag, UserStats.userId, UserStats.reactionsReceived
+		FROM UserStats
+		JOIN Users ON UserStats.userId = Users.userId
+		ORDER BY UserStats.reactionsReceived DESC
+		LIMIT ?`
+
+	rows, err := r.Conn.Db.Query(query, count)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var topUsers []dataModels.TopUserRCT
+
+	for rows.Next() {
+		var user dataModels.TopUserRCT
+		err := rows.Scan(&user.DiscordTag, &user.UserId, &user.ReactionsReceived)
 		if err != nil {
 			return nil, err
 		}
