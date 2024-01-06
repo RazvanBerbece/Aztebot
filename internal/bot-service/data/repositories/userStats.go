@@ -368,8 +368,8 @@ func (r UsersStatsRepository) GetTopUsersByMessageSent(count int) ([]dataModels.
 
 	query := `SELECT Users.discordTag, UserStats.userId, UserStats.messagesSent
 		FROM UserStats
-		WHERE UserStats.messagesSent > 10
 		JOIN Users ON UserStats.userId = Users.userId
+		WHERE UserStats.messagesSent > 10
 		ORDER BY UserStats.messagesSent DESC
 		LIMIT ?`
 
@@ -405,8 +405,8 @@ func (r UsersStatsRepository) GetTopUsersByTimeSpentInVC(count int) ([]dataModel
 
 	query := `SELECT Users.discordTag, UserStats.userId, UserStats.timeSpentInVoiceChannels
 		FROM UserStats
-		WHERE UserStats.timeSpentInVoiceChannels > 5
 		JOIN Users ON UserStats.userId = Users.userId
+		WHERE UserStats.timeSpentInVoiceChannels > 5
 		ORDER BY UserStats.timeSpentInVoiceChannels DESC
 		LIMIT ?`
 
@@ -442,8 +442,8 @@ func (r UsersStatsRepository) GetTopUsersByActiveDayStreak(count int) ([]dataMod
 
 	query := `SELECT Users.discordTag, UserStats.userId, UserStats.activeDayStreak
 		FROM UserStats
-		WHERE UserStats.activeDayStreak > 1
 		JOIN Users ON UserStats.userId = Users.userId
+		WHERE UserStats.activeDayStreak > 1
 		ORDER BY UserStats.activeDayStreak DESC
 		LIMIT ?`
 
@@ -478,9 +478,9 @@ func (r UsersStatsRepository) GetTopUsersByReceivedReactions(count int) ([]dataM
 	// and only pass the column we want to filter on as a parameter to a more generic function
 
 	query := `SELECT Users.discordTag, UserStats.userId, UserStats.reactionsReceived
-		FROM UserStats 
-		WHERE UserStats.reactionsReceived > 1
+		FROM UserStats
 		JOIN Users ON UserStats.userId = Users.userId
+		WHERE UserStats.reactionsReceived > 1
 		ORDER BY UserStats.reactionsReceived DESC
 		LIMIT ?`
 
