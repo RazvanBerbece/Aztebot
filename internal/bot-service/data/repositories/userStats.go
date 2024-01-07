@@ -31,15 +31,16 @@ func (r UsersStatsRepository) UserStatsExist(userId string) int {
 func (r UsersStatsRepository) SaveInitialUserStats(userId string) error {
 
 	userStats := &dataModels.UserStats{
-		UserId:                   userId,
-		NumberMessagesSent:       0,
-		NumberSlashCommandsUsed:  0,
-		NumberReactionsReceived:  0,
-		NumberActiveDayStreak:    0,
-		LastActiveTimestamp:      0,
-		NumberActivitiesToday:    1,
-		TimeSpentInVoiceChannels: 0,
-		TimeSpentInEvents:        0,
+		UserId:                    userId,
+		NumberMessagesSent:        0,
+		NumberSlashCommandsUsed:   0,
+		NumberReactionsReceived:   0,
+		NumberActiveDayStreak:     0,
+		LastActiveTimestamp:       0,
+		NumberActivitiesToday:     1,
+		TimeSpentInVoiceChannels:  0,
+		TimeSpentInEvents:         0,
+		TimeSpentListeningToMusic: 0,
 	}
 
 	stmt, err := r.Conn.Db.Prepare(`
@@ -53,15 +54,16 @@ func (r UsersStatsRepository) SaveInitialUserStats(userId string) error {
 				lastActivityTimestamp,
 				numberActivitiesToday,
 				timeSpentInVoiceChannels,
-				timeSpentInEvents
+				timeSpentInEvents,
+				timeSpentListeningMusic
 			)
-		VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);`)
+		VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(userStats.UserId, userStats.NumberMessagesSent, userStats.NumberSlashCommandsUsed, userStats.NumberReactionsReceived, userStats.NumberActiveDayStreak, userStats.LastActiveTimestamp, userStats.NumberActivitiesToday, userStats.TimeSpentInVoiceChannels, userStats.TimeSpentInEvents)
+	_, err = stmt.Exec(userStats.UserId, userStats.NumberMessagesSent, userStats.NumberSlashCommandsUsed, userStats.NumberReactionsReceived, userStats.NumberActiveDayStreak, userStats.LastActiveTimestamp, userStats.NumberActivitiesToday, userStats.TimeSpentInVoiceChannels, userStats.TimeSpentInEvents, userStats.TimeSpentListeningToMusic)
 	if err != nil {
 		return err
 	}
@@ -89,6 +91,7 @@ func (r UsersStatsRepository) GetStatsForUser(userId string) (*dataModels.UserSt
 		&userStats.NumberActivitiesToday,
 		&userStats.TimeSpentInVoiceChannels,
 		&userStats.TimeSpentInEvents,
+		&userStats.TimeSpentListeningToMusic,
 	)
 
 	if err != nil {
@@ -355,6 +358,26 @@ func (r UsersStatsRepository) AddToTimeSpentInEvents(userId string, sTimeLength 
 	_, err = stmt.Exec(userId, sTimeLength)
 	if err != nil {
 		fmt.Printf("Error ocurred while increasing event spent time stat for user %s: %v\n", userId, err)
+		return err
+	}
+
+	return nil
+}
+
+func (r UsersStatsRepository) AddToTimeSpentListeningMusic(userId string, sTimeLength int) error {
+	stmt, err := r.Conn.Db.Prepare(`
+		UPDATE UserStats SET 
+			timeSpentListeningMusic = timeSpentListeningMusic + ?
+		WHERE userId = ?`)
+	if err != nil {
+		fmt.Printf("Error ocurred while preparing music listening spent time increase for user %s: %v\n", userId, err)
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(sTimeLength, userId)
+	if err != nil {
+		fmt.Printf("Error ocurred while increasing music listening spent time stat for user %s: %v\n", userId, err)
 		return err
 	}
 

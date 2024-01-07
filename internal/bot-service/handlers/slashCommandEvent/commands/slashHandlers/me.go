@@ -133,7 +133,8 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 			AddField(fmt.Sprintf("⚙️ Total slash commands used:  `%d`", stats.NumberSlashCommandsUsed), "", false).
 			AddField(fmt.Sprintf("💯 Total reactions received:  `%d`", stats.NumberReactionsReceived), "", false).
 			AddField(fmt.Sprintf("🔄 Active day streak:  `%d`", stats.NumberActiveDayStreak), "", false).
-			AddField(fmt.Sprintf("🎙️ Time spent in voice channels:  `%s`", timeSpentInVcs), "", false)
+			AddField(fmt.Sprintf("🎙️ Time spent in voice channels:  `%s`", timeSpentInVcs), "", false).
+			AddField(fmt.Sprintf("🎵 Time spent listening music:  `%s`", timeSpentInVcs), "", false)
 
 	} else {
 		embed.AddField("Member hasn't verified yet.", "", false)
