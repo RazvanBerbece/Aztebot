@@ -22,6 +22,9 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 		// Production text channels
 		voiceChannels = map[string]string{
 			"1176204022399631381": "radio",
+			"1118202946455351388": "music-1",
+			"1118202975026937948": "music-2",
+			"1118202999504904212": "music-3",
 		}
 	}
 
