@@ -18,7 +18,6 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 		voiceChannels = map[string]string{
 			"1173790229258326106": "radio",
 		}
-		fmt.Println(voiceChannels)
 	} else {
 		// Production text channels
 		voiceChannels = map[string]string{
@@ -127,6 +126,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 }
 
 func TargetChannelIsForMusicListening(voiceChannels map[string]string, channelId string) bool {
+	fmt.Println("TARGET VC", channelId)
 	for id := range voiceChannels {
 		if channelId == id {
 			// Target VC is a music-specific channel
