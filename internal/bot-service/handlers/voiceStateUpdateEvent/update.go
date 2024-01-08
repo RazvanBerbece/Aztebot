@@ -72,6 +72,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 		if vs.ChannelID != "" && globals.StreamSessions[userId] == nil {
 			// User JOINED a VC but NOT STREAMING
 			if TargetChannelIsForMusicListening(voiceChannels, vs.ChannelID) {
+				fmt.Println("JOIN MUSIC")
 				now := time.Now()
 				globals.MusicSessions[userId] = map[string]*time.Time{
 					vs.ChannelID: &now,
@@ -96,6 +97,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 			musicSession, userHadMusicSession := globals.MusicSessions[userId]
 			if userHadMusicSession {
 				// User was on a music channel
+				fmt.Println("LEAVE MUSIC")
 				for _, joinTime := range musicSession {
 					duration := time.Since(*joinTime)
 					err := globalsRepo.UserStatsRepository.AddToTimeSpentListeningMusic(userId, int(duration.Seconds()))
