@@ -40,6 +40,9 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	// Initial informative messages on certain channels
 	go SendInformationEmbedsToTextChannels(s)
 
+	// Check for users on voice channels to start their VC sessions
+	// TODO
+
 	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, XP gaining?, etc.)
 	initialDelay, activityTicker := getDelayAndTickerForActivityStreakCron(24, 0, 0) // H, m, s
 	go func() {

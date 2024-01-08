@@ -56,19 +56,18 @@ func TopCommandResultsEmbed(s *discordgo.Session, i *discordgo.InteractionCreate
 
 	// Top by messages sent
 	ProcessTopMessagesPartialEmbed(topCount, s, i.Interaction, embed)
-	// updateInteraction(s, i.Interaction, embed)
 
 	// Top by time spent in VCs
 	ProcessTopVCSpentPartialEmbed(topCount, s, i.Interaction, embed)
-	// updateInteraction(s, i.Interaction, embed)
 
 	// Top by active day streak
 	ProcessTopActiveDayStreakPartialEmbed(topCount, s, i.Interaction, embed)
-	// updateInteraction(s, i.Interaction, embed)
 
 	// Top by reactions received
 	ProcessTopReactionsReceivedPartialEmbed(topCount, s, i.Interaction, embed)
-	// updateInteraction(s, i.Interaction, embed)
+
+	// Top by time spent listening to music
+	ProcessTopMusicListeningTimePartialEmbed(topCount, s, i.Interaction, embed)
 
 	globals.LastUsedTopTimestamp = time.Now()
 
@@ -81,7 +80,6 @@ func ProcessTopMessagesPartialEmbed(topCount int, s *discordgo.Session, i *disco
 		log.Printf("Cannot retrieve OTA leaderboard top messages sent from the Discord API: %v", err)
 	}
 	embed.
-		AddLineBreakField().
 		AddField(fmt.Sprintf("✉️ Top %d By Messages Sent", topCount), "", false)
 	if len(topMessagesSent) == 0 {
 		embed.AddField("", "No members in this category", false)
@@ -147,6 +145,26 @@ func ProcessTopReactionsReceivedPartialEmbed(topCount int, s *discordgo.Session,
 		topContentText := ""
 		for idx, topUser := range topReactions {
 			topContentText += fmt.Sprintf("**%d.** **%s** (received a total of `%d` reactions 💯)\n", idx+1, topUser.DiscordTag, topUser.ReactionsReceived)
+		}
+		embed.AddField("", topContentText, false)
+	}
+}
+
+func ProcessTopMusicListeningTimePartialEmbed(topCount int, s *discordgo.Session, i *discordgo.Interaction, embed *embed.Embed) {
+	topMusicListeners, err := globalsRepo.UserStatsRepository.GetTopUsersByTimeSpentListeningMusic(topCount)
+	if err != nil {
+		log.Printf("Cannot retrieve OTA leaderboard top times spent listening music from the Discord API: %v", err)
+	}
+	embed.
+		AddLineBreakField().
+		AddField(fmt.Sprintf("🎵 Top %d By Time Spent Listening Music", topCount), "", false)
+	if len(topMusicListeners) == 0 {
+		embed.AddField("", "No members in this category", false)
+	} else {
+		topContentText := ""
+		for idx, topUser := range topMusicListeners {
+			days, hours, minutes, seconds := utils.HumanReadableTimeLength(float64(topUser.TimeSpentListeningMusic))
+			topContentText += fmt.Sprintf("**%d.** **%s** (spent `%dd, %dh:%dm:%ds` listening to music 🎵)\n", idx+1, topUser.DiscordTag, days, hours, minutes, seconds)
 		}
 		embed.AddField("", topContentText, false)
 	}
