@@ -18,6 +18,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 		voiceChannels = map[string]string{
 			"1173790229258326106": "radio",
 		}
+		fmt.Println(voiceChannels)
 	} else {
 		// Production text channels
 		voiceChannels = map[string]string{
@@ -26,6 +27,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 			"1118202975026937948": "music-2",
 			"1118202999504904212": "music-3",
 		}
+		fmt.Println(voiceChannels)
 	}
 
 	guild, err := s.Guild(vs.GuildID)
