@@ -102,7 +102,8 @@ func (b *DiscordBotBase) setBotIntents() {
 		discordgo.PermissionManageServer |
 		discordgo.IntentsDirectMessages |
 		discordgo.IntentsGuildVoiceStates |
-		discordgo.IntentsGuildMembers
+		discordgo.IntentsGuildMembers |
+		discordgo.IntentGuildVoiceStates
 }
 
 func (b *DiscordBotBase) setBotStateTrackers() {
