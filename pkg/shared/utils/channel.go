@@ -22,3 +22,13 @@ func ChannelHasDefaultInformationMessage(session *discordgo.Session, channelId s
 	}
 
 }
+
+func TargetChannelIsForMusicListening(musicChannels map[string]string, channelId string) bool {
+	for id := range musicChannels {
+		if channelId == id {
+			// Target VC is a music-specific channel
+			return true
+		}
+	}
+	return false
+}

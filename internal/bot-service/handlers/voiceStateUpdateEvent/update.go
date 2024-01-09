@@ -7,20 +7,21 @@ import (
 
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
+	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
 
 func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 
-	var voiceChannels map[string]string
+	var musicChannels map[string]string
 	if globals.Environment == "staging" {
 		// Dev text channels
-		voiceChannels = map[string]string{
+		musicChannels = map[string]string{
 			"1173790229258326106": "radio",
 		}
 	} else {
 		// Production text channels
-		voiceChannels = map[string]string{
+		musicChannels = map[string]string{
 			"1176204022399631381": "radio",
 			"1118202946455351388": "music-1",
 			"1118202975026937948": "music-2",
@@ -72,7 +73,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 	} else {
 		if vs.ChannelID != "" && globals.StreamSessions[userId] == nil && globals.MusicSessions[userId] == nil {
 			// User JOINED a VC but NOT STREAMING
-			if TargetChannelIsForMusicListening(voiceChannels, vs.ChannelID) {
+			if utils.TargetChannelIsForMusicListening(musicChannels, vs.ChannelID) {
 				now := time.Now()
 				globals.MusicSessions[userId] = map[string]*time.Time{
 					vs.ChannelID: &now,
@@ -97,7 +98,6 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 			musicSession, userHadMusicSession := globals.MusicSessions[userId]
 			if userHadMusicSession {
 				// User was on a music channel
-				fmt.Println("LEAVE MUSIC")
 				for _, joinTime := range musicSession {
 					duration := time.Since(*joinTime)
 					err := globalsRepo.UserStatsRepository.AddToTimeSpentListeningMusic(userId, int(duration.Seconds()))
@@ -121,14 +121,4 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 		}
 	}
 
-}
-
-func TargetChannelIsForMusicListening(voiceChannels map[string]string, channelId string) bool {
-	for id := range voiceChannels {
-		if channelId == id {
-			// Target VC is a music-specific channel
-			return true
-		}
-	}
-	return false
 }
