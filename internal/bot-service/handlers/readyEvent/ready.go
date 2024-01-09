@@ -294,7 +294,12 @@ func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 		userId := voiceState.UserID
 		channelId := voiceState.ChannelID
 
-		if voiceState.Member.User.Bot {
+		user, err := s.User(userId)
+		if err != nil {
+			fmt.Println("Error retrieving user:", err)
+			return
+		}
+		if user.Bot {
 			continue
 		}
 
