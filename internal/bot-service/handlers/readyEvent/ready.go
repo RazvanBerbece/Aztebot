@@ -3,6 +3,7 @@ package readyEvent
 import (
 	"fmt"
 	"log"
+	"strings"
 	"sync"
 	"time"
 
@@ -219,6 +220,7 @@ func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
 		// Dev text channels
 		textChannels = map[string]string{
 			"1188135110042734613": "default",
+			"1194451477192773773": "staff-rules",
 		}
 	} else {
 		// Production text channels
@@ -240,6 +242,8 @@ func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
 		} else {
 			// Send associated default message to given text channel
 			var embedText string
+			var hasOwnEmbed bool
+			var ownEmbed *embed.Embed = embed.NewEmbed()
 			switch details {
 			case "default":
 				embedText = utils.GetTextFromFile("internal/bot-service/handlers/readyEvent/assets/defaultContent/default.txt")
@@ -247,15 +251,33 @@ func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
 				embedText = utils.GetTextFromFile("internal/bot-service/handlers/readyEvent/assets/defaultContent/music-info.txt")
 			case "staff-rules":
 				embedText = utils.GetTextFromFile("internal/bot-service/handlers/readyEvent/assets/defaultContent/staff-rules.txt")
+				hasOwnEmbed = true
+				// Split the content into sections based on double newline characters ("\n\n")
+				sections := strings.Split(embedText, "\n\n")
+				for _, section := range sections {
+					lines := strings.Split(section, "\n")
+					if len(lines) > 0 {
+						// Use the first line as the title and the rest as content
+						title := lines[0]
+						content := strings.Join(lines[1:], "\n")
+						ownEmbed.AddField(title, content, false)
+					}
+				}
 			}
-			embed := embed.NewEmbed().
-				SetTitle("🤖  Information Message").
-				SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
-				SetColor(000000).
-				AddField("", embedText, false).
-				MessageEmbed
 
-			_, err := s.ChannelMessageSendEmbed(id, embed)
+			var messageEmbedToPost *discordgo.MessageEmbed
+			if !hasOwnEmbed {
+				messageEmbedToPost = embed.NewEmbed().
+					SetTitle("🤖  Information Message").
+					SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
+					SetColor(000000).
+					AddField("", embedText, false).
+					MessageEmbed
+			} else {
+				messageEmbedToPost = ownEmbed.MessageEmbed
+			}
+
+			_, err := s.ChannelMessageSendEmbed(id, messageEmbedToPost)
 			if err != nil {
 				log.Fatalf("An error occured while sending a default message (%s): %v", details, err)
 				return
