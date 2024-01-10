@@ -1,4 +1,4 @@
-package slashHandlers
+package games
 
 import (
 	"fmt"

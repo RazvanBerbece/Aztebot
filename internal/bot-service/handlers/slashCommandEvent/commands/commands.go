@@ -1,7 +1,11 @@
 package commands
 
 import (
-	slashHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/slashHandlers"
+	gamesHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/slashHandlers/games"
+	profileHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/slashHandlers/profile"
+	serverHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/slashHandlers/server"
+	utilHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/slashHandlers/utils"
+	warningHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/slashHandlers/warning"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -67,13 +71,13 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 }
 
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
-	"ping":               slashHandlers.HandleSlashPingAztebot,
-	"my_roles":           slashHandlers.HandleSlashMyRoles,
-	"me":                 slashHandlers.HandleSlashMe,
-	"help":               slashHandlers.HandleSlashAztebotHelp,
-	"sync":               slashHandlers.HandleSlashSync,
-	"top":                slashHandlers.HandleSlashTop,
-	"dice":               slashHandlers.HandleSlashDice,
-	"warn":               slashHandlers.HandleSlashWarn,
-	"warn_remove_oldest": slashHandlers.HandleSlashWarnRemoveOldest,
+	"ping":               utilHandlers.HandleSlashPingAztebot,
+	"my_roles":           profileHandlers.HandleSlashMyRoles,
+	"me":                 profileHandlers.HandleSlashMe,
+	"help":               serverHandlers.HandleSlashAztebotHelp,
+	"sync":               profileHandlers.HandleSlashSync,
+	"top":                serverHandlers.HandleSlashTop,
+	"dice":               gamesHandlers.HandleSlashDice,
+	"warn":               warningHandlers.HandleSlashWarn,
+	"warn_remove_oldest": warningHandlers.HandleSlashWarnRemoveOldest,
 }
