@@ -44,3 +44,13 @@ func (r WarnsRepository) SaveWarn(userId string, reason string, timestamp int64)
 	return nil
 
 }
+
+func (r WarnsRepository) GetWarningsCountForUser(userId string) int {
+	query := "SELECT COUNT(*) FROM Warns WHERE userId = ?"
+	var count int
+	err := r.Conn.Db.QueryRow(query, userId).Scan(&count)
+	if err != nil {
+		return -1
+	}
+	return count
+}
