@@ -28,7 +28,7 @@ func (r WarnsRepository) SaveWarn(userId string, reason string, timestamp int64)
 			Warns(
 				userId, 
 				reason, 
-				creationTimestamp,
+				creationTimestamp
 			)
 		VALUES(?, ?, ?);`)
 	if err != nil {
