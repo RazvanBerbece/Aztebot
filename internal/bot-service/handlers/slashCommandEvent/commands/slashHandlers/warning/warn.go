@@ -29,18 +29,6 @@ func HandleSlashWarn(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		})
 	}
 
-	// Send DM to user to announce the warning
-	err = SendWarnDmToUser(s, i, targetUserId, reason)
-	if err != nil {
-		fmt.Printf("An error ocurred while giving warning to user: %v\n", err)
-		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{
-				Content: fmt.Sprintf("An error ocurred while DMing warned user with ID %s.", targetUserId),
-			},
-		})
-	}
-
 	user, err := s.User(targetUserId)
 	if err != nil {
 		fmt.Printf("An error ocurred while sending warning embed response: %v", err)
@@ -74,23 +62,6 @@ func HandleSlashWarn(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 }
 
-func SendWarnDmToUser(s *discordgo.Session, i *discordgo.InteractionCreate, userId string, reason string) error {
-
-	result := globalsRepo.WarnsRepository.GetWarningsCountForUser(userId)
-	if result < 0 {
-		fmt.Println("ERROR occured while getting all warnings count for user")
-		return fmt.Errorf("ERROR SendWarnDmToUser")
-	}
-
-	dmContent := fmt.Sprintf("\n\n⚠️ You received a warning for the following reason: `%s`.\nYour current warning count is %d/4.\nPlease keep in mind that each warning lasts for 2 months and that on receiving 4 warnings, you will be kicked out of the OTA community.", reason, result)
-	err := sendWarnDmToUser(s, i, userId, dmContent)
-	if err != nil {
-		fmt.Printf("An error ocurred while sending warning DM to user: %v\n", err)
-		return err
-	}
-	return nil
-}
-
 func GiveWarnToUserWithId(s *discordgo.Session, i *discordgo.InteractionCreate, userId string, reason string, timestamp int64) error {
 
 	result := globalsRepo.WarnsRepository.GetWarningsCountForUser(userId)
@@ -104,7 +75,8 @@ func GiveWarnToUserWithId(s *discordgo.Session, i *discordgo.InteractionCreate, 
 	case 0:
 		// Send rule guide to user and tell them to follow it
 		staffRules := utils.GetTextFromFile("internal/bot-service/handlers/readyEvent/assets/defaultContent/staff-rules.txt")
-		err := sendWarnDmToUser(s, i, userId, staffRules)
+		dmContent := fmt.Sprintf("⚠️ You received a warning with reason: `%s`. You have %d out of 4 warnings.\nKeep in mind that on receiving 4 warnings you will be kicked out of the OTA community.\n\nSee below the OTA Staff rulebook.\n%s", reason, result+1, staffRules)
+		err := sendWarnDmToUser(s, i, userId, dmContent)
 		if err != nil {
 			fmt.Printf("An error ocurred while sending staff rules DM to user: %v\n", err)
 			return err
@@ -113,7 +85,7 @@ func GiveWarnToUserWithId(s *discordgo.Session, i *discordgo.InteractionCreate, 
 		// 1 downgrade for role
 		// TODO: Downgrade logic
 		// Send demotion message
-		demotionMessageContent := "This is a message to inform you that you have been demoted from your Circle role as you received your second warning."
+		demotionMessageContent := "⚠️ This is a message to inform you that you have been demoted from your Circle role as you received your second warning."
 		err := sendWarnDmToUser(s, i, userId, demotionMessageContent)
 		if err != nil {
 			fmt.Printf("An error ocurred while sending demotion message content 1 DM to user: %v\n", err)
@@ -123,7 +95,7 @@ func GiveWarnToUserWithId(s *discordgo.Session, i *discordgo.InteractionCreate, 
 		// 1 downgrade for role
 		// TODO: Downgrade logic
 		// Send demotion message
-		demotionMessageContent := "This is a message to inform you that you have been demoted from your Circle role as you received your third warning."
+		demotionMessageContent := "⚠️ This is a message to inform you that you have been demoted from your Circle role as you received your third warning."
 		err := sendWarnDmToUser(s, i, userId, demotionMessageContent)
 		if err != nil {
 			fmt.Printf("An error ocurred while sending demotion message content 2 DM to user: %v\n", err)
@@ -131,7 +103,7 @@ func GiveWarnToUserWithId(s *discordgo.Session, i *discordgo.InteractionCreate, 
 		}
 	case 3:
 		// Send demotion message
-		kickMessageContent := "This is a message to inform you that you have been kicked from the OTA community as you received your fourth, and final warning."
+		kickMessageContent := "⚠️ This is a message to inform you that you have been kicked from the OTA community as you received your fourth, and final warning."
 		err := sendWarnDmToUser(s, i, userId, kickMessageContent)
 		if err != nil {
 			fmt.Printf("An error ocurred while sending kick message content DM to user: %v\n", err)
