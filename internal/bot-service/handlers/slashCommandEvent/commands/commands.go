@@ -52,15 +52,34 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 			},
 		},
 	},
+	{
+		Name:        "warn_remove",
+		Description: "Removes a warning with the provided ID from the user with the given ID",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "warn-id",
+				Description: "The warning ID of the warning to remove from the user",
+				Required:    true,
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "user-id",
+				Description: "The Discord User ID of the user the warning was given to",
+				Required:    true,
+			},
+		},
+	},
 }
 
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
-	"ping":     slashHandlers.HandleSlashPingAztebot,
-	"my_roles": slashHandlers.HandleSlashMyRoles,
-	"me":       slashHandlers.HandleSlashMe,
-	"help":     slashHandlers.HandleSlashAztebotHelp,
-	"sync":     slashHandlers.HandleSlashSync,
-	"top":      slashHandlers.HandleSlashTop,
-	"dice":     slashHandlers.HandleSlashDice,
-	"warn":     slashHandlers.HandleSlashWarn,
+	"ping":        slashHandlers.HandleSlashPingAztebot,
+	"my_roles":    slashHandlers.HandleSlashMyRoles,
+	"me":          slashHandlers.HandleSlashMe,
+	"help":        slashHandlers.HandleSlashAztebotHelp,
+	"sync":        slashHandlers.HandleSlashSync,
+	"top":         slashHandlers.HandleSlashTop,
+	"dice":        slashHandlers.HandleSlashDice,
+	"warn":        slashHandlers.HandleSlashWarn,
+	"warn_remove": slashHandlers.HandleSlashWarnRemove,
 }
