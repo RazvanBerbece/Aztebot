@@ -7,6 +7,7 @@ docker-compose.yml
 local.dbconfig.yml
 build/
 *.log
+logs/
 
 config.prod.txt
 base64.config.prod.txt
