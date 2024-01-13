@@ -2,6 +2,7 @@ package member
 
 import (
 	"fmt"
+	"log"
 
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/bot-service/data/models"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
@@ -9,6 +10,25 @@ import (
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
+
+func IsStaffMember(s *discordgo.Session, userId string) bool {
+
+	roles, err := globalsRepo.UsersRepository.GetRolesForUser(userId)
+	if err != nil {
+		log.Printf("Cannot retrieve roles for user with id %s: %v", userId, err)
+	}
+
+	// Staff text segment (is user a member of staff?) in embed description
+	var isStaffMember bool = false
+	for _, role := range roles {
+		if role.Id == 3 || role.Id == 5 || role.Id == 6 || role.Id == 7 || role.Id == 18 {
+			// User is a staff member if they belong to any of the roles above
+			isStaffMember = true
+		}
+	}
+
+	return isStaffMember
+}
 
 func KickMember(s *discordgo.Session, guildId string, userId string) error {
 	// Delete member from server
