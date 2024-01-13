@@ -47,7 +47,7 @@ func HandleSlashWarn(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
-				Content: "An error ocurred while sending warning embed response.",
+				Content: fmt.Sprintf("An error ocurred while retrieving user with ID %s provided in the slash command.", targetUserId),
 			},
 		})
 	}
@@ -92,7 +92,6 @@ func GiveWarnToUserWithId(s *discordgo.Session, i *discordgo.InteractionCreate, 
 		err := sendWarnDmToUser(s, i, userId, dmContent)
 		if err != nil {
 			fmt.Printf("An error ocurred while sending staff rules DM to user: %v\n", err)
-			return err
 		}
 	case 1:
 		// 1 downgrade for role
@@ -106,7 +105,6 @@ func GiveWarnToUserWithId(s *discordgo.Session, i *discordgo.InteractionCreate, 
 		err := sendWarnDmToUser(s, i, userId, demotionMessageContent)
 		if err != nil {
 			fmt.Printf("An error ocurred while sending demotion message content 1 DM to user: %v\n", err)
-			return err
 		}
 	case 2:
 		// 1 downgrade for role
@@ -120,7 +118,6 @@ func GiveWarnToUserWithId(s *discordgo.Session, i *discordgo.InteractionCreate, 
 		err := sendWarnDmToUser(s, i, userId, demotionMessageContent)
 		if err != nil {
 			fmt.Printf("An error ocurred while sending demotion message content 2 DM to user: %v\n", err)
-			return err
 		}
 	case 3:
 		// Send demotion message
@@ -128,7 +125,6 @@ func GiveWarnToUserWithId(s *discordgo.Session, i *discordgo.InteractionCreate, 
 		err := sendWarnDmToUser(s, i, userId, kickMessageContent)
 		if err != nil {
 			fmt.Printf("An error ocurred while sending kick message content DM to user: %v\n", err)
-			return err
 		}
 		// kick from guild, timeout
 		err = s.GuildMemberDelete(globals.DiscordMainGuildId, userId)
