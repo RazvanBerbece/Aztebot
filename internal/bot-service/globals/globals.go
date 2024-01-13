@@ -28,6 +28,8 @@ var AllowedRoles = strings.Split(os.Getenv("ALLOWED_ROLES"), ",")
 
 var FavourableActivitiesThreshold, FavourableActivitiesThresholdErr = strconv.Atoi(os.Getenv("FAVOURABLE_ACTIVITIES_THRESHOLD"))
 
+var UpdateVoiceStateFrequency, UpdateVoiceStateFrequencyErr = strconv.Atoi(os.Getenv("UPDATE_VOICE_STATE_DURATIONS_FREQUENCY"))
+
 // =============== RUNTIME VARIABLES (BOT APPLICATIONS) ===============
 var VoiceSessions = make(map[string]time.Time)
 var StreamSessions = make(map[string]*time.Time)

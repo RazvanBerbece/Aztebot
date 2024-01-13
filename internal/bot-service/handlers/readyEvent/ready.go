@@ -45,6 +45,9 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	// TODO: FIX THIS (ON STARTUP IN PROD IT RECEIVES 0 STATES)
 	go RegisterUsersInVoiceChannelsAtStartup(s)
 
+	// Run background task toperiodically update voice session durations in the DB
+	go UpdateVoiceSesionDurations(s)
+
 	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, XP gaining?, etc.)
 	initialDelay, activityTicker := getDelayAndTickerForActivityStreakCron(24, 0, 0) // H, m, s
 	go func() {
@@ -287,6 +290,35 @@ func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
 
 }
 
+func UpdateVoiceSesionDurations(s *discordgo.Session) {
+
+	var numSec int
+	if globals.UpdateVoiceStateFrequencyErr != nil {
+		numSec = 5
+	} else {
+		numSec = globals.UpdateVoiceStateFrequency
+	}
+
+	fmt.Println("Starting Task UpdateVoiceSesionDurations() at", time.Now(), "running every", numSec, "seconds")
+
+	ticker := time.NewTicker(time.Duration(numSec) * time.Second)
+	quit := make(chan struct{})
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				go updateVoiceSessions()
+				go updateStreamingSessions()
+				go updateMusicSessions()
+			case <-quit:
+				ticker.Stop()
+				return
+			}
+		}
+	}()
+
+}
+
 func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 
 	var musicChannels map[string]string
@@ -399,6 +431,56 @@ func processMembers(s *discordgo.Session, members []*discordgo.Member, rolesRepo
 		err := utils.SyncUserPersistent(s, globals.DiscordMainGuildId, member.User.ID, member, rolesRepository, usersRepository, userStatsRepository)
 		if err != nil && err.Error() != "no update was executed" {
 			fmt.Printf("Error syncing member %s: %v\n", member.User.Username, err)
+		}
+	}
+}
+
+func updateVoiceSessions() {
+	for uid, joinTime := range globals.VoiceSessions {
+		duration := time.Since(joinTime)
+		err := globalsRepo.UserStatsRepository.AddToTimeSpentInVoiceChannels(uid, int(duration.Seconds()))
+		if err != nil {
+			fmt.Printf("An error ocurred while adding time spent to voice channels for user with id %s: %v", uid, err)
+		}
+
+		// Reset join time
+		now := time.Now()
+		globals.VoiceSessions[uid] = now
+	}
+}
+
+func updateStreamingSessions() {
+	for uid, joinTime := range globals.StreamSessions {
+		duration := time.Since(*joinTime)
+		err := globalsRepo.UserStatsRepository.AddToTimeSpentInVoiceChannels(uid, int(duration.Seconds()))
+		if err != nil {
+			fmt.Printf("An error ocurred while adding streaming duration to voice channels for user with id %s: %v", uid, err)
+		}
+
+		// Reset join time
+		now := time.Now()
+		globals.StreamSessions[uid] = &now
+	}
+}
+
+func updateMusicSessions() {
+	for uid := range globals.MusicSessions {
+		session, userHadMusicSession := globals.MusicSessions[uid]
+		if userHadMusicSession {
+			// User was on a music channel
+			for channelId, joinTime := range session {
+				duration := time.Since(*joinTime)
+				err := globalsRepo.UserStatsRepository.AddToTimeSpentListeningMusic(uid, int(duration.Seconds()))
+				if err != nil {
+					fmt.Printf("An error ocurred while adding time spent listening music for user with id %s: %v", uid, err)
+				}
+
+				// Reset join time
+				now := time.Now()
+				globals.MusicSessions[uid] = map[string]*time.Time{
+					channelId: &now,
+				}
+			}
 		}
 	}
 }
