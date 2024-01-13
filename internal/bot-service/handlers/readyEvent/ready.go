@@ -357,10 +357,9 @@ func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 	for !foundUsersInVCs {
 
 		time.Sleep(5 * time.Millisecond)
-		fmt.Println("AH")
 
 		durationForLoadingSessions := time.Since(now)
-		if durationForLoadingSessions.Seconds() > 5*60 { // only try this for 5 minutes, then break and return
+		if durationForLoadingSessions.Seconds() > 2*60 { // only try this for 5 minutes, then break and return
 			loadingTimeIsUp = true
 			break
 		}
