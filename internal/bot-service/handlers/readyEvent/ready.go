@@ -42,11 +42,10 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	go SendInformationEmbedsToTextChannels(s)
 
 	// Check for users on voice channels and start their VC sessions
-	// TODO: FIX THIS (ON STARTUP IN PROD IT RECEIVES 0 STATES)
 	go RegisterUsersInVoiceChannelsAtStartup(s)
 
 	// Run background task toperiodically update voice session durations in the DB
-	go UpdateVoiceSesionDurations(s)
+	go UpdateVoiceSessionDurations(s)
 
 	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, XP gaining?, etc.)
 	initialDelay, activityTicker := getDelayAndTickerForActivityStreakCron(24, 0, 0) // H, m, s
@@ -290,7 +289,7 @@ func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
 
 }
 
-func UpdateVoiceSesionDurations(s *discordgo.Session) {
+func UpdateVoiceSessionDurations(s *discordgo.Session) {
 
 	var numSec int
 	if globals.UpdateVoiceStateFrequencyErr != nil {
@@ -320,6 +319,8 @@ func UpdateVoiceSesionDurations(s *discordgo.Session) {
 }
 
 func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
+
+	fmt.Println("Trying to RegisterUsersInVoiceChannelsAtStartup() at", time.Now())
 
 	var musicChannels map[string]string
 	if globals.Environment == "staging" {

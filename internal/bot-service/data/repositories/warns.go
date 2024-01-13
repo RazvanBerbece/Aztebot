@@ -111,7 +111,7 @@ func (r WarnsRepository) DeleteAllWarningsForUser(userId string) error {
 
 func (r WarnsRepository) DeleteOldestWarningForUser(userId string) error {
 
-	query := "DELETE FROM Warns WHERE userId = ? ORDER BY creationTimestamp LIMIT 1"
+	query := "DELETE FROM Warns WHERE userId = ? ORDER BY creationTimestamp ASC LIMIT 1"
 
 	_, err := r.Conn.Db.Exec(query, userId)
 	if err != nil {
@@ -119,4 +119,34 @@ func (r WarnsRepository) DeleteOldestWarningForUser(userId string) error {
 	}
 
 	return nil
+}
+
+func (r WarnsRepository) GetWarningsForUser(userId string) ([]dataModels.Warn, error) {
+
+	var warns []dataModels.Warn
+
+	rows, err := r.Conn.Db.Query("SELECT * FROM Warns WHERE userId = ? ORDER BY creationTimestamp ASC", userId)
+	if err != nil {
+		return nil, fmt.Errorf("GetWarningsForUser %s: %v", userId, err)
+	}
+	defer rows.Close()
+
+	// Loop through rows, using Scan to assign column data to struct fields.
+	for rows.Next() {
+		var warn dataModels.Warn
+		if err := rows.Scan(&warn.Id, &warn.UserId, &warn.Reason, &warn.CreationTimestamp); err != nil {
+			return nil, fmt.Errorf("GetWarningsForUser %s: %v", userId, err)
+		}
+		warns = append(warns, warn)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("GetWarningsForUser %s: %v", userId, err)
+	}
+
+	// Check for zero rows
+	if len(warns) == 0 {
+		return []dataModels.Warn{}, nil
+	}
+
+	return warns, nil
 }

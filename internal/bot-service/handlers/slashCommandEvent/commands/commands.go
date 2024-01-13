@@ -68,6 +68,18 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 			},
 		},
 	},
+	{
+		Name:        "warns",
+		Description: "View a list of a members's warnings",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "user-id",
+				Description: "The Discord User ID of the user who was given the warnings",
+				Required:    true,
+			},
+		},
+	},
 }
 
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -80,4 +92,5 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"dice":               gamesHandlers.HandleSlashDice,
 	"warn":               warningHandlers.HandleSlashWarn,
 	"warn_remove_oldest": warningHandlers.HandleSlashWarnRemoveOldest,
+	"warns":              warningHandlers.HandleSlashWarns,
 }
