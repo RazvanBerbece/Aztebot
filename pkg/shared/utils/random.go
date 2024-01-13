@@ -4,6 +4,7 @@ import (
 	"math/rand"
 )
 
-func GetRandomIntegerInRange(min int, max int) int {
-	return rand.Intn(max-min) + min
+func GetRandomIntegerInRange(min int, max int, seed int64) int {
+	r := rand.New(rand.NewSource(seed))
+	return r.Intn(max-min) + min
 }

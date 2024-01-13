@@ -351,15 +351,15 @@ func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 	var streamSessionsAtStartup int = 0
 	var musicSessionsAtStartup int = 0
 
-	var foundUsersInVCs bool = false
+	var loadedUsersFromVCs bool = false
 	var loadingTimeIsUp bool = false
 
-	for !foundUsersInVCs {
+	for !loadedUsersFromVCs {
 
 		time.Sleep(5 * time.Millisecond)
 
 		durationForLoadingSessions := time.Since(now)
-		if durationForLoadingSessions.Seconds() > 2*60 { // only try this for 5 minutes, then break and return
+		if durationForLoadingSessions.Seconds() > 2*60 { // only try this for ~2-3 minutes, then break and return
 			loadingTimeIsUp = true
 			break
 		}
@@ -377,7 +377,6 @@ func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 			if user.Bot {
 				continue
 			}
-			foundUsersInVCs = true
 
 			if utils.TargetChannelIsForMusicListening(musicChannels, channelId) {
 				// If the voice state is purposed for music, initiate a music session at startup time
@@ -411,11 +410,13 @@ func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 					}
 				}
 			}
+
+			loadedUsersFromVCs = true
 		}
 
 	}
 
-	if foundUsersInVCs || loadingTimeIsUp {
+	if loadedUsersFromVCs || loadingTimeIsUp {
 		totalSessions := voiceSessionsAtStartup + streamSessionsAtStartup + musicSessionsAtStartup
 		fmt.Printf("Found %d active voice states at bot startup time (%d voice, %d streaming, %d music)\n", totalSessions, voiceSessionsAtStartup, streamSessionsAtStartup, musicSessionsAtStartup)
 	}
