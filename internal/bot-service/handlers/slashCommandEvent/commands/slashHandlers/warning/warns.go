@@ -6,12 +6,20 @@ import (
 
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
+	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
 
 func HandleSlashWarns(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	targetUserId := i.ApplicationCommandData().Options[0].StringValue()
+
+	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Embeds: utils.SimpleEmbed("🤖   Slash Command Confirmation", "Gathering your `/warns` data..."),
+		},
+	})
 
 	user, err := s.User(targetUserId)
 	if err != nil {
@@ -54,11 +62,12 @@ func HandleSlashWarns(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		embed.AddField(warningTitle, warningReason, false)
 	}
 
-	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Embeds: []*discordgo.MessageEmbed{embed.MessageEmbed},
-		},
-	})
+	// Final response
+	editContent := ""
+	editWebhook := discordgo.WebhookEdit{
+		Content: &editContent,
+		Embeds:  &[]*discordgo.MessageEmbed{embed.MessageEmbed},
+	}
+	s.InteractionResponseEdit(i.Interaction, &editWebhook)
 
 }
