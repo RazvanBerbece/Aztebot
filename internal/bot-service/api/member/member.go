@@ -53,7 +53,8 @@ func KickMember(s *discordgo.Session, guildId string, userId string) error {
 	return nil
 }
 
-func DemoteMember(s *discordgo.Session, guildId string, userId string) error {
+// Allows demotion either from a staff role or an inner order role.
+func DemoteMember(s *discordgo.Session, guildId string, userId string, demoteType string) error {
 
 	userToUpdate, err := globalsRepo.UsersRepository.GetUser(userId)
 	if err != nil {
@@ -76,21 +77,26 @@ func DemoteMember(s *discordgo.Session, guildId string, userId string) error {
 	for _, role := range userRoles {
 		// If an Inner Circle role
 		if role.Id > 7 && role.Id < 18 {
-			if role.Id == 8 {
-				// If left end of inner circle
-				roleBeforeDemotion = role
+			if demoteType == "STAFF" {
+				updatedCurrentRoleIds += fmt.Sprintf("%d,", role.Id)
+				roleIdsPostDemote = append(roleIdsPostDemote, role.Id)
 				roleIdsPriorDemote = append(roleIdsPriorDemote, role.Id)
-				continue
 			} else {
-				demotedRole, err := globalsRepo.RolesRepository.GetRoleById(role.Id - 1)
-				if err != nil {
-					fmt.Printf("Error ocurred while trying to demote member with ID %s: %v", userId, err)
-					return err
+				if role.Id == 8 {
+					// If left end of inner circle
+					roleBeforeDemotion = role
+					roleIdsPriorDemote = append(roleIdsPriorDemote, role.Id)
+				} else {
+					demotedRole, err := globalsRepo.RolesRepository.GetRoleById(role.Id - 1)
+					if err != nil {
+						fmt.Printf("Error ocurred while trying to demote member with ID %s: %v", userId, err)
+						return err
+					}
+					updatedCurrentRoleIds += fmt.Sprintf("%d,", demotedRole.Id)
+					roleIdsPostDemote = append(roleIdsPostDemote, demotedRole.Id)
+					roleBeforeDemotion = role
+					roleIdsPriorDemote = append(roleIdsPriorDemote, roleBeforeDemotion.Id)
 				}
-				updatedCurrentRoleIds += fmt.Sprintf("%d,", demotedRole.Id)
-				roleIdsPostDemote = append(roleIdsPostDemote, demotedRole.Id)
-				roleBeforeDemotion = role
-				roleIdsPriorDemote = append(roleIdsPriorDemote, roleBeforeDemotion.Id)
 			}
 		} else if role.Id > 1 && role.Id < 8 {
 			if role.Id == 2 || role.Id == 4 {
@@ -100,32 +106,38 @@ func DemoteMember(s *discordgo.Session, guildId string, userId string) error {
 				roleIdsPriorDemote = append(roleIdsPriorDemote, role.Id)
 			} else {
 				// Staff roles
-				if role.Id-1 == 2 {
-					// Demotion from Moderator leads to being kicked out of the guild
-					err = KickMember(s, guildId, userId)
-					if err != nil {
-						fmt.Println("Error kicking member for demoting from Moderator:", err)
-						return err
-					}
-				} else if role.Id-1 == 4 {
-					// Demotion from Administrator leads to Moderator
-					demotedRole, err := globalsRepo.RolesRepository.GetRoleById(role.Id - 2)
-					if err != nil {
-						fmt.Printf("Error ocurred while trying to demote staff role for member with ID %s: %v", userId, err)
-						return err
-					}
-					updatedCurrentRoleIds += fmt.Sprintf("%d,", demotedRole.Id)
-					roleIdsPostDemote = append(roleIdsPostDemote, demotedRole.Id)
-					roleIdsPriorDemote = append(roleIdsPriorDemote, roleBeforeDemotion.Id)
+				if demoteType == "ORDER" {
+					updatedCurrentRoleIds += fmt.Sprintf("%d,", role.Id)
+					roleIdsPostDemote = append(roleIdsPostDemote, role.Id)
+					roleIdsPriorDemote = append(roleIdsPriorDemote, role.Id)
 				} else {
-					demotedRole, err := globalsRepo.RolesRepository.GetRoleById(role.Id - 1)
-					if err != nil {
-						fmt.Printf("Error ocurred while trying to demote staff role for member with ID %s: %v", userId, err)
-						return err
+					if role.Id-1 == 2 {
+						// Demotion from Moderator leads to being kicked out of the guild
+						err = KickMember(s, guildId, userId)
+						if err != nil {
+							fmt.Println("Error kicking member for demoting from Moderator:", err)
+							return err
+						}
+					} else if role.Id-1 == 4 {
+						// Demotion from Administrator leads to Moderator
+						demotedRole, err := globalsRepo.RolesRepository.GetRoleById(role.Id - 2)
+						if err != nil {
+							fmt.Printf("Error ocurred while trying to demote staff role for member with ID %s: %v", userId, err)
+							return err
+						}
+						updatedCurrentRoleIds += fmt.Sprintf("%d,", demotedRole.Id)
+						roleIdsPostDemote = append(roleIdsPostDemote, demotedRole.Id)
+						roleIdsPriorDemote = append(roleIdsPriorDemote, roleBeforeDemotion.Id)
+					} else {
+						demotedRole, err := globalsRepo.RolesRepository.GetRoleById(role.Id - 1)
+						if err != nil {
+							fmt.Printf("Error ocurred while trying to demote staff role for member with ID %s: %v", userId, err)
+							return err
+						}
+						updatedCurrentRoleIds += fmt.Sprintf("%d,", demotedRole.Id)
+						roleIdsPostDemote = append(roleIdsPostDemote, demotedRole.Id)
+						roleIdsPriorDemote = append(roleIdsPriorDemote, roleBeforeDemotion.Id)
 					}
-					updatedCurrentRoleIds += fmt.Sprintf("%d,", demotedRole.Id)
-					roleIdsPostDemote = append(roleIdsPostDemote, demotedRole.Id)
-					roleIdsPriorDemote = append(roleIdsPriorDemote, roleBeforeDemotion.Id)
 				}
 			}
 		} else { // Aztec or Arhitect role
