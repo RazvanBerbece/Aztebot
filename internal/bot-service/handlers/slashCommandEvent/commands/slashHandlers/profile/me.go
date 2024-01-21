@@ -131,17 +131,17 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 		orderNum := *user.CurrentInnerOrder
 		switch orderNum {
 		case 1:
-			orderText = "| FIRST ORDER"
+			orderText = " | FIRST ORDER"
 		case 2:
-			orderText = "| SECOND ORDER"
+			orderText = " | SECOND ORDER"
 		case 3:
-			orderText = "| THIRD ORDER"
+			orderText = " | THIRD ORDER"
 		}
 	}
 
 	embed := embed.NewEmbed().
 		SetTitle(fmt.Sprintf("🤖   `%s`'s Profile Card", user.DiscordTag)).
-		SetDescription(fmt.Sprintf("`%s CIRCLE %s`", user.CurrentCircle, orderText)).
+		SetDescription(fmt.Sprintf("`%s CIRCLE%s`", user.CurrentCircle, orderText)).
 		SetThumbnail(fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.png", userId, apiUser.Avatar)).
 		SetColor(000000).
 		AddLineBreakField()

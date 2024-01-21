@@ -223,12 +223,14 @@ func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
 		textChannels = map[string]string{
 			"1188135110042734613": "default",
 			"1194451477192773773": "staff-rules",
+			"1198686819928264784": "server-rules",
 		}
 	} else {
 		// Production text channels
 		textChannels = map[string]string{
 			"1176277764001767464": "info-music",
 			"1100486860058398770": "staff-rules",
+			"1100142572141281460": "server-rules",
 		}
 	}
 
@@ -254,17 +256,11 @@ func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
 			case "staff-rules":
 				embedText = utils.GetTextFromFile("internal/bot-service/handlers/readyEvent/assets/defaultContent/staff-rules.txt")
 				hasOwnEmbed = true
-				// Split the content into sections based on double newline characters ("\n\n")
-				sections := strings.Split(embedText, "\n\n")
-				for _, section := range sections {
-					lines := strings.Split(section, "\n")
-					if len(lines) > 0 {
-						// Use the first line as the title and the rest as content
-						title := lines[0]
-						content := strings.Join(lines[1:], "\n")
-						ownEmbed.AddField(title, content, false)
-					}
-				}
+				mutateLongEmbedFromStaticData(embedText, ownEmbed)
+			case "server-rules":
+				embedText = utils.GetTextFromFile("internal/bot-service/handlers/readyEvent/assets/defaultContent/server-rules.txt")
+				hasOwnEmbed = true
+				mutateLongEmbedFromStaticData(embedText, ownEmbed)
 			}
 
 			var messageEmbedToPost *discordgo.MessageEmbed
@@ -518,6 +514,21 @@ func updateMusicSessions() {
 					channelId: &now,
 				}
 			}
+		}
+	}
+}
+
+// Note that this is a mutating function on `hasOwnEmbed` and `embed`.
+func mutateLongEmbedFromStaticData(embedText string, embed *embed.Embed) {
+	// Split the content into sections based on double newline characters ("\n\n")
+	sections := strings.Split(embedText, "\n\n")
+	for _, section := range sections {
+		lines := strings.Split(section, "\n")
+		if len(lines) > 0 {
+			// Use the first line as the title and the rest as content
+			title := lines[0]
+			content := strings.Join(lines[1:], "\n")
+			embed.AddField(title, content, false)
 		}
 	}
 }
