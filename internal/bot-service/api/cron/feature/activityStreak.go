@@ -21,20 +21,20 @@ func ProcessUpdateActivityStreaks(h int, m int, s int) {
 		fmt.Println("Scheduled Task UpdateActivityStreaks() in <", initialActivityStreakDelay.Hours(), "> hours")
 		time.Sleep(initialActivityStreakDelay)
 
+		// Inject new connections
+		usersRepository := repositories.NewUsersRepository()
+		userStatsRepository := repositories.NewUsersStatsRepository()
+
 		// The first run should happen at start-up, not after 24 hours
 		UpdateActivityStreaks(globalsRepo.UsersRepository, globalsRepo.UserStatsRepository)
 
 		for range activityStreakTicker.C {
-			// Inject new connections
-			usersRepository := repositories.NewUsersRepository()
-			userStatsRepository := repositories.NewUsersStatsRepository()
-
 			// Process
 			UpdateActivityStreaks(usersRepository, userStatsRepository)
-
-			// Cleanup DB connections after cron run
-			utils.CleanupRepositories(nil, usersRepository, userStatsRepository, nil)
 		}
+
+		// Cleanup DB connections after cron run
+		utils.CleanupRepositories(nil, usersRepository, userStatsRepository, nil)
 	}()
 }
 

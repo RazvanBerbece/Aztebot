@@ -48,8 +48,8 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	go UpdateVoiceSessionDurations(s)
 
 	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, XP gaining?, etc.)
-	cronFeature.ProcessUpdateActivityStreaks(24, 00, 00) // the hh:mm:ss timestamp in a day to run the cron at
-	cronFeature.ProcessRemoveExpiredWarns(2)             // run every n=2 months
+	cronFeature.ProcessUpdateActivityStreaks(24, 0, 0) // the hh:mm:ss timestamp in a day to run the cron at
+	cronFeature.ProcessRemoveExpiredWarns(2)           // run every n=2 months
 
 }
 

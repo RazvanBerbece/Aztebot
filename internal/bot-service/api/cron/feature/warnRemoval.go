@@ -11,24 +11,26 @@ import (
 )
 
 func ProcessRemoveExpiredWarns(months int) {
+
 	initialWarnRemovalDelay, warnRemovalTicker := cron.GetDelayAndTickerForWarnRemovalCron(months) // every n=2 months
+
 	go func() {
 
 		fmt.Println("Scheduled Task RemoveExpiredWarns() in <", initialWarnRemovalDelay.Hours()/24, "> days")
 		time.Sleep(initialWarnRemovalDelay)
 
+		// Inject new connections
+		warnsRepository := repositories.NewWarnsRepository()
+
 		RemoveExpiredWarns(globalsRepo.WarnsRepository)
 
 		for range warnRemovalTicker.C {
-			// Inject new connections
-			warnsRepository := repositories.NewWarnsRepository()
-
 			// Process
 			RemoveExpiredWarns(warnsRepository)
-
-			// Cleanup DB connections after cron run
-			utils.CleanupRepositories(nil, nil, nil, warnsRepository)
 		}
+
+		// Cleanup DB connections after cron run
+		utils.CleanupRepositories(nil, nil, nil, warnsRepository)
 	}()
 }
 
