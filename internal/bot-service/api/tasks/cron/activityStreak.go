@@ -1,11 +1,10 @@
-package cronFeature
+package cron
 
 import (
 	"database/sql"
 	"fmt"
 	"time"
 
-	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/cron"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
@@ -14,7 +13,7 @@ import (
 
 func ProcessUpdateActivityStreaks(h int, m int, s int) {
 
-	initialActivityStreakDelay, activityStreakTicker := cron.GetDelayAndTickerForActivityStreakCron(h, m, s) // H, m, s
+	initialActivityStreakDelay, activityStreakTicker := GetDelayAndTickerForActivityStreakCron(h, m, s) // H, m, s
 
 	go func() {
 
