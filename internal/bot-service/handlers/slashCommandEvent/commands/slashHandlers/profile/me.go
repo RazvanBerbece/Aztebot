@@ -148,6 +148,11 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 
 	if userCreatedTimeString != "" && highestRole != nil {
 
+		if user.UserId == "526512064794066945" {
+			// The one and only, Edi
+			embed.AddField("👑 Azteca", "", false)
+		}
+
 		if isStaffMember {
 			embed.AddField("💎 OTA Staff Member", "", false)
 		}
