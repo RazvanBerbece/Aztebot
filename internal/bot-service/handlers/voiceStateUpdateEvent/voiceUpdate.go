@@ -43,14 +43,6 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 
 	userId := member.User.ID
 
-	// if vs.Deaf {
-	// 	fmt.Println("DEAFEN")
-	// 	globals.DeafSessions[userId] = time.Now()
-	// } else if vs.BeforeUpdate.Deaf && !vs.Deaf {
-	// 	fmt.Println("UNDEAFEN")
-	// 	delete(globals.DeafSessions, userId)
-	// }
-
 	if vs.SelfStream && vs.ChannelID != "" {
 		// User STARTED STREAMING
 		now := time.Now()
