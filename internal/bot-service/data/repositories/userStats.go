@@ -608,3 +608,60 @@ func (r UsersStatsRepository) DecreaseTimeSpentInVoiceChannels(userId string, sT
 
 	return nil
 }
+
+func (r UsersStatsRepository) GetUserLeaderboardRank(userId string, leaderboardName string) (*int, error) {
+
+	query := ""
+
+	switch leaderboardName {
+	case "msg":
+		query = `SELECT COUNT(*) AS user_rank
+		FROM UserStats AS t1
+		JOIN UserStats AS t2 ON t1.messagesSent >= t2.messagesSent
+		WHERE t2.userId = ?;`
+	case "react":
+		query = `SELECT COUNT(*) AS user_rank
+		FROM UserStats AS t1
+		JOIN UserStats AS t2 ON t1.reactionsReceived >= t2.reactionsReceived
+		WHERE t2.userId = ?;`
+	case "streak":
+		query = `SELECT COUNT(*) AS user_rank
+		FROM UserStats AS t1
+		JOIN UserStats AS t2 ON t1.activeDayStreak >= t2.activeDayStreak
+		WHERE t2.userId = ?;`
+	case "vc":
+		query = `SELECT COUNT(*) AS user_rank
+		FROM UserStats AS t1
+		JOIN UserStats AS t2 ON t1.timeSpentInVoiceChannels >= t2.timeSpentInVoiceChannels
+		WHERE t2.userId = ?;`
+	case "music":
+		query = `SELECT COUNT(*) AS user_rank
+		FROM UserStats AS t1
+		JOIN UserStats AS t2 ON t1.timeSpentListeningMusic >= t2.timeSpentListeningMusic
+		WHERE t2.userId = ?;`
+	default:
+		fmt.Println("Leaderboard not implemented: ", leaderboardName)
+	}
+
+	rows, err := r.Conn.Db.Query(query, userId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var rank int
+
+	for rows.Next() {
+		err := rows.Scan(&rank)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return &rank, nil
+
+}
