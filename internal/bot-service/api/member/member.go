@@ -282,35 +282,45 @@ func GetMemberRankInLeaderboards(s *discordgo.Session, userId string) (map[strin
 		fmt.Printf("An error ocurred while retrieving leaderboard msg rank for user %s", userId)
 		return nil, err
 	}
-	results["msg"] = *msgRank
+	if *msgRank != 0 {
+		results["msg"] = *msgRank
+	}
 	// Get place in the reactions received leaderboard
 	reactRank, err := globalsRepo.UserStatsRepository.GetUserLeaderboardRank(userId, "react")
 	if err != nil {
 		fmt.Printf("An error ocurred while retrieving leaderboard react rank for user %s", userId)
 		return nil, err
 	}
-	results["react"] = *reactRank
+	if *reactRank != 0 {
+		results["react"] = *reactRank
+	}
 	// Get place in the time spent in VCs leaderboard
 	vcRank, err := globalsRepo.UserStatsRepository.GetUserLeaderboardRank(userId, "vc")
 	if err != nil {
 		fmt.Printf("An error ocurred while retrieving leaderboard vc rank for user %s", userId)
 		return nil, err
 	}
-	results["vc"] = *vcRank
+	if *vcRank != 0 {
+		results["vc"] = *vcRank
+	}
 	// Get place in the time spent in music channels leaderboard
 	musicRank, err := globalsRepo.UserStatsRepository.GetUserLeaderboardRank(userId, "music")
 	if err != nil {
 		fmt.Printf("An error ocurred while retrieving leaderboard music rank for user %s", userId)
 		return nil, err
 	}
-	results["music"] = *musicRank
+	if *musicRank != 0 {
+		results["music"] = *musicRank
+	}
 	// Get place in the time streak leaderboard
 	streakRank, err := globalsRepo.UserStatsRepository.GetUserLeaderboardRank(userId, "streak")
 	if err != nil {
 		fmt.Printf("An error ocurred while retrieving leaderboard streak rank for user %s", userId)
 		return nil, err
 	}
-	results["streak"] = *streakRank
+	if *streakRank != 0 {
+		results["streak"] = *streakRank
+	}
 
 	return results, nil
 
