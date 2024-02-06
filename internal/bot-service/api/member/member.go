@@ -326,6 +326,19 @@ func GetMemberRankInLeaderboards(s *discordgo.Session, userId string) (map[strin
 
 }
 
-func GiveTimeoutToMemberWithId(s *discordgo.Session, i *discordgo.InteractionCreate, userId string, reason string, creationTimestamp int64, hTimeoutLength int64) error {
+func GiveTimeoutToMemberWithId(s *discordgo.Session, i *discordgo.InteractionCreate, userId string, reason string, creationTimestamp int64, sTimeoutLength float64) error {
+
+	result := globalsRepo.TimeoutsRepository.GetTimeoutsCountForUser(userId)
+	if result > 0 {
+		return fmt.Errorf("a user cannot be given more than 1 timeout at a time")
+	}
+
+	err := globalsRepo.TimeoutsRepository.SaveTimeout(userId, reason, creationTimestamp, int(sTimeoutLength))
+	if err != nil {
+		fmt.Printf("Error ocurred while storing timeout for user: %s", err)
+		return fmt.Errorf("ERROR GiveTimeoutToMemberWithId")
+	}
+
 	return nil
+
 }

@@ -30,6 +30,8 @@ var FavourableActivitiesThreshold, FavourableActivitiesThresholdErr = strconv.At
 
 var UpdateVoiceStateFrequency, UpdateVoiceStateFrequencyErr = strconv.Atoi(os.Getenv("UPDATE_VOICE_STATE_DURATIONS_FREQUENCY"))
 
+var TimeoutClearFrequency, TimeoutClearFrequencyErr = strconv.Atoi(os.Getenv("TIMEOUT_CLEAR_FREQUENCY"))
+
 // =============== RUNTIME VARIABLES (BOT APPLICATIONS) ===============
 var VoiceSessions = make(map[string]time.Time)
 var StreamSessions = make(map[string]*time.Time)

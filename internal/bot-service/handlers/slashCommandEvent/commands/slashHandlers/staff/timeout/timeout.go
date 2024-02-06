@@ -14,7 +14,7 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	targetUserId := i.ApplicationCommandData().Options[0].StringValue()
 	reason := i.ApplicationCommandData().Options[1].StringValue()
-	hTimeLengthString := i.ApplicationCommandData().Options[2].StringValue()
+	sTimeLengthString := i.ApplicationCommandData().Options[2].StringValue()
 
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
@@ -23,44 +23,31 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		},
 	})
 
-	hTimeLength, convErr := utils.StringToInt64(hTimeLengthString)
+	sTimeLength, convErr := utils.StringToFloat64(sTimeLengthString)
 	if convErr != nil {
-		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{
-				Content: fmt.Sprintf("The provided `timeLength` command argument is invalid. (term: %s)", hTimeLengthString),
-			},
-		})
+		errMsg := fmt.Sprintf("The provided `timeLength` command argument is invalid. (term: %s)", sTimeLengthString)
+		utils.SendErrorReportEmbed(s, i.Interaction, errMsg)
 		return
 	}
 
 	timestamp := time.Now().Unix()
 
 	var err error
-	go func() {
-		err := member.GiveTimeoutToMemberWithId(s, i, targetUserId, reason, timestamp, *hTimeLength)
-		if err != nil {
-			fmt.Printf("An error ocurred while giving timeout to user: %v\n", err)
-			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-				Type: discordgo.InteractionResponseChannelMessageWithSource,
-				Data: &discordgo.InteractionResponseData{
-					Content: fmt.Sprintf("An error ocurred while giving timeout to user with ID %s.", targetUserId),
-				},
-			})
-			return
-		}
-	}()
+	err = member.GiveTimeoutToMemberWithId(s, i, targetUserId, reason, timestamp, *sTimeLength)
+	if err != nil {
+		errMsg := fmt.Sprintf("Error ocurred giving timeout to user with ID %s: %s", targetUserId, err)
+		utils.SendErrorReportEmbed(s, i.Interaction, errMsg)
+		return
+	}
 
 	user, err := s.User(targetUserId)
 	if err != nil {
 		fmt.Printf("An error ocurred while sending timeout embed response: %v", err)
-		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{
-				Content: fmt.Sprintf("An error ocurred while retrieving user with ID %s provided in the slash command.", targetUserId),
-			},
-		})
+		errMsg := fmt.Sprintf("An error ocurred while retrieving user with ID %s provided in the slash command.", targetUserId)
+		utils.SendErrorReportEmbed(s, i.Interaction, errMsg)
+		return
 	}
+	// TODO send DM
 
 	// Format timeout creation time
 	var timeoutCreatedAt time.Time
@@ -68,9 +55,9 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	timeoutCreatedAt = time.Unix(timestamp, 0).UTC()
 	timeoutCreatedAtString = timeoutCreatedAt.Format("Mon, 02 Jan 2006 15:04:05 MST")
 
-	// Format timeout time length
-	// var timeoutLength time.Time
-	var timeoutLengthString string
+	// Format timeout duration
+	var dd, hr, mm, ss = utils.HumanReadableTimeLength(*sTimeLength)
+	var timeoutLengthString string = fmt.Sprintf("%dd, %dh:%dm:%ds", dd, hr, mm, ss)
 
 	embed := embed.NewEmbed().
 		SetTitle(fmt.Sprintf("🤖⚠️   Timeout given to `%s`", user.Username)).
