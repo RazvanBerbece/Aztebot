@@ -1,6 +1,9 @@
 package utils
 
-import "math"
+import (
+	"math"
+	"strconv"
+)
 
 func HumanReadableTimeLength(totalSeconds float64) (int, int, int, int) {
 
@@ -15,4 +18,12 @@ func HumanReadableTimeLength(totalSeconds float64) (int, int, int, int) {
 
 	return int(days), int(hours), int(minutes), int(seconds)
 
+}
+
+func StringToInt64(timeString string) (*int64, error) {
+	i, err := strconv.ParseInt(timeString, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	return &i, nil
 }

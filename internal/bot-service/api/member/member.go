@@ -325,3 +325,7 @@ func GetMemberRankInLeaderboards(s *discordgo.Session, userId string) (map[strin
 	return results, nil
 
 }
+
+func GiveTimeoutToMemberWithId(s *discordgo.Session, i *discordgo.InteractionCreate, userId string, reason string, creationTimestamp int64, hTimeoutLength int64) error {
+	return nil
+}
