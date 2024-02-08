@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/member"
+	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/notifications"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
@@ -89,6 +90,11 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	var dd, hr, mm, ss = utils.HumanReadableTimeLength(*sTimeLength)
 	var timeoutLengthString string = fmt.Sprintf("%dd, %dh:%dm:%ds", dd, hr, mm, ss)
 
+	// Send notification to target channel to announce the timeout
+	if channel, channelExists := globals.NotificationChannels["notif-timeout"]; channelExists {
+		go sendTimeoutNotification(s, channel.ChannelId, targetUserId, reason, timeoutCreatedAtString, timeoutLengthString)
+	}
+
 	embed := embed.NewEmbed().
 		SetTitle(fmt.Sprintf("🤖⚠️   Timeout given to `%s`", user.Username)).
 		SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
@@ -104,5 +110,30 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		Embeds:  &[]*discordgo.MessageEmbed{embed.MessageEmbed},
 	}
 	s.InteractionResponseEdit(i.Interaction, &editWebhook)
+
+}
+
+func sendTimeoutNotification(s *discordgo.Session, channelId string, targetUserId string, reason string, timestamp string, duration string) {
+
+	fields := []discordgo.MessageEmbedField{
+		{
+			Name:   "Reason",
+			Value:  reason,
+			Inline: false,
+		},
+		{
+			Name:   "Timestamp",
+			Value:  timestamp,
+			Inline: false,
+		},
+		{
+			Name:   "Duration",
+			Value:  duration,
+			Inline: false,
+		},
+	}
+
+	notificationTitle := fmt.Sprintf("`/timeout` given to User with UID `%s`", targetUserId)
+	notifications.SendNotificationToTextChannel(s, channelId, notificationTitle, fields)
 
 }

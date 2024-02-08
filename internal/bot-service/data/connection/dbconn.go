@@ -5,7 +5,6 @@ import (
 	"log"
 
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
-
 	_ "github.com/go-sql-driver/mysql"
 )
 
