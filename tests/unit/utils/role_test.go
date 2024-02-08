@@ -20,7 +20,7 @@ func TestRoleIsStaffRole(t *testing.T) {
 		{6, true},
 		{7, true},
 		{8, true},
-		{19, true},
+		{19, false},
 	}
 
 	for _, c := range cases {
