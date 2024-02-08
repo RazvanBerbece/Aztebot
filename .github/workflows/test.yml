@@ -29,7 +29,11 @@ jobs:
       
       - name: Setup environment
         run: |
+          : # Environment variables for CI testing
           echo ${{ secrets.CI_ENV_BASE64_STRING }} | base64 --decode > .env
+
+          : # Docker networks for CI testing
+          docker network create dev_network
       
       - name: Run CI tests
         run: |
