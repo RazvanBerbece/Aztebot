@@ -15,12 +15,12 @@ func HandleSlashMyRoles(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	// Attempt a sync
 	err := ProcessUserUpdate(i.Interaction.Member.User.ID, s, i)
 	if err != nil {
-		utils.SendErrorReportEmbed(s, i.Interaction, fmt.Sprintf("An error ocurred while trying to fetch your roles: `%s`", err))
+		utils.ErrorEmbedResponseEdit(s, i.Interaction, fmt.Sprintf("An error ocurred while trying to fetch your roles: `%s`", err))
 	}
 
 	embed := roleDisplayEmbedForUser(i.Interaction.Member.User.Username, i.Interaction.Member.User.ID)
 	if embed == nil {
-		utils.SendErrorReportEmbed(s, i.Interaction, "An error ocurred while trying to fetch your roles.")
+		utils.ErrorEmbedResponseEdit(s, i.Interaction, "An error ocurred while trying to fetch your roles.")
 	}
 
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{

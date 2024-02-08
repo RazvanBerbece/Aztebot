@@ -24,14 +24,14 @@ func HandleSlashTimeouts(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	activeTimeout, archived, err := member.GetMemberTimeouts(targetUserId)
 	if err != nil {
 		errMsg := fmt.Sprintf("An error ocurred while retrieving timeouts for member with UID %s: `%s`", targetUserId, err)
-		utils.SendErrorReportEmbed(s, i.Interaction, errMsg)
+		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
 		return
 	}
 
 	user, err := s.User(targetUserId)
 	if err != nil {
 		errMsg := fmt.Sprintf("An error ocurred while retrieving user with ID %s provided in the slash command.", targetUserId)
-		utils.SendErrorReportEmbed(s, i.Interaction, errMsg)
+		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
 	}
 
 	embed := embed.NewEmbed().

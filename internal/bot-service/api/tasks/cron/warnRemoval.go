@@ -17,7 +17,7 @@ func ProcessRemoveExpiredWarns(months int) {
 
 		RemoveExpiredWarns(globalsRepo.WarnsRepository)
 
-		fmt.Println("[SCHEDULED CRON]\t\tScheduled Task RemoveExpiredWarns() in <", initialWarnRemovalDelay.Hours()/24, "> days")
+		fmt.Println("[SCHEDULED CRON] Scheduled Task RemoveExpiredWarns() in <", initialWarnRemovalDelay.Hours()/24, "> days")
 		time.Sleep(initialWarnRemovalDelay)
 
 		// Inject new connections
@@ -35,11 +35,11 @@ func ProcessRemoveExpiredWarns(months int) {
 
 func RemoveExpiredWarns(warnsRepository *repositories.WarnsRepository) {
 
-	fmt.Println("[CRON]\t\t\tStarting Task RemoveExpiredWarns() at", time.Now())
+	fmt.Println("[CRON] Starting Task RemoveExpiredWarns() at", time.Now())
 
 	allWarns, err := warnsRepository.GetAllWarns()
 	if err != nil {
-		fmt.Println("[CRON]\t\t\tFailed Task RemoveExpiredWarns() at", time.Now(), "with error", err)
+		fmt.Println("[CRON]Failed Task RemoveExpiredWarns() at", time.Now(), "with error", err)
 	}
 
 	// For all existing warns
@@ -51,11 +51,11 @@ func RemoveExpiredWarns(warnsRepository *repositories.WarnsRepository) {
 			// Remove it
 			err := warnsRepository.DeleteWarningForUser(warn.Id, warn.UserId)
 			if err != nil {
-				fmt.Println("[CRON]\t\t\tFailed Task RemoveExpiredWarns() at", time.Now(), "with error", err)
+				fmt.Println("[CRON]Failed Task RemoveExpiredWarns() at", time.Now(), "with error", err)
 			}
 		}
 	}
 
-	fmt.Println("[CRON]\t\t\tFinished Task RemoveExpiredWarns() at", time.Now())
+	fmt.Println("[CRON] Finished Task RemoveExpiredWarns() at", time.Now())
 
 }

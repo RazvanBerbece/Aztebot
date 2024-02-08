@@ -13,6 +13,12 @@ import (
 
 func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
+	// Ensure that the member using this command is a staff member
+	if !member.IsStaffMember(i.Member.User.ID) {
+		utils.SendErrorEmbedResponse(s, i.Interaction, "You do not have the required permissions to use this command.")
+		return
+	}
+
 	targetUserId := i.ApplicationCommandData().Options[0].StringValue()
 	reason := i.ApplicationCommandData().Options[1].StringValue()
 	sTimeLengthString := i.ApplicationCommandData().Options[2].StringValue()
@@ -27,7 +33,7 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	sTimeLength, convErr := utils.StringToFloat64(sTimeLengthString)
 	if convErr != nil {
 		errMsg := fmt.Sprintf("The provided `timeLength` command argument is invalid. (term: `%s`)", sTimeLengthString)
-		utils.SendErrorReportEmbed(s, i.Interaction, errMsg)
+		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
 		return
 	}
 
@@ -35,7 +41,7 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	allowedTimeoutExpirations := []float64{300, 600, 1800, 3600, 86400, 259200}
 	if !utils.Float64InSlice(*sTimeLength, allowedTimeoutExpirations) {
 		errMsg := fmt.Sprintf("The provided `timeLength` command argument is not an allowed value. (term `%s` not in { 300, 600, 1800, 3600, 86400, 259200 })", sTimeLengthString)
-		utils.SendErrorReportEmbed(s, i.Interaction, errMsg)
+		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
 		return
 	}
 
@@ -45,20 +51,20 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	err = member.GiveTimeoutToMemberWithId(s, i, globals.DiscordMainGuildId, targetUserId, reason, timestamp, *sTimeLength)
 	if err != nil {
 		errMsg := fmt.Sprintf("Error ocurred giving timeout to user with ID `%s`: `%s`", targetUserId, err)
-		utils.SendErrorReportEmbed(s, i.Interaction, errMsg)
+		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
 		return
 	}
 
 	user, err := s.User(targetUserId)
 	if err != nil {
 		errMsg := fmt.Sprintf("An error ocurred while retrieving user with ID %s provided in the slash command.", targetUserId)
-		utils.SendErrorReportEmbed(s, i.Interaction, errMsg)
+		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
 	}
 	err = member.SendDirectMessageToMember(s, targetUserId, "You received a timeout.")
 	if err != nil {
 		fmt.Printf("An error ocurred while sending timeout embed response: %v", err)
 		errMsg := fmt.Sprintf("An error ocurred while sending the timeout DM to the target user %s", targetUserId)
-		utils.SendErrorReportEmbed(s, i.Interaction, errMsg)
+		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
 	}
 
 	// Format timeout creation time
