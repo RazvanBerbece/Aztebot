@@ -12,7 +12,7 @@ down:
 	docker compose down -v
 
 ci:
-	docker-compose -f docker-compose.ci.yml up --remove-orphans --build
+	docker-compose -f docker-compose.ci.yml up --remove-orphans --abort-on-container-exit --exit-code-from service-test
 
 update-env:
 	openssl base64 -A -in .prod.env -out base64.prod.env.out
