@@ -29,7 +29,7 @@ func ProcessRemoveExpiredWarns(months int) {
 		}
 
 		// Cleanup DB connections after cron run
-		utils.CleanupRepositories(nil, nil, nil, warnsRepository)
+		utils.CleanupRepositories(nil, nil, nil, warnsRepository, nil)
 	}()
 }
 

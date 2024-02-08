@@ -105,6 +105,18 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 			},
 		},
 	},
+	{
+		Name:        "timeouts",
+		Description: "See a user's active and archived timeouts.",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "user-id",
+				Description: "The Discord User ID of the user to see the associated timeouts for",
+				Required:    true,
+			},
+		},
+	},
 }
 
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -119,4 +131,5 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"warn_remove_oldest": warningHandlers.HandleSlashWarnRemoveOldest,
 	"warns":              warningHandlers.HandleSlashWarns,
 	"timeout":            timeoutHandlers.HandleSlashTimeout,
+	"timeouts":           profileHandlers.HandleSlashTimeouts,
 }

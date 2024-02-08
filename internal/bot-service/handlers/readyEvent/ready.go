@@ -44,6 +44,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, XP gaining?, etc.)
 	cron.ProcessUpdateActivityStreaks(24, 0, 0) // the hh:mm:ss timestamp in a day to run the cron at
 	cron.ProcessRemoveExpiredWarns(2)           // run every n=2 months
-	cron.ClearExpiredTimeouts(s)
+	cron.ClearExpiredTimeouts(s)                // clear timeouts with freq from env var
+	cron.ProcessRemoveArchivedTimeouts(1)       // run every n=1 month
 
 }
