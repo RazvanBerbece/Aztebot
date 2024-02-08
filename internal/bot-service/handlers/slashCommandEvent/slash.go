@@ -33,8 +33,8 @@ func RegisterAztebotSlashCommands(s *discordgo.Session) error {
 
 		appData := i.ApplicationCommandData()
 
-		// If allowed roles are configured, only allow a user with one of these roles to execute an app command
-		// The app commands which require role permissions are defined here
+		// If a higher-up restricted command
+		// and allowed roles are configured, only allow a user with one of these roles to execute an app command
 		if utils.StringInSlice(appData.Name, globals.RestrictedCommands) && len(globals.AllowedRoles) > 0 {
 			if i.Type == discordgo.InteractionApplicationCommand {
 				// Check if the user has the allowed role
@@ -46,6 +46,39 @@ func RegisterAztebotSlashCommands(s *discordgo.Session) error {
 						return
 					}
 					if utils.StringInSlice(roleObj.Name, globals.AllowedRoles) {
+						hasAllowedRole = true
+					}
+					if hasAllowedRole {
+						break
+					}
+				}
+
+				if !hasAllowedRole {
+					// If the user doesn't have the allowed role, send a response
+					s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+						Type: discordgo.InteractionResponseChannelMessageWithSource,
+						Data: &discordgo.InteractionResponseData{
+							Content: "You do not have the required role to use this command.",
+						},
+					})
+					return
+				}
+			}
+		}
+
+		// If a staff command
+		// and staff roles are configured, only allow a user with one of these roles to execute an app command
+		if utils.StringInSlice(appData.Name, globals.StaffCommands) && len(globals.StaffRoles) > 0 {
+			if i.Type == discordgo.InteractionApplicationCommand {
+				// Check if the user has the allowed role
+				hasAllowedRole := false
+				for _, role := range i.Member.Roles {
+					roleObj, err := s.State.Role(i.GuildID, role)
+					if err != nil {
+						log.Println("Error getting role:", err)
+						return
+					}
+					if utils.StringInSlice(roleObj.Name, globals.StaffRoles) {
 						hasAllowedRole = true
 					}
 					if hasAllowedRole {
