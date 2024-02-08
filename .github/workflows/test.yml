@@ -27,6 +27,6 @@ jobs:
       - name: Display Go version
         run: go version
       
-      - uses: Run CI tests
+      - name: Run CI tests
         run: |
           make ci
