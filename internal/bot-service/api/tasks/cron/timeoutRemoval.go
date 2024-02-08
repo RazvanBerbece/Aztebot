@@ -18,7 +18,7 @@ func ClearExpiredTimeouts(s *discordgo.Session) {
 		numSec = globals.TimeoutClearFrequency
 	}
 
-	fmt.Println("Starting Task ClearExpiredTimeouts() at", time.Now(), "running every", numSec, "seconds")
+	fmt.Println("[CRON] Starting Task ClearExpiredTimeouts() at", time.Now(), "running every", numSec, "seconds")
 
 	cleanupExpiredTimeouts() // initial run can happen at startup
 
