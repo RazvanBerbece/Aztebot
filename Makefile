@@ -17,6 +17,9 @@ ci:
 update-env:
 	openssl base64 -A -in .prod.env -out base64.prod.env.out
 
+update-ci-env:
+	openssl base64 -A -in .env -out base64.ci.env.out
+
 # APP STARTUP SHELL APPS
 run-aztebot-bot-service:
 	./build/bot/main
