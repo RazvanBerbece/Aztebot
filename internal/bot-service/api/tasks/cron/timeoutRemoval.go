@@ -20,6 +20,8 @@ func ClearExpiredTimeouts(s *discordgo.Session) {
 
 	fmt.Println("Starting Task ClearExpiredTimeouts() at", time.Now(), "running every", numSec, "seconds")
 
+	cleanupExpiredTimeouts() // initial run can happen at startup
+
 	ticker := time.NewTicker(time.Duration(numSec) * time.Second)
 	quit := make(chan struct{})
 	go func() {
