@@ -27,6 +27,6 @@ jobs:
       - name: Display Go version
         run: go version
       
-      - uses: isbang/compose-action@v1.5.1
-        with:
-          compose-file: "./docker-compose.ci.yml"
+      - uses: Run CI tests
+        run: |
+          make ci
