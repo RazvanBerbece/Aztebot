@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
+	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 )
 
@@ -14,13 +15,13 @@ func ProcessRemoveArchivedTimeouts(months int) {
 
 	go func() {
 
+		CleanupArchivedTimeouts(globalsRepo.TimeoutsRepository)
+
 		fmt.Println("Scheduled Task ProcessRemoveArchivedTimeouts() in <", initialWarnRemovalDelay.Hours()/24, "> days")
 		time.Sleep(initialWarnRemovalDelay)
 
 		// Inject new connections
 		timeoutsRepository := repositories.NewTimeoutsRepository()
-
-		CleanupArchivedTimeouts(timeoutsRepository)
 
 		for range warnRemovalTicker.C {
 			// Process

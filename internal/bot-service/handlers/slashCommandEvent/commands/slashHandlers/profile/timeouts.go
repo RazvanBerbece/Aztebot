@@ -35,7 +35,7 @@ func HandleSlashTimeouts(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	}
 
 	embed := embed.NewEmbed().
-		SetTitle(fmt.Sprintf("🤖   `%s`s Timeouts", user.Username)).
+		SetTitle(fmt.Sprintf("🤖   `%s`'s Timeouts", user.Username)).
 		SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		SetColor(000000)
 
