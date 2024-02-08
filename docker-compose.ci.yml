@@ -15,12 +15,12 @@ services:
   
   integration-test-bot-service:
     container_name: SUT-bot-service
-    context: .
     depends_on:
       - mysql-db
     env_file:
       ./.env
     build:
+      context: .
       dockerfile: ./tests/Dockerfile
     volumes: 
       - "./logs:/app/logs"
