@@ -27,6 +27,10 @@ jobs:
       - name: Display Go version
         run: go version
       
+      - name: Setup environment
+        run: |
+          echo ${{ secrets.CI_ENV_BASE64_STRING }} | base64 --decode > .env
+      
       - name: Run CI tests
         run: |
           make ci
