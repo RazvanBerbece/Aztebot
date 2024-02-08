@@ -13,15 +13,28 @@ import (
 
 func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
+	targetUserId := i.ApplicationCommandData().Options[0].StringValue()
+	reason := i.ApplicationCommandData().Options[1].StringValue()
+	sTimeLengthString := i.ApplicationCommandData().Options[2].StringValue()
+
 	// Ensure that the member using this command is a staff member
 	if !member.IsStaffMember(i.Member.User.ID) {
 		utils.SendErrorEmbedResponse(s, i.Interaction, "You do not have the required permissions to use this command.")
 		return
 	}
 
-	targetUserId := i.ApplicationCommandData().Options[0].StringValue()
-	reason := i.ApplicationCommandData().Options[1].StringValue()
-	sTimeLengthString := i.ApplicationCommandData().Options[2].StringValue()
+	// Input validation
+	if !utils.IsValidDiscordUserId(targetUserId) {
+		errMsg := fmt.Sprintf("The provided `user-id` command argument is invalid. (term: `%s`)", targetUserId)
+		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
+		return
+	}
+
+	if !utils.IsValidReasonMessage(reason) {
+		errMsg := fmt.Sprintf("The provided `reason` command argument is invalid. (term: `%s`)", reason)
+		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
+		return
+	}
 
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
@@ -32,7 +45,7 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	sTimeLength, convErr := utils.StringToFloat64(sTimeLengthString)
 	if convErr != nil {
-		errMsg := fmt.Sprintf("The provided `timeLength` command argument is invalid. (term: `%s`)", sTimeLengthString)
+		errMsg := fmt.Sprintf("The provided `duration` command argument is invalid. (term: `%s`)", sTimeLengthString)
 		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
 		return
 	}
@@ -40,7 +53,7 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	// Validate the timeout duration input to be in the allowed array of values
 	allowedTimeoutExpirations := []float64{300, 600, 1800, 3600, 86400, 259200}
 	if !utils.Float64InSlice(*sTimeLength, allowedTimeoutExpirations) {
-		errMsg := fmt.Sprintf("The provided `timeLength` command argument is not an allowed value. (term `%s` not in { 300, 600, 1800, 3600, 86400, 259200 })", sTimeLengthString)
+		errMsg := fmt.Sprintf("The provided `duration` command argument is not an allowed value. (term `%s` not in { 300, 600, 1800, 3600, 86400, 259200 })", sTimeLengthString)
 		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
 		return
 	}
