@@ -18,7 +18,7 @@ func UpdateVoiceSessionDurations(s *discordgo.Session) {
 		numSec = globals.UpdateVoiceStateFrequency
 	}
 
-	fmt.Println("[CRON] Starting Task UpdateVoiceSesionDurations() at", time.Now(), "running every", numSec, "seconds")
+	fmt.Println("[CRON]\t\t\tStarting Task UpdateVoiceSesionDurations() at", time.Now(), "running every", numSec, "seconds")
 
 	ticker := time.NewTicker(time.Duration(numSec) * time.Second)
 	quit := make(chan struct{})
