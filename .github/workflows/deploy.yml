@@ -26,14 +26,14 @@ env:
 
 jobs:
 
-  test-and-build:
+  continuous-integration:
     uses: ./.github/workflows/test.yml
     secrets: inherit
 
   deploy:
-    needs: [test-and-build]
+    needs: [continuous-integration]
     runs-on: ubuntu-latest
-    if: needs.test-and-build.result == 'success'
+    if: needs.continuous-integration.result == 'success'
 
     permissions:
       contents: 'read'
