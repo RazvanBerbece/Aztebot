@@ -86,7 +86,19 @@ func ProcessTopMessagesPartialEmbed(topCount int, s *discordgo.Session, i *disco
 	} else {
 		topContentText := ""
 		for idx, topUser := range topMessagesSent {
-			topContentText += fmt.Sprintf("**%d.** **%s**    (sent `%d` ✉️)\n", idx+1, topUser.DiscordTag, topUser.MessagesSent)
+			// Dynamically add a medal emoji depending on position in ranking
+			rankMedal := ""
+			switch idx {
+			case 0:
+				rankMedal = "🥇 "
+			case 1:
+				rankMedal = "🥈 "
+			case 2:
+				rankMedal = "🥉 "
+			default:
+				rankMedal = ""
+			}
+			topContentText += fmt.Sprintf("**%d.** %s**%s**   (sent `%d` ✉️)\n", idx+1, rankMedal, topUser.DiscordTag, topUser.MessagesSent)
 		}
 		embed.AddField("", topContentText, false)
 	}
@@ -105,8 +117,20 @@ func ProcessTopVCSpentPartialEmbed(topCount int, s *discordgo.Session, i *discor
 	} else {
 		topContentText := ""
 		for idx, topUser := range topTimeInVCs {
+			// Dynamically add a medal emoji depending on position in ranking
+			rankMedal := ""
+			switch idx {
+			case 0:
+				rankMedal = "🥇 "
+			case 1:
+				rankMedal = "🥈 "
+			case 2:
+				rankMedal = "🥉 "
+			default:
+				rankMedal = ""
+			}
 			days, hours, minutes, seconds := utils.HumanReadableTimeLength(float64(topUser.TimeSpentInVCs))
-			topContentText += fmt.Sprintf("**%d.** **%s** (spent `%dd, %dh:%dm:%ds` in voice channels 🎙️)\n", idx+1, topUser.DiscordTag, days, hours, minutes, seconds)
+			topContentText += fmt.Sprintf("**%d.** %s**%s** (spent `%dd, %dh:%dm:%ds` in voice channels 🎙️)\n", idx+1, rankMedal, topUser.DiscordTag, days, hours, minutes, seconds)
 		}
 		embed.AddField("", topContentText, false)
 	}
@@ -125,7 +149,19 @@ func ProcessTopActiveDayStreakPartialEmbed(topCount int, s *discordgo.Session, i
 	} else {
 		topContentText := ""
 		for idx, topUser := range topStreaks {
-			topContentText += fmt.Sprintf("**%d.** **%s** (active for `%d` days in a row 🔄)\n", idx+1, topUser.DiscordTag, topUser.Streak)
+			// Dynamically add a medal emoji depending on position in ranking
+			rankMedal := ""
+			switch idx {
+			case 0:
+				rankMedal = "🥇 "
+			case 1:
+				rankMedal = "🥈 "
+			case 2:
+				rankMedal = "🥉 "
+			default:
+				rankMedal = ""
+			}
+			topContentText += fmt.Sprintf("**%d.** %s**%s** (active for `%d` days in a row 🔄)\n", idx+1, rankMedal, topUser.DiscordTag, topUser.Streak)
 		}
 		embed.AddField("", topContentText, false)
 	}
@@ -144,7 +180,19 @@ func ProcessTopReactionsReceivedPartialEmbed(topCount int, s *discordgo.Session,
 	} else {
 		topContentText := ""
 		for idx, topUser := range topReactions {
-			topContentText += fmt.Sprintf("**%d.** **%s** (received a total of `%d` reactions 💯)\n", idx+1, topUser.DiscordTag, topUser.ReactionsReceived)
+			// Dynamically add a medal emoji depending on position in ranking
+			rankMedal := ""
+			switch idx {
+			case 0:
+				rankMedal = "🥇 "
+			case 1:
+				rankMedal = "🥈 "
+			case 2:
+				rankMedal = "🥉 "
+			default:
+				rankMedal = ""
+			}
+			topContentText += fmt.Sprintf("**%d.** %s**%s** (received a total of `%d` reactions 💯)\n", idx+1, rankMedal, topUser.DiscordTag, topUser.ReactionsReceived)
 		}
 		embed.AddField("", topContentText, false)
 	}
@@ -163,8 +211,20 @@ func ProcessTopMusicListeningTimePartialEmbed(topCount int, s *discordgo.Session
 	} else {
 		topContentText := ""
 		for idx, topUser := range topMusicListeners {
+			// Dynamically add a medal emoji depending on position in ranking
+			rankMedal := ""
+			switch idx {
+			case 0:
+				rankMedal = "🥇 "
+			case 1:
+				rankMedal = "🥈 "
+			case 2:
+				rankMedal = "🥉 "
+			default:
+				rankMedal = ""
+			}
 			days, hours, minutes, seconds := utils.HumanReadableTimeLength(float64(topUser.TimeSpentListeningMusic))
-			topContentText += fmt.Sprintf("**%d.** **%s** (spent `%dd, %dh:%dm:%ds` listening to music 🎵)\n", idx+1, topUser.DiscordTag, days, hours, minutes, seconds)
+			topContentText += fmt.Sprintf("**%d.** %s**%s** (spent `%dd, %dh:%dm:%ds` listening to music 🎵)\n", idx+1, rankMedal, topUser.DiscordTag, days, hours, minutes, seconds)
 		}
 		embed.AddField("", topContentText, false)
 	}
