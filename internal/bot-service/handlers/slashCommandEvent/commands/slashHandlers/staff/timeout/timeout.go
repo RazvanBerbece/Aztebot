@@ -75,18 +75,21 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		errMsg := fmt.Sprintf("An error ocurred while retrieving user with ID %s provided in the slash command.", targetUserId)
 		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
 	}
-	err = member.SendDirectMessageToMember(s, targetUserId, "You received a timeout.")
-	if err != nil {
-		fmt.Printf("An error ocurred while sending timeout embed response: %v", err)
-		errMsg := fmt.Sprintf("An error ocurred while sending the timeout DM to the target user %s", targetUserId)
-		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
-	}
 
 	// Format timeout creation time
 	var timeoutCreatedAt time.Time
 	var timeoutCreatedAtString string
 	timeoutCreatedAt = time.Unix(timestamp, 0).UTC()
 	timeoutCreatedAtString = timeoutCreatedAt.Format("Mon, 02 Jan 2006 15:04:05 MST")
+
+	// Build a DM to send to the target user detailing the timeout
+	timeoutDm := fmt.Sprintf("You received a timeout for reason: `%s`\nat `%s`", reason, timeoutCreatedAtString)
+	err = member.SendDirectMessageToMember(s, targetUserId, timeoutDm)
+	if err != nil {
+		fmt.Printf("An error ocurred while sending timeout embed response: %v", err)
+		errMsg := fmt.Sprintf("An error ocurred while sending the timeout DM to the target user %s", targetUserId)
+		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
+	}
 
 	// Format timeout duration
 	var dd, hr, mm, ss = utils.HumanReadableTimeLength(*sTimeLength)
