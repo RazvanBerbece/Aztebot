@@ -1,7 +1,6 @@
 package readyEvent
 
 import (
-	"fmt"
 	"strings"
 
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/bot-service/data/models"
@@ -39,13 +38,9 @@ func getChannelValuesFromChannelPair(channelPair string) (bool, *string, *string
 
 	var channelValues = strings.Split(channelPair, " ")
 
-	fmt.Println(channelValues)
-
 	if len(channelValues) != 2 {
 		return false, nil, nil
 	}
-
-	fmt.Println(channelValues)
 
 	// Figure out if channel might be a voice channel
 	var isVoice = false
