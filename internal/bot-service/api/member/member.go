@@ -437,3 +437,21 @@ func ClearMemberActiveTimeout(s *discordgo.Session, i *discordgo.Interaction, gu
 	return nil
 
 }
+
+func AppealTimeout(s *discordgo.Session, i *discordgo.Interaction, guildId string, userId string) error {
+
+	activeTimeout, _, err := GetMemberTimeouts(userId)
+	if err != nil {
+		timeoutError := fmt.Errorf("an error ocurred while retrieving timeout data for user with ID %s: %v", userId, err)
+		return timeoutError
+	}
+
+	if activeTimeout == nil {
+		return fmt.Errorf("no active timeout was found for user with ID `%s`", userId)
+	}
+
+	// TODO
+
+	return nil
+
+}
