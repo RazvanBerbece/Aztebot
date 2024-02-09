@@ -64,7 +64,7 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	err = member.GiveTimeoutToMemberWithId(s, i, globals.DiscordMainGuildId, targetUserId, reason, timestamp, *sTimeLength)
 	if err != nil {
-		errMsg := fmt.Sprintf("Error ocurred giving timeout to user with ID `%s`: `%s`", targetUserId, err)
+		errMsg := fmt.Sprintf("Error ocurred giving timeout to user with UID `%s`: `%s`", targetUserId, err)
 		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
 		return
 	}
