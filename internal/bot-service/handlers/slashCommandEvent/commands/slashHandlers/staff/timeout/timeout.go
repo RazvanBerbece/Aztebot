@@ -20,12 +20,6 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	commandOwnerUserId := i.Member.User.ID
 
-	// Ensure that the member using this command is a staff member
-	if !member.IsStaffMember(commandOwnerUserId) {
-		utils.SendErrorEmbedResponse(s, i.Interaction, "You do not have the required permissions to use this command.")
-		return
-	}
-
 	// Input validation
 	if !utils.IsValidDiscordUserId(targetUserId) {
 		errMsg := fmt.Sprintf("The provided `user-id` command argument is invalid. (term: `%s`)", targetUserId)
@@ -45,6 +39,12 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		},
 	})
 
+	user, err := s.User(targetUserId)
+	if err != nil {
+		errMsg := fmt.Sprintf("An error ocurred while retrieving user with ID %s provided in the slash command.", targetUserId)
+		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
+	}
+
 	sTimeLength, convErr := utils.StringToFloat64(sTimeLengthString)
 	if convErr != nil {
 		errMsg := fmt.Sprintf("The provided `duration` command argument is invalid. (term: `%s`)", sTimeLengthString)
@@ -62,18 +62,11 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	timestamp := time.Now().Unix()
 
-	var err error
 	err = member.GiveTimeoutToMemberWithId(s, i, globals.DiscordMainGuildId, targetUserId, reason, timestamp, *sTimeLength)
 	if err != nil {
 		errMsg := fmt.Sprintf("Error ocurred giving timeout to user with ID `%s`: `%s`", targetUserId, err)
 		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
 		return
-	}
-
-	user, err := s.User(targetUserId)
-	if err != nil {
-		errMsg := fmt.Sprintf("An error ocurred while retrieving user with ID %s provided in the slash command.", targetUserId)
-		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
 	}
 
 	// Format timeout creation time
