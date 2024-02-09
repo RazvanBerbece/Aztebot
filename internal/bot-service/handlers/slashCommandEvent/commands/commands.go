@@ -24,6 +24,18 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		Description: "Get a summary of your profile details which are linked to the OTA guild",
 	},
 	{
+		Name:        "you",
+		Description: "See a user's profile card",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "user-id",
+				Description: "The Discord User ID of the user to see the profile card for",
+				Required:    true,
+			},
+		},
+	},
+	{
 		Name:        "sync",
 		Description: "Syncs the user profile data (roles, etc.) with the OTA servers",
 	},
@@ -165,6 +177,7 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"ping":                  utilHandlers.HandleSlashPingAztebot,
 	"my_roles":              profileHandlers.HandleSlashMyRoles,
 	"me":                    profileHandlers.HandleSlashMe,
+	"you":                   profileHandlers.HandleSlashYou,
 	"help":                  serverHandlers.HandleSlashAztebotHelp,
 	"sync":                  profileHandlers.HandleSlashSync,
 	"top":                   serverHandlers.HandleSlashTop,
