@@ -20,6 +20,9 @@ func TestRoleIsStaffRole(t *testing.T) {
 		{6, true},
 		{7, true},
 		{8, true},
+		{9, false},
+		{10, false},
+		{18, false},
 		{19, true},
 	}
 
