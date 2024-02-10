@@ -18,7 +18,7 @@ func TestGetRandomIntegerInRange(t *testing.T) {
 
 	for _, c := range cases {
 		if output := utils.GetRandomIntegerInRange(c.input[0], c.input[1]); utils.IntInSlice(output, c.expectedOutput) {
-			t.Errorf("incorrect output for `(%d,%d)`: expected to be within range", c.input[0], c.input[1])
+			t.Errorf("incorrect output for `(%d,%d) -> %d`: expected to be within range", c.input[0], c.input[1], output)
 		}
 	}
 
