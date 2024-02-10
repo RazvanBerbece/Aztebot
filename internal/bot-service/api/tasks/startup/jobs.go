@@ -65,6 +65,12 @@ func CleanupMemberAtStartup(s *discordgo.Session, uids []string) error {
 	usersRepository := repositories.NewUsersRepository()
 	userStatsRepository := repositories.NewUsersStatsRepository()
 
+	// Cleanup duplicate DB entities
+	err := userStatsRepository.DeleteDuplicateEntries()
+	if err != nil {
+		fmt.Println("Error deleting duplicated user stats data on startup: ", err)
+	}
+
 	uidsLength := len(uids)
 
 	// For each tag in the DB, delete user from table
@@ -86,7 +92,7 @@ func CleanupMemberAtStartup(s *discordgo.Session, uids []string) error {
 	}
 	wg.Wait()
 
-	// Cleanup
+	// Cleanup repos
 	utils.CleanupRepositories(nil, usersRepository, userStatsRepository, nil, nil)
 
 	fmt.Println("[STARTUP] Finished Task CleanupMemberAtStartup() at", time.Now())

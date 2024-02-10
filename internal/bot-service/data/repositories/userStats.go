@@ -18,6 +18,18 @@ func NewUsersStatsRepository() *UsersStatsRepository {
 	return repo
 }
 
+func (r UsersStatsRepository) DeleteDuplicateEntries() error {
+
+	query := "DELETE e1 FROM UserStats e1, UserStats e2 WHERE e1.id < e2.id AND e1.userId = e2.userId;"
+
+	_, err := r.Conn.Db.Exec(query)
+	if err != nil {
+		return fmt.Errorf("error deleting duplicated user stats: %w", err)
+	}
+
+	return nil
+}
+
 func (r UsersStatsRepository) UserStatsExist(userId string) int {
 	query := "SELECT COUNT(*) FROM Users WHERE userId = ?"
 	var count int

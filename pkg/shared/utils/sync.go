@@ -49,22 +49,6 @@ func SyncUserPersistent(s *discordgo.Session, guildId string, userId string, mem
 	// or it exists because it was previously synced
 	if user != nil {
 
-		// Setup user stats if the user doesn't have an entity in UserStats
-		userStatsExistResult := globalsRepo.UserStatsRepository.UserStatsExist(userId)
-		switch userStatsExistResult {
-		case -1:
-			fmt.Printf("Cannot check whether user stats for %s (%s) exists in the DB during bot startup sync\n", member.User.Username, userId)
-		case 0:
-			fmt.Println("Adding new user stats to the OTA DB during bot startup sync")
-			errStats := userStatsRepository.SaveInitialUserStats(userId)
-			if errStats != nil {
-				log.Fatalf("Cannot store initial user stats during bot startup sync: %v\n", errStats)
-				return errStats
-			}
-		case 1:
-			// Already exists
-		}
-
 		// Sync all other user details between the Discord server and the database (mostly updating the DB with Discord data)
 		// Get current roles from user (as they appear on the Discord guild)
 		currentRoleIds, roleIds, err := GetUserRolesFromDiscord(s, guildId, *user, *member)
