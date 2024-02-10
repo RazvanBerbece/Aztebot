@@ -3,7 +3,6 @@ package slashCommandEvent
 import (
 	"fmt"
 	"log"
-	"strings"
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
@@ -13,27 +12,14 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func RegisterAztebotSlashCommands(s *discordgo.Session) error {
+func RegisterSlashHandler(s *discordgo.Session) {
 
-	// For each guild ID, register the commands
-	guildIds := strings.Fields(globals.DiscordGuildIds)
-	for _, guildId := range guildIds {
-		globals.AztebotRegisteredCommands = make([]*discordgo.ApplicationCommand, len(commands.AztebotSlashCommands))
-		for index, cmd := range commands.AztebotSlashCommands {
-			_, err := s.ApplicationCommandCreate(globals.DiscordAztebotAppId, guildId, cmd)
-			if err != nil {
-				return err
-			}
-			globals.AztebotRegisteredCommands[index] = cmd
-		}
-	}
-
-	// Add slash command handlers
+	// This handler runs on EVERY slash command registered with the main bot application
 	s.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 		appData := i.ApplicationCommandData()
 
-		// If a higher-up restricted command
+		// If a higher-up restricted command is being executed
 		// and allowed roles are configured, only allow a user with one of these roles to execute an app command
 		if utils.StringInSlice(appData.Name, globals.RestrictedCommands) && len(globals.AllowedRoles) > 0 {
 			if i.Type == discordgo.InteractionApplicationCommand {
@@ -117,19 +103,4 @@ func RegisterAztebotSlashCommands(s *discordgo.Session) error {
 			handlerFunc(s, i)
 		}
 	})
-
-	return nil
-}
-
-func CleanupAztebotSlashCommands(s *discordgo.Session) {
-	// For each guild ID, cleanup the commands
-	guildIds := strings.Fields(globals.DiscordGuildIds)
-	for _, guildId := range guildIds {
-		for _, cmd := range globals.AztebotRegisteredCommands {
-			err := s.ApplicationCommandDelete(globals.DiscordAztebotAppId, guildId, cmd.ID)
-			if err != nil {
-				log.Fatalf("Cannot delete %s slash command: %v", cmd.Name, err)
-			}
-		}
-	}
 }

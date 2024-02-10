@@ -27,7 +27,7 @@ func SyncUsersAtStartup(s *discordgo.Session) error {
 	// Retrieve all members in the guild
 	members, err := s.GuildMembers(globals.DiscordMainGuildId, "", 1000)
 	if err != nil {
-		fmt.Println("[STARTUP]Failed Task SyncUsersAtStartup() at", time.Now(), "with error", err)
+		fmt.Println("[STARTUP] Failed Task SyncUsersAtStartup() at", time.Now(), "with error", err)
 		return err
 	}
 
@@ -40,7 +40,7 @@ func SyncUsersAtStartup(s *discordgo.Session) error {
 		lastMemberID := members[len(members)-1].User.ID
 		members, err = s.GuildMembers(globals.DiscordMainGuildId, lastMemberID, 1000)
 		if err != nil {
-			fmt.Println("[STARTUP]Failed Task SyncUsersAtStartup() at", time.Now(), "with error", err)
+			fmt.Println("[STARTUP] Failed Task SyncUsersAtStartup() at", time.Now(), "with error", err)
 			return err
 		}
 
@@ -126,6 +126,7 @@ func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
 			"1188135110042734613": "default",
 			"1194451477192773773": "staff-rules",
 			"1198686819928264784": "server-rules",
+			"1205859615406030868": "legends",
 		}
 	} else {
 		// Production text channels
@@ -133,6 +134,7 @@ func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
 			"1176277764001767464": "info-music",
 			"1100486860058398770": "staff-rules",
 			"1100142572141281460": "server-rules",
+			"1100762035450544219": "legends",
 		}
 	}
 
@@ -161,6 +163,10 @@ func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
 				mutateLongEmbedFromStaticData(embedText, ownEmbed)
 			case "server-rules":
 				embedText = utils.GetTextFromFile("internal/bot-service/handlers/readyEvent/assets/defaultContent/server-rules.txt")
+				hasOwnEmbed = true
+				mutateLongEmbedFromStaticData(embedText, ownEmbed)
+			case "legends":
+				embedText = utils.GetTextFromFile("internal/bot-service/handlers/readyEvent/assets/defaultContent/legends.txt")
 				hasOwnEmbed = true
 				mutateLongEmbedFromStaticData(embedText, ownEmbed)
 			}
@@ -298,15 +304,22 @@ func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 
 // Note that this is a mutating function on `hasOwnEmbed` and `embed`.
 func mutateLongEmbedFromStaticData(embedText string, embed *embed.Embed) {
+
+	// Make sure that the newline characters are encoded correctly
+	embedText = strings.Replace(embedText, `\n`, "\n", -1)
+
 	// Split the content into sections based on double newline characters ("\n\n")
 	sections := strings.Split(embedText, "\n\n")
-	for _, section := range sections {
+	for idx, section := range sections {
 		lines := strings.Split(section, "\n")
 		if len(lines) > 0 {
 			// Use the first line as the title and the rest as content
 			title := lines[0]
 			content := strings.Join(lines[1:], "\n")
 			embed.AddField(title, content, false)
+			if idx < len(sections)-1 {
+				embed.AddLineBreakField()
+			}
 		}
 	}
 }

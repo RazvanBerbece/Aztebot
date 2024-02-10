@@ -6,7 +6,7 @@ FROM golang:latest
 WORKDIR /app
 
 # Install project dependencies
-RUN apt-get update && apt-get install -y iputils-ping && apt install -y make
+RUN apt-get update
 COPY go.mod go.sum ./
 RUN go mod download
 
