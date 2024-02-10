@@ -1,15 +1,18 @@
 package slashCommandEvent
 
 import (
-	"log"
+	"fmt"
 	"strings"
 
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	commands "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands"
+	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
 
 func RegisterAztebotSlashCommands(s *discordgo.Session, mainGuildOnly bool) error {
+
+	fmt.Printf("[STARTUP] Registering %d slash commands...\n", len(commands.AztebotSlashCommands))
 
 	if mainGuildOnly {
 		// Register commands only for the main guild
@@ -37,20 +40,25 @@ func RegisterAztebotSlashCommands(s *discordgo.Session, mainGuildOnly bool) erro
 		}
 	}
 
+	// Register global commands (available in bot DMs as well)
+	RegisterDmCommands(s, globals.GlobalCommands)
+
 	// Register actual slash command handler
 	go RegisterSlashHandler(s)
 
 	return nil
 }
 
-func CleanupAztebotSlashCommands(s *discordgo.Session) {
-	// For each guild ID, cleanup the commands
-	guildIds := strings.Fields(globals.DiscordGuildIds)
-	for _, guildId := range guildIds {
-		for _, cmd := range globals.AztebotRegisteredCommands {
-			err := s.ApplicationCommandDelete(globals.DiscordAztebotAppId, guildId, cmd.ID)
+// Given the comprehensive list of slash commands registered on the bot,
+// and a list of command names which depict which commands can be used in the bot's DMs,
+// register the DM commands as global commands, so users can leverage them in DMs.
+func RegisterDmCommands(s *discordgo.Session, dmCommands []string) {
+	for _, cmd := range commands.AztebotSlashCommands {
+		if utils.StringInSlice(cmd.Name, dmCommands) {
+			// If a command that can be used in DMs too
+			_, err := s.ApplicationCommandCreate(globals.DiscordAztebotAppId, "", cmd)
 			if err != nil {
-				log.Fatalf("Cannot delete %s slash command: %v", cmd.Name, err)
+				fmt.Println("An error ocurred while registering DM (global) commands")
 			}
 		}
 	}

@@ -41,6 +41,7 @@ func (b *DiscordBotBase) ConfigureBase(appName string) {
 func (b *DiscordBotBase) AddHandlers(handlers []interface{}) {
 
 	// Register custom handlers as callbacks for various events
+	fmt.Printf("[STARTUP] Registering %d event handlers...\n", len(handlers))
 	for _, handler := range handlers {
 		b.botSession.AddHandler(handler)
 	}
@@ -82,7 +83,7 @@ func (b *DiscordBotBase) Connect() {
 	b.isConnected = true
 
 	// wait here until CTRL-C or anther term signal is received
-	fmt.Println("Discord bot session is now running.")
+	fmt.Println("[STARTUP] Discord bot session is now running.")
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	<-sc
@@ -100,7 +101,6 @@ func (b *DiscordBotBase) Cleanup() {
 	// Store in-process data (runtime maps, etc.)
 	storeInProgressData()
 	// Cleanup resources
-	aztebotSlashCommands.CleanupAztebotSlashCommands(b.botSession)
 }
 
 // Sets the required bot intents and permissions.

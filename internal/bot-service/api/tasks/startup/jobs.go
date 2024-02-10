@@ -3,7 +3,6 @@ package startup
 import (
 	"fmt"
 	"log"
-	"strings"
 	"sync"
 	"time"
 
@@ -138,6 +137,7 @@ func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
 		}
 	}
 
+	// For each available default message resource in local storage
 	for id, details := range textChannels {
 		hasMessage, err := utils.ChannelHasDefaultInformationMessage(s, id)
 		if err != nil {
@@ -151,7 +151,7 @@ func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
 			// Send associated default message to given text channel
 			var embedText string
 			var hasOwnEmbed bool
-			var ownEmbed *embed.Embed = embed.NewEmbed()
+			var longEmbed *embed.Embed
 			switch details {
 			case "default":
 				embedText = utils.GetTextFromFile("internal/bot-service/handlers/readyEvent/assets/defaultContent/default.txt")
@@ -160,15 +160,15 @@ func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
 			case "staff-rules":
 				embedText = utils.GetTextFromFile("internal/bot-service/handlers/readyEvent/assets/defaultContent/staff-rules.txt")
 				hasOwnEmbed = true
-				mutateLongEmbedFromStaticData(embedText, ownEmbed)
+				longEmbed = utils.GetLongEmbedFromStaticData(embedText)
 			case "server-rules":
 				embedText = utils.GetTextFromFile("internal/bot-service/handlers/readyEvent/assets/defaultContent/server-rules.txt")
 				hasOwnEmbed = true
-				mutateLongEmbedFromStaticData(embedText, ownEmbed)
+				longEmbed = utils.GetLongEmbedFromStaticData(embedText)
 			case "legends":
 				embedText = utils.GetTextFromFile("internal/bot-service/handlers/readyEvent/assets/defaultContent/legends.txt")
 				hasOwnEmbed = true
-				mutateLongEmbedFromStaticData(embedText, ownEmbed)
+				longEmbed = utils.GetLongEmbedFromStaticData(embedText)
 			}
 
 			var messageEmbedToPost *discordgo.MessageEmbed
@@ -180,7 +180,7 @@ func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
 					AddField("", embedText, false).
 					MessageEmbed
 			} else {
-				messageEmbedToPost = ownEmbed.MessageEmbed
+				messageEmbedToPost = longEmbed.MessageEmbed
 			}
 
 			_, err := s.ChannelMessageSendEmbed(id, messageEmbedToPost)
@@ -195,7 +195,7 @@ func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
 
 func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 
-	fmt.Println("[STARTUP] Trying to RegisterUsersInVoiceChannelsAtStartup() at", time.Now())
+	fmt.Println("[STARTUP] Starting Task RegisterUsersInVoiceChannelsAtStartup() at", time.Now())
 
 	now := time.Now()
 
@@ -300,26 +300,4 @@ func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 		fmt.Printf("[STARTUP] Found %d active voice states at bot startup time (%d voice, %d streaming, %d music, %d deafened)\n", totalSessions, voiceSessionsAtStartup, streamSessionsAtStartup, musicSessionsAtStartup, deafSessionsAtStartup)
 	}
 
-}
-
-// Note that this is a mutating function on `hasOwnEmbed` and `embed`.
-func mutateLongEmbedFromStaticData(embedText string, embed *embed.Embed) {
-
-	// Make sure that the newline characters are encoded correctly
-	embedText = strings.Replace(embedText, `\n`, "\n", -1)
-
-	// Split the content into sections based on double newline characters ("\n\n")
-	sections := strings.Split(embedText, "\n\n")
-	for idx, section := range sections {
-		lines := strings.Split(section, "\n")
-		if len(lines) > 0 {
-			// Use the first line as the title and the rest as content
-			title := lines[0]
-			content := strings.Join(lines[1:], "\n")
-			embed.AddField(title, content, false)
-			if idx < len(sections)-1 {
-				embed.AddLineBreakField()
-			}
-		}
-	}
 }

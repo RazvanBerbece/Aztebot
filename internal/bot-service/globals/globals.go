@@ -38,6 +38,8 @@ var TimeoutClearFrequency, TimeoutClearFrequencyErr = strconv.Atoi(os.Getenv("TI
 
 var NotificationChannelsPairs = strings.Split(os.Getenv("NOTIFICATION_CHANNELS"), ",")
 
+var GlobalCommands = strings.Split(os.Getenv("GLOBAL_COMMANDS"), ",")
+
 // =============== RUNTIME VARIABLES (BOT APPLICATIONS) ===============
 var NotificationChannels = make(map[string]dataModels.Channel)
 
