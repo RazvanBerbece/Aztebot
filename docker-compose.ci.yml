@@ -1,7 +1,7 @@
 version: '3.9'
 
 services:
-  mysql-db:
+  mysql-db-test:
     image: mysql:8.0
     command: --default-authentication-plugin=mysql_native_password
     restart: always
@@ -22,7 +22,7 @@ services:
     build:
       context: .
       dockerfile: ./tests/Dockerfile
-    entrypoint: [ "bash", "-c", "go install github.com/rubenv/sql-migrate/...@latest && pwd && sql-migrate up -config=local.dbconfig.yml -env='test' && go test ./..."]      
+    entrypoint: [ "bash", "-c", "pwd && go install github.com/rubenv/sql-migrate/...@latest && sql-migrate up -config=local.dbconfig.yml -env='test' && go test ./..."]      
 
 networks:
   default:
