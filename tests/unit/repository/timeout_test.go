@@ -10,7 +10,6 @@ import (
 	"github.com/brianvoe/gofakeit/v6"
 )
 
-// Uncomment this when DB migrations are working in CI or when there is a DB provisioner image available
 func TestGetUserTimeout(t *testing.T) {
 
 	// Arrange
@@ -48,8 +47,11 @@ func TestGetUserTimeout(t *testing.T) {
 		// Assert
 		if err != nil && c.expectedOutput != nil {
 			t.Errorf("Timeout expected, error occurred instead: %v", err)
+		} else if err != nil && c.expectedOutput == nil {
+			// This is expected, so continue
+			continue
 		}
-		if *entityId != c.expectedOutput.Id {
+		if output.Id != *entityId {
 			t.Errorf("incorrect output for `Id`: expected `%d` but got `%d`", *entityId, output.Id)
 		}
 		if output.CreationTimestamp != c.expectedOutput.CreationTimestamp {
