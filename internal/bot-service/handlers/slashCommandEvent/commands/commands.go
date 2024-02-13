@@ -151,6 +151,10 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 						Name:  "3 days",
 						Value: "259200",
 					},
+					{
+						Name:  "1 week",
+						Value: "604800",
+					},
 				},
 			},
 		},

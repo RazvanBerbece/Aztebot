@@ -53,9 +53,9 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	}
 
 	// Validate the timeout duration input to be in the allowed array of values
-	allowedTimeoutExpirations := []float64{300, 600, 1800, 3600, 86400, 259200}
+	allowedTimeoutExpirations := []float64{300, 600, 1800, 3600, 86400, 259200, 604800}
 	if !utils.Float64InSlice(*sTimeLength, allowedTimeoutExpirations) {
-		errMsg := fmt.Sprintf("The provided `duration` command argument is not an allowed value. (term `%s` not in { 300, 600, 1800, 3600, 86400, 259200 })", sTimeLengthString)
+		errMsg := fmt.Sprintf("The provided `duration` command argument is not an allowed value. (term `%s` not in { 300, 600, 1800, 3600, 86400, 259200, 604800 })", sTimeLengthString)
 		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
 		return
 	}
