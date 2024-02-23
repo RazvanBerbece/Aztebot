@@ -1,4 +1,4 @@
-package timeoutHandlers
+package timeoutSlashHandlers
 
 import (
 	"fmt"
@@ -17,7 +17,7 @@ func HandleSlashTimeoutRemoveActive(s *discordgo.Session, i *discordgo.Interacti
 	// Input validation
 	if !utils.IsValidDiscordUserId(targetUserId) {
 		errMsg := fmt.Sprintf("The provided `user-id` command argument is invalid. (term: `%s`)", targetUserId)
-		utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
+		utils.SendCommandErrorEmbedResponse(s, i.Interaction, errMsg)
 		return
 	}
 

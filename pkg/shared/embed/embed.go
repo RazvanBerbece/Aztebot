@@ -245,3 +245,35 @@ func (e *Embed) TruncateFooter() *Embed {
 	}
 	return e
 }
+
+// GetApprovalActionRowForEmbed
+func GetApprovalActionRowForEmbed(affirmativeCustomId string, negativeCustomId string) discordgo.ActionsRow {
+
+	// Create accept and decline buttons
+	acceptButton := discordgo.Button{
+		Emoji: discordgo.ComponentEmoji{
+			Name: "👍🏽",
+		},
+		Label:    "Accept",
+		Style:    discordgo.SuccessButton,
+		CustomID: affirmativeCustomId,
+		Disabled: false,
+	}
+
+	declineButton := discordgo.Button{
+		Emoji: discordgo.ComponentEmoji{
+			Name: "👎🏽",
+		},
+		Label:    "Decline",
+		Style:    discordgo.DangerButton,
+		CustomID: negativeCustomId,
+		Disabled: false,
+	}
+
+	actionRow := discordgo.ActionsRow{
+		Components: []discordgo.MessageComponent{&acceptButton, &declineButton},
+	}
+
+	return actionRow
+
+}

@@ -1,4 +1,4 @@
-package timeoutHandlers
+package timeoutSlashHandlers
 
 import (
 	"fmt"

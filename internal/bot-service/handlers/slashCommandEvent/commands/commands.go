@@ -1,12 +1,13 @@
 package commands
 
 import (
-	gamesHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/games"
-	profileHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/profile"
-	serverHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/server"
-	timeoutHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/staff/timeout"
-	warningHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/staff/warning"
-	utilHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/utils"
+	gamesSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/games"
+	profileSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/profile"
+	serverSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/server"
+	timeoutSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/staff/timeout"
+	warningSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/staff/warning"
+	supportSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/support"
+	slashUtils "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/utils"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -173,7 +174,7 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 	},
 	{
 		Name:        "timeout_remove_active",
-		Description: "Removes a user's current active timeout (and skip archiving it)",
+		Description: "Removes a user's current active timeout (and skip archiving it).",
 		Options: []*discordgo.ApplicationCommandOption{
 			{
 				Type:        discordgo.ApplicationCommandOptionString,
@@ -187,23 +188,36 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		Name:        "timeout_appeal",
 		Description: "Appeal your current active timeout (if you have one)",
 	},
+	{
+		Name:        "confess",
+		Description: "Sends an anonymised confessional message to the designated text channel.",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "confession-message",
+				Description: "The confession message to post",
+				Required:    true,
+			},
+		},
+	},
 }
 
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
-	"ping":                  utilHandlers.HandleSlashPingAztebot,
-	"my_roles":              profileHandlers.HandleSlashMyRoles,
-	"roles":                 profileHandlers.HandleSlashYouRoles,
-	"me":                    profileHandlers.HandleSlashMe,
-	"you":                   profileHandlers.HandleSlashYou,
-	"help":                  serverHandlers.HandleSlashAztebotHelp,
-	"sync":                  profileHandlers.HandleSlashSync,
-	"top":                   serverHandlers.HandleSlashTop,
-	"dice":                  gamesHandlers.HandleSlashDice,
-	"warn":                  warningHandlers.HandleSlashWarn,
-	"warn_remove_oldest":    warningHandlers.HandleSlashWarnRemoveOldest,
-	"warns":                 warningHandlers.HandleSlashWarns,
-	"timeout":               timeoutHandlers.HandleSlashTimeout,
-	"timeouts":              timeoutHandlers.HandleSlashTimeouts,
-	"timeout_remove_active": timeoutHandlers.HandleSlashTimeoutRemoveActive,
-	"timeout_appeal":        timeoutHandlers.HandleSlashTimeoutAppeal,
+	"ping":                  slashUtils.HandleSlashPingAztebot,
+	"my_roles":              profileSlashHandlers.HandleSlashMyRoles,
+	"roles":                 profileSlashHandlers.HandleSlashYouRoles,
+	"me":                    profileSlashHandlers.HandleSlashMe,
+	"you":                   profileSlashHandlers.HandleSlashYou,
+	"sync":                  profileSlashHandlers.HandleSlashSync,
+	"dice":                  gamesSlashHandlers.HandleSlashDice,
+	"help":                  serverSlashHandlers.HandleSlashAztebotHelp,
+	"top":                   serverSlashHandlers.HandleSlashTop,
+	"confess":               supportSlashHandlers.HandleSlashConfess,
+	"warn":                  warningSlashHandlers.HandleSlashWarn,
+	"warn_remove_oldest":    warningSlashHandlers.HandleSlashWarnRemoveOldest,
+	"warns":                 warningSlashHandlers.HandleSlashWarns,
+	"timeout":               timeoutSlashHandlers.HandleSlashTimeout,
+	"timeouts":              timeoutSlashHandlers.HandleSlashTimeouts,
+	"timeout_remove_active": timeoutSlashHandlers.HandleSlashTimeoutRemoveActive,
+	"timeout_appeal":        timeoutSlashHandlers.HandleSlashTimeoutAppeal,
 }

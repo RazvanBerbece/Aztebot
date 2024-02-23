@@ -49,5 +49,7 @@ var MusicSessions = make(map[string]map[string]*time.Time)
 var DeafSessions = make(map[string]time.Time)
 var LastUsedTopTimestamp = time.Now().Add(-60 * time.Minute)
 
+var ConfessionsToApprove = make(map[string]string)
+
 // =============== RUNTIME VARIABLES (SLASH COMMANDS) ===============
 var AztebotRegisteredCommands []*discordgo.ApplicationCommand
