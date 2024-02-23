@@ -1,4 +1,4 @@
-package warning
+package warningSlashHandlers
 
 import (
 	"fmt"

@@ -1,4 +1,4 @@
-package profile
+package profileSlashHandlers
 
 import (
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"

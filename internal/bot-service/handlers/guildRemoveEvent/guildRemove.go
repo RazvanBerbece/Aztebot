@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/member"
-	"github.com/RazvanBerbece/Aztebot/pkg/shared/logging"
+	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -15,7 +15,7 @@ func GuildRemove(s *discordgo.Session, m *discordgo.GuildMemberRemove) {
 		return
 	}
 
-	logging.LogHandlerCall("GuildRemove", "")
+	utils.LogHandlerCall("GuildRemove", "")
 
 	// Delete user from all tables
 	userId := m.Member.User.ID

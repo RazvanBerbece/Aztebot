@@ -3,7 +3,6 @@ package memberUpdateEvent
 import (
 	"fmt"
 
-	"github.com/RazvanBerbece/Aztebot/pkg/shared/logging"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
@@ -15,7 +14,7 @@ func MemberRoleUpdate(s *discordgo.Session, m *discordgo.GuildMemberUpdate) {
 		return
 	}
 
-	logging.LogHandlerCall("MemberRoleUpdate", "")
+	utils.LogHandlerCall("MemberRoleUpdate", "")
 
 	// Sync user in DB with the current Discord member state
 	fmt.Printf("Handling role update for %s\n", m.Member.User.Username)

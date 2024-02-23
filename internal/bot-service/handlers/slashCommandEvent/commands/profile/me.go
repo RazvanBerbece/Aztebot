@@ -1,4 +1,4 @@
-package profile
+package profileSlashHandlers
 
 import (
 	"fmt"

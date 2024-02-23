@@ -7,6 +7,7 @@ import (
 
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
+	actionEvent "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/actionEvents"
 	commands "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -16,6 +17,13 @@ func RegisterSlashHandler(s *discordgo.Session) {
 
 	// This handler runs on EVERY slash command registered with the main bot application
 	s.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+
+		if i.Type == discordgo.InteractionMessageComponent {
+			// This configures button press event handlers for the bot
+			// i.e pressing 'Accept' on a button on a generated embed and emitting the event
+			actionEvent.HandleMessageComponentInteraction(s, i)
+			return
+		}
 
 		appData := i.ApplicationCommandData()
 

@@ -6,14 +6,14 @@ import (
 	cron "github.com/RazvanBerbece/Aztebot/internal/bot-service/api/tasks/cron"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/tasks/startup"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
-	"github.com/RazvanBerbece/Aztebot/pkg/shared/logging"
+	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
 
 // Called once the Discord servers confirm a succesful connection.
 func Ready(s *discordgo.Session, event *discordgo.Ready) {
 
-	logging.LogHandlerCall("Ready", "")
+	utils.LogHandlerCall("Ready", "")
 
 	// Load static data once runtime is confirmed
 	go LoadStaticData()

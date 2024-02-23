@@ -1,4 +1,4 @@
-package timeoutHandlers
+package timeoutSlashHandlers
 
 import (
 	"fmt"
@@ -23,12 +23,12 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	// Input validation
 	if !utils.IsValidDiscordUserId(targetUserId) {
 		errMsg := fmt.Sprintf("The provided `user-id` command argument is invalid. (term: `%s`)", targetUserId)
-		utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
+		utils.SendCommandErrorEmbedResponse(s, i.Interaction, errMsg)
 		return
 	}
 	if !utils.IsValidReasonMessage(reason) {
 		errMsg := fmt.Sprintf("The provided `reason` command argument is invalid. (term: `%s`)", reason)
-		utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
+		utils.SendCommandErrorEmbedResponse(s, i.Interaction, errMsg)
 		return
 	}
 
@@ -143,6 +143,6 @@ func sendTimeoutNotification(s *discordgo.Session, channelId string, targetUserI
 	}
 
 	notificationTitle := fmt.Sprintf("`/timeout` given to User with UID `%s`", targetUserId)
-	notifications.SendNotificationToTextChannel(s, channelId, notificationTitle, fields)
+	notifications.SendNotificationToTextChannel(s, channelId, notificationTitle, fields, true)
 
 }
