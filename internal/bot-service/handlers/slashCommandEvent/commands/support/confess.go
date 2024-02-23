@@ -16,15 +16,26 @@ func HandleSlashConfess(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	// Send notification to target channel to announce the confession
 	if channel, channelExists := globals.NotificationChannels["notif-confessApproval"]; channelExists {
-		go SendConfessionApprovalNotification(s, channel.ChannelId, message)
-	}
+		SendConfessionApprovalNotification(s, channel.ChannelId, message)
 
-	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Embeds: utils.SimpleEmbed("", "Confession submitted for approval."),
-		},
-	})
+		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Embeds: utils.SimpleEmbed("", "Confession submitted for approval."),
+			},
+		})
+
+		utils.DeleteInteractionResponse(s, i.Interaction, 50)
+	} else {
+		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Embeds: utils.SimpleEmbed("", "No confession channel was found."),
+			},
+		})
+
+		utils.DeleteInteractionResponse(s, i.Interaction, 50)
+	}
 }
 
 func SendConfessionApprovalNotification(s *discordgo.Session, channelId string, message string) {

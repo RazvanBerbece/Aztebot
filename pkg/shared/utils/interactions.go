@@ -6,9 +6,9 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func DeleteInteractionResponse(s *discordgo.Session, i *discordgo.Interaction, delay int) {
+func DeleteInteractionResponse(s *discordgo.Session, i *discordgo.Interaction, msDelay int) {
 
-	time.Sleep(time.Duration(delay) * time.Second)
+	time.Sleep(time.Duration(msDelay) * time.Millisecond)
 
 	// Delete the response
 	s.InteractionResponseDelete(i)
