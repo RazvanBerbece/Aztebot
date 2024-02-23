@@ -38,8 +38,8 @@ func SendConfessionApprovalNotification(s *discordgo.Session, channelId string, 
 	}
 
 	// Add action row with approval/disproval buttons to the confession approval embed being posted
-	actionRow := embed.GetApprovalActionRowForEmbed("approve_confession", "decline_confession")
-	approvalMessageId, err := notifications.SendNotificationWithActionRowToTextChannel(s, channelId, "", fields, actionRow, false)
+	actionRow := embed.GetApprovalActionRowForEmbed(globals.ConfessionApprovalEventId, globals.ConfessionDisprovalEventId)
+	approvalMessageId, err := notifications.SendNotificationWithActionRowToTextChannel(s, channelId, "New `/confess` to Approve", fields, actionRow, false)
 	if err != nil {
 		fmt.Printf("An error ocurred while sending confession approval notification: %v\n", err)
 		return

@@ -51,5 +51,9 @@ var LastUsedTopTimestamp = time.Now().Add(-60 * time.Minute)
 
 var ConfessionsToApprove = make(map[string]string)
 
+// =============== RUNTIME CUSTOM EVENT IDs (FOR BUTTON PRESS EVENT HANDLERS) ===============
+var ConfessionApprovalEventId = "approve_confession"
+var ConfessionDisprovalEventId = "decline_confession"
+
 // =============== RUNTIME VARIABLES (SLASH COMMANDS) ===============
 var AztebotRegisteredCommands []*discordgo.ApplicationCommand
