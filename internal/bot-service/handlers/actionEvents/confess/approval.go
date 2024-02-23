@@ -42,7 +42,7 @@ func HandleApproveConfession(s *discordgo.Session, i *discordgo.InteractionCreat
 	}
 
 	// Cleanup
-	go utils.DeleteInteractionResponse(s, i.Interaction, 3)
+	go utils.DeleteInteractionResponse(s, i.Interaction, 3000)
 	go actionEventsUtils.DisableButtonsForApprovalActionRow(s, originalApprovalMessageChannelId, originalApprovalMessageId, globals.ConfessionApprovalEventId, globals.ConfessionDisprovalEventId)
 	go actionEventsUtils.UpdateApprovedActionRowOriginalMessage(s, i.Member.User.Username, "APPROVED", originalApprovalMessageChannelId, originalApprovalMessageId, globals.ConfessionApprovalEventId, globals.ConfessionDisprovalEventId)
 }
@@ -75,7 +75,7 @@ func HandleDeclineConfession(s *discordgo.Session, i *discordgo.InteractionCreat
 	}
 
 	// Cleanup
-	go utils.DeleteInteractionResponse(s, i.Interaction, 3)
+	go utils.DeleteInteractionResponse(s, i.Interaction, 3000)
 	go actionEventsUtils.DisableButtonsForApprovalActionRow(s, originalApprovalMessageChannelId, originalApprovalMessageId, globals.ConfessionApprovalEventId, globals.ConfessionDisprovalEventId)
 	go actionEventsUtils.UpdateApprovedActionRowOriginalMessage(s, i.Member.User.Username, "DECLINED", originalApprovalMessageChannelId, originalApprovalMessageId, globals.ConfessionApprovalEventId, globals.ConfessionDisprovalEventId)
 }
