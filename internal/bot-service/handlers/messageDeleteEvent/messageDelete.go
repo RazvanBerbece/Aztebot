@@ -23,7 +23,7 @@ func MessageDelete(s *discordgo.Session, m *discordgo.MessageDelete) {
 	// Ignore all messages created by bots
 	authorIsBot, err := member.MemberIsBot(s, globals.DiscordMainGuildId, deletedMessageAuthorId)
 	if err != nil {
-		fmt.Printf("An error ocurred while checking against bot application: %v\n", err)
+		return
 	}
 	if authorIsBot == nil {
 		return

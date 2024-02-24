@@ -17,7 +17,7 @@ func Any(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// Ignore all messages created by bots
 	authorIsBot, err := member.MemberIsBot(s, globals.DiscordMainGuildId, messageCreatorUserId)
 	if err != nil {
-		fmt.Printf("An error ocurred while checking against bot application: %v\n", err)
+		return
 	}
 	if authorIsBot == nil {
 		return
