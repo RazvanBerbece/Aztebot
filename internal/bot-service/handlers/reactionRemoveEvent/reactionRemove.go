@@ -3,6 +3,7 @@ package messageEvent
 import (
 	"fmt"
 
+	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/member"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/bwmarrin/discordgo"
 )
@@ -25,6 +26,12 @@ func ReactionRemove(s *discordgo.Session, r *discordgo.MessageReactionRemove) {
 	err = globalsRepo.UserStatsRepository.DecrementReactionsReceivedForUser(messageOwnerUid)
 	if err != nil {
 		fmt.Printf("An error ocurred while updating user (%s) reaction count: %v", messageOwnerUid, err)
+	}
+
+	// Remove experience points from message owner
+	currentXp, err := member.RemoveMemberExperience(messageOwnerUid, "REACT_REWARD")
+	if err != nil {
+		fmt.Printf("An error ocurred while removing reaction received rewards (%d) from user (%s): %v", currentXp, messageOwnerUid, err)
 	}
 
 }

@@ -621,24 +621,13 @@ func (r UsersStatsRepository) DecreaseTimeSpentInVoiceChannels(userId string, sT
 	return nil
 }
 
-func (r UsersStatsRepository) GetUserXpRank(userId string, msgWeight float64, slashweight float64, reactWeight float64, vcWeight float64, musicWeight float64) (*int, error) {
+func (r UsersStatsRepository) GetUserXpRank(userId string) (*int, error) {
 
 	query := `
-			SELECT 
-				COUNT(*) AS user_rank
-			FROM 
-				UserStats AS t1
-			JOIN 
-				UserStats AS t2 
-			ON 
-				(
-					(t1.messagesSent * 0.5 + t1.slashCommandsUsed * 0.45 + t1.reactionsReceived * 0.33 + t1.timeSpentInVoiceChannels * 0.133 + t1.timeSpentListeningMusic * 0.1) 
-					>= 
-					(t2.messagesSent * 0.5 + t2.slashCommandsUsed * 0.45 + t2.reactionsReceived * 0.33 + t2.timeSpentInVoiceChannels * 0.133 + t2.timeSpentListeningMusic * 0.1)
-				)
-			WHERE 
-				t2.userId = ?;
-		`
+		SELECT COUNT(*) AS user_rank
+		FROM Users AS t1
+		JOIN Users AS t2 ON t1.currentExperience >= t2.currentExperience
+		WHERE t2.userId = ?;`
 
 	rows, err := r.Conn.Db.Query(query, userId)
 	if err != nil {
@@ -717,5 +706,41 @@ func (r UsersStatsRepository) GetUserLeaderboardRank(userId string, leaderboardN
 	}
 
 	return &rank, nil
+
+}
+
+func (r UsersStatsRepository) GetTopUsersByXp(count int) ([]dataModels.TopUserXP, error) {
+
+	// This could use something similar to a strategy pattern
+	// and only pass the column we want to filter on as a parameter to a more generic function
+
+	query := `
+		SELECT Users.discordTag, Users.userId, Users.currentExperience 
+		FROM Users
+		ORDER BY Users.currentExperience DESC
+		LIMIT ?`
+
+	rows, err := r.Conn.Db.Query(query, count)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var topUsers []dataModels.TopUserXP
+
+	for rows.Next() {
+		var user dataModels.TopUserXP
+		err := rows.Scan(&user.DiscordTag, &user.UserId, &user.XpGained)
+		if err != nil {
+			return nil, err
+		}
+		topUsers = append(topUsers, user)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return topUsers, nil
 
 }

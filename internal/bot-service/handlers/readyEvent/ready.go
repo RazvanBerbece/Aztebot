@@ -35,6 +35,9 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	// Initial cleanup of members from database against the Discord server
 	go startup.CleanupMemberAtStartup(s, uids)
 
+	// Initial update of experience gains in the DB
+	go startup.SyncExperiencePointsGainsAtStartup(s)
+
 	// Initial informative messages on certain channels
 	go startup.SendInformationEmbedsToTextChannels(s)
 

@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/member"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	actionEvent "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/actionEvents"
@@ -93,18 +94,26 @@ func RegisterSlashHandler(s *discordgo.Session) {
 			}
 		}
 
-		err := globalsRepo.UserStatsRepository.IncrementSlashCommandsUsedForUser(i.Member.User.ID)
+		ownerUserId := i.Member.User.ID
+
+		err := globalsRepo.UserStatsRepository.IncrementSlashCommandsUsedForUser(ownerUserId)
 		if err != nil {
-			fmt.Printf("Error ocurred while incrementing slash commands for user %s: %v", i.Member.User.ID, err)
+			fmt.Printf("Error ocurred while incrementing slash commands for user %s: %v", ownerUserId, err)
 		}
 
-		err = globalsRepo.UserStatsRepository.IncrementActivitiesTodayForUser(i.Member.User.ID)
+		err = globalsRepo.UserStatsRepository.IncrementActivitiesTodayForUser(ownerUserId)
 		if err != nil {
-			fmt.Printf("An error ocurred while incrementing user (%s) activities count: %v", i.Member.User.ID, err)
+			fmt.Printf("An error ocurred while incrementing user (%s) activities count: %v", ownerUserId, err)
 		}
-		err = globalsRepo.UserStatsRepository.UpdateLastActiveTimestamp(i.Member.User.ID, time.Now().Unix())
+		err = globalsRepo.UserStatsRepository.UpdateLastActiveTimestamp(ownerUserId, time.Now().Unix())
 		if err != nil {
-			fmt.Printf("An error ocurred while udpating user (%s) last timestamp: %v", i.Member.User.ID, err)
+			fmt.Printf("An error ocurred while udpating user (%s) last timestamp: %v", ownerUserId, err)
+		}
+
+		// Grant experience points for using slash command
+		currentXp, err := member.GrantMemberExperience(ownerUserId, "SLASH_REWARD", nil)
+		if err != nil {
+			fmt.Printf("An error ocurred while granting slash command usage rewards (%d) to user (%s): %v", currentXp, ownerUserId, err)
 		}
 
 		if handlerFunc, ok := commands.AztebotSlashCommandHandlers[i.ApplicationCommandData().Name]; ok {

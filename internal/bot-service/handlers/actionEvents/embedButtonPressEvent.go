@@ -7,12 +7,6 @@ import (
 )
 
 func HandleMessageComponentInteraction(s *discordgo.Session, i *discordgo.InteractionCreate) {
-	if i.Type == discordgo.InteractionMessageComponent {
-		handleEmbedButtonPressEventHandler(s, i)
-	}
-}
-
-func handleEmbedButtonPressEventHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	eventCustomId := i.MessageComponentData().CustomID
 

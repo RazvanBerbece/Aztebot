@@ -49,6 +49,47 @@ func (r UsersRepository) GetAllDiscordUids() ([]string, error) {
 	return userIds, nil
 }
 
+func (r UsersRepository) GetAllUsers() ([]dataModels.User, error) {
+
+	var users []dataModels.User
+
+	rowsUsers, err := r.Conn.Db.Query("SELECT * FROM Users")
+	if err != nil {
+		return nil, fmt.Errorf("GetAllUsers: %v", err)
+	}
+
+	defer rowsUsers.Close()
+
+	for rowsUsers.Next() {
+		var user dataModels.User
+		if err := rowsUsers.Scan(&user.Id,
+			&user.DiscordTag,
+			&user.UserId,
+			&user.CurrentRoleIds,
+			&user.CurrentCircle,
+			&user.CurrentInnerOrder,
+			&user.CurrentLevel,
+			&user.CurrentExperience,
+			&user.CreatedAt); err != nil {
+			return nil, fmt.Errorf("GetAllUsers: %v", err)
+		}
+		users = append(users, user)
+	}
+	if err := rowsUsers.Err(); err != nil {
+		return nil, fmt.Errorf("GetAllUsers: %v", err)
+	}
+	// Check for zero rows - if the query arg has no IDs retrieved from the Users table
+	if len(users) == 0 {
+		return nil, fmt.Errorf("GetAllUsers: No users found in Users table")
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
 func (r UsersRepository) UserExists(userId string) int {
 	query := "SELECT COUNT(*) FROM Users WHERE userId = ?"
 	var count int
@@ -158,6 +199,44 @@ func (r UsersRepository) UpdateUser(user dataModels.User) (*dataModels.User, err
 	}
 
 	return &user, nil
+}
+
+func (r UsersRepository) AddUserExpriencePoints(userId string, experiencePoints float64) error {
+
+	stmt, err := r.Conn.Db.Prepare(`
+		UPDATE Users SET 
+			currentExperience = currentExperience + ?
+		WHERE userId = ?`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(experiencePoints, userId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r UsersRepository) RemoveUserExpriencePoints(userId string, experiencePoints float64) error {
+
+	stmt, err := r.Conn.Db.Prepare(`
+		UPDATE Users SET 
+			currentExperience = currentExperience - ?
+		WHERE userId = ?`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(experiencePoints, userId)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r UsersRepository) GetRolesForUser(userId string) ([]dataModels.Role, error) {

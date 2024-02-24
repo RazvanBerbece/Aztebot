@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/member"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/bwmarrin/discordgo"
@@ -40,10 +41,19 @@ func UpdateVoiceSessionDurations(s *discordgo.Session) {
 
 func updateVoiceSessions() {
 	for uid, joinTime := range globals.VoiceSessions {
+
 		duration := time.Since(joinTime)
+		secondsSpent := duration.Seconds()
+
 		err := globalsRepo.UserStatsRepository.AddToTimeSpentInVoiceChannels(uid, int(duration.Seconds()))
 		if err != nil {
 			fmt.Printf("An error ocurred while adding time spent to voice channels for user with id %s: %v", uid, err)
+		}
+
+		// Grant experience points for time spent streaming
+		currentXp, err := member.GrantMemberExperience(uid, "IN_VC_REWARD", &secondsSpent)
+		if err != nil {
+			fmt.Printf("An error ocurred while granting streaming rewards (%d) to user (%s): %v", currentXp, uid, err)
 		}
 
 		// Reset join time
@@ -54,10 +64,19 @@ func updateVoiceSessions() {
 
 func updateStreamingSessions() {
 	for uid, joinTime := range globals.StreamSessions {
+
 		duration := time.Since(*joinTime)
-		err := globalsRepo.UserStatsRepository.AddToTimeSpentInVoiceChannels(uid, int(duration.Seconds()))
+		secondsSpent := duration.Seconds()
+
+		err := globalsRepo.UserStatsRepository.AddToTimeSpentInVoiceChannels(uid, int(secondsSpent))
 		if err != nil {
 			fmt.Printf("An error ocurred while adding streaming duration to voice channels for user with id %s: %v", uid, err)
+		}
+
+		// Grant experience points for time spent streaming
+		currentXp, err := member.GrantMemberExperience(uid, "IN_VC_REWARD", &secondsSpent)
+		if err != nil {
+			fmt.Printf("An error ocurred while granting streaming rewards (%d) to user (%s): %v", currentXp, uid, err)
 		}
 
 		// Reset join time
@@ -72,10 +91,19 @@ func updateMusicSessions() {
 		if userHadMusicSession {
 			// User was on a music channel
 			for channelId, joinTime := range session {
+
 				duration := time.Since(*joinTime)
-				err := globalsRepo.UserStatsRepository.AddToTimeSpentListeningMusic(uid, int(duration.Seconds()))
+				secondsSpent := duration.Seconds()
+
+				err := globalsRepo.UserStatsRepository.AddToTimeSpentListeningMusic(uid, int(secondsSpent))
 				if err != nil {
 					fmt.Printf("An error ocurred while adding time spent listening music for user with id %s: %v", uid, err)
+				}
+
+				// Grant experience points for time spent listening to music
+				currentXp, err := member.GrantMemberExperience(uid, "IN_MUSIC_REWARD", &secondsSpent)
+				if err != nil {
+					fmt.Printf("An error ocurred while granting music listening rewards (%d) to user (%s): %v", currentXp, uid, err)
 				}
 
 				// Reset join time
