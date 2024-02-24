@@ -27,9 +27,9 @@ func UpdateVoiceSessionDurations(s *discordgo.Session) {
 		for {
 			select {
 			case <-ticker.C:
-				go updateVoiceSessions()
-				go updateStreamingSessions()
-				go updateMusicSessions()
+				go updateVoiceSessions(s)
+				go updateStreamingSessions(s)
+				go updateMusicSessions(s)
 			case <-quit:
 				ticker.Stop()
 				return
@@ -39,13 +39,25 @@ func UpdateVoiceSessionDurations(s *discordgo.Session) {
 
 }
 
-func updateVoiceSessions() {
+func updateVoiceSessions(s *discordgo.Session) {
 	for uid, joinTime := range globals.VoiceSessions {
+
+		// Ignore all bot sessions
+		authorIsBot, err := member.MemberIsBot(s, globals.DiscordMainGuildId, uid)
+		if err != nil {
+			continue
+		}
+		if authorIsBot == nil {
+			continue
+		}
+		if *authorIsBot {
+			continue
+		}
 
 		duration := time.Since(joinTime)
 		secondsSpent := duration.Seconds()
 
-		err := globalsRepo.UserStatsRepository.AddToTimeSpentInVoiceChannels(uid, int(duration.Seconds()))
+		err = globalsRepo.UserStatsRepository.AddToTimeSpentInVoiceChannels(uid, int(duration.Seconds()))
 		if err != nil {
 			fmt.Printf("An error ocurred while adding time spent to voice channels for user with id %s: %v", uid, err)
 		}
@@ -62,13 +74,25 @@ func updateVoiceSessions() {
 	}
 }
 
-func updateStreamingSessions() {
+func updateStreamingSessions(s *discordgo.Session) {
 	for uid, joinTime := range globals.StreamSessions {
+
+		// Ignore all bot sessions
+		authorIsBot, err := member.MemberIsBot(s, globals.DiscordMainGuildId, uid)
+		if err != nil {
+			continue
+		}
+		if authorIsBot == nil {
+			continue
+		}
+		if *authorIsBot {
+			continue
+		}
 
 		duration := time.Since(*joinTime)
 		secondsSpent := duration.Seconds()
 
-		err := globalsRepo.UserStatsRepository.AddToTimeSpentInVoiceChannels(uid, int(secondsSpent))
+		err = globalsRepo.UserStatsRepository.AddToTimeSpentInVoiceChannels(uid, int(secondsSpent))
 		if err != nil {
 			fmt.Printf("An error ocurred while adding streaming duration to voice channels for user with id %s: %v", uid, err)
 		}
@@ -85,8 +109,21 @@ func updateStreamingSessions() {
 	}
 }
 
-func updateMusicSessions() {
+func updateMusicSessions(s *discordgo.Session) {
 	for uid := range globals.MusicSessions {
+
+		// Ignore all bot sessions
+		authorIsBot, err := member.MemberIsBot(s, globals.DiscordMainGuildId, uid)
+		if err != nil {
+			continue
+		}
+		if authorIsBot == nil {
+			continue
+		}
+		if *authorIsBot {
+			continue
+		}
+
 		session, userHadMusicSession := globals.MusicSessions[uid]
 		if userHadMusicSession {
 			// User was on a music channel
