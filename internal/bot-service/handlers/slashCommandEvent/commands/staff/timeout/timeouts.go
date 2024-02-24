@@ -12,7 +12,7 @@ import (
 
 func HandleSlashTimeouts(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
-	targetUserId := i.ApplicationCommandData().Options[0].StringValue()
+	targetUserId := utils.GetDiscordIdFromMentionFormat(i.ApplicationCommandData().Options[0].StringValue())
 
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,

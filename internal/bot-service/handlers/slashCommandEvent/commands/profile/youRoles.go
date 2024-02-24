@@ -10,7 +10,7 @@ import (
 
 func HandleSlashYouRoles(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
-	targetUserId := i.ApplicationCommandData().Options[0].StringValue()
+	targetUserId := utils.GetDiscordIdFromMentionFormat(i.ApplicationCommandData().Options[0].StringValue())
 
 	user, err := globalsRepo.UsersRepository.GetUser(targetUserId)
 	if err != nil {
