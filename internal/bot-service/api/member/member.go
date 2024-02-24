@@ -380,7 +380,7 @@ func GiveTimeoutToMemberWithId(s *discordgo.Session, guildId string, userId stri
 
 	err := globalsRepo.TimeoutsRepository.SaveTimeout(userId, reason, creationTimestamp, int(sTimeoutLength))
 	if err != nil {
-		fmt.Printf("Error ocurred while storing timeout for user: %s", err)
+		fmt.Printf("Error ocurred while storing timeout for user: %s\n", err)
 		return fmt.Errorf(err.Error())
 	}
 
@@ -453,12 +453,12 @@ func AppealTimeout(guildId string, userId string) error {
 
 	activeTimeout, _, err := GetMemberTimeouts(userId)
 	if err != nil {
-		timeoutError := fmt.Errorf("an error ocurred while retrieving timeout data for user with ID %s: %v", userId, err)
+		timeoutError := fmt.Errorf("an error ocurred while retrieving timeout data for user with ID %s: %v\n", userId, err)
 		return timeoutError
 	}
 
 	if activeTimeout == nil {
-		return fmt.Errorf("no active timeout was found for user with ID `%s`", userId)
+		return fmt.Errorf("no active timeout was found for user with ID `%s`\n", userId)
 	}
 
 	// TODO
@@ -471,7 +471,7 @@ func GetMemberExperiencePoints(userId string) (*float64, error) {
 
 	user, err := globalsRepo.UsersRepository.GetUser(userId)
 	if err != nil {
-		fmt.Printf("An error ocurred while retrieving User from DB: %v", err)
+		fmt.Printf("An error ocurred while retrieving User from DB: %v\n", err)
 		return nil, err
 	}
 
@@ -491,38 +491,38 @@ func GrantMemberExperience(userId string, activityType string, multiplierOption 
 	case "MSG_REWARD":
 		err := globalsRepo.UsersRepository.AddUserExpriencePoints(userId, globals.ExperienceReward_MessageSent*multiplier)
 		if err != nil {
-			fmt.Printf("An error ocurred while granting XP to user: %v", err)
+			fmt.Printf("An error ocurred while granting XP to user: %v\n", err)
 			return nil, err
 		}
 	case "REACT_REWARD":
 		err := globalsRepo.UsersRepository.AddUserExpriencePoints(userId, globals.ExperienceReward_ReactionReceived*multiplier)
 		if err != nil {
-			fmt.Printf("An error ocurred while granting XP to user: %v", err)
+			fmt.Printf("An error ocurred while granting XP to user: %v\n", err)
 			return nil, err
 		}
 	case "SLASH_REWARD":
 		err := globalsRepo.UsersRepository.AddUserExpriencePoints(userId, globals.ExperienceReward_SlashCommandUsed*multiplier)
 		if err != nil {
-			fmt.Printf("An error ocurred while granting XP to user: %v", err)
+			fmt.Printf("An error ocurred while granting XP to user: %v\n", err)
 			return nil, err
 		}
 	case "IN_VC_REWARD":
 		err := globalsRepo.UsersRepository.AddUserExpriencePoints(userId, globals.ExperienceReward_InVc*multiplier)
 		if err != nil {
-			fmt.Printf("An error ocurred while granting XP to user: %v", err)
+			fmt.Printf("An error ocurred while granting XP to user: %v\n", err)
 			return nil, err
 		}
 	case "IN_MUSIC_REWARD":
 		err := globalsRepo.UsersRepository.AddUserExpriencePoints(userId, globals.ExperienceReward_InMusic*multiplier)
 		if err != nil {
-			fmt.Printf("An error ocurred while granting XP to user: %v", err)
+			fmt.Printf("An error ocurred while granting XP to user: %v\n", err)
 			return nil, err
 		}
 	}
 
 	user, err := globalsRepo.UsersRepository.GetUser(userId)
 	if err != nil {
-		fmt.Printf("An error ocurred while retrieving User from DB: %v", err)
+		fmt.Printf("An error ocurred while retrieving User (%s) from DB after adding XP. Member may have left the server.\n", userId)
 		return nil, err
 	}
 
@@ -536,38 +536,38 @@ func RemoveMemberExperience(userId string, activityType string) (*float64, error
 	case "MSG_REWARD":
 		err := globalsRepo.UsersRepository.RemoveUserExpriencePoints(userId, globals.ExperienceReward_MessageSent)
 		if err != nil {
-			fmt.Printf("An error ocurred while removing XP from user: %v", err)
+			fmt.Printf("An error ocurred while removing XP from user: %v\n", err)
 			return nil, err
 		}
 	case "REACT_REWARD":
 		err := globalsRepo.UsersRepository.RemoveUserExpriencePoints(userId, globals.ExperienceReward_ReactionReceived)
 		if err != nil {
-			fmt.Printf("An error ocurred while removing XP from user: %v", err)
+			fmt.Printf("An error ocurred while removing XP from user: %v\n", err)
 			return nil, err
 		}
 	case "SLASH_REWARD":
 		err := globalsRepo.UsersRepository.RemoveUserExpriencePoints(userId, globals.ExperienceReward_SlashCommandUsed)
 		if err != nil {
-			fmt.Printf("An error ocurred while removing XP from user: %v", err)
+			fmt.Printf("An error ocurred while removing XP from user: %v\n", err)
 			return nil, err
 		}
 	case "IN_VC_REWARD":
 		err := globalsRepo.UsersRepository.RemoveUserExpriencePoints(userId, globals.ExperienceReward_InVc)
 		if err != nil {
-			fmt.Printf("An error ocurred while removing XP from user: %v", err)
+			fmt.Printf("An error ocurred while removing XP from user: %v\n", err)
 			return nil, err
 		}
 	case "IN_MUSIC_REWARD":
 		err := globalsRepo.UsersRepository.RemoveUserExpriencePoints(userId, globals.ExperienceReward_InMusic)
 		if err != nil {
-			fmt.Printf("An error ocurred while removing XP from user: %v", err)
+			fmt.Printf("An error ocurred while removing XP from user: %v\n", err)
 			return nil, err
 		}
 	}
 
 	user, err := globalsRepo.UsersRepository.GetUser(userId)
 	if err != nil {
-		fmt.Printf("An error ocurred while retrieving User from DB: %v", err)
+		fmt.Printf("An error ocurred while retrieving User (%s) from DB after removing XP. Member may have left the server.\n", userId)
 		return nil, err
 	}
 

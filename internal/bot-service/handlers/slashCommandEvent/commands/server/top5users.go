@@ -14,8 +14,8 @@ import (
 
 func HandleSlashTop5Users(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
-	durationSinceLastTopCommand := time.Since(globals.LastUsedTopTimestamp)
-	if int(durationSinceLastTopCommand.Minutes()) < 5 {
+	durationSinceLastTop5sCommand := time.Since(globals.LastUsedTop5sTimestamp)
+	if int(durationSinceLastTop5sCommand.Minutes()) < 5 {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
@@ -69,7 +69,7 @@ func Top5CommandResultsEmbed(s *discordgo.Session, i *discordgo.InteractionCreat
 	// Top by time spent listening to music
 	ProcessTopMusicListeningTimePartialEmbed(topCount, s, i.Interaction, embed)
 
-	globals.LastUsedTopTimestamp = time.Now()
+	globals.LastUsedTop5sTimestamp = time.Now()
 
 	return []*discordgo.MessageEmbed{embed.MessageEmbed}
 }
