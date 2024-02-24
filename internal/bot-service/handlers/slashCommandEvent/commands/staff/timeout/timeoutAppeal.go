@@ -28,7 +28,7 @@ func HandleSlashTimeoutAppeal(s *discordgo.Session, i *discordgo.InteractionCrea
 	}
 
 	// Timeout appeal logic
-	err = member.AppealTimeout(s, i.Interaction, globals.DiscordMainGuildId, userId)
+	err = member.AppealTimeout(s, globals.DiscordMainGuildId, userId)
 	if err != nil {
 		errMsg := fmt.Sprintf("An error ocurred while appealing timeout for user with UID `%s`: %v", userId, err)
 		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)

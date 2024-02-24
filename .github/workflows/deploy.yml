@@ -30,7 +30,8 @@ jobs:
     uses: ./.github/workflows/test.yml
     secrets: inherit
 
-  deploy:
+  continuous-delivery:
+    environment: production
     needs: [continuous-integration]
     runs-on: ubuntu-latest
     if: needs.continuous-integration.result == 'success'
