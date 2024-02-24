@@ -7,11 +7,11 @@ func CalculateExperiencePointsFromStats(
 	tsVc int,
 	tsMusic int) int {
 
-	var MessageWeight float64 = 1.0
-	var SlashCommandWeight float64 = 0.65
-	var ReactionsReceivedWeight float64 = 0.77
-	var TimeSpentVCWeight float64 = 0.25
-	var TimeSpentMusicWeight float64 = 0.125
+	var MessageWeight float64 = 0.5
+	var SlashCommandWeight float64 = 0.45
+	var ReactionsReceivedWeight float64 = 0.33
+	var TimeSpentVCWeight float64 = 0.133
+	var TimeSpentMusicWeight float64 = 0.1
 
 	var totalExperience int = int(float64(messagesSent)*MessageWeight +
 		float64(slashCommandsUsed)*SlashCommandWeight +
