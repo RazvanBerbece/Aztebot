@@ -111,9 +111,9 @@ func ProcessTopEmbed(topCount int, s *discordgo.Session, i *discordgo.Interactio
 			sTimeSpentListeningMusic := int64(stats.TimeSpentListeningToMusic)
 			daysMusic, hoursMusic, minutesMusic, secondsMusic := utils.HumanReadableTimeLength(float64(sTimeSpentListeningMusic))
 			if daysMusic != 0 {
-				timeSpentListeningMusic = fmt.Sprintf("%dd, %dh:%dm:%ds", daysMusic, hoursMusic, minutesMusic, secondsMusic)
+				timeSpentListeningMusic = fmt.Sprintf("%dd, %dh", daysMusic, hoursMusic)
 			} else if daysMusic == 0 && hoursMusic != 0 {
-				timeSpentListeningMusic = fmt.Sprintf("%dh:%dm:%ds", hoursMusic, minutesMusic, secondsMusic)
+				timeSpentListeningMusic = fmt.Sprintf("%dh:%dm", hoursMusic, minutesMusic)
 			} else if daysMusic == 0 && hoursMusic == 0 {
 				timeSpentListeningMusic = fmt.Sprintf("%dm:%ds", minutesMusic, secondsMusic)
 			}
