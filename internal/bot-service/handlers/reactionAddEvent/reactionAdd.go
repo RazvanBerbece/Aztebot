@@ -30,6 +30,9 @@ func ReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 	if err != nil {
 		fmt.Printf("An error ocurred while checking against bot application: %v\n", err)
 	}
+	if authorIsBot == nil {
+		return
+	}
 	if *authorIsBot {
 		return
 	}
