@@ -41,6 +41,12 @@ var NotificationChannelsPairs = strings.Split(os.Getenv("NOTIFICATION_CHANNELS")
 var GlobalCommands = strings.Split(os.Getenv("GLOBAL_COMMANDS"), ",")
 
 // =============== RUNTIME VARIABLES (BOT APPLICATIONS) ===============
+var XpMessageWeight float64 = 0.5
+var XpSlashCommandWeight float64 = 0.45
+var XpReactionsReceivedWeight float64 = 0.33
+var XpTimeSpentVCWeight float64 = 0.133
+var XpTimeSpentMusicWeight float64 = 0.1
+
 var NotificationChannels = make(map[string]dataModels.Channel)
 
 var VoiceSessions = make(map[string]time.Time)

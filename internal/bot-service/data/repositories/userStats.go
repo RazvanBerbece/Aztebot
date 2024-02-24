@@ -621,6 +621,48 @@ func (r UsersStatsRepository) DecreaseTimeSpentInVoiceChannels(userId string, sT
 	return nil
 }
 
+func (r UsersStatsRepository) GetUserXpRank(userId string, msgWeight float64, slashweight float64, reactWeight float64, vcWeight float64, musicWeight float64) (*int, error) {
+
+	query := `
+			SELECT 
+				COUNT(*) AS user_rank
+			FROM 
+				UserStats AS t1
+			JOIN 
+				UserStats AS t2 
+			ON 
+				(
+					(t1.messagesSent * 0.5 + t1.slashCommandsUsed * 0.45 + t1.reactionsReceived * 0.33 + t1.timeSpentInVoiceChannels * 0.133 + t1.timeSpentListeningMusic * 0.1) 
+					>= 
+					(t2.messagesSent * 0.5 + t2.slashCommandsUsed * 0.45 + t2.reactionsReceived * 0.33 + t2.timeSpentInVoiceChannels * 0.133 + t2.timeSpentListeningMusic * 0.1)
+				)
+			WHERE 
+				t2.userId = ?;
+		`
+
+	rows, err := r.Conn.Db.Query(query, userId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var rank int
+
+	for rows.Next() {
+		err := rows.Scan(&rank)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return &rank, nil
+
+}
+
 func (r UsersStatsRepository) GetUserLeaderboardRank(userId string, leaderboardName string) (*int, error) {
 
 	query := ""
