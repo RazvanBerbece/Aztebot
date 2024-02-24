@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/member"
+	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/bwmarrin/discordgo"
 )
@@ -11,23 +12,34 @@ import (
 func MessageDelete(s *discordgo.Session, m *discordgo.MessageDelete) {
 
 	deletedMessage := m.BeforeDelete
-	if deletedMessage.Author == nil {
-		// Probably an embed, so ignore
+	if deletedMessage == nil {
 		return
 	}
-	deletedMessageAuthor := deletedMessage.Author.ID
+	if deletedMessage.Author == nil {
+		return
+	}
+	deletedMessageAuthorId := deletedMessage.Author.ID
+
+	// Ignore all messages created by bots
+	authorIsBot, err := member.MemberIsBot(s, globals.DiscordMainGuildId, deletedMessageAuthorId)
+	if err != nil {
+		fmt.Printf("An error ocurred while checking against bot application: %v\n", err)
+	}
+	if *authorIsBot {
+		return
+	}
 
 	if deletedMessage != nil {
 		// Decrease stats for user
-		err := globalsRepo.UserStatsRepository.DecrementMessagesSentForUser(deletedMessageAuthor)
+		err := globalsRepo.UserStatsRepository.DecrementMessagesSentForUser(deletedMessageAuthorId)
 		if err != nil {
-			fmt.Printf("An error ocurred while updating user (%s) message count: %v", deletedMessageAuthor, err)
+			fmt.Printf("An error ocurred while updating user (%s) message count: %v", deletedMessageAuthorId, err)
 		}
 
 		// Remove experience points
-		currentXp, err := member.RemoveMemberExperience(deletedMessageAuthor, "MSG_REWARD")
+		currentXp, err := member.RemoveMemberExperience(deletedMessageAuthorId, "MSG_REWARD")
 		if err != nil {
-			fmt.Printf("An error ocurred while removing message rewards (%d) from user (%s): %v", currentXp, deletedMessageAuthor, err)
+			fmt.Printf("An error ocurred while removing message rewards (%d) from user (%s): %v", currentXp, deletedMessageAuthorId, err)
 		}
 	}
 

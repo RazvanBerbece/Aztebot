@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/member"
+	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/bwmarrin/discordgo"
 )
@@ -23,6 +24,15 @@ func ReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 	}
 
 	messageOwnerUid := message.Author.ID
+
+	// Ignore all messages created by bots
+	authorIsBot, err := member.MemberIsBot(s, globals.DiscordMainGuildId, messageOwnerUid)
+	if err != nil {
+		fmt.Printf("An error ocurred while checking against bot application: %v\n", err)
+	}
+	if *authorIsBot {
+		return
+	}
 
 	err = globalsRepo.UserStatsRepository.IncrementReactionsReceivedForUser(messageOwnerUid)
 	if err != nil {

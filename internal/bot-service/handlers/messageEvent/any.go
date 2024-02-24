@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/member"
+	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/bwmarrin/discordgo"
 )
@@ -13,13 +14,17 @@ func Any(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	messageCreatorUserId := m.Author.ID
 
-	// Ignore all messages created by the bot itself
-	if messageCreatorUserId == s.State.User.ID {
+	// Ignore all messages created by bots
+	authorIsBot, err := member.MemberIsBot(s, globals.DiscordMainGuildId, messageCreatorUserId)
+	if err != nil {
+		fmt.Printf("An error ocurred while checking against bot application: %v\n", err)
+	}
+	if *authorIsBot {
 		return
 	}
 
 	// Increase stats for user
-	err := globalsRepo.UserStatsRepository.IncrementMessagesSentForUser(messageCreatorUserId)
+	err = globalsRepo.UserStatsRepository.IncrementMessagesSentForUser(messageCreatorUserId)
 	if err != nil {
 		fmt.Printf("An error ocurred while updating user (%s) message count: %v\n", messageCreatorUserId, err)
 	}
