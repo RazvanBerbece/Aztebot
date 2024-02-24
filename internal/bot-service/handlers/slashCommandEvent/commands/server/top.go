@@ -118,7 +118,7 @@ func ProcessTopEmbed(topCount int, s *discordgo.Session, i *discordgo.Interactio
 				timeSpentListeningMusic = fmt.Sprintf("%dm:%ds", minutesMusic, secondsMusic)
 			}
 
-			rankingRowName := fmt.Sprintf("**%d.** %s**%s**", idx+1, rankMedal, topUser.DiscordTag)
+			rankingRowName := fmt.Sprintf("**%d.** %s**_%s_**", idx+1, rankMedal, topUser.DiscordTag)
 			rankingRowValue := fmt.Sprintf("Total: `%d` XP 💠 | `%d` ✉️ | `%d` 💯 | `%s` 🎙️ | `%s` 🎵\n", int(topUser.XpGained), stats.NumberMessagesSent, stats.NumberReactionsReceived, timeSpentInVcs, timeSpentListeningMusic)
 			embed.AddField(rankingRowName, rankingRowValue, false)
 		}

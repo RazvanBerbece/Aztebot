@@ -11,6 +11,10 @@ import (
 func MessageDelete(s *discordgo.Session, m *discordgo.MessageDelete) {
 
 	deletedMessage := m.BeforeDelete
+	if deletedMessage.Author == nil {
+		// Probably an embed, so ignore
+		return
+	}
 	deletedMessageAuthor := deletedMessage.Author.ID
 
 	if deletedMessage != nil {

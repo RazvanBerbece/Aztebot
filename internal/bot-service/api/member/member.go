@@ -481,6 +481,11 @@ func GetMemberExperiencePoints(userId string) (*float64, error) {
 
 func GrantMemberExperience(userId string, activityType string, multiplierOption *float64) (*float64, error) {
 
+	isMember := globalsRepo.UsersRepository.UserExists(userId)
+	if isMember < 0 {
+		return nil, fmt.Errorf("member not found in the DB; likely the given member is a bot application")
+	}
+
 	var multiplier float64 = 1.0
 
 	if multiplierOption != nil {
@@ -531,6 +536,11 @@ func GrantMemberExperience(userId string, activityType string, multiplierOption 
 }
 
 func RemoveMemberExperience(userId string, activityType string) (*float64, error) {
+
+	isMember := globalsRepo.UsersRepository.UserExists(userId)
+	if isMember < 0 {
+		return nil, fmt.Errorf("member not found in the DB; likely the given member is a bot application")
+	}
 
 	switch activityType {
 	case "MSG_REWARD":
