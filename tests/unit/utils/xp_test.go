@@ -23,7 +23,7 @@ func TestCalculateExperiencePointsFromStats(t *testing.T) {
 
 	cases := []struct {
 		input          TestStatsInput
-		expectedOutput int
+		expectedOutput float64
 	}{
 		{TestStatsInput{
 			NumMessagesSent:      0,
@@ -48,7 +48,7 @@ func TestCalculateExperiencePointsFromStats(t *testing.T) {
 			ReactionsWeight:      0.33,
 			TsVcWeight:           0.133,
 			TsMusicWeight:        0.1,
-		}, 0},
+		}, 0.50},
 		{TestStatsInput{
 			NumMessagesSent:      153,
 			NumSlashCommandsUsed: 10,
@@ -60,7 +60,7 @@ func TestCalculateExperiencePointsFromStats(t *testing.T) {
 			ReactionsWeight:      0.33,
 			TsVcWeight:           0.133,
 			TsMusicWeight:        0.1,
-		}, 123},
+		}, 123.21},
 	}
 
 	for _, c := range cases {
@@ -76,7 +76,7 @@ func TestCalculateExperiencePointsFromStats(t *testing.T) {
 			c.input.TsVcWeight,
 			c.input.TsMusicWeight,
 		); output != c.expectedOutput {
-			t.Errorf("incorrect output: expected `%d` but got `%d`", c.expectedOutput, output)
+			t.Errorf("incorrect output: expected `%.2f` but got `%.2f`", c.expectedOutput, output)
 		}
 	}
 
