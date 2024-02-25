@@ -6,6 +6,7 @@ import (
 	serverSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/server"
 	timeoutSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/staff/timeout"
 	warningSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/staff/warning"
+	xpRateSettingSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/staff/xp"
 	supportSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/support"
 	slashUtils "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/utils"
 	"github.com/bwmarrin/discordgo"
@@ -14,15 +15,15 @@ import (
 var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 	{
 		Name:        "ping",
-		Description: "Basic ping slash interaction for the AzteBot",
+		Description: "Basic ping slash interaction for the AzteBot.",
 	},
 	{
 		Name:        "my_roles",
-		Description: "Get a list of your assigned roles",
+		Description: "Get a list of your assigned roles.",
 	},
 	{
 		Name:        "roles",
-		Description: "See a user's role card",
+		Description: "See a user's role card.",
 		Options: []*discordgo.ApplicationCommandOption{
 			{
 				Type:        discordgo.ApplicationCommandOptionString,
@@ -34,7 +35,7 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 	},
 	{
 		Name:        "me",
-		Description: "Get a summary of your profile details which are linked to the OTA guild",
+		Description: "Get a summary of your profile details which are linked to the OTA guild.",
 	},
 	{
 		Name:        "you",
@@ -50,23 +51,23 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 	},
 	{
 		Name:        "sync",
-		Description: "Syncs the user profile data (roles, etc.) with the OTA servers",
+		Description: "Syncs the user profile data (roles, etc.) with the OTA servers.",
 	},
 	{
 		Name:        "help",
-		Description: "Get a help guide for the available AzteBot slash commands",
+		Description: "Get a help guide for the available AzteBot slash commands.",
 	},
 	{
 		Name:        "top5user",
-		Description: "See the OTA leaderboard top 5s by activity category",
+		Description: "See the OTA leaderboard top 5s by activity category.",
 	},
 	{
 		Name:        "dice",
-		Description: "Roll a 6-sided dice and try your luck",
+		Description: "Roll a 6-sided dice and try your luck.",
 	},
 	{
 		Name:        "warn",
-		Description: "Gives a warning (with a provided reason message) to the user with the given ID",
+		Description: "Gives a warning (with a provided reason message) to the user with the given ID.",
 		Options: []*discordgo.ApplicationCommandOption{
 			{
 				Type:        discordgo.ApplicationCommandOptionString,
@@ -84,7 +85,7 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 	},
 	{
 		Name:        "warn_remove_oldest",
-		Description: "Removes a user's oldest warning",
+		Description: "Removes a user's oldest warning.",
 		Options: []*discordgo.ApplicationCommandOption{
 			{
 				Type:        discordgo.ApplicationCommandOptionString,
@@ -96,7 +97,7 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 	},
 	{
 		Name:        "warns",
-		Description: "View a a member's warnings",
+		Description: "View a a member's warnings.",
 		Options: []*discordgo.ApplicationCommandOption{
 			{
 				Type:        discordgo.ApplicationCommandOptionString,
@@ -204,6 +205,64 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		Name:        "top",
 		Description: "Displays the global OTA leaderboard",
 	},
+	{
+		Name:        "set_global_xp_rate",
+		Description: "Sets the global XP gain rate for a specific activity.",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "activity",
+				Description: "Select the activity to set the XP gain rate for",
+				Required:    true,
+				Choices: []*discordgo.ApplicationCommandOptionChoice{
+					{
+						Name:  "Message Sends",
+						Value: "msg_send",
+					},
+					{
+						Name:  "Reactions Received",
+						Value: "react_recv",
+					},
+					{
+						Name:  "Slash Commands Used",
+						Value: "slash_use",
+					},
+					{
+						Name:  "Time Spent in Voice Channels",
+						Value: "spent_vc",
+					},
+					{
+						Name:  "Time Spent Listening to Music",
+						Value: "spent_music",
+					},
+				},
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "multiplier",
+				Description: "Select the gain rate multiplier for the specified activity",
+				Required:    true,
+				Choices: []*discordgo.ApplicationCommandOptionChoice{
+					{
+						Name:  "Default",
+						Value: "def",
+					},
+					{
+						Name:  "1.5x",
+						Value: "1.5",
+					},
+					{
+						Name:  "2x",
+						Value: "2.0",
+					},
+					{
+						Name:  "3x",
+						Value: "3.0",
+					},
+				},
+			},
+		},
+	},
 }
 
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -225,4 +284,5 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"timeouts":              timeoutSlashHandlers.HandleSlashTimeouts,
 	"timeout_remove_active": timeoutSlashHandlers.HandleSlashTimeoutRemoveActive,
 	"timeout_appeal":        timeoutSlashHandlers.HandleSlashTimeoutAppeal,
+	"set_global_xp_rate":    xpRateSettingSlashHandlers.HandleSlashSetGlobalXpRateForActivity,
 }
