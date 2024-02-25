@@ -19,9 +19,6 @@ func Any(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if err != nil {
 		return
 	}
-	if authorIsBot == nil {
-		return
-	}
 	if *authorIsBot {
 		return
 	}
