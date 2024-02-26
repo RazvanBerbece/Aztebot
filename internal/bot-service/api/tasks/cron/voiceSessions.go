@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/member"
+	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -21,15 +21,18 @@ func UpdateVoiceSessionDurations(s *discordgo.Session) {
 
 	fmt.Println("[CRON] Starting Task UpdateVoiceSesionDurations() at", time.Now(), "running every", numSec, "seconds")
 
+	// Inject repositories
+	userStatsRepository := repositories.NewUsersStatsRepository()
+
 	ticker := time.NewTicker(time.Duration(numSec) * time.Second)
 	quit := make(chan struct{})
 	go func() {
 		for {
 			select {
 			case <-ticker.C:
-				go updateVoiceSessions(s)
-				go updateStreamingSessions(s)
-				go updateMusicSessions(s)
+				go updateVoiceSessions(s, userStatsRepository)
+				go updateStreamingSessions(s, userStatsRepository)
+				go updateMusicSessions(s, userStatsRepository)
 			case <-quit:
 				ticker.Stop()
 				return
@@ -39,7 +42,7 @@ func UpdateVoiceSessionDurations(s *discordgo.Session) {
 
 }
 
-func updateVoiceSessions(s *discordgo.Session) {
+func updateVoiceSessions(s *discordgo.Session, userStatsRepo *repositories.UsersStatsRepository) {
 	for uid, joinTime := range globals.VoiceSessions {
 
 		// Ignore all bot sessions
@@ -54,7 +57,7 @@ func updateVoiceSessions(s *discordgo.Session) {
 		duration := time.Since(joinTime)
 		secondsSpent := duration.Seconds()
 
-		err = globalsRepo.UserStatsRepository.AddToTimeSpentInVoiceChannels(uid, int(duration.Seconds()))
+		err = userStatsRepo.AddToTimeSpentInVoiceChannels(uid, int(duration.Seconds()))
 		if err != nil {
 			fmt.Printf("An error ocurred while adding time spent to voice channels for user with id %s: %v", uid, err)
 		}
@@ -68,7 +71,7 @@ func updateVoiceSessions(s *discordgo.Session) {
 	}
 }
 
-func updateStreamingSessions(s *discordgo.Session) {
+func updateStreamingSessions(s *discordgo.Session, userStatsRepo *repositories.UsersStatsRepository) {
 	for uid, joinTime := range globals.StreamSessions {
 
 		// Ignore all bot sessions
@@ -83,7 +86,7 @@ func updateStreamingSessions(s *discordgo.Session) {
 		duration := time.Since(*joinTime)
 		secondsSpent := duration.Seconds()
 
-		err = globalsRepo.UserStatsRepository.AddToTimeSpentInVoiceChannels(uid, int(secondsSpent))
+		err = userStatsRepo.AddToTimeSpentInVoiceChannels(uid, int(secondsSpent))
 		if err != nil {
 			fmt.Printf("An error ocurred while adding streaming duration to voice channels for user with id %s: %v", uid, err)
 		}
@@ -97,7 +100,7 @@ func updateStreamingSessions(s *discordgo.Session) {
 	}
 }
 
-func updateMusicSessions(s *discordgo.Session) {
+func updateMusicSessions(s *discordgo.Session, userStatsRepo *repositories.UsersStatsRepository) {
 	for uid := range globals.MusicSessions {
 
 		// Ignore all bot sessions
@@ -117,7 +120,7 @@ func updateMusicSessions(s *discordgo.Session) {
 				duration := time.Since(*joinTime)
 				secondsSpent := duration.Seconds()
 
-				err := globalsRepo.UserStatsRepository.AddToTimeSpentListeningMusic(uid, int(secondsSpent))
+				err := userStatsRepo.AddToTimeSpentListeningMusic(uid, int(secondsSpent))
 				if err != nil {
 					fmt.Printf("An error ocurred while adding time spent listening music for user with id %s: %v", uid, err)
 				}

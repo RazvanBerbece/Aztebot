@@ -25,7 +25,7 @@ func HandleSlashConfess(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			},
 		})
 
-		utils.DeleteInteractionResponse(s, i.Interaction, 50)
+		utils.DeleteInteractionResponse(s, i.Interaction, 0)
 	} else {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
@@ -34,7 +34,7 @@ func HandleSlashConfess(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			},
 		})
 
-		utils.DeleteInteractionResponse(s, i.Interaction, 50)
+		utils.DeleteInteractionResponse(s, i.Interaction, 0)
 	}
 }
 
