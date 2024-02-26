@@ -19,7 +19,7 @@ func UpdateVoiceSessionDurations(s *discordgo.Session) {
 		numSec = globals.UpdateVoiceStateFrequency
 	}
 
-	fmt.Println("[CRON] Starting Task UpdateVoiceSesionDurations() at", time.Now(), "running every", numSec, "seconds")
+	fmt.Println("[CRON] Starting Cron Ticker UpdateVoiceSesionDurations() at", time.Now(), "running every", numSec, "seconds")
 
 	// Inject repositories
 	userStatsRepository := repositories.NewUsersStatsRepository()

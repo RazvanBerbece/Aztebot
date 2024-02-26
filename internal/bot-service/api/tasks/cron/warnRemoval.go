@@ -5,31 +5,32 @@ import (
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
-	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 )
 
 func ProcessRemoveExpiredWarns(months int) {
 
-	initialWarnRemovalDelay, warnRemovalTicker := GetDelayAndTickerForWarnRemovalCron(months) // every n=2 months
+	// TODO: Move this into env variable and use cron syntax
+	var numSec int = 5.256e+6 // run every 2 months
 
+	fmt.Println("[CRON] Starting Cron Ticker ProcessRemoveExpiredWarns() at", time.Now(), "running every 2 months")
+
+	// Inject new connections
+	warnsRepository := repositories.NewWarnsRepository()
+
+	go RemoveExpiredWarns(warnsRepository)
+
+	ticker := time.NewTicker(time.Duration(numSec) * time.Second)
+	quit := make(chan struct{})
 	go func() {
-
-		RemoveExpiredWarns(globalsRepo.WarnsRepository)
-
-		fmt.Println("[SCHEDULED CRON] Scheduled Task RemoveExpiredWarns() in <", initialWarnRemovalDelay.Hours()/24, "> days")
-		time.Sleep(initialWarnRemovalDelay)
-
-		// Inject new connections
-		warnsRepository := repositories.NewWarnsRepository()
-
-		for range warnRemovalTicker.C {
-			// Process
-			RemoveExpiredWarns(warnsRepository)
+		for {
+			select {
+			case <-ticker.C:
+				go RemoveExpiredWarns(warnsRepository)
+			case <-quit:
+				ticker.Stop()
+				return
+			}
 		}
-
-		// Cleanup DB connections after cron run
-		utils.CleanupRepositories(nil, nil, nil, warnsRepository, nil)
 	}()
 }
 
@@ -39,7 +40,7 @@ func RemoveExpiredWarns(warnsRepository *repositories.WarnsRepository) {
 
 	allWarns, err := warnsRepository.GetAllWarns()
 	if err != nil {
-		fmt.Println("[CRON]Failed Task RemoveExpiredWarns() at", time.Now(), "with error", err)
+		fmt.Println("[CRON] Failed Task RemoveExpiredWarns() at", time.Now(), "with error", err)
 	}
 
 	// For all existing warns
@@ -51,7 +52,7 @@ func RemoveExpiredWarns(warnsRepository *repositories.WarnsRepository) {
 			// Remove it
 			err := warnsRepository.DeleteWarningForUser(warn.Id, warn.UserId)
 			if err != nil {
-				fmt.Println("[CRON]Failed Task RemoveExpiredWarns() at", time.Now(), "with error", err)
+				fmt.Println("[CRON] Failed Task RemoveExpiredWarns() at", time.Now(), "with error", err)
 			}
 		}
 	}

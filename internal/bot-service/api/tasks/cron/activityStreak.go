@@ -33,7 +33,7 @@ func ProcessUpdateActivityStreaks(h int, m int, s int) {
 		}
 
 		// Cleanup DB connections after cron run
-		utils.CleanupRepositories(nil, usersRepository, userStatsRepository, nil, nil)
+		go utils.CleanupRepositories(nil, usersRepository, userStatsRepository, nil, nil)
 	}()
 }
 
