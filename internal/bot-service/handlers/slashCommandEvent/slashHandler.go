@@ -111,10 +111,7 @@ func RegisterSlashHandler(s *discordgo.Session) {
 		}
 
 		// Grant experience points for using slash command
-		currentXp, err := member.GrantMemberExperience(ownerUserId, "SLASH_REWARD", nil)
-		if err != nil {
-			fmt.Printf("An error ocurred while granting slash command usage rewards (%d) to user (%s): %v", currentXp, ownerUserId, err)
-		}
+		go member.GrantMemberExperience(ownerUserId, "SLASH_REWARD", nil)
 
 		if handlerFunc, ok := commands.AztebotSlashCommandHandlers[i.ApplicationCommandData().Name]; ok {
 			handlerFunc(s, i)
