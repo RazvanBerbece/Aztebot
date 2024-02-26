@@ -53,6 +53,7 @@ func HandleSlashWarn(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		fmt.Printf("An error ocurred while sending warning embed response: %v", err)
 		errMsg := fmt.Sprintf("An error ocurred while retrieving user with ID `%s` provided in the slash command.", targetUserId)
 		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
+		return
 	}
 
 	// Format CreatedAt

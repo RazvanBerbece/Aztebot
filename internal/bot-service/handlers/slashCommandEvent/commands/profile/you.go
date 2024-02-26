@@ -19,6 +19,7 @@ func HandleSlashYou(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	embed := GetProfileEmbedForUser(s, targetUserId)
 	if embed == nil {
 		utils.ErrorEmbedResponseEdit(s, i.Interaction, "An error ocurred while trying to fetch user's profile card.")
+		return
 	}
 
 	// Final response

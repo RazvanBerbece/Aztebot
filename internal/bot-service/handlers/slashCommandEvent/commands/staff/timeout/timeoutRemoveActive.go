@@ -32,6 +32,7 @@ func HandleSlashTimeoutRemoveActive(s *discordgo.Session, i *discordgo.Interacti
 	if err != nil {
 		errMsg := fmt.Sprintf("An error ocurred while retrieving user with ID %s provided in the slash command.", targetUserId)
 		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
+		return
 	}
 
 	activeTimeout, _, err := member.GetMemberTimeouts(targetUserId)

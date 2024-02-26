@@ -31,6 +31,7 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 			if convErr != nil {
 				errMsg := fmt.Sprintf("The provided `multiplier` command argument is invalid. (term: `%s`)", multiplierName)
 				utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
+				return
 			}
 			globals.ExperienceReward_MessageSent = *multiplier
 		}
@@ -42,6 +43,7 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 			if convErr != nil {
 				errMsg := fmt.Sprintf("The provided `multiplier` command argument is invalid. (term: `%s`)", multiplierName)
 				utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
+				return
 			}
 			globals.ExperienceReward_ReactionReceived = *multiplier
 		}
@@ -53,6 +55,7 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 			if convErr != nil {
 				errMsg := fmt.Sprintf("The provided `multiplier` command argument is invalid. (term: `%s`)", multiplierName)
 				utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
+				return
 			}
 			globals.ExperienceReward_SlashCommandUsed = *multiplier
 		}
@@ -64,6 +67,7 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 			if convErr != nil {
 				errMsg := fmt.Sprintf("The provided `multiplier` command argument is invalid. (term: `%s`)", multiplierName)
 				utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
+				return
 			}
 			globals.ExperienceReward_InVc = *multiplier
 		}
@@ -75,6 +79,7 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 			if convErr != nil {
 				errMsg := fmt.Sprintf("The provided `multiplier` command argument is invalid. (term: `%s`)", multiplierName)
 				utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
+				return
 			}
 			globals.ExperienceReward_InMusic = *multiplier
 		}

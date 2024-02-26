@@ -47,6 +47,7 @@ func HandleSlashWarnRemoveOldest(s *discordgo.Session, i *discordgo.InteractionC
 				Content: "An error ocurred while sending warning removal embed response.",
 			},
 		})
+		return
 	}
 
 	// Format CreatedAt
