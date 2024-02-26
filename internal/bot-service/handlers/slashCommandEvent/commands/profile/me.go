@@ -197,7 +197,7 @@ func DecorateProfileEmbed(embed *embed.Embed, staffRole *dataModels.Role, userId
 	}
 
 	// Staff text segment (is user a member of staff?) in embed description
-	if member.IsStaffMember(userId) {
+	if member.IsStaff(userId) {
 		var staffFieldName string = "💎 OTA Staff Member"
 		if staffRole != nil {
 			staffFieldName += fmt.Sprintf(" (`%s`)", staffRole.DisplayName)

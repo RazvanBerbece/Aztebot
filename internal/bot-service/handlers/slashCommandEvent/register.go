@@ -14,6 +14,8 @@ func RegisterAztebotSlashCommands(s *discordgo.Session, mainGuildOnly bool) erro
 
 	fmt.Printf("[STARTUP] Registering %d slash commands...\n", len(commands.AztebotSlashCommands))
 
+	// TODO: Optimise this as it take ~2 mins to finish executing and it seems to scale poorly with more slash commands
+
 	if mainGuildOnly {
 		// Register commands only for the main guild
 		// This is more performant when the bot is not supposed to be in more guilds
@@ -41,7 +43,7 @@ func RegisterAztebotSlashCommands(s *discordgo.Session, mainGuildOnly bool) erro
 	}
 
 	// Register global commands (available in bot DMs as well)
-	RegisterDmCommands(s, globals.GlobalCommands)
+	go RegisterDmCommands(s, globals.GlobalCommands)
 
 	// Register actual slash command handler
 	go RegisterSlashHandler(s)

@@ -14,7 +14,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func IsStaffMember(userId string) bool {
+func IsStaff(userId string) bool {
 
 	roles, err := globalsRepo.UsersRepository.GetRolesForUser(userId)
 	if err != nil {
@@ -482,6 +482,8 @@ func GetMemberExperiencePoints(userId string) (*float64, error) {
 // TODO: This could implement a channel pub/sub so that it can ensure experience grants but also fire and forget
 func GrantMemberExperience(userId string, activityType string, multiplierOption *float64) (*float64, error) {
 
+	fmt.Println("[RUNTIME] Granting Experience Points...")
+
 	isMember := globalsRepo.UsersRepository.UserExists(userId)
 	if isMember < 0 {
 		var errMsg string = "member to grant XP to was not found in the DB; likely the given member is a bot application"
@@ -495,43 +497,24 @@ func GrantMemberExperience(userId string, activityType string, multiplierOption 
 		multiplier = *multiplierOption
 	}
 
-	var xpAdded float64 = 0
+	var xpToAdd float64
 	switch activityType {
 	case "MSG_REWARD":
-		xpAdded = globals.ExperienceReward_MessageSent * multiplier
-		err := globalsRepo.UsersRepository.AddUserExpriencePoints(userId, xpAdded)
-		if err != nil {
-			fmt.Printf("An error ocurred while granting XP to user: %v\n", err)
-			return nil, err
-		}
+		xpToAdd = globals.ExperienceReward_MessageSent * multiplier
 	case "REACT_REWARD":
-		xpAdded = globals.ExperienceReward_ReactionReceived * multiplier
-		err := globalsRepo.UsersRepository.AddUserExpriencePoints(userId, xpAdded)
-		if err != nil {
-			fmt.Printf("An error ocurred while granting XP to user: %v\n", err)
-			return nil, err
-		}
+		xpToAdd = globals.ExperienceReward_ReactionReceived * multiplier
 	case "SLASH_REWARD":
-		xpAdded = globals.ExperienceReward_SlashCommandUsed * multiplier
-		err := globalsRepo.UsersRepository.AddUserExpriencePoints(userId, xpAdded)
-		if err != nil {
-			fmt.Printf("An error ocurred while granting XP to user: %v\n", err)
-			return nil, err
-		}
+		xpToAdd = globals.ExperienceReward_SlashCommandUsed * multiplier
 	case "IN_VC_REWARD":
-		xpAdded = globals.ExperienceReward_InVc * multiplier
-		err := globalsRepo.UsersRepository.AddUserExpriencePoints(userId, xpAdded)
-		if err != nil {
-			fmt.Printf("An error ocurred while granting XP to user: %v\n", err)
-			return nil, err
-		}
+		xpToAdd = globals.ExperienceReward_InVc * multiplier
 	case "IN_MUSIC_REWARD":
-		xpAdded = globals.ExperienceReward_InMusic * multiplier
-		err := globalsRepo.UsersRepository.AddUserExpriencePoints(userId, xpAdded)
-		if err != nil {
-			fmt.Printf("An error ocurred while granting XP to user: %v\n", err)
-			return nil, err
-		}
+		xpToAdd = globals.ExperienceReward_InMusic * multiplier
+	}
+
+	err := globalsRepo.UsersRepository.AddUserExpriencePoints(userId, xpToAdd)
+	if err != nil {
+		fmt.Printf("An error ocurred while granting XP to user: %v\n", err)
+		return nil, err
 	}
 
 	user, err := globalsRepo.UsersRepository.GetUser(userId)
@@ -539,6 +522,8 @@ func GrantMemberExperience(userId string, activityType string, multiplierOption 
 		fmt.Printf("An error ocurred while retrieving User (%s) from DB after adding XP. Member may have left the server.\n", userId)
 		return nil, err
 	}
+
+	fmt.Println("[RUNTIME] Finished Granting Experience Points...")
 
 	return &user.CurrentExperience, nil
 
@@ -553,37 +538,24 @@ func RemoveMemberExperience(userId string, activityType string) (*float64, error
 		return nil, fmt.Errorf("member to remove XP from was not found in the DB; likely the given member is a bot application")
 	}
 
+	var xpToRemove float64
 	switch activityType {
 	case "MSG_REWARD":
-		err := globalsRepo.UsersRepository.RemoveUserExpriencePoints(userId, globals.ExperienceReward_MessageSent)
-		if err != nil {
-			fmt.Printf("An error ocurred while removing XP from user: %v\n", err)
-			return nil, err
-		}
+		xpToRemove = globals.ExperienceReward_MessageSent
 	case "REACT_REWARD":
-		err := globalsRepo.UsersRepository.RemoveUserExpriencePoints(userId, globals.ExperienceReward_ReactionReceived)
-		if err != nil {
-			fmt.Printf("An error ocurred while removing XP from user: %v\n", err)
-			return nil, err
-		}
+		xpToRemove = globals.ExperienceReward_ReactionReceived
 	case "SLASH_REWARD":
-		err := globalsRepo.UsersRepository.RemoveUserExpriencePoints(userId, globals.ExperienceReward_SlashCommandUsed)
-		if err != nil {
-			fmt.Printf("An error ocurred while removing XP from user: %v\n", err)
-			return nil, err
-		}
+		xpToRemove = globals.ExperienceReward_SlashCommandUsed
 	case "IN_VC_REWARD":
-		err := globalsRepo.UsersRepository.RemoveUserExpriencePoints(userId, globals.ExperienceReward_InVc)
-		if err != nil {
-			fmt.Printf("An error ocurred while removing XP from user: %v\n", err)
-			return nil, err
-		}
+		xpToRemove = globals.ExperienceReward_InVc
 	case "IN_MUSIC_REWARD":
-		err := globalsRepo.UsersRepository.RemoveUserExpriencePoints(userId, globals.ExperienceReward_InMusic)
-		if err != nil {
-			fmt.Printf("An error ocurred while removing XP from user: %v\n", err)
-			return nil, err
-		}
+		xpToRemove = globals.ExperienceReward_InMusic
+	}
+
+	err := globalsRepo.UsersRepository.RemoveUserExpriencePoints(userId, xpToRemove)
+	if err != nil {
+		fmt.Printf("An error ocurred while removing XP from user: %v\n", err)
+		return nil, err
 	}
 
 	user, err := globalsRepo.UsersRepository.GetUser(userId)
@@ -596,7 +568,7 @@ func RemoveMemberExperience(userId string, activityType string) (*float64, error
 
 }
 
-func MemberIsBot(s *discordgo.Session, guildId string, userId string) (*bool, error) {
+func IsBot(s *discordgo.Session, guildId string, userId string) (*bool, error) {
 
 	// Fetch user information from Discord API.
 	apiUser, err := s.User(userId)

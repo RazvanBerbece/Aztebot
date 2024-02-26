@@ -8,7 +8,6 @@ import (
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
-	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 )
 
 func ProcessUpdateActivityStreaks(h int, m int, s int) {
@@ -31,9 +30,6 @@ func ProcessUpdateActivityStreaks(h int, m int, s int) {
 			// Process
 			UpdateActivityStreaks(usersRepository, userStatsRepository)
 		}
-
-		// Cleanup DB connections after cron run
-		go utils.CleanupRepositories(nil, usersRepository, userStatsRepository, nil, nil)
 	}()
 }
 

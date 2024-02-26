@@ -25,7 +25,7 @@ func ReactionRemove(s *discordgo.Session, r *discordgo.MessageReactionRemove) {
 	messageOwnerUid := message.Author.ID
 
 	// Ignore all messages created by bots
-	authorIsBot, err := member.MemberIsBot(s, globals.DiscordMainGuildId, messageOwnerUid)
+	authorIsBot, err := member.IsBot(s, globals.DiscordMainGuildId, messageOwnerUid)
 	if err != nil {
 		return
 	}
