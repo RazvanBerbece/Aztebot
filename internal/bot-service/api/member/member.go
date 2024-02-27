@@ -479,7 +479,6 @@ func GetMemberExperiencePoints(userId string) (*float64, error) {
 
 }
 
-// TODO: This could implement a channel pub/sub so that it can ensure experience grants but also fire and forget
 func GrantMemberExperience(userId string, activityType string, points float64) (*float64, error) {
 
 	isMember := globalsRepo.UsersRepository.UserExists(userId)

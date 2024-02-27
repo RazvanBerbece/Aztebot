@@ -61,7 +61,7 @@ func updateVoiceSessions(userStatsRepo *repositories.UsersStatsRepository) {
 		globals.ExperienceGrantsChannel <- dataModels.ExperienceGrant{
 			UserId:   uid,
 			Points:   globals.ExperienceReward_InMusic * secondsSpent,
-			Activity: "Time Spent Streaming",
+			Activity: "Time Spent in Voice Channels",
 		}
 	}
 }
@@ -85,7 +85,7 @@ func updateStreamingSessions(userStatsRepo *repositories.UsersStatsRepository) {
 		globals.ExperienceGrantsChannel <- dataModels.ExperienceGrant{
 			UserId:   uid,
 			Points:   globals.ExperienceReward_InMusic * secondsSpent,
-			Activity: "Time Spent in Voice Channels",
+			Activity: "Time Spent Streaming",
 		}
 	}
 }
@@ -116,7 +116,7 @@ func updateMusicSessions(userStatsRepo *repositories.UsersStatsRepository) {
 				globals.ExperienceGrantsChannel <- dataModels.ExperienceGrant{
 					UserId:   uid,
 					Points:   globals.ExperienceReward_InMusic * secondsSpent,
-					Activity: "Time Spent in Voice Channels",
+					Activity: "Time Spent in Music Channels",
 				}
 			}
 		}
