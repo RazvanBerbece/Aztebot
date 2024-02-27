@@ -240,7 +240,7 @@ func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 			userId := voiceState.UserID
 			channelId := voiceState.ChannelID
 
-			userIsBot, err := member.IsBot(s, globals.DiscordMainGuildId, userId)
+			userIsBot, err := member.IsBot(s, globals.DiscordMainGuildId, userId, false)
 			if err != nil {
 				fmt.Println("Error retrieving user for bot check:", err)
 				return

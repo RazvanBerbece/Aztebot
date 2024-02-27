@@ -564,12 +564,14 @@ func RemoveMemberExperience(userId string, activityType string) (*float64, error
 
 }
 
-func IsBot(s *discordgo.Session, guildId string, userId string) (*bool, error) {
+func IsBot(s *discordgo.Session, guildId string, userId string, debug bool) (*bool, error) {
 
 	// Fetch user information from Discord API.
 	apiUser, err := s.User(userId)
 	if err != nil {
-		log.Printf("Cannot retrieve user %s from Discord API: %v", userId, err)
+		if debug {
+			log.Printf("Cannot retrieve user %s from Discord API: %v", userId, err)
+		}
 		return nil, err
 	}
 
