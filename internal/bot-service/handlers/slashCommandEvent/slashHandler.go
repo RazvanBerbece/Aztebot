@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/member"
+	dataModels "github.com/RazvanBerbece/Aztebot/internal/bot-service/data/models"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	actionEvent "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/actionEvents"
@@ -110,8 +110,12 @@ func RegisterSlashHandler(s *discordgo.Session) {
 			fmt.Printf("An error ocurred while udpating user (%s) last timestamp: %v", ownerUserId, err)
 		}
 
-		// Grant experience points for using slash command
-		go member.GrantMemberExperience(ownerUserId, "SLASH_REWARD", nil)
+		// Publish experience grant message on the channel
+		globals.ExperienceGrantsChannel <- dataModels.ExperienceGrant{
+			UserId:   ownerUserId,
+			Points:   globals.ExperienceReward_SlashCommandUsed,
+			Activity: "Slash Command Used",
+		}
 
 		if handlerFunc, ok := commands.AztebotSlashCommandHandlers[i.ApplicationCommandData().Name]; ok {
 			handlerFunc(s, i)

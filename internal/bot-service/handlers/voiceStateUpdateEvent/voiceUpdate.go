@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	memberApi "github.com/RazvanBerbece/Aztebot/internal/bot-service/api/member"
+	dataModels "github.com/RazvanBerbece/Aztebot/internal/bot-service/data/models"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
@@ -71,10 +71,11 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 				fmt.Printf("An error ocurred while adding time spent to voice channels for user with id %s: %v", userId, err)
 			}
 
-			// Grant experience points for time spent streaming
-			currentXp, err := memberApi.GrantMemberExperience(userId, "IN_VC_REWARD", &secondsSpent)
-			if err != nil {
-				fmt.Printf("An error ocurred while granting streaming activity rewards (%d) to user (%s): %v", currentXp, userId, err)
+			// Publish experience grant message on the channel
+			globals.ExperienceGrantsChannel <- dataModels.ExperienceGrant{
+				UserId:   userId,
+				Points:   globals.ExperienceReward_InMusic * secondsSpent,
+				Activity: "Time Spent Streaming",
 			}
 
 			delete(globals.VoiceSessions, userId)
@@ -119,10 +120,11 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 						fmt.Printf("An error ocurred while adding time spent listening music for user with id %s: %v", userId, err)
 					}
 
-					// Grant experience points for time spent streaming
-					currentXp, err := memberApi.GrantMemberExperience(userId, "IN_MUSIC_REWARD", &secondsSpent)
-					if err != nil {
-						fmt.Printf("An error ocurred while granting music listening rewards (%d) to user (%s): %v", currentXp, userId, err)
+					// Publish experience grant message on the channel
+					globals.ExperienceGrantsChannel <- dataModels.ExperienceGrant{
+						UserId:   userId,
+						Points:   globals.ExperienceReward_InMusic * secondsSpent,
+						Activity: "Time Spent in Music Channels",
 					}
 
 				}
@@ -138,10 +140,11 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 						fmt.Printf("An error ocurred while adding time spent to voice channels for user with id %s: %v", userId, err)
 					}
 
-					// Grant experience points for time spent streaming
-					currentXp, err := memberApi.GrantMemberExperience(userId, "IN_VC_REWARD", &secondsSpent)
-					if err != nil {
-						fmt.Printf("An error ocurred while granting voice channel activity rewards (%d) to user (%s): %v", currentXp, userId, err)
+					// Publish experience grant message on the channel
+					globals.ExperienceGrantsChannel <- dataModels.ExperienceGrant{
+						UserId:   userId,
+						Points:   globals.ExperienceReward_InVc * secondsSpent,
+						Activity: "Time Spent in Voice Channels",
 					}
 				}
 			}

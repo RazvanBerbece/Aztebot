@@ -65,6 +65,9 @@ var LastUsedTop5sTimestamp = time.Now().Add(-60 * time.Minute)
 
 var ConfessionsToApprove = make(map[string]string)
 
+// =============== RUNTIME GLOBAL CHANNELS ===============
+var ExperienceGrantsChannel = make(chan dataModels.ExperienceGrant)
+
 // =============== RUNTIME CUSTOM EVENT IDs (FOR BUTTON PRESS EVENT HANDLERS) ===============
 var ConfessionApprovalEventId = "approve_confession"
 var ConfessionDisprovalEventId = "decline_confession"

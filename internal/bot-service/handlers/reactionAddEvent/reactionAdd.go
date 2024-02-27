@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/member"
+	dataModels "github.com/RazvanBerbece/Aztebot/internal/bot-service/data/models"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/bwmarrin/discordgo"
@@ -51,10 +52,11 @@ func ReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 		fmt.Printf("An error ocurred while udpating user (%s) last timestamp: %v", r.UserID, err)
 	}
 
-	// Grant experience points
-	currentXp, err := member.GrantMemberExperience(messageOwnerUid, "REACT_REWARD", nil)
-	if err != nil {
-		fmt.Printf("An error ocurred while granting reaction received rewards (%d) to user (%s): %v", currentXp, messageOwnerUid, err)
+	// Publish experience grant message on the channel
+	globals.ExperienceGrantsChannel <- dataModels.ExperienceGrant{
+		UserId:   messageOwnerUid,
+		Points:   globals.ExperienceReward_ReactionReceived,
+		Activity: "Reaction Received",
 	}
 
 }

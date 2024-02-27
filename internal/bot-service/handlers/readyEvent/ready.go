@@ -3,6 +3,7 @@ package readyEvent
 import (
 	"fmt"
 
+	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/tasks/channelHandlers"
 	cron "github.com/RazvanBerbece/Aztebot/internal/bot-service/api/tasks/cron"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/tasks/startup"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
@@ -46,6 +47,9 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 
 	// Run background task to periodically update voice session durations in the DB
 	go cron.UpdateVoiceSessionDurations(s)
+
+	// Run channel message handlers
+	go channelHandlers.HandleExperienceGrantsMessages()
 
 	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, XP gaining?, etc.)
 	cron.ProcessUpdateActivityStreaks(24, 0, 0) // the hh:mm:ss timestamp in a day to run the cron at

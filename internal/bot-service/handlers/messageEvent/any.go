@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/member"
+	dataModels "github.com/RazvanBerbece/Aztebot/internal/bot-service/data/models"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/bwmarrin/discordgo"
@@ -38,7 +39,11 @@ func Any(s *discordgo.Session, m *discordgo.MessageCreate) {
 		fmt.Printf("An error ocurred while updating user (%s) last timestamp: %v\n", m.Author.ID, err)
 	}
 
-	// Grant experience points
-	go member.GrantMemberExperience(messageCreatorUserId, "MSG_REWARD", nil)
+	// Publish experience grant message on the channel
+	globals.ExperienceGrantsChannel <- dataModels.ExperienceGrant{
+		UserId:   messageCreatorUserId,
+		Points:   globals.ExperienceReward_MessageSent,
+		Activity: "Message Sent Reward",
+	}
 
 }
