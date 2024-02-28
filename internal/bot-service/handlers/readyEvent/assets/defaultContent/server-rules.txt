@@ -20,6 +20,7 @@
 📃 ━ Este strict interzisă folosirea comenzilor pentru boți în afara camerelor special destinate pentru acest lucru (vezi #comenzi-bot, #comenzi-muzica)
 📃 ━ Este strict interzisă folosirea canelelor de chat din secțiunea `#Diferite discutii` în alte scopuri decât cele stabilite de staff.
 📃 ━ Este obligatorie păstrarea contextelor în fiecare canal creat!
+📃 ━ Este strict interzisă folosirea camerelor de voice și muzică (e.g: AzteRadio, Music Rooms, etc.) pentru a farma puncte de experiență.
 
 **🌐 Secțiunea V - Reguli privind Termenii și Condițiile Discord**
 📃 ━ Este strict interzisă comercializarea de bunuri atât digitale, cât și fizice în cadrul acestei comunități. Nu aveți voie sa vindeți niciun fel de bunuri, fie ele conturi, abonamente, etc.
