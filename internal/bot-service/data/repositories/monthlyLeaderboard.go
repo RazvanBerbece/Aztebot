@@ -137,3 +137,23 @@ func (r MonthlyLeaderboardRepository) GetLeaderboardEntriesByCategory(category i
 	return entries, nil
 
 }
+
+func (r MonthlyLeaderboardRepository) UpdateCategoryForUser(userId string, category int8) error {
+	stmt, err := r.Conn.Db.Prepare(`
+		UPDATE MonthlyLeaderboard SET 
+			category = ?
+		WHERE userId = ?`)
+	if err != nil {
+		fmt.Printf("Error ocurred while preparing to update a user's leaderboard category %s: %v\n", userId, err)
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(category, userId)
+	if err != nil {
+		fmt.Printf("Error ocurred while updating leaderboard category for user %s: %v\n", userId, err)
+		return err
+	}
+
+	return nil
+}

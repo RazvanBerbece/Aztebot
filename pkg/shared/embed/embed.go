@@ -68,6 +68,17 @@ func (e *Embed) AddLineBreakField() *Embed {
 	return e
 }
 
+// AtTagEveryone
+func (e *Embed) AtTagEveryone() *Embed {
+	e.Fields = append(e.Fields, &discordgo.MessageEmbedField{
+		Name:   "",
+		Value:  "||@everyone||",
+		Inline: false,
+	})
+
+	return e
+}
+
 // SetFooter [Text] [iconURL]
 func (e *Embed) SetFooter(args ...string) *Embed {
 	iconURL := ""

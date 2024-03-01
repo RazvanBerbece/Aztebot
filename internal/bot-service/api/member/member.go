@@ -612,6 +612,20 @@ func SetGender(userId string, genderValue string) error {
 		return err
 	}
 
+	// Also set gender in leaderboard - if applicable
+	count := globalsRepo.MonthlyLeaderboardRepository.EntryExists(userId)
+	if count <= 0 {
+		if count == -1 {
+			return fmt.Errorf("an error ocurred while checking for user leaderboard entry")
+		}
+	} else {
+		err = globalsRepo.MonthlyLeaderboardRepository.UpdateCategoryForUser(userId, user.Gender)
+		if err != nil {
+			return err
+		}
+
+	}
+
 	return nil
 
 }
