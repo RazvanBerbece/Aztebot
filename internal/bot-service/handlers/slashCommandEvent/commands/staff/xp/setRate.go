@@ -108,12 +108,10 @@ func sendXpRateChangeNotification(s *discordgo.Session, channelId string, activi
 	// Build global XP rate change embed
 	embed := embed.
 		NewEmbed().
-		SetTitle(fmt.Sprintf("🤖📣 Global XP Rate Change for `%s`", activityName)).
+		SetTitle("🤖📣	Global XP Rate Change Announcement").
 		SetColor(000000).
 		SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
-		AddField("Activity", fmt.Sprintf("`%s`", activityName), false).
-		AddField("Rate Multiplier", fmt.Sprintf("`%s`", multiplierName), false).
-		AddLineBreakField().
+		AddField("", fmt.Sprintf("`%s` are now worth `%s` as many experience points !", activityName, multiplierName), false).
 		AtTagEveryone()
 
 	notifications.SendEmbedToTextChannel(s, channelId, *embed)
