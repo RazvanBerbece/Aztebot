@@ -479,37 +479,49 @@ func GetMemberExperiencePoints(userId string) (*float64, error) {
 
 }
 
-func GrantMemberExperience(userId string, activityType string, points float64) (*float64, error) {
-
-	isMember := globalsRepo.UsersRepository.UserExists(userId)
-	if isMember < 0 {
-		var errMsg string = "member to grant XP to was not found in the DB; likely the given member is a bot application"
-		fmt.Println(errMsg)
-		return nil, fmt.Errorf(errMsg)
-	}
-
-	err := globalsRepo.UsersRepository.AddUserExpriencePoints(userId, points)
-	if err != nil {
-		fmt.Printf("An error ocurred while granting XP to user: %v\n", err)
-		return nil, err
-	}
+func GrantMemberExperience(userId string, activityType string, points float64) (float64, error) {
 
 	user, err := globalsRepo.UsersRepository.GetUser(userId)
 	if err != nil {
-		fmt.Printf("An error ocurred while retrieving User (%s) from DB after adding XP. Member may have left the server.\n", userId)
-		return nil, err
+		fmt.Printf("An error ocurred while retrieving user with UID %s from OTA DB: %v\n", userId, err)
+		return -1, err
 	}
 
-	return &user.CurrentExperience, nil
+	err = globalsRepo.UsersRepository.AddUserExpriencePoints(userId, points)
+	if err != nil {
+		fmt.Printf("An error ocurred while granting XP to user: %v\n", err)
+		return -1, err
+	}
+
+	// Also store records for the monthly leaderboard
+	monthlyEntryExists := globalsRepo.MonthlyLeaderboardRepository.EntryExists(userId)
+	if monthlyEntryExists <= 0 {
+		if monthlyEntryExists == -1 {
+			return -1, fmt.Errorf("monthly leaderboard entry to was not found in the DB; likely an error has ocurred")
+		}
+		// Entry doesn't exist for member, so create one
+		err := globalsRepo.MonthlyLeaderboardRepository.AddLeaderboardEntry(userId, user.Gender)
+		if err != nil {
+			return -1, err
+		}
+	}
+	err = globalsRepo.MonthlyLeaderboardRepository.AddLeaderboardExpriencePoints(userId, points)
+	if err != nil {
+		fmt.Printf("An error ocurred while granting monthly leaderboard XP to user: %v\n", err)
+		return -1, err
+	}
+
+	return user.CurrentExperience + points, nil
 
 }
 
 func RemoveMemberExperience(userId string, activityType string) (*float64, error) {
 
 	isMember := globalsRepo.UsersRepository.UserExists(userId)
-	if isMember < 0 {
-		var errMsg string = "member to remove XP from was not found in the DB; likely the given member is a bot application"
-		fmt.Println(errMsg)
+	if isMember <= 0 {
+		if isMember == -1 {
+			return nil, fmt.Errorf("member to grant XP to was not found in the DB; likely an error has ocurred")
+		}
 		return nil, fmt.Errorf("member to remove XP from was not found in the DB; likely the given member is a bot application")
 	}
 
@@ -531,6 +543,22 @@ func RemoveMemberExperience(userId string, activityType string) (*float64, error
 	if err != nil {
 		fmt.Printf("An error ocurred while removing XP from user: %v\n", err)
 		return nil, err
+	}
+
+	// Also remove points from the monthly leaderboard
+	monthlyEntryExists := globalsRepo.MonthlyLeaderboardRepository.EntryExists(userId)
+	if monthlyEntryExists <= 0 {
+		if monthlyEntryExists == -1 {
+			return nil, fmt.Errorf("monthly leaderboard entry to was not found in the DB; likely an error has ocurred")
+		}
+	}
+
+	if monthlyEntryExists == 1 {
+		err = globalsRepo.MonthlyLeaderboardRepository.RemoveUserExpriencePoints(userId, xpToRemove)
+		if err != nil {
+			fmt.Printf("An error ocurred while removing monthly leaderboard XP from user: %v\n", err)
+			return nil, err
+		}
 	}
 
 	user, err := globalsRepo.UsersRepository.GetUser(userId)
@@ -557,4 +585,33 @@ func IsBot(s *discordgo.Session, guildId string, userId string, debug bool) (*bo
 	isBot := apiUser.Bot
 
 	return &isBot, nil
+}
+
+func SetGender(userId string, genderValue string) error {
+
+	user, err := globalsRepo.UsersRepository.GetUser(userId)
+	if err != nil {
+		return err
+	}
+
+	switch genderValue {
+	case "male":
+		user.Gender = 0
+	case "female":
+		user.Gender = 1
+	case "nonbin":
+		user.Gender = 2
+	case "other":
+		user.Gender = 3
+	default:
+		user.Gender = -1
+	}
+
+	_, err = globalsRepo.UsersRepository.UpdateUser(*user)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
 }

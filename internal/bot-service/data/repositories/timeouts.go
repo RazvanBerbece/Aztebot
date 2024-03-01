@@ -147,11 +147,6 @@ func (r TimeoutsRepository) GetAllTimeouts() ([]dataModels.Timeout, error) {
 		return nil, fmt.Errorf("GetAllTimeouts: %v", err)
 	}
 
-	// Check for zero rows
-	if len(timeouts) == 0 {
-		return []dataModels.Timeout{}, nil
-	}
-
 	return timeouts, nil
 
 }
@@ -207,11 +202,6 @@ func (r TimeoutsRepository) GetAllArchivedTimeouts() ([]dataModels.ArchivedTimeo
 		return nil, fmt.Errorf("GetAllArchivedTimeouts: %v", err)
 	}
 
-	// Check for zero rows
-	if len(timeouts) == 0 {
-		return []dataModels.ArchivedTimeout{}, nil
-	}
-
 	return timeouts, nil
 
 }
@@ -235,11 +225,6 @@ func (r TimeoutsRepository) GetAllArchivedTimeoutsForUser(userId string) ([]data
 	}
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("GetAllArchivedTimeoutsForUser: %v", err)
-	}
-
-	// Check for zero rows
-	if len(timeouts) == 0 {
-		return []dataModels.ArchivedTimeout{}, nil
 	}
 
 	return timeouts, nil

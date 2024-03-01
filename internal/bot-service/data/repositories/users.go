@@ -42,10 +42,6 @@ func (r UsersRepository) GetAllDiscordUids() ([]string, error) {
 		return nil, fmt.Errorf("GetAllUids: No users found in Users table")
 	}
 
-	if err != nil {
-		return nil, err
-	}
-
 	return userIds, nil
 }
 
@@ -70,21 +66,14 @@ func (r UsersRepository) GetAllUsers() ([]dataModels.User, error) {
 			&user.CurrentInnerOrder,
 			&user.CurrentLevel,
 			&user.CurrentExperience,
-			&user.CreatedAt); err != nil {
+			&user.CreatedAt,
+			&user.Gender); err != nil {
 			return nil, fmt.Errorf("GetAllUsers: %v", err)
 		}
 		users = append(users, user)
 	}
 	if err := rowsUsers.Err(); err != nil {
 		return nil, fmt.Errorf("GetAllUsers: %v", err)
-	}
-	// Check for zero rows - if the query arg has no IDs retrieved from the Users table
-	if len(users) == 0 {
-		return nil, fmt.Errorf("GetAllUsers: No users found in Users table")
-	}
-
-	if err != nil {
-		return nil, err
 	}
 
 	return users, nil
@@ -95,6 +84,7 @@ func (r UsersRepository) UserExists(userId string) int {
 	var count int
 	err := r.Conn.Db.QueryRow(query, userId).Scan(&count)
 	if err != nil {
+		fmt.Printf("An error ocurred while checking for user in OTA DB: %v\n", err)
 		return -1
 	}
 	return count
@@ -115,7 +105,7 @@ func (r UsersRepository) GetUser(userId string) (*dataModels.User, error) {
 		&user.CurrentLevel,
 		&user.CurrentExperience,
 		&user.CreatedAt,
-	)
+		&user.Gender)
 
 	if err != nil {
 		return nil, err
@@ -147,6 +137,7 @@ func (r UsersRepository) SaveInitialUserDetails(tag string, userId string) (*dat
 		CurrentLevel:      0,
 		CurrentExperience: 0,
 		CreatedAt:         nil,
+		Gender:            -1,
 	}
 
 	stmt, err := r.Conn.Db.Prepare(`
@@ -159,15 +150,16 @@ func (r UsersRepository) SaveInitialUserDetails(tag string, userId string) (*dat
 				currentInnerOrder, 
 				currentLevel, 
 				currentExperience, 
-				createdAt
+				createdAt,
+				gender
 			)
-		VALUES(?, ?, ?, ?, ?, ?, ?, ?);`)
+		VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);`)
 	if err != nil {
 		return nil, err
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(user.DiscordTag, user.UserId, user.CurrentRoleIds, user.CurrentCircle, user.CurrentInnerOrder, user.CurrentLevel, user.CurrentExperience, user.CreatedAt)
+	_, err = stmt.Exec(user.DiscordTag, user.UserId, user.CurrentRoleIds, user.CurrentCircle, user.CurrentInnerOrder, user.CurrentLevel, user.CurrentExperience, user.CreatedAt, user.Gender)
 	if err != nil {
 		return nil, err
 	}
@@ -186,14 +178,15 @@ func (r UsersRepository) UpdateUser(user dataModels.User) (*dataModels.User, err
 			currentInnerOrder = ?, 
 			currentLevel = ?, 
 			currentExperience = ?, 
-			createdAt = ? 
+			createdAt = ?,
+			gender = ?
 		WHERE userId = ?`)
 	if err != nil {
 		return nil, err
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(user.DiscordTag, user.CurrentRoleIds, user.CurrentCircle, user.CurrentInnerOrder, user.CurrentLevel, user.CurrentExperience, user.CreatedAt, user.UserId)
+	_, err = stmt.Exec(user.DiscordTag, user.CurrentRoleIds, user.CurrentCircle, user.CurrentInnerOrder, user.CurrentLevel, user.CurrentExperience, user.CreatedAt, user.Gender, user.UserId)
 	if err != nil {
 		return nil, err
 	}
@@ -301,10 +294,6 @@ func (r UsersRepository) GetRolesByIds(placeholders string, ids []int) ([]dataMo
 	}
 	if err := rowsRoles.Err(); err != nil {
 		return nil, fmt.Errorf("GetRolesByIds: %v", err)
-	}
-	// Check for zero rows - if the query arg has no IDs retrieved from the Users table
-	if len(roles) == 0 {
-		return nil, fmt.Errorf("GetRolesByIds: No roles found for ids %d", ids)
 	}
 
 	return roles, nil

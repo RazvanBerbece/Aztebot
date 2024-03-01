@@ -16,12 +16,12 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 
 	var musicChannels map[string]string
 	if globals.Environment == "staging" {
-		// Dev text channels
+		// Dev music channels
 		musicChannels = map[string]string{
 			"1173790229258326106": "radio",
 		}
 	} else {
-		// Production text channels
+		// Production music channels
 		musicChannels = map[string]string{
 			"1176204022399631381": "radio",
 			"1118202946455351388": "music-1",
