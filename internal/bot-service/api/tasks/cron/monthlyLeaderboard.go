@@ -163,7 +163,7 @@ func sendMonthlyLeaderboardWinnerNotification(s *discordgo.Session, channelId st
 	// Tag everyone to propagate announcement
 	embed.
 		AddLineBreakField().
-		AddField("", "@everyone", false)
+		AddField("", "|@everyone|", false)
 
 	notifications.SendEmbedToTextChannel(s, channelId, *embed)
 
