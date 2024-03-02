@@ -70,6 +70,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 				delete(globals.VoiceSessions, userId)
 				delete(globals.StreamSessions, userId)
 				delete(globals.DeafSessions, userId)
+				return
 			}
 		}
 	}
