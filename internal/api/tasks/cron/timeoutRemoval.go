@@ -9,7 +9,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func ClearExpiredTimeouts(s *discordgo.Session) {
+func ProcessClearExpiredTimeouts(s *discordgo.Session) {
 
 	var numSec int
 	if globals.TimeoutClearFrequencyErr != nil {

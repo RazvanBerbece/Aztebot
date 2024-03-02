@@ -23,7 +23,6 @@ func SyncUserPersistent(s *discordgo.Session, guildId string, userId string, mem
 	case -1:
 		fmt.Printf("Cannot check whether user %s (%s) exists in the DB during bot startup sync\n", member.User.Username, userId)
 	case 0:
-		fmt.Printf("Adding new member %s to the OTA DB during bot startup sync\n", member.User.Username)
 		var err error
 		user, err = globalsRepo.UsersRepository.SaveInitialUserDetails(member.User.Username, userId)
 		if err != nil {
@@ -35,6 +34,7 @@ func SyncUserPersistent(s *discordgo.Session, guildId string, userId string, mem
 			log.Fatalf("Cannot store initial user stats during bot startup sync: %v", err)
 			return errStats
 		}
+		fmt.Printf("Added new member entries %s to the OTA DB during bot startup sync\n", member.User.Username)
 	case 1:
 		// Already exists
 		var err error
@@ -54,6 +54,7 @@ func SyncUserPersistent(s *discordgo.Session, guildId string, userId string, mem
 			err = globalsRepo.UserStatsRepository.SaveInitialUserStats(userId)
 			if err != nil {
 				log.Printf("Failed to store initial user stats at startup: %v", err)
+				return err
 			}
 		case 1:
 			// Stats exist
@@ -111,7 +112,6 @@ func SyncUser(s *discordgo.Session, guildId string, userId string, member *disco
 	case -1:
 		fmt.Printf("Cannot check whether user %s (%s) exists in the DB\n", member.User.Username, userId)
 	case 0:
-		fmt.Printf("Adding new member %s to the OTA DB\n", member.User.Username)
 		var err error
 		user, err = globalsRepo.UsersRepository.SaveInitialUserDetails(member.User.Username, userId)
 		if err != nil {
@@ -123,6 +123,7 @@ func SyncUser(s *discordgo.Session, guildId string, userId string, member *disco
 			log.Fatalf("Cannot store initial user stats: %v\n", errStats)
 			return errStats
 		}
+		fmt.Printf("Added new member entries %s to the OTA DB\n", member.User.Username)
 	case 1:
 		// Already exists
 		var err error
