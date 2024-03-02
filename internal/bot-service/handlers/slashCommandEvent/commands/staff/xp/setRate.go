@@ -110,8 +110,7 @@ func sendXpRateChangeNotification(s *discordgo.Session, channelId string, activi
 		NewEmbed().
 		SetTitle("🤖📣	Global XP Rate Change Announcement").
 		SetColor(000000).
-		SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
-		AtTagEveryone()
+		SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg")
 
 	if multiplierName == "Default" {
 		embed.AddField("", fmt.Sprintf("`%s` are now worth the default amount of experience points.", activityName), false)
