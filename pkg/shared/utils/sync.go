@@ -6,9 +6,9 @@ import (
 	"log"
 	"time"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/bot-service/data/models"
-	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
+	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
+	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
+	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
 	"github.com/bwmarrin/discordgo"
 )
 

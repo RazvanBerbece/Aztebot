@@ -3,8 +3,8 @@ package repository_test
 import (
 	"testing"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/bot-service/data/models"
-	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
+	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
+	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
 )
 
 func TestGetRoleById(t *testing.T) {

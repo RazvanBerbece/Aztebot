@@ -20,7 +20,7 @@ services:
     env_file:
       ./.env
     build:
-      dockerfile: ./cmd/bot-service/Dockerfile
+      dockerfile: ./cmd/Dockerfile
     volumes: 
       - "./logs:/app/logs"
 

@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/bot-service/data/models"
-	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
+	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
+	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
 	"github.com/RazvanBerbece/Aztebot/tests/testData"
 	"github.com/brianvoe/gofakeit/v6"
 )

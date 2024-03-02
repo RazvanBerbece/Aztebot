@@ -1,6 +1,6 @@
 package utils
 
-import "github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
+import "github.com/RazvanBerbece/Aztebot/internal/data/repositories"
 
 func CleanupRepositories(rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository, warnsRepository *repositories.WarnsRepository, timeoutsRepository *repositories.TimeoutsRepository) {
 

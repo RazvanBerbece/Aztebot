@@ -84,7 +84,7 @@ jobs:
 
       - name: 'Docker build'
         run: |
-          docker build --tag "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTEBOT_IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}" -f cmd/bot-service/Dockerfile .
+          docker build --tag "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTEBOT_IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}" -f cmd/Dockerfile .
 
       - name: 'Docker push'
         run: |
