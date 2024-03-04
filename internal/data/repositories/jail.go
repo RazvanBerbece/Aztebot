@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	databaseconn "github.com/RazvanBerbece/Aztebot/internal/data/connection"
+	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
 )
 
 type JailRepository struct {
@@ -61,4 +62,27 @@ func (r JailRepository) RemoveUserFromJail(userId string) error {
 	}
 
 	return nil
+}
+
+func (r JailRepository) GetJailedUser(userId string) (*dataModels.JailedUser, error) {
+
+	// Get assigned role IDs for given user from the DB
+	query := "SELECT * FROM Jail WHERE userId = ?"
+	row := r.Conn.Db.QueryRow(query, userId)
+
+	// Scan the role IDs and process them into query arguments to use
+	// in the Roles table
+	var jailedUser dataModels.JailedUser
+	err := row.Scan(&jailedUser.UserId,
+		&jailedUser.Reason,
+		&jailedUser.TaskToComplete,
+		&jailedUser.JailedAt,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &jailedUser, nil
+
 }

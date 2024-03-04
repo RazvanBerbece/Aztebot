@@ -44,7 +44,7 @@ func HandleSlashJail(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			return
 		}
 	} else {
-		utils.ErrorEmbedResponseEdit(s, i.Interaction, "The `/jail` command cannot be userd without a designated notification channel to send various jail related alerts to.")
+		utils.ErrorEmbedResponseEdit(s, i.Interaction, "The `/jail` command cannot be used without a designated notification channel to send various jail related alerts to.")
 		return
 	}
 
@@ -53,7 +53,7 @@ func HandleSlashJail(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		SetColor(000000).
 		AddField("Reason", jailedUser.Reason, false).
-		AddField("Given Task", jailedUser.Reason, false).
+		AddField("Given Task", jailedUser.TaskToComplete, false).
 		AddField("Timestamp", utils.FormatUnixAsString(jailedUser.JailedAt, "Mon, 02 Jan 2006 15:04:05 MST"), false)
 
 	// Final response

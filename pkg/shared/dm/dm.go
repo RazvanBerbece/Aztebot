@@ -33,7 +33,7 @@ func SendHelpDmToUser(session *discordgo.Session, originalMessage *discordgo.Int
 
 }
 
-func SendEmbedToUser(session *discordgo.Session, originalMessage *discordgo.InteractionCreate, userId string, embed *discordgo.MessageEmbed) error {
+func SendEmbedForOriginalMsgToUser(session *discordgo.Session, originalMessage *discordgo.InteractionCreate, userId string, embed *discordgo.MessageEmbed) error {
 
 	channel, err := session.UserChannelCreate(userId) // DM channel
 	if err != nil {
@@ -71,6 +71,24 @@ func DmUser(session *discordgo.Session, userId string, content string) error {
 	_, err = session.ChannelMessageSend(channel.ID, content)
 	if err != nil {
 		fmt.Println("error sending DM message: ", err)
+		return err
+	}
+
+	return nil
+
+}
+
+func DmEmbedUser(session *discordgo.Session, userId string, embed discordgo.MessageEmbed) error {
+
+	channel, err := session.UserChannelCreate(userId)
+	if err != nil {
+		fmt.Println("error creating embed DM channel: ", err)
+		return err
+	}
+
+	_, err = session.ChannelMessageSendEmbed(channel.ID, &embed)
+	if err != nil {
+		fmt.Println("error sending embed DM message: ", err)
 		return err
 	}
 
