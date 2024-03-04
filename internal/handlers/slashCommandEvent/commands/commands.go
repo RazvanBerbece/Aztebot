@@ -296,7 +296,7 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 	},
 	{
 		Name:        "jail",
-		Description: "Jails the given user, giving them the designated 'jailed' role and removing some of their permissions.",
+		Description: "Jails the given user, giving them the designated 'jailed' role and removing their permissions.",
 		Options: []*discordgo.ApplicationCommandOption{
 			{
 				Type:        discordgo.ApplicationCommandOptionString,
@@ -314,7 +314,7 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 	},
 	{
 		Name:        "unjail",
-		Description: "Unjails the given user, removing the designated 'jailed' role and giving them back their permissions.",
+		Description: "Unjails the given user, removing the designated 'jailed' role and returning their permissions.",
 		Options: []*discordgo.ApplicationCommandOption{
 			{
 				Type:        discordgo.ApplicationCommandOptionString,
