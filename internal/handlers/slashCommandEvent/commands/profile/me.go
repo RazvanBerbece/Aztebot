@@ -87,12 +87,12 @@ func GetProfileEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Me
 
 	// Process the time spent in VCs in a nice format
 	sTimeSpentInVc := int64(stats.TimeSpentInVoiceChannels)
-	daysVC, hoursVC, minutesVC, secondsVC := utils.HumanReadableTimeLength(float64(sTimeSpentInVc))
+	daysVC, hoursVC, minutesVC, secondsVC := utils.HumanReadableDuration(float64(sTimeSpentInVc))
 	timeSpentInVcs := fmt.Sprintf("%dd, %dh:%dm:%ds", daysVC, hoursVC, minutesVC, secondsVC)
 
 	// Process the time spent listening to music a nice format
 	sTimeSpentListeningMusic := int64(stats.TimeSpentListeningToMusic)
-	daysMusic, hoursMusic, minutesMusic, secondsMusic := utils.HumanReadableTimeLength(float64(sTimeSpentListeningMusic))
+	daysMusic, hoursMusic, minutesMusic, secondsMusic := utils.HumanReadableDuration(float64(sTimeSpentListeningMusic))
 	timeSpentListeningMusic := fmt.Sprintf("%dd, %dh:%dm:%ds", daysMusic, hoursMusic, minutesMusic, secondsMusic)
 
 	// Get the profile picture url

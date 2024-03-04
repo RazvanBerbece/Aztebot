@@ -40,6 +40,8 @@ var NotificationChannelsPairs = strings.Split(os.Getenv("NOTIFICATION_CHANNELS")
 
 var GlobalCommands = strings.Split(os.Getenv("GLOBAL_COMMANDS"), ",")
 
+var JailedRoleName = os.Getenv("JAILED_ROLE_NAME")
+
 // =============== RUNTIME VARIABLES (BOT APPLICATIONS) ===============
 var DefaultExperienceReward_MessageSent float64 = 0.5
 var DefaultExperienceReward_SlashCommandUsed float64 = 0.45
@@ -64,6 +66,8 @@ var LastUsedTopTimestamp = time.Now().Add(-60 * time.Minute)
 var LastUsedTop5sTimestamp = time.Now().Add(-60 * time.Minute)
 
 var ConfessionsToApprove = make(map[string]string)
+
+var JailTasks = []string{}
 
 // =============== RUNTIME GLOBAL CHANNELS ===============
 var ExperienceGrantsChannel = make(chan dataModels.ExperienceGrant)

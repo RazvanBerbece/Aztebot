@@ -97,7 +97,7 @@ func ProcessTopEmbed(topCount int, s *discordgo.Session, i *discordgo.Interactio
 			// Process the time spent in VCs in a nice format
 			var timeSpentInVcs string = ""
 			sTimeSpentInVc := int64(stats.TimeSpentInVoiceChannels)
-			daysVC, hoursVC, minutesVC, secondsVC := utils.HumanReadableTimeLength(float64(sTimeSpentInVc))
+			daysVC, hoursVC, minutesVC, secondsVC := utils.HumanReadableDuration(float64(sTimeSpentInVc))
 			if daysVC != 0 {
 				timeSpentInVcs = fmt.Sprintf("%dd, %dh", daysVC, hoursVC)
 			} else if daysVC == 0 && hoursVC != 0 {
@@ -109,7 +109,7 @@ func ProcessTopEmbed(topCount int, s *discordgo.Session, i *discordgo.Interactio
 			// Process the time spent listening to music a nice format
 			var timeSpentListeningMusic string = ""
 			sTimeSpentListeningMusic := int64(stats.TimeSpentListeningToMusic)
-			daysMusic, hoursMusic, minutesMusic, secondsMusic := utils.HumanReadableTimeLength(float64(sTimeSpentListeningMusic))
+			daysMusic, hoursMusic, minutesMusic, secondsMusic := utils.HumanReadableDuration(float64(sTimeSpentListeningMusic))
 			if daysMusic != 0 {
 				timeSpentListeningMusic = fmt.Sprintf("%dd, %dh", daysMusic, hoursMusic)
 			} else if daysMusic == 0 && hoursMusic != 0 {
