@@ -88,3 +88,29 @@ func (r JailRepository) GetJailedUser(userId string) (*dataModels.JailedUser, er
 	return &jailedUser, nil
 
 }
+
+func (r JailRepository) GetJail() ([]dataModels.JailedUser, error) {
+
+	var jailed []dataModels.JailedUser
+
+	rows, err := r.Conn.Db.Query("SELECT * FROM Jail ORDER BY jailedAt ASC")
+	if err != nil {
+		return nil, fmt.Errorf("GetJail: %v", err)
+	}
+	defer rows.Close()
+
+	// Loop through rows, using Scan to assign column data to struct fields.
+	for rows.Next() {
+		var jailedUser dataModels.JailedUser
+		if err := rows.Scan(&jailedUser.UserId, &jailedUser.Reason, &jailedUser.TaskToComplete, &jailedUser.JailedAt, &jailedUser.RoleIdsBeforeJail); err != nil {
+			return nil, fmt.Errorf("GetJail: %v", err)
+		}
+		jailed = append(jailed, jailedUser)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("GetJail: %v", err)
+	}
+
+	return jailed, nil
+
+}

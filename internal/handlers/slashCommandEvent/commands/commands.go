@@ -324,6 +324,10 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 			},
 		},
 	},
+	{
+		Name:        "jail-view",
+		Description: "Displays a high level view of the OTA Jail.",
+	},
 }
 
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -349,4 +353,5 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"set_global_xp_rate":    xpRateSettingSlashHandlers.HandleSlashSetGlobalXpRateForActivity,
 	"jail":                  jailSlashHandlers.HandleSlashJail,
 	"unjail":                jailSlashHandlers.HandleSlashUnjail,
+	"jail-view":             jailSlashHandlers.HandleSlashJailView,
 }
