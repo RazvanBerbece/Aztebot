@@ -328,6 +328,18 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		Name:        "jail-view",
 		Description: "Displays a high level view of the OTA Jail.",
 	},
+	{
+		Name:        "jailed-user",
+		Description: "Retrieves a jailed user's OTA Jail record.",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "user",
+				Description: "The user to see the record for",
+				Required:    true,
+			},
+		},
+	},
 }
 
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -354,4 +366,5 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"jail":                  jailSlashHandlers.HandleSlashJail,
 	"unjail":                jailSlashHandlers.HandleSlashUnjail,
 	"jail-view":             jailSlashHandlers.HandleSlashJailView,
+	"jailed-user":           jailSlashHandlers.HandleSlashJailedUser,
 }
