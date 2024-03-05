@@ -683,6 +683,16 @@ func JailMember(s *discordgo.Session, guildId string, userId string, reason stri
 
 	var err error
 
+	// Make sure that a user can't be jailed twice
+	isJailedResult := globalsRepo.JailRepository.UserIsJailed(userId)
+	if isJailedResult <= 0 {
+		if isJailedResult == -1 {
+			return nil, nil, fmt.Errorf("could not verify whether user `%s` is already jailed", userId)
+		}
+	} else {
+		return nil, nil, fmt.Errorf("a user cannot be jailed twice")
+	}
+
 	currentTimestamp := time.Now()
 
 	// Pick a random task to assign to the jailed user
@@ -740,6 +750,12 @@ func JailMember(s *discordgo.Session, guildId string, userId string, reason stri
 func UnjailMember(s *discordgo.Session, guildId string, userId string, jailRoleName string, notificationChannelId string) (*dataModels.JailedUser, *dataModels.User, error) {
 
 	var err error
+
+	// Make sure that a user can't be unjailed if not in jail at a certain point in time
+	isJailedResult := globalsRepo.JailRepository.UserIsJailed(userId)
+	if isJailedResult <= 0 {
+		return nil, nil, fmt.Errorf("cannot unjail a user who is not in jail. user `%s` not found in jail", userId)
+	}
 
 	jailedUser, err := globalsRepo.JailRepository.GetJailedUser(userId)
 	if err != nil {
