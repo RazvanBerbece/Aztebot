@@ -21,7 +21,7 @@ func SetGlobalRestrictionsForRole(s *discordgo.Session, guildId string, targetRo
 
 	// Deny access to all channels and categories
 	for _, channel := range channels {
-		err := s.ChannelPermissionSet(channel.ID, *roleId, discordgo.PermissionAll, 0, 0)
+		err := s.ChannelPermissionSet(channel.ID, *roleId, discordgo.PermissionOverwriteTypeRole, 0, discordgo.PermissionAll)
 		if err != nil {
 			fmt.Printf("Error setting denial permissions for channel %s: %v\n", channel.Name, err)
 		}
@@ -32,8 +32,8 @@ func SetGlobalRestrictionsForRole(s *discordgo.Session, guildId string, targetRo
 		err := s.ChannelPermissionSet(
 			*exceptionChannelId,
 			*roleId,
+			discordgo.PermissionOverwriteTypeRole,
 			discordgo.PermissionViewChannel|discordgo.PermissionSendMessages|discordgo.PermissionReadMessageHistory,
-			0,
 			0)
 		if err != nil {
 			fmt.Printf("Error setting denial permissions for channel with ID %s: %v\n", *exceptionChannelId, err)
