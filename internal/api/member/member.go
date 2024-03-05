@@ -317,6 +317,18 @@ func AddRolesToDiscordUser(s *discordgo.Session, guildId string, userId string, 
 				fmt.Println("Error adding DB role to Discord member:", err)
 				return err
 			}
+
+			// If a staff role, add a default 'STAFF' role as well
+			if utils.RoleIsStaffRole(roleId) {
+				discordDefaultStaffRoleId := GetDiscordRoleIdForRoleWithName(s, guildId, "STAFF")
+				if discordDefaultStaffRoleId != nil {
+					err = s.GuildMemberRoleAdd(guildId, userId, *discordDefaultStaffRoleId)
+					if err != nil {
+						fmt.Println("Error adding default STAFF role to Discord member:", err)
+						return err
+					}
+				}
+			}
 		}
 	}
 
