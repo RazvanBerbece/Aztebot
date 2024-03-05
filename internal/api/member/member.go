@@ -227,6 +227,7 @@ func GetDiscordRoleIdForRoleWithName(s *discordgo.Session, guildId string, roleN
 	return &roleID
 }
 
+// Removes all roles on the actual Discord member.
 func RemoveAllDiscordUserRoles(s *discordgo.Session, guildId string, userId string) error {
 
 	// Get the member's roles
@@ -242,6 +243,18 @@ func RemoveAllDiscordUserRoles(s *discordgo.Session, guildId string, userId stri
 			fmt.Println("Error removing role:", err)
 			return err
 		}
+	}
+
+	return nil
+
+}
+
+// Removes all roles from the database member.
+func RemoveAllMemberRoles(userId string) error {
+
+	err := globalsRepo.UsersRepository.RemoveUserRoles(userId)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -288,7 +301,7 @@ func RemoveDiscordRoleFromMember(s *discordgo.Session, guildId string, userId st
 
 func AddRolesToDiscordUser(s *discordgo.Session, guildId string, userId string, roleIds []int) error {
 
-	// For each role from the DB
+	// For each role
 	for _, roleId := range roleIds {
 		role, err := globalsRepo.RolesRepository.GetRoleById(roleId)
 		if err != nil {
@@ -693,6 +706,12 @@ func JailMember(s *discordgo.Session, guildId string, userId string, reason stri
 		return nil, nil, fmt.Errorf("a user cannot be jailed twice")
 	}
 
+	user, err := globalsRepo.UsersRepository.GetUser(userId)
+	if err != nil {
+		fmt.Printf("Failed to JailMember %s: %v", userId, err)
+		return nil, nil, err
+	}
+
 	currentTimestamp := time.Now()
 
 	// Pick a random task to assign to the jailed user
@@ -707,20 +726,28 @@ func JailMember(s *discordgo.Session, guildId string, userId string, reason stri
 	}
 
 	// Add User to Jail in the DB
-	err = globalsRepo.JailRepository.AddUserToJail(userId, reason, taskToFree, currentTimestamp.Unix())
+	err = globalsRepo.JailRepository.AddUserToJail(userId, reason, taskToFree, currentTimestamp.Unix(), user.CurrentRoleIds)
 	if err != nil {
 		fmt.Printf("Failed to JailMember %s: %v", userId, err)
 		return nil, nil, err
 	}
 
-	// Give designated Discord role to member to restrict access
+	// Remove all roles from Discord user to restrict access
+	err = RemoveAllDiscordUserRoles(s, guildId, userId)
+	if err != nil {
+		fmt.Printf("Failed to JailMember %s: %v", userId, err)
+		return nil, nil, err
+	}
+
+	// Remove all roles from OTA member in the database
+	err = RemoveAllMemberRoles(userId)
+	if err != nil {
+		fmt.Printf("Failed to JailMember %s: %v", userId, err)
+		return nil, nil, err
+	}
+
+	// Give designated Jailed Discord role to member
 	err = GiveDiscordRoleToMember(s, guildId, userId, jailRoleName)
-	if err != nil {
-		fmt.Printf("Failed to JailMember %s: %v", userId, err)
-		return nil, nil, err
-	}
-
-	user, err := globalsRepo.UsersRepository.GetUser(userId)
 	if err != nil {
 		fmt.Printf("Failed to JailMember %s: %v", userId, err)
 		return nil, nil, err
@@ -757,6 +784,12 @@ func UnjailMember(s *discordgo.Session, guildId string, userId string, jailRoleN
 		return nil, nil, fmt.Errorf("cannot unjail a user who is not in jail. user `%s` not found in jail", userId)
 	}
 
+	user, err := globalsRepo.UsersRepository.GetUser(userId)
+	if err != nil {
+		fmt.Printf("Failed to UnjailMember (Retrieve OTA Member) %s: %v", userId, err)
+		return nil, nil, err
+	}
+
 	jailedUser, err := globalsRepo.JailRepository.GetJailedUser(userId)
 	if err != nil {
 		fmt.Printf("Failed to UnjailMember (Retrieve Jailed Member Entry) %s: %v", userId, err)
@@ -770,16 +803,17 @@ func UnjailMember(s *discordgo.Session, guildId string, userId string, jailRoleN
 		return nil, nil, err
 	}
 
-	// Remove designated Discord role from member to return access
-	err = RemoveDiscordRoleFromMember(s, guildId, userId, jailRoleName)
+	// Give roles back to member to return permsisions
+	err = AddRolesToDiscordUser(s, guildId, userId, utils.GetRoleIdsFromRoleString(jailedUser.RoleIdsBeforeJail))
 	if err != nil {
-		fmt.Printf("Failed to UnjailMember (Remove Jailed Role From Discord) %s: %v", userId, err)
+		fmt.Printf("Failed to UnjailMember (Return roles before jail) %s: %v", userId, err)
 		return nil, nil, err
 	}
 
-	user, err := globalsRepo.UsersRepository.GetUser(userId)
+	// Remove designated Jailed Discord role from member
+	err = RemoveDiscordRoleFromMember(s, guildId, userId, jailRoleName)
 	if err != nil {
-		fmt.Printf("Failed to UnjailMember (Retrieve OTA Member) %s: %v", userId, err)
+		fmt.Printf("Failed to UnjailMember (Remove Jailed Role From Discord) %s: %v", userId, err)
 		return nil, nil, err
 	}
 

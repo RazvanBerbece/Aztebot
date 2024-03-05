@@ -232,6 +232,44 @@ func (r UsersRepository) RemoveUserExpriencePoints(userId string, experiencePoin
 	return nil
 }
 
+func (r UsersRepository) RemoveUserRoles(userId string) error {
+
+	stmt, err := r.Conn.Db.Prepare(`
+		UPDATE Users SET 
+			currentRoleIds = ","
+		WHERE userId = ?`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(userId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r UsersRepository) SetUserRoles(userId string, roleIdsString string) error {
+
+	stmt, err := r.Conn.Db.Prepare(`
+		UPDATE Users SET 
+			currentRoleIds = ?
+		WHERE userId = ?`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(userId, roleIdsString)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r UsersRepository) GetRolesForUser(userId string) ([]dataModels.Role, error) {
 
 	// Get assigned role IDs for given user from the DB

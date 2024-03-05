@@ -28,7 +28,7 @@ func (r JailRepository) UserIsJailed(userId string) int {
 	return count
 }
 
-func (r JailRepository) AddUserToJail(userId string, reason string, task string, timestamp int64) error {
+func (r JailRepository) AddUserToJail(userId string, reason string, task string, timestamp int64, roleIdsBeforeJail string) error {
 
 	stmt, err := r.Conn.Db.Prepare(`
 	INSERT INTO 
@@ -36,15 +36,16 @@ func (r JailRepository) AddUserToJail(userId string, reason string, task string,
 			userId, 
 			reason,
 			task,
-			jailedAt
+			jailedAt,
+			roleIdsBeforeJail
 		)
-	VALUES(?, ?, ?, ?);`)
+	VALUES(?, ?, ?, ?, ?);`)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(userId, reason, task, timestamp)
+	_, err = stmt.Exec(userId, reason, task, timestamp, roleIdsBeforeJail)
 	if err != nil {
 		return err
 	}
@@ -77,6 +78,7 @@ func (r JailRepository) GetJailedUser(userId string) (*dataModels.JailedUser, er
 		&jailedUser.Reason,
 		&jailedUser.TaskToComplete,
 		&jailedUser.JailedAt,
+		&jailedUser.RoleIdsBeforeJail,
 	)
 
 	if err != nil {
