@@ -6,6 +6,7 @@ import (
 	"github.com/RazvanBerbece/Aztebot/internal/api/tasks/channelHandlers"
 	cron "github.com/RazvanBerbece/Aztebot/internal/api/tasks/cron"
 	"github.com/RazvanBerbece/Aztebot/internal/api/tasks/startup"
+	"github.com/RazvanBerbece/Aztebot/internal/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -56,5 +57,6 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	cron.ProcessClearExpiredTimeouts(s)                       // clear timeouts with freq from env var
 	cron.ProcessRemoveArchivedTimeouts(1)                     // run every n=1 month
 	cron.ProcessMonthlyLeaderboard(s, 23, 55, 00, true, true) // run on last day at given time
+	cron.ProcessCleanupUnusedDynamicChannels(s, globals.DiscordMainGuildId)
 
 }

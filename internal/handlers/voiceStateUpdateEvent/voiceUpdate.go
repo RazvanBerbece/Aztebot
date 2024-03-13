@@ -15,52 +15,6 @@ import (
 
 func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 
-	var afkChannels map[string]string
-	if globals.Environment == "staging" {
-		// Dev afk channels
-		afkChannels = map[string]string{
-			"1176284686297874522": "afk",
-		}
-	} else {
-		// Production afk channels
-		afkChannels = map[string]string{
-			"1212508073101627412": "afk",
-		}
-	}
-
-	var musicChannels map[string]string
-	if globals.Environment == "staging" {
-		// Dev music channels
-		musicChannels = map[string]string{
-			"1173790229258326106": "radio",
-		}
-	} else {
-		// Production music channels
-		musicChannels = map[string]string{
-			"1176204022399631381": "radio",
-			"1118202946455351388": "music-1",
-			"1118202975026937948": "music-2",
-			"1118202999504904212": "music-3",
-		}
-	}
-
-	var dynamicChannelCreateButtonIds map[string]string
-	if globals.Environment == "staging" {
-		// Dev dynamic channel creation button channels
-		dynamicChannelCreateButtonIds = map[string]string{
-			"1217251206624186481": "☕ | Dev Test Room",
-		}
-	} else {
-		// Production dynamic channel creation button channels
-		dynamicChannelCreateButtonIds = map[string]string{
-			"1171570400891785266": "☕ | Chill Room",
-			"1171589545473613886": "🔒 | Private Room",
-			"1171591013354197062": "🔮 | Spiritual Room",
-			"1171595498185035796": "🎵 | Music Room",
-			"1171599680568832023": "🎮 | Gaming",
-		}
-	}
-
 	guild, err := s.Guild(vs.GuildID)
 	if err != nil {
 		log.Println("Error getting guild: ", err)
@@ -81,7 +35,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 	userId := member.User.ID
 
 	// If a dynamic room creation command
-	if newChannelName, isCreateChannelCommand := dynamicChannelCreateButtonIds[vs.ChannelID]; isCreateChannelCommand {
+	if newChannelName, isCreateChannelCommand := globals.DynamicChannelCreateButtonIds[vs.ChannelID]; isCreateChannelCommand {
 
 		// Publish channel creation event
 		globals.ChannelCreationsChannel <- events.VoiceChannelCreateEvent{
@@ -97,7 +51,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 	}
 
 	if vs.ChannelID != "" {
-		if _, isAfkChannel := afkChannels[vs.ChannelID]; isAfkChannel {
+		if _, isAfkChannel := globals.AfkChannels[vs.ChannelID]; isAfkChannel {
 			if isAfkChannel {
 				// Don't register audio sessions in the AFK zones
 				delete(globals.MusicSessions, userId)
@@ -150,7 +104,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 	} else {
 		if vs.ChannelID != "" && globals.StreamSessions[userId] == nil && globals.MusicSessions[userId] == nil {
 			// User JOINED a VC but NOT STREAMING
-			if utils.TargetChannelIsForMusicListening(musicChannels, vs.ChannelID) {
+			if utils.TargetChannelIsForMusicListening(globals.MusicChannels, vs.ChannelID) {
 				now := time.Now()
 				globals.MusicSessions[userId] = map[string]*time.Time{
 					vs.ChannelID: &now,

@@ -70,6 +70,10 @@ var ConfessionsToApprove = make(map[string]string)
 
 var JailTasks = []string{}
 
+var AfkChannels map[string]string
+var MusicChannels map[string]string
+var DynamicChannelCreateButtonIds map[string]string
+
 // =============== RUNTIME GLOBAL CHANNELS ===============
 var ExperienceGrantsChannel = make(chan dataModels.ExperienceGrant)
 var ChannelCreationsChannel = make(chan events.VoiceChannelCreateEvent)
