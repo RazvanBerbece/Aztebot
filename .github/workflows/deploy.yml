@@ -59,7 +59,7 @@ jobs:
       - name: Setup environment
         run: |
           : # Environment variables for AzteBot
-          echo ${{ secrets.ENV_ENCODED_STRING }} | base64 --decode > .env
+          echo ${{ secrets.ENV_BASE64_STRING }} | base64 --decode > .env
 
       - name: Generate SHA output
         id: vars
