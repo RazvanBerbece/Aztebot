@@ -48,6 +48,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 
 	// Run channel message handlers
 	go channelHandlers.HandleExperienceGrantsMessages(false)
+	go channelHandlers.HandleChannelCreationMessages(s)
 
 	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, XP gaining?, etc.)
 	cron.ProcessUpdateActivityStreaks(24, 0, 0)               // the hh:mm:ss timestamp in a day to run the cron at

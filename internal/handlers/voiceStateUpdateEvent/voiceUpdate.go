@@ -6,6 +6,7 @@ import (
 	"time"
 
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	"github.com/RazvanBerbece/Aztebot/internal/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
@@ -43,6 +44,23 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 		}
 	}
 
+	var dynamicChannelCreateButtonIds map[string]string
+	if globals.Environment == "staging" {
+		// Dev dynamic channel creation button channels
+		dynamicChannelCreateButtonIds = map[string]string{
+			"1217251206624186481": "☕ | Dev Test Room",
+		}
+	} else {
+		// Production dynamic channel creation button channels
+		dynamicChannelCreateButtonIds = map[string]string{
+			"1171570400891785266": "☕ | Chill Room",
+			"1171589545473613886": "🔒 | Private Room",
+			"1171591013354197062": "🔮 | Spiritual Room",
+			"1171595498185035796": "🎵 | Music Room",
+			"1171599680568832023": "🎮 | Gaming",
+		}
+	}
+
 	guild, err := s.Guild(vs.GuildID)
 	if err != nil {
 		log.Println("Error getting guild: ", err)
@@ -61,6 +79,23 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 	}
 
 	userId := member.User.ID
+
+	// If a dynamic room creation command
+	if newChannelName, isCreateChannelCommand := dynamicChannelCreateButtonIds[vs.ChannelID]; isCreateChannelCommand {
+
+		// Publish channel creation event
+		globals.ChannelCreationsChannel <- events.VoiceChannelCreateEvent{
+			Name:            newChannelName,
+			Private:         false,
+			ParentChannelId: vs.ChannelID,
+			Description:     "This is a dynamically generated voice channel!",
+			ParentMemberId:  userId,
+			ParentGuildId:   member.GuildID,
+		}
+
+		// TODO: verify whether on channel moving the user registers a voiceUpdate
+		return
+	}
 
 	if vs.ChannelID != "" {
 		if _, isAfkChannel := afkChannels[vs.ChannelID]; isAfkChannel {
@@ -185,25 +220,5 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 			delete(globals.DeafSessions, userId)
 		}
 	}
-
-}
-
-func UserHasActiveVoiceSession(uid string) bool {
-
-	status := 0
-
-	if _, ok := globals.VoiceSessions[uid]; ok {
-		status += 1
-	}
-
-	if _, ok := globals.MusicSessions[uid]; ok {
-		status += 1
-	}
-
-	if _, ok := globals.StreamSessions[uid]; ok {
-		status += 1
-	}
-
-	return status == 3
 
 }
