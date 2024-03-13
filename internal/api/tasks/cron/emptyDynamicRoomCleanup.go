@@ -8,9 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func ProcessCleanupUnusedDynamicChannels(s *discordgo.Session, guildId string) {
-
-	var numSec int = 3 // 60 * 60 * 5
+func ProcessCleanupUnusedDynamicChannels(s *discordgo.Session, guildId string, numSec int) {
 
 	fmt.Println("[CRON] Starting Cron Ticker CleanupUnusedDynamicChannels() at", time.Now(), "running every", numSec, "seconds")
 

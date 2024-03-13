@@ -22,6 +22,8 @@ func LoadJailTasks() {
 		"AzteQuiz",
 		"Guess the Number",
 		"Roll a Double",
+		"Write a Chorus for a Rap Song",
+		"Custom Task from a Staff Member",
 	}
 }
 
@@ -58,7 +60,7 @@ func LoadStaticDiscordChannels() {
 	if globals.Environment == "staging" {
 		// Dev dynamic channel creation button channels
 		globals.DynamicChannelCreateButtonIds = map[string]string{
-			"1217251206624186481": "☕ | Dev Test Room",
+			"1217251206624186481": "☕ | Dev Test Room (~Extra~)",
 		}
 	} else {
 		// Production dynamic channel creation button channels
