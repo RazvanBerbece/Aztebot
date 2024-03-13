@@ -93,7 +93,6 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 			ParentGuildId:   member.GuildID,
 		}
 
-		// TODO: verify whether on channel moving the user registers a voiceUpdate
 		return
 	}
 
