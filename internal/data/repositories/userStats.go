@@ -504,7 +504,6 @@ func (r UsersStatsRepository) GetTopUsersByActiveDayStreak(count int) ([]dataMod
 	query := `SELECT Users.discordTag, UserStats.userId, UserStats.activeDayStreak
 		FROM UserStats
 		JOIN Users ON UserStats.userId = Users.userId
-		WHERE UserStats.activeDayStreak > 1
 		ORDER BY UserStats.activeDayStreak DESC
 		LIMIT ?`
 

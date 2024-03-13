@@ -7,6 +7,7 @@ import (
 	"time"
 
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	"github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
 )
@@ -69,8 +70,13 @@ var ConfessionsToApprove = make(map[string]string)
 
 var JailTasks = []string{}
 
+var AfkChannels map[string]string
+var MusicChannels map[string]string
+var DynamicChannelCreateButtonIds map[string]string
+
 // =============== RUNTIME GLOBAL CHANNELS ===============
 var ExperienceGrantsChannel = make(chan dataModels.ExperienceGrant)
+var ChannelCreationsChannel = make(chan events.VoiceChannelCreateEvent)
 
 // =============== RUNTIME CUSTOM EVENT IDs (FOR BUTTON PRESS EVENT HANDLERS) ===============
 var ConfessionApprovalEventId = "approve_confession"
