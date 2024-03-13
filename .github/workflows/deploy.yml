@@ -23,7 +23,7 @@ env:
   GKE_REGION: europe-west2 # TODO: Try and make this follow the instance zone declared in the infrastructure repo ?
   CLUSTER_NAME: ${{ secrets.GKE_CLUSTER_NAME }}
   AZTEBOT_IMAGE: aztebot-service
-  AZTEBOT_CONFIG_ENCODED: ${{ secrets.ENV_ENCODED_STRING }}
+  AZTEBOT_CONFIG_ENCODED: ${{ secrets.ENV_BASE64_STRING }}
 
 jobs:
 
