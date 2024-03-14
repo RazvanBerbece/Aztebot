@@ -59,14 +59,12 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 
 	if vs.ChannelID != "" {
 		if _, isAfkChannel := globals.AfkChannels[vs.ChannelID]; isAfkChannel {
-			if isAfkChannel {
-				// Don't register audio sessions in the AFK zones
-				delete(globals.MusicSessions, userId)
-				delete(globals.VoiceSessions, userId)
-				delete(globals.StreamSessions, userId)
-				delete(globals.DeafSessions, userId)
-				return
-			}
+			// Don't register audio sessions in the AFK zones
+			delete(globals.MusicSessions, userId)
+			delete(globals.VoiceSessions, userId)
+			delete(globals.StreamSessions, userId)
+			delete(globals.DeafSessions, userId)
+			return
 		}
 	}
 
