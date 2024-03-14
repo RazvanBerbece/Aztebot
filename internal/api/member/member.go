@@ -52,23 +52,39 @@ func DeleteAllMemberData(userId string) error {
 	err := globalsRepo.UserStatsRepository.DeleteUserStats(userId)
 	if err != nil {
 		fmt.Printf("Error deleting member %s stats from DB: %v", userId, err)
+		return err
 	}
 	err = globalsRepo.UsersRepository.DeleteUser(userId)
 	if err != nil {
 		fmt.Printf("Error deleting user %s from DB: %v", userId, err)
+		return err
 	}
 	err = globalsRepo.WarnsRepository.DeleteAllWarningsForUser(userId)
 	if err != nil {
 		fmt.Printf("Error deleting user %s warnings from DB: %v", userId, err)
+		return err
 	}
 	err = globalsRepo.TimeoutsRepository.ClearTimeoutForUser(userId)
 	if err != nil {
 		fmt.Printf("Error deleting user %s active timeouts from DB: %v", userId, err)
+		return err
 	}
 	err = globalsRepo.TimeoutsRepository.ClearArchivedTimeoutsForUser(userId)
 	if err != nil {
 		fmt.Printf("Error deleting user %s archived timeouts from DB: %v", userId, err)
+		return err
 	}
+	err = globalsRepo.MonthlyLeaderboardRepository.DeleteEntry(userId)
+	if err != nil {
+		fmt.Printf("Error deleting user %s monthly leaderboard entry from DB: %v", userId, err)
+		return err
+	}
+	err = globalsRepo.JailRepository.RemoveUserFromJail(userId)
+	if err != nil {
+		fmt.Printf("Error deleting user %s jail entry from DB: %v", userId, err)
+		return err
+	}
+
 	return nil
 }
 
