@@ -3,6 +3,7 @@ package voiceStateUpdateEvent
 import (
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
@@ -37,10 +38,16 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 	// If a dynamic room creation command
 	if newChannelName, isCreateChannelCommand := globals.DynamicChannelCreateButtonIds[vs.ChannelID]; isCreateChannelCommand {
 
+		// Privacy status of channel (public or private)
+		channelIsPrivate := false
+		if strings.Contains(newChannelName, "Private") {
+			channelIsPrivate = true
+		}
+
 		// Publish channel creation event
 		globals.ChannelCreationsChannel <- events.VoiceChannelCreateEvent{
 			Name:            newChannelName,
-			Private:         false,
+			Private:         channelIsPrivate,
 			ParentChannelId: vs.ChannelID,
 			Description:     "This is a dynamically generated voice channel!",
 			ParentMemberId:  userId,

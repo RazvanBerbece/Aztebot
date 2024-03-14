@@ -7,7 +7,7 @@ import (
 	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
 )
 
-func ProcessRemoveArchivedTimeouts(months int) {
+func ProcessRemoveArchivedTimeouts() {
 
 	// TODO: Move this into env variable and use cron syntax
 	var numSec int = 2.628e+6 // run every month
