@@ -75,6 +75,7 @@ var DynamicChannelsCount int = 0
 // =============== RUNTIME GLOBAL STATIC DATA ===============
 var JailTasks = []string{}
 
+var DefaultInformationChannels map[string]string
 var AfkChannels map[string]string
 var MusicChannels map[string]string
 var DynamicChannelCreateButtonIds map[string]string
