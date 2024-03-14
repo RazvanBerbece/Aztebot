@@ -5,10 +5,18 @@ import (
 	"strings"
 	"time"
 
+	"github.com/RazvanBerbece/Aztebot/internal/globals"
 	"github.com/bwmarrin/discordgo"
 )
 
-func ProcessCleanupUnusedDynamicChannels(s *discordgo.Session, guildId string, numSec int) {
+func ProcessCleanupUnusedDynamicChannels(s *discordgo.Session, guildId string) {
+
+	var numSec int
+	if globals.CleanupDynamicChannelsFrequencyErr != nil {
+		numSec = 5
+	} else {
+		numSec = globals.CleanupDynamicChannelsFrequency
+	}
 
 	fmt.Println("[CRON] Starting Cron Ticker CleanupUnusedDynamicChannels() at", time.Now(), "running every", numSec, "seconds")
 

@@ -52,11 +52,11 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	go channelHandlers.HandleChannelCreationMessages(s)
 
 	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, cleanups, etc.)
-	cron.ProcessUpdateActivityStreaks(24, 0, 0)                                      // the hh:mm:ss timestamp in a day to run the cron at
-	cron.ProcessRemoveExpiredWarns(2)                                                // run every n=2 months
-	cron.ProcessClearExpiredTimeouts(s)                                              // clear timeouts with freq from env var
-	cron.ProcessRemoveArchivedTimeouts(1)                                            // run every n=1 month
-	cron.ProcessMonthlyLeaderboard(s, 23, 55, 00, true, true)                        // run on last day at given time
-	cron.ProcessCleanupUnusedDynamicChannels(s, globals.DiscordMainGuildId, 60*60*2) // run every n=2 hours
+	cron.ProcessUpdateActivityStreaks(24, 0, 0)               // the hh:mm:ss timestamp in a day to run the cron at
+	cron.ProcessRemoveExpiredWarns(2)                         // run every n=2 months
+	cron.ProcessClearExpiredTimeouts(s)                       // clear timeouts with freq from env var
+	cron.ProcessRemoveArchivedTimeouts(1)                     // run every n=1 month
+	cron.ProcessMonthlyLeaderboard(s, 23, 55, 00, true, true) // run on last day at given time
+	cron.ProcessCleanupUnusedDynamicChannels(s, globals.DiscordMainGuildId)
 
 }
