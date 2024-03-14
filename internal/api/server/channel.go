@@ -6,6 +6,23 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+func VoiceChannelHasConnectedMembers(s *discordgo.Session, guildId string, channelId string) (bool, error) {
+
+	guild, err := s.State.Guild(guildId)
+	if err != nil {
+		fmt.Println("Error retrieving guild:", err)
+		return false, err
+	}
+
+	for _, voiceState := range guild.VoiceStates {
+		if voiceState.ChannelID == channelId {
+			return true, nil
+		}
+	}
+
+	return false, nil
+}
+
 func GetCategoryIdForChannel(s *discordgo.Session, guildId string, channelId string) (string, error) {
 
 	channels, err := s.GuildChannels(guildId)
