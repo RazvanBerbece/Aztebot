@@ -71,6 +71,6 @@ func SendApprovedConfessionNotification(s *discordgo.Session, channelId string, 
 		},
 	}
 
-	notifications.SendNotificationToTextChannel(s, channelId, "", fields, false)
+	go notifications.SendNotificationToTextChannel(s, channelId, "", fields, false)
 
 }

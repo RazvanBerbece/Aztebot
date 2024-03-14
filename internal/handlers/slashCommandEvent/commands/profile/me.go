@@ -8,6 +8,7 @@ import (
 	"github.com/RazvanBerbece/Aztebot/internal/api/member"
 	rolesService "github.com/RazvanBerbece/Aztebot/internal/api/roles"
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
+	"github.com/RazvanBerbece/Aztebot/internal/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
@@ -213,7 +214,7 @@ func DecorateProfileEmbed(embed *embed.Embed, staffRole *dataModels.Role, userId
 	}
 
 	// Staff text segment (is user a member of staff?) in embed description
-	if member.IsStaff(userId) {
+	if member.IsStaff(userId, globals.StaffRoles) {
 		var staffFieldName string = "💎 OTA Staff Member"
 		if staffRole != nil {
 			staffFieldName += fmt.Sprintf(" (`%s`)", staffRole.DisplayName)
