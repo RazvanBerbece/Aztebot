@@ -55,15 +55,6 @@ func GetCircleAndOrderFromRoleId(roleId int) (int, int) {
 
 }
 
-func RoleIsStaffRole(roleId int) bool {
-	return roleId == 3 ||
-		roleId == 5 ||
-		roleId == 6 ||
-		roleId == 7 ||
-		roleId == 8 ||
-		roleId == 19
-}
-
 func GetRoleIdsFromRoleString(roleIdsString string) []int {
 
 	var roleIds []int = []int{}

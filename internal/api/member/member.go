@@ -16,7 +16,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func IsStaff(userId string) bool {
+func IsStaff(userId string, staffRoles []string) bool {
 
 	roles, err := globalsRepo.UsersRepository.GetRolesForUser(userId)
 	if err != nil {
@@ -24,7 +24,7 @@ func IsStaff(userId string) bool {
 	}
 
 	for _, role := range roles {
-		if utils.RoleIsStaffRole(role.Id) {
+		if utils.StringInSlice(role.DisplayName, staffRoles) {
 			return true
 		}
 	}
@@ -319,7 +319,7 @@ func AddRolesToDiscordUser(s *discordgo.Session, guildId string, userId string, 
 			}
 
 			// If a staff role, add a default 'STAFF' role as well
-			if utils.RoleIsStaffRole(roleId) {
+			if utils.StringInSlice(role.DisplayName, globals.StaffRoles) {
 				discordDefaultStaffRoleId := GetDiscordRoleIdForRoleWithName(s, guildId, "STAFF")
 				if discordDefaultStaffRoleId != nil {
 					err = s.GuildMemberRoleAdd(guildId, userId, *discordDefaultStaffRoleId)
