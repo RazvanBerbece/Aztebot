@@ -539,19 +539,20 @@ func ClearMemberActiveTimeout(s *discordgo.Session, guildId string, userId strin
 
 }
 
+// TODO: Implement timeout appeals in private DMs between bot application and guild member.
 func AppealTimeout(guildId string, userId string) error {
 
 	activeTimeout, _, err := GetMemberTimeouts(userId)
 	if err != nil {
-		timeoutError := fmt.Errorf("an error ocurred while retrieving timeout data for user with ID %s: %v\n", userId, err)
+		timeoutError := fmt.Errorf("an error ocurred while retrieving timeout data for user with ID %s: %v", userId, err)
 		return timeoutError
 	}
 
 	if activeTimeout == nil {
-		return fmt.Errorf("no active timeout was found for user with ID `%s`\n", userId)
+		return fmt.Errorf("no active timeout was found for user with ID `%s`", userId)
 	}
 
-	// TODO
+	// TODO: Etc etc.
 
 	return nil
 
@@ -713,7 +714,6 @@ func SetGender(userId string, genderValue string) error {
 		if err != nil {
 			return err
 		}
-
 	}
 
 	return nil
@@ -724,7 +724,7 @@ func JailMember(s *discordgo.Session, guildId string, userId string, reason stri
 
 	var err error
 
-	// Make sure that a user can't be jailed twice
+	// Ensure that a user won't be jailed twice
 	isJailedResult := globalsRepo.JailRepository.UserIsJailed(userId)
 	if isJailedResult <= 0 {
 		if isJailedResult == -1 {
