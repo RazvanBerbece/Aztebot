@@ -38,7 +38,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	// Initial update of experience gains in the DB
 	go startup.SyncExperiencePointsGainsAtStartup(s)
 
-	// Initial informative messages on certain channels
+	// Initial publishing of informative messages on certain channels
 	go startup.SendInformationEmbedsToTextChannels(s)
 
 	// Check for users on voice channels and start their VC sessions
@@ -57,6 +57,6 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	cron.ProcessClearExpiredTimeouts(s)                                              // clear timeouts with freq from env var
 	cron.ProcessRemoveArchivedTimeouts(1)                                            // run every n=1 month
 	cron.ProcessMonthlyLeaderboard(s, 23, 55, 00, true, true)                        // run on last day at given time
-	cron.ProcessCleanupUnusedDynamicChannels(s, globals.DiscordMainGuildId, 60*60*5) // run every n=5 hours
+	cron.ProcessCleanupUnusedDynamicChannels(s, globals.DiscordMainGuildId, 60*60*2) // run every n=2 hours
 
 }

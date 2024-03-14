@@ -26,6 +26,22 @@ func GetCategoryIdForChannel(s *discordgo.Session, guildId string, channelId str
 
 func CreateVoiceChannelForCategory(s *discordgo.Session, guildId string, categoryId string, channelName string, private bool) (*discordgo.Channel, error) {
 
+	if private {
+		channel, err := s.GuildChannelCreateComplex(guildId, discordgo.GuildChannelCreateData{
+			Name:      channelName,
+			Type:      discordgo.ChannelTypeGuildVoice,
+			ParentID:  categoryId,
+			UserLimit: 2,
+		})
+
+		if err != nil {
+			fmt.Printf("An error ocurred while creating a dynamic private voice channel: %v\n", err)
+			return nil, err
+		}
+
+		return channel, nil
+	}
+
 	channel, err := s.GuildChannelCreateComplex(guildId, discordgo.GuildChannelCreateData{
 		Name:     channelName,
 		Type:     discordgo.ChannelTypeGuildVoice,

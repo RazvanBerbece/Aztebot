@@ -68,13 +68,14 @@ var LastUsedTop5sTimestamp = time.Now().Add(-60 * time.Minute)
 
 var ConfessionsToApprove = make(map[string]string)
 
+// =============== RUNTIME GLOBAL STATIC DATA ===============
 var JailTasks = []string{}
 
 var AfkChannels map[string]string
 var MusicChannels map[string]string
 var DynamicChannelCreateButtonIds map[string]string
 
-// =============== RUNTIME GLOBAL CHANNELS ===============
+// =============== RUNTIME GLOBAL EVENT CHANNELS ===============
 var ExperienceGrantsChannel = make(chan dataModels.ExperienceGrant)
 var ChannelCreationsChannel = make(chan events.VoiceChannelCreateEvent)
 
