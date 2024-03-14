@@ -41,6 +41,7 @@ func ProcessCleanupUnusedDynamicChannels(s *discordgo.Session, guildId string) {
 }
 
 func CleanupUnusedDynamicChannels(s *discordgo.Session, guildId string) {
+
 	channels, err := s.GuildChannels(guildId)
 	if err != nil {
 		fmt.Printf("An error ocurred while cleaning up hanging dynamic channels: %v\n", err)
@@ -63,8 +64,9 @@ func CleanupUnusedDynamicChannels(s *discordgo.Session, guildId string) {
 				_, err := s.ChannelDelete(channel.ID)
 				if err != nil {
 					fmt.Printf("An error ocurred while cleaning up hanging dynamic channels: %v\n", err)
-					return
+					continue
 				}
+				globals.DynamicChannelsCount -= 1
 			}
 		}
 	}

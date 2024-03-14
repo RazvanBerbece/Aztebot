@@ -70,6 +70,8 @@ var LastUsedTop5sTimestamp = time.Now().Add(-60 * time.Minute)
 
 var ConfessionsToApprove = make(map[string]string)
 
+var DynamicChannelsCount int = 0
+
 // =============== RUNTIME GLOBAL STATIC DATA ===============
 var JailTasks = []string{}
 
