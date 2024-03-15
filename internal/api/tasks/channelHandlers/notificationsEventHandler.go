@@ -5,15 +5,16 @@ import (
 
 	"github.com/RazvanBerbece/Aztebot/internal/api/notifications"
 	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	"github.com/bwmarrin/discordgo"
 )
 
-func HandleNotificationEvents() {
+func HandleNotificationEvents(s *discordgo.Session) {
 
 	for notificationEvent := range globals.NotificationsChannel {
 		switch notificationEvent.Type {
 		case "EMBED_WITH_TITLE_AND_FIELDS":
 			err := notifications.SendNotificationToTextChannel(
-				notificationEvent.Session,
+				s,
 				notificationEvent.TargetChannelId,
 				*notificationEvent.Title,
 				notificationEvent.Fields,
@@ -23,7 +24,7 @@ func HandleNotificationEvents() {
 			}
 		case "EMBED_PASSTHROUGH":
 			err := notifications.SendEmbedToTextChannel(
-				notificationEvent.Session,
+				s,
 				notificationEvent.TargetChannelId,
 				*notificationEvent.Embed)
 			if err != nil {
@@ -31,7 +32,7 @@ func HandleNotificationEvents() {
 			}
 		case "EMBED_WITH_ACTION_ROW":
 			approvalMessageId, err := notifications.SendNotificationWithActionRowToTextChannel(
-				notificationEvent.Session,
+				s,
 				notificationEvent.TargetChannelId,
 				*notificationEvent.Title,
 				notificationEvent.Fields,

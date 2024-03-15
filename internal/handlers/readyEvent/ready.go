@@ -48,7 +48,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	go cron.UpdateVoiceSessionDurations(s)
 
 	// Run event handlers
-	go channelHandlers.HandleNotificationEvents()
+	go channelHandlers.HandleNotificationEvents(s)
 	go channelHandlers.HandleExperienceGrantEvents()
 	go channelHandlers.HandleDynamicChannelCreationEvents(s)
 

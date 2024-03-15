@@ -85,7 +85,7 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 
 	// Send notification to target staff channel to announce the global rate change
 	if channel, channelExists := globals.NotificationChannels["notif-aztebot"]; channelExists {
-		go sendXpRateChangeNotification(s, channel.ChannelId, activityName, multiplierName)
+		go sendXpRateChangeNotification(channel.ChannelId, activityName, multiplierName)
 	}
 
 	// Send response embed
@@ -103,7 +103,7 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 
 }
 
-func sendXpRateChangeNotification(s *discordgo.Session, channelId string, activityName string, multiplierName string) {
+func sendXpRateChangeNotification(channelId string, activityName string, multiplierName string) {
 
 	// Build global XP rate change embed
 	embed := embed.
@@ -122,7 +122,6 @@ func sendXpRateChangeNotification(s *discordgo.Session, channelId string, activi
 
 	// Publish notification event
 	globals.NotificationsChannel <- events.NotificationEvent{
-		Session:         s,
 		TargetChannelId: channelId,
 		Type:            "EMBED_PASSTHROUGH",
 		Embed:           embed,

@@ -51,7 +51,6 @@ func SendConfessionApprovalNotification(s *discordgo.Session, channelId string, 
 	notificationTitle := "New `/confess` to Approve"
 	useThumbnail := false
 	globals.NotificationsChannel <- events.NotificationEvent{
-		Session:         s,
 		TargetChannelId: channelId,
 		Title:           &notificationTitle,
 		Type:            "EMBED_WITH_ACTION_ROW",
@@ -76,7 +75,6 @@ func SendApprovedConfessionNotification(s *discordgo.Session, channelId string, 
 	emptyTitle := ""
 	useThumbnail := false
 	globals.NotificationsChannel <- events.NotificationEvent{
-		Session:         s,
 		TargetChannelId: channelId,
 		Title:           &emptyTitle,
 		Type:            "EMBED_WITH_TITLE_AND_FIELDS",

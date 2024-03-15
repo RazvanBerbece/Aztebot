@@ -6,7 +6,6 @@ import (
 )
 
 type NotificationEvent struct {
-	Session         *discordgo.Session
 	TargetChannelId string
 	Type            string
 	Title           *string

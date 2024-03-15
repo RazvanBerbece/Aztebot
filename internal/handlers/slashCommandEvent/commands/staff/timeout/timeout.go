@@ -143,7 +143,6 @@ func sendTimeoutNotification(s *discordgo.Session, channelId string, targetUserI
 
 	useThumbnail := true
 	globals.NotificationsChannel <- events.NotificationEvent{
-		Session:         s,
 		TargetChannelId: channelId,
 		Title:           &notificationTitle,
 		Type:            "EMBED_WITH_TITLE_AND_FIELDS",

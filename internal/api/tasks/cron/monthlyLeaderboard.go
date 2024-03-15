@@ -171,7 +171,6 @@ func sendMonthlyLeaderboardWinnerNotification(s *discordgo.Session, channelId st
 
 	// Publish notification event
 	globals.NotificationsChannel <- events.NotificationEvent{
-		Session:         s,
 		TargetChannelId: channelId,
 		Type:            "EMBED_PASSTHROUGH",
 		Embed:           embed,

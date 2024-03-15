@@ -791,7 +791,6 @@ func JailMember(s *discordgo.Session, guildId string, userId string, reason stri
 
 	// Publish notification event
 	globals.NotificationsChannel <- events.NotificationEvent{
-		Session:         s,
 		TargetChannelId: notificationChannelId,
 		Type:            "EMBED_PASSTHROUGH",
 		Embed:           notificationEmbed,
@@ -861,7 +860,6 @@ func UnjailMember(s *discordgo.Session, guildId string, userId string, jailRoleN
 
 	// Publish notification event
 	globals.NotificationsChannel <- events.NotificationEvent{
-		Session:         s,
 		TargetChannelId: notificationChannelId,
 		Type:            "EMBED_PASSTHROUGH",
 		Embed:           notificationEmbed,
