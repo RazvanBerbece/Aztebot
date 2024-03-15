@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/RazvanBerbece/Aztebot/internal/api/server"
+	server_channel "github.com/RazvanBerbece/Aztebot/internal/api/server/channel"
 	"github.com/RazvanBerbece/Aztebot/internal/globals"
 	"github.com/bwmarrin/discordgo"
 )
@@ -52,7 +52,7 @@ func CleanupUnusedDynamicChannels(s *discordgo.Session, guildId string) {
 		// If channel is a dynamic channel - given the `(~Extra~)` substring in the name
 		if channel.Type == discordgo.ChannelTypeGuildVoice && strings.Contains(channel.Name, "(~Extra~)") {
 
-			hasConnectedMembers, err := server.VoiceChannelHasConnectedMembers(s, guildId, channel.ID)
+			hasConnectedMembers, err := server_channel.VoiceChannelHasConnectedMembers(s, guildId, channel.ID)
 			if err != nil {
 				fmt.Printf("An error ocurred while cleaning up hanging dynamic channels: %v\n", err)
 				continue

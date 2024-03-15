@@ -13,7 +13,7 @@ func HandleNotificationEvents(s *discordgo.Session) {
 	for notificationEvent := range globals.NotificationsChannel {
 		switch notificationEvent.Type {
 		case "EMBED_WITH_TITLE_AND_FIELDS":
-			err := notifications.SendNotificationToTextChannel(
+			err := notifications.SendNotificationWithFieldsToTextChannel(
 				s,
 				notificationEvent.TargetChannelId,
 				*notificationEvent.Title,

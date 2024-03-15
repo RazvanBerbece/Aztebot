@@ -19,7 +19,7 @@ func SendEmbedToTextChannel(s *discordgo.Session, channelId string, embed embed.
 
 }
 
-func SendNotificationToTextChannel(s *discordgo.Session, channelId string, notificationTitle string, fields []discordgo.MessageEmbedField, useThumbnail bool) error {
+func SendNotificationWithFieldsToTextChannel(s *discordgo.Session, channelId string, notificationTitle string, fields []discordgo.MessageEmbedField, useThumbnail bool) error {
 
 	// Build notification embed
 	embed := embed.NewEmbed().

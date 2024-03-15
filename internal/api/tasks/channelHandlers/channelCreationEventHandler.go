@@ -3,7 +3,7 @@ package channelHandlers
 import (
 	"fmt"
 
-	"github.com/RazvanBerbece/Aztebot/internal/api/server"
+	server_channel "github.com/RazvanBerbece/Aztebot/internal/api/server/channel"
 	"github.com/RazvanBerbece/Aztebot/internal/globals"
 	"github.com/bwmarrin/discordgo"
 )
@@ -17,14 +17,14 @@ func HandleDynamicChannelCreationEvents(s *discordgo.Session) {
 			continue
 		}
 
-		categoryId, err := server.GetCategoryIdForChannel(s, channelEvent.ParentGuildId, channelEvent.ParentChannelId)
+		categoryId, err := server_channel.GetCategoryIdForChannel(s, channelEvent.ParentGuildId, channelEvent.ParentChannelId)
 		if err != nil {
 			fmt.Printf("Failed to handle VC creation event (get parent category): %v\n", err)
 			continue
 		}
 
 		// Create a new voice channel with the given specification
-		createdChannel, err := server.CreateVoiceChannelForCategory(s, channelEvent.ParentGuildId, categoryId, channelEvent.Name, channelEvent.Private)
+		createdChannel, err := server_channel.CreateVoiceChannelForCategory(s, channelEvent.ParentGuildId, categoryId, channelEvent.Name, channelEvent.Private)
 		if err != nil {
 			fmt.Printf("Failed to handle VC creation event (create channel): %v\n", err)
 			continue

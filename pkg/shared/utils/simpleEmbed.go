@@ -6,6 +6,7 @@ import (
 )
 
 func SimpleEmbed(title string, description string) []*discordgo.MessageEmbed {
+
 	embed := embed.NewEmbed().
 		SetTitle(title).
 		SetDescription(description).

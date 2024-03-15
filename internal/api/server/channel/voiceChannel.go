@@ -1,4 +1,4 @@
-package server
+package server_channel
 
 import (
 	"fmt"
@@ -21,24 +21,6 @@ func VoiceChannelHasConnectedMembers(s *discordgo.Session, guildId string, chann
 	}
 
 	return false, nil
-}
-
-func GetCategoryIdForChannel(s *discordgo.Session, guildId string, channelId string) (string, error) {
-
-	channels, err := s.GuildChannels(guildId)
-	if err != nil {
-		return "", err
-	}
-
-	for _, channel := range channels {
-		if channel.ID == channelId {
-			// The ParentID should be the category - if it exists
-			return channel.ParentID, nil
-		}
-	}
-
-	return "", nil
-
 }
 
 func CreateVoiceChannelForCategory(s *discordgo.Session, guildId string, categoryId string, channelName string, private bool) (*discordgo.Channel, error) {
