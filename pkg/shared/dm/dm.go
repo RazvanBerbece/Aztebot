@@ -6,7 +6,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func SendEmbedForOriginalMsgToUser(session *discordgo.Session, originalMessage *discordgo.InteractionCreate, userId string, embed *discordgo.MessageEmbed) error {
+func DmUserWithOriginalMessageFeedback(session *discordgo.Session, originalMessage *discordgo.InteractionCreate, userId string, embed *discordgo.MessageEmbed) error {
 
 	channel, err := session.UserChannelCreate(userId) // DM channel
 	if err != nil {
