@@ -98,7 +98,7 @@ func ExtractMonthlyLeaderboardWinners(s *discordgo.Session, monthlyLeaderboardRe
 
 func sendMonthlyLeaderboardWinnerNotification(s *discordgo.Session, channelId string, king *dataModels.MonthlyLeaderboardEntry, queen *dataModels.MonthlyLeaderboardEntry, nonbinary *dataModels.MonthlyLeaderboardEntry, other *dataModels.MonthlyLeaderboardEntry) {
 
-	// Get command owner discord names
+	// Get winner discord names for display purposes
 	var kingsName string = ""
 	var queensName string = ""
 	var nonbinsName string = ""

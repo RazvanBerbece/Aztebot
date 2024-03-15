@@ -340,6 +340,10 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 			},
 		},
 	},
+	{
+		Name:        "monthly-leaderboard",
+		Description: "Displays a high level view of the monthly leaderboard for the current month.",
+	},
 }
 
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -354,6 +358,7 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"help":                  serverSlashHandlers.HandleSlashAztebotHelp,
 	"top5user":              serverSlashHandlers.HandleSlashTop5Users,
 	"top":                   serverSlashHandlers.HandleSlashTop,
+	"monthly-leaderboard":   serverSlashHandlers.HandleSlashMonthlyLeaderboard,
 	"confess":               supportSlashHandlers.HandleSlashConfess,
 	"warn":                  warningSlashHandlers.HandleSlashWarn,
 	"warn_remove_oldest":    warningSlashHandlers.HandleSlashWarnRemoveOldest,
