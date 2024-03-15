@@ -6,8 +6,9 @@ import (
 
 	"github.com/RazvanBerbece/Aztebot/internal/api/member"
 	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -16,7 +17,7 @@ func Any(s *discordgo.Session, m *discordgo.MessageCreate) {
 	messageCreatorUserId := m.Author.ID
 
 	// Ignore all messages created by bots
-	authorIsBot, err := member.IsBot(s, globals.DiscordMainGuildId, messageCreatorUserId, false)
+	authorIsBot, err := member.IsBot(s, globalConfiguration.DiscordMainGuildId, messageCreatorUserId, false)
 	if err != nil {
 		return
 	}
@@ -25,24 +26,24 @@ func Any(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	// Increase stats for user
-	err = globalsRepo.UserStatsRepository.IncrementMessagesSentForUser(messageCreatorUserId)
+	err = globalRepositories.UserStatsRepository.IncrementMessagesSentForUser(messageCreatorUserId)
 	if err != nil {
 		fmt.Printf("An error ocurred while updating user (%s) message count: %v\n", messageCreatorUserId, err)
 	}
 
-	err = globalsRepo.UserStatsRepository.IncrementActivitiesTodayForUser(messageCreatorUserId)
+	err = globalRepositories.UserStatsRepository.IncrementActivitiesTodayForUser(messageCreatorUserId)
 	if err != nil {
 		fmt.Printf("An error ocurred while incrementing user (%s) activities count: %v\n", messageCreatorUserId, err)
 	}
-	err = globalsRepo.UserStatsRepository.UpdateLastActiveTimestamp(messageCreatorUserId, time.Now().Unix())
+	err = globalRepositories.UserStatsRepository.UpdateLastActiveTimestamp(messageCreatorUserId, time.Now().Unix())
 	if err != nil {
 		fmt.Printf("An error ocurred while updating user (%s) last timestamp: %v\n", m.Author.ID, err)
 	}
 
 	// Publish experience grant message on the channel
-	globals.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
+	globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 		UserId:   messageCreatorUserId,
-		Points:   globals.ExperienceReward_MessageSent,
+		Points:   globalConfiguration.ExperienceReward_MessageSent,
 		Activity: "Message Sent Reward",
 	}
 

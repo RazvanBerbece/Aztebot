@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"github.com/RazvanBerbece/Aztebot/internal/api/member"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 )
 
 func HandleExperienceGrantEvents() {
 
-	for xpEvent := range globals.ExperienceGrantsChannel {
+	for xpEvent := range globalMessaging.ExperienceGrantsChannel {
 		_, err := member.GrantMemberExperience(xpEvent.UserId, xpEvent.Activity, xpEvent.Points)
 		if err != nil {
 			fmt.Println("An error ocurred in the XP grant message handler for message", xpEvent, ":", err)

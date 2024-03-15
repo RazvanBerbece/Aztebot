@@ -5,8 +5,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
+	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -14,7 +14,7 @@ import (
 
 func HandleSlashTop(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
-	durationSinceLastTopCommand := time.Since(globals.LastUsedTopTimestamp)
+	durationSinceLastTopCommand := time.Since(globalState.LastUsedTopTimestamp)
 	if int(durationSinceLastTopCommand.Minutes()) < 5 {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
@@ -57,14 +57,14 @@ func TopCommandResultsEmbed(s *discordgo.Session, i *discordgo.InteractionCreate
 	// Top by messages sent
 	ProcessTopEmbed(topCount, s, i.Interaction, embed)
 
-	globals.LastUsedTopTimestamp = time.Now()
+	globalState.LastUsedTopTimestamp = time.Now()
 
 	return []*discordgo.MessageEmbed{embed.MessageEmbed}
 }
 
 func ProcessTopEmbed(topCount int, s *discordgo.Session, i *discordgo.Interaction, embed *embed.Embed) {
 
-	topXpGains, err := globalsRepo.UserStatsRepository.GetTopUsersByXp(topCount)
+	topXpGains, err := globalRepositories.UserStatsRepository.GetTopUsersByXp(topCount)
 	if err != nil {
 		log.Printf("Cannot retrieve global OTA leaderboard: %v", err)
 	}
@@ -88,7 +88,7 @@ func ProcessTopEmbed(topCount int, s *discordgo.Session, i *discordgo.Interactio
 			}
 
 			// Get rest of stats for user to display in the result embed
-			stats, err := globalsRepo.UserStatsRepository.GetStatsForUser(topUser.UserId)
+			stats, err := globalRepositories.UserStatsRepository.GetStatsForUser(topUser.UserId)
 			if err != nil {
 				log.Printf("Cannot retrieve stats for user: %v", err)
 				continue

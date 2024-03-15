@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/api/member"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -77,7 +77,7 @@ func HandleSlashWarn(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 func GiveWarnToUserWithId(s *discordgo.Session, i *discordgo.InteractionCreate, userId string, reason string, timestamp int64) error {
 
-	result := globalsRepo.WarnsRepository.GetWarningsCountForUser(userId)
+	result := globalRepositories.WarnsRepository.GetWarningsCountForUser(userId)
 	if result < 0 {
 		fmt.Println("ERROR occured while getting all warnings count for user")
 		return fmt.Errorf("ERROR SendWarnDmToUser")
@@ -96,7 +96,7 @@ func GiveWarnToUserWithId(s *discordgo.Session, i *discordgo.InteractionCreate, 
 	case 1:
 		// 1 downgrade for staff role
 		demoteType := "STAFF"
-		errDemote := member.DemoteMember(s, globals.DiscordMainGuildId, userId, demoteType)
+		errDemote := member.DemoteMember(s, globalConfiguration.DiscordMainGuildId, userId, demoteType)
 		if errDemote != nil {
 			fmt.Printf("An error ocurred while demoting user: %v\n", errDemote)
 			return errDemote
@@ -110,7 +110,7 @@ func GiveWarnToUserWithId(s *discordgo.Session, i *discordgo.InteractionCreate, 
 	case 2:
 		// 1 downgrade for role
 		demoteType := "STAFF"
-		errDemote := member.DemoteMember(s, globals.DiscordMainGuildId, userId, "STAFF")
+		errDemote := member.DemoteMember(s, globalConfiguration.DiscordMainGuildId, userId, "STAFF")
 		if errDemote != nil {
 			fmt.Printf("An error ocurred while demoting user: %v\n", errDemote)
 			return errDemote
@@ -129,14 +129,14 @@ func GiveWarnToUserWithId(s *discordgo.Session, i *discordgo.InteractionCreate, 
 			fmt.Printf("An error ocurred while sending kick message content DM to user: %v\n", err)
 		}
 		// kick from guild, timeout
-		err = member.KickMember(s, globals.DiscordMainGuildId, userId)
+		err = member.KickMember(s, globalConfiguration.DiscordMainGuildId, userId)
 		if err != nil {
 			fmt.Println("Error kicking member for receiving 4th warning:", err)
 			return err
 		}
 	}
 
-	err := globalsRepo.WarnsRepository.SaveWarn(userId, reason, timestamp)
+	err := globalRepositories.WarnsRepository.SaveWarn(userId, reason, timestamp)
 	if err != nil {
 		fmt.Printf("ERROR GiveWarnToUserWithId: %v", err)
 		return err

@@ -4,7 +4,8 @@ import (
 	"fmt"
 
 	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -23,7 +24,7 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 	switch activity {
 	case "msg_send":
 		if multiplierStringInput == "def" {
-			globals.ExperienceReward_MessageSent = globals.DefaultExperienceReward_MessageSent
+			globalConfiguration.ExperienceReward_MessageSent = globalConfiguration.DefaultExperienceReward_MessageSent
 		} else {
 			multiplier, convErr := utils.StringToFloat64(multiplierStringInput)
 			if convErr != nil {
@@ -31,11 +32,11 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 				utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
 				return
 			}
-			globals.ExperienceReward_MessageSent = *multiplier
+			globalConfiguration.ExperienceReward_MessageSent = *multiplier
 		}
 	case "react_recv":
 		if multiplierStringInput == "def" {
-			globals.ExperienceReward_ReactionReceived = globals.DefaultExperienceReward_ReactionReceived
+			globalConfiguration.ExperienceReward_ReactionReceived = globalConfiguration.DefaultExperienceReward_ReactionReceived
 		} else {
 			multiplier, convErr := utils.StringToFloat64(multiplierStringInput)
 			if convErr != nil {
@@ -43,11 +44,11 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 				utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
 				return
 			}
-			globals.ExperienceReward_ReactionReceived = *multiplier
+			globalConfiguration.ExperienceReward_ReactionReceived = *multiplier
 		}
 	case "slash_use":
 		if multiplierStringInput == "def" {
-			globals.ExperienceReward_SlashCommandUsed = globals.DefaultExperienceReward_SlashCommandUsed
+			globalConfiguration.ExperienceReward_SlashCommandUsed = globalConfiguration.DefaultExperienceReward_SlashCommandUsed
 		} else {
 			multiplier, convErr := utils.StringToFloat64(multiplierStringInput)
 			if convErr != nil {
@@ -55,11 +56,11 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 				utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
 				return
 			}
-			globals.ExperienceReward_SlashCommandUsed = *multiplier
+			globalConfiguration.ExperienceReward_SlashCommandUsed = *multiplier
 		}
 	case "spent_vc":
 		if multiplierStringInput == "def" {
-			globals.ExperienceReward_InVc = globals.DefaultExperienceReward_InVc
+			globalConfiguration.ExperienceReward_InVc = globalConfiguration.DefaultExperienceReward_InVc
 		} else {
 			multiplier, convErr := utils.StringToFloat64(multiplierStringInput)
 			if convErr != nil {
@@ -67,11 +68,11 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 				utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
 				return
 			}
-			globals.ExperienceReward_InVc = *multiplier
+			globalConfiguration.ExperienceReward_InVc = *multiplier
 		}
 	case "spent_music":
 		if multiplierStringInput == "def" {
-			globals.ExperienceReward_InMusic = globals.DefaultExperienceReward_InMusic
+			globalConfiguration.ExperienceReward_InMusic = globalConfiguration.DefaultExperienceReward_InMusic
 		} else {
 			multiplier, convErr := utils.StringToFloat64(multiplierStringInput)
 			if convErr != nil {
@@ -79,12 +80,12 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 				utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
 				return
 			}
-			globals.ExperienceReward_InMusic = *multiplier
+			globalConfiguration.ExperienceReward_InMusic = *multiplier
 		}
 	}
 
 	// Send notification to target staff channel to announce the global rate change
-	if channel, channelExists := globals.NotificationChannels["notif-aztebot"]; channelExists {
+	if channel, channelExists := globalConfiguration.NotificationChannels["notif-aztebot"]; channelExists {
 		go sendXpRateChangeNotification(channel.ChannelId, activityName, multiplierName)
 	}
 
@@ -120,7 +121,7 @@ func sendXpRateChangeNotification(channelId string, activityName string, multipl
 
 	embed.AtTagEveryone()
 
-	globals.NotificationsChannel <- events.NotificationEvent{
+	globalMessaging.NotificationsChannel <- events.NotificationEvent{
 		TargetChannelId: channelId,
 		Type:            "EMBED_PASSTHROUGH",
 		Embed:           embed,

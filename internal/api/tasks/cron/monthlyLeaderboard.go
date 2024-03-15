@@ -7,7 +7,8 @@ import (
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
 	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/bwmarrin/discordgo"
 )
@@ -79,7 +80,7 @@ func ExtractMonthlyLeaderboardWinners(s *discordgo.Session, monthlyLeaderboardRe
 	}
 
 	// Send winner notification to designated channel
-	if channel, channelExists := globals.NotificationChannels["notif-monthlyWinners"]; channelExists {
+	if channel, channelExists := globalConfiguration.NotificationChannels["notif-monthlyWinners"]; channelExists {
 		go sendMonthlyLeaderboardWinnerNotification(s, channel.ChannelId, kingEntry, queenEntry, nonbinaryEntry, otherEntry)
 	}
 
@@ -169,7 +170,7 @@ func sendMonthlyLeaderboardWinnerNotification(s *discordgo.Session, channelId st
 		AddLineBreakField().
 		AtTagEveryone()
 
-	globals.NotificationsChannel <- events.NotificationEvent{
+	globalMessaging.NotificationsChannel <- events.NotificationEvent{
 		TargetChannelId: channelId,
 		Type:            "EMBED_PASSTHROUGH",
 		Embed:           embed,

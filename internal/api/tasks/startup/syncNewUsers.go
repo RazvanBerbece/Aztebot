@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
@@ -20,7 +20,7 @@ func SyncUsersAtStartup(s *discordgo.Session) error {
 	userStatsRepository := repositories.NewUsersStatsRepository()
 
 	// Retrieve all members in the guild
-	members, err := s.GuildMembers(globals.DiscordMainGuildId, "", 1000)
+	members, err := s.GuildMembers(globalConfiguration.DiscordMainGuildId, "", 1000)
 	if err != nil {
 		fmt.Println("[STARTUP] Failed Task SyncUsersAtStartup() at", time.Now(), "with error", err)
 		return err
@@ -33,7 +33,7 @@ func SyncUsersAtStartup(s *discordgo.Session) error {
 	for len(members) == 1000 {
 		// Set the 'After' parameter to the ID of the last member in the current batch
 		lastMemberID := members[len(members)-1].User.ID
-		members, err = s.GuildMembers(globals.DiscordMainGuildId, lastMemberID, 1000)
+		members, err = s.GuildMembers(globalConfiguration.DiscordMainGuildId, lastMemberID, 1000)
 		if err != nil {
 			fmt.Println("[STARTUP] Failed Task SyncUsersAtStartup() at", time.Now(), "with error", err)
 			return err
@@ -59,7 +59,7 @@ func processMembers(s *discordgo.Session, members []*discordgo.Member, rolesRepo
 			continue
 		}
 		// For each member, sync their details (either add to DB or update)
-		err := utils.SyncUserPersistent(s, globals.DiscordMainGuildId, member.User.ID, member, rolesRepository, usersRepository, userStatsRepository)
+		err := utils.SyncUserPersistent(s, globalConfiguration.DiscordMainGuildId, member.User.ID, member, rolesRepository, usersRepository, userStatsRepository)
 		if err != nil && err.Error() != "no update was executed" {
 			fmt.Printf("Error syncing member %s: %v\n", member.User.Username, err)
 		}

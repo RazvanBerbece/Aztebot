@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
 	"github.com/RazvanBerbece/Aztebot/internal/handlers/slashCommandEvent/commands"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -19,31 +20,31 @@ func RegisterAztebotSlashCommands(s *discordgo.Session, mainGuildOnly bool) erro
 	if mainGuildOnly {
 		// Register commands only for the main guild
 		// This is more performant when the bot is not supposed to be in more guilds
-		globals.AztebotRegisteredCommands = make([]*discordgo.ApplicationCommand, len(commands.AztebotSlashCommands))
+		globalState.AztebotRegisteredCommands = make([]*discordgo.ApplicationCommand, len(commands.AztebotSlashCommands))
 		for index, cmd := range commands.AztebotSlashCommands {
-			_, err := s.ApplicationCommandCreate(globals.DiscordAztebotAppId, globals.DiscordMainGuildId, cmd)
+			_, err := s.ApplicationCommandCreate(globalConfiguration.DiscordAztebotAppId, globalConfiguration.DiscordMainGuildId, cmd)
 			if err != nil {
 				return err
 			}
-			globals.AztebotRegisteredCommands[index] = cmd
+			globalState.AztebotRegisteredCommands[index] = cmd
 		}
 	} else {
 		// For each guild where the bot exists in, register the available commands
-		guildIds := strings.Fields(globals.DiscordGuildIds)
+		guildIds := strings.Fields(globalConfiguration.DiscordGuildIds)
 		for _, guildId := range guildIds {
-			globals.AztebotRegisteredCommands = make([]*discordgo.ApplicationCommand, len(commands.AztebotSlashCommands))
+			globalState.AztebotRegisteredCommands = make([]*discordgo.ApplicationCommand, len(commands.AztebotSlashCommands))
 			for index, cmd := range commands.AztebotSlashCommands {
-				_, err := s.ApplicationCommandCreate(globals.DiscordAztebotAppId, guildId, cmd)
+				_, err := s.ApplicationCommandCreate(globalConfiguration.DiscordAztebotAppId, guildId, cmd)
 				if err != nil {
 					return err
 				}
-				globals.AztebotRegisteredCommands[index] = cmd
+				globalState.AztebotRegisteredCommands[index] = cmd
 			}
 		}
 	}
 
 	// Register global commands (available in bot DMs as well)
-	go RegisterDmCommands(s, globals.GlobalCommands)
+	go RegisterDmCommands(s, globalConfiguration.GlobalCommands)
 
 	// Register actual slash command handler
 	go RegisterSlashHandler(s)
@@ -58,7 +59,7 @@ func RegisterDmCommands(s *discordgo.Session, dmCommands []string) {
 	for _, cmd := range commands.AztebotSlashCommands {
 		if utils.StringInSlice(cmd.Name, dmCommands) {
 			// If a command that can be used in DMs too
-			_, err := s.ApplicationCommandCreate(globals.DiscordAztebotAppId, "", cmd)
+			_, err := s.ApplicationCommandCreate(globalConfiguration.DiscordAztebotAppId, "", cmd)
 			if err != nil {
 				fmt.Println("An error ocurred while registering DM (global) commands")
 			}

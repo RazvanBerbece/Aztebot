@@ -8,8 +8,8 @@ import (
 	"github.com/RazvanBerbece/Aztebot/internal/api/member"
 	rolesService "github.com/RazvanBerbece/Aztebot/internal/api/roles"
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -50,7 +50,7 @@ func HandleSlashMe(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 func GetProfileEmbedForUser(s *discordgo.Session, userId string) []*discordgo.MessageEmbed {
 
-	user, err := globalsRepo.UsersRepository.GetUser(userId)
+	user, err := globalRepositories.UsersRepository.GetUser(userId)
 	if err != nil {
 		log.Printf("Cannot retrieve user with id %s: %v", userId, err)
 		return nil
@@ -70,7 +70,7 @@ func GetProfileEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Me
 	var highestOrderRole *dataModels.Role = nil
 	var highestStaffRole *dataModels.Role = nil
 	var orderRoleText string = ""
-	roles, err := globalsRepo.UsersRepository.GetRolesForUser(userId)
+	roles, err := globalRepositories.UsersRepository.GetRolesForUser(userId)
 	if err != nil {
 		log.Printf("Cannot retrieve roles for user with id %s: %v", userId, err)
 		highestOrderRole = nil
@@ -80,7 +80,7 @@ func GetProfileEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Me
 		orderRoleText = fmt.Sprintf("%s | ", highestOrderRole.DisplayName)
 	}
 
-	stats, errStats := globalsRepo.UserStatsRepository.GetStatsForUser(userId)
+	stats, errStats := globalRepositories.UserStatsRepository.GetStatsForUser(userId)
 	if errStats != nil {
 		log.Fatalf("Cannot retrieve user %s stats: %v", user.DiscordTag, errStats)
 		return nil
@@ -214,7 +214,7 @@ func DecorateProfileEmbed(embed *embed.Embed, staffRole *dataModels.Role, userId
 	}
 
 	// Staff text segment (is user a member of staff?) in embed description
-	if member.IsStaff(userId, globals.StaffRoles) {
+	if member.IsStaff(userId, globalConfiguration.StaffRoles) {
 		var staffFieldName string = "💎 OTA Staff Member"
 		if staffRole != nil {
 			staffFieldName += fmt.Sprintf(" (`%s`)", staffRole.DisplayName)

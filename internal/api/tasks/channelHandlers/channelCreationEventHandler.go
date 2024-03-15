@@ -4,16 +4,17 @@ import (
 	"fmt"
 
 	server_channel "github.com/RazvanBerbece/Aztebot/internal/api/server/channel"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
+	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
 	"github.com/bwmarrin/discordgo"
 )
 
 func HandleDynamicChannelCreationEvents(s *discordgo.Session) {
 
-	for channelEvent := range globals.ChannelCreationsChannel {
+	for channelEvent := range globalMessaging.ChannelCreationsChannel {
 
 		// Limit dynamic channels to a maximum of ~25, to minimise the risk of DoS by spamming VCs
-		if globals.DynamicChannelsCount >= 25 {
+		if globalState.DynamicChannelsCount >= 25 {
 			continue
 		}
 
@@ -30,7 +31,7 @@ func HandleDynamicChannelCreationEvents(s *discordgo.Session) {
 			continue
 		}
 
-		globals.DynamicChannelsCount += 1
+		globalState.DynamicChannelsCount += 1
 
 		// and move member to it
 		err = s.GuildMemberMove(channelEvent.ParentGuildId, channelEvent.ParentMemberId, &createdChannel.ID)

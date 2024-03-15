@@ -3,7 +3,7 @@ package member
 import (
 	"fmt"
 
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -24,37 +24,37 @@ func KickMember(s *discordgo.Session, guildId string, userId string) error {
 }
 
 func DeleteAllMemberData(userId string) error {
-	err := globalsRepo.UserStatsRepository.DeleteUserStats(userId)
+	err := globalRepositories.UserStatsRepository.DeleteUserStats(userId)
 	if err != nil {
 		fmt.Printf("Error deleting member %s stats from DB: %v", userId, err)
 		return err
 	}
-	err = globalsRepo.UsersRepository.DeleteUser(userId)
+	err = globalRepositories.UsersRepository.DeleteUser(userId)
 	if err != nil {
 		fmt.Printf("Error deleting user %s from DB: %v", userId, err)
 		return err
 	}
-	err = globalsRepo.WarnsRepository.DeleteAllWarningsForUser(userId)
+	err = globalRepositories.WarnsRepository.DeleteAllWarningsForUser(userId)
 	if err != nil {
 		fmt.Printf("Error deleting user %s warnings from DB: %v", userId, err)
 		return err
 	}
-	err = globalsRepo.TimeoutsRepository.ClearTimeoutForUser(userId)
+	err = globalRepositories.TimeoutsRepository.ClearTimeoutForUser(userId)
 	if err != nil {
 		fmt.Printf("Error deleting user %s active timeouts from DB: %v", userId, err)
 		return err
 	}
-	err = globalsRepo.TimeoutsRepository.ClearArchivedTimeoutsForUser(userId)
+	err = globalRepositories.TimeoutsRepository.ClearArchivedTimeoutsForUser(userId)
 	if err != nil {
 		fmt.Printf("Error deleting user %s archived timeouts from DB: %v", userId, err)
 		return err
 	}
-	err = globalsRepo.MonthlyLeaderboardRepository.DeleteEntry(userId)
+	err = globalRepositories.MonthlyLeaderboardRepository.DeleteEntry(userId)
 	if err != nil {
 		fmt.Printf("Error deleting user %s monthly leaderboard entry from DB: %v", userId, err)
 		return err
 	}
-	err = globalsRepo.JailRepository.RemoveUserFromJail(userId)
+	err = globalRepositories.JailRepository.RemoveUserFromJail(userId)
 	if err != nil {
 		fmt.Printf("Error deleting user %s jail entry from DB: %v", userId, err)
 		return err

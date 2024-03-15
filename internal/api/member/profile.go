@@ -3,12 +3,12 @@ package member
 import (
 	"fmt"
 
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 )
 
 func SetGender(userId string, genderValue string) error {
 
-	user, err := globalsRepo.UsersRepository.GetUser(userId)
+	user, err := globalRepositories.UsersRepository.GetUser(userId)
 	if err != nil {
 		return err
 	}
@@ -26,19 +26,19 @@ func SetGender(userId string, genderValue string) error {
 		user.Gender = -1
 	}
 
-	_, err = globalsRepo.UsersRepository.UpdateUser(*user)
+	_, err = globalRepositories.UsersRepository.UpdateUser(*user)
 	if err != nil {
 		return err
 	}
 
 	// Also set gender in leaderboard - if applicable
-	count := globalsRepo.MonthlyLeaderboardRepository.EntryExists(userId)
+	count := globalRepositories.MonthlyLeaderboardRepository.EntryExists(userId)
 	if count <= 0 {
 		if count == -1 {
 			return fmt.Errorf("an error ocurred while checking for user leaderboard entry")
 		}
 	} else {
-		err = globalsRepo.MonthlyLeaderboardRepository.UpdateCategoryForUser(userId, user.Gender)
+		err = globalRepositories.MonthlyLeaderboardRepository.UpdateCategoryForUser(userId, user.Gender)
 		if err != nil {
 			return err
 		}

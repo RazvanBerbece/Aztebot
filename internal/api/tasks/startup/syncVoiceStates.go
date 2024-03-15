@@ -5,7 +5,8 @@ import (
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/api/member"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
@@ -16,7 +17,7 @@ func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 
 	now := time.Now()
 
-	guild, err := s.State.Guild(globals.DiscordMainGuildId)
+	guild, err := s.State.Guild(globalConfiguration.DiscordMainGuildId)
 	if err != nil {
 		fmt.Println("Error retrieving guild:", err)
 		return
@@ -46,7 +47,7 @@ func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 			userId := voiceState.UserID
 			channelId := voiceState.ChannelID
 
-			userIsBot, err := member.IsBot(s, globals.DiscordMainGuildId, userId, false)
+			userIsBot, err := member.IsBot(s, globalConfiguration.DiscordMainGuildId, userId, false)
 			if err != nil {
 				fmt.Println("Error retrieving user for bot check:", err)
 				return
@@ -55,14 +56,14 @@ func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 				continue
 			}
 
-			if utils.TargetChannelIsForMusicListening(globals.MusicChannels, channelId) {
+			if utils.TargetChannelIsForMusicListening(globalConfiguration.MusicChannels, channelId) {
 				// If the voice state is purposed for music, initiate a music session at startup time
-				_, exists := globals.MusicSessions[userId]
+				_, exists := globalState.MusicSessions[userId]
 				if exists {
 					continue
 				} else {
 					now = time.Now()
-					globals.MusicSessions[userId] = map[string]*time.Time{
+					globalState.MusicSessions[userId] = map[string]*time.Time{
 						channelId: &now,
 					}
 					musicSessionsAtStartup += 1
@@ -70,22 +71,22 @@ func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 			} else {
 				if voiceState.SelfStream {
 					// If the voice state is purposed for streaming, initiate a streaming session at startup time
-					_, exists := globals.StreamSessions[userId]
+					_, exists := globalState.StreamSessions[userId]
 					if exists {
 						continue
 					} else {
 						now = time.Now()
-						globals.StreamSessions[userId] = &now
+						globalState.StreamSessions[userId] = &now
 						streamSessionsAtStartup += 1
 					}
 				} else {
 					// If the voice state is purposed for just for listening on a voice channel, initiate a voice session at startup time
-					_, exists := globals.VoiceSessions[userId]
+					_, exists := globalState.VoiceSessions[userId]
 					if exists {
 						continue
 					} else {
 						now = time.Now()
-						globals.VoiceSessions[userId] = now
+						globalState.VoiceSessions[userId] = now
 						voiceSessionsAtStartup += 1
 					}
 				}

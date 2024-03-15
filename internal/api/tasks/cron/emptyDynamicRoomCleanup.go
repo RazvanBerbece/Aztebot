@@ -6,17 +6,18 @@ import (
 	"time"
 
 	server_channel "github.com/RazvanBerbece/Aztebot/internal/api/server/channel"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
 	"github.com/bwmarrin/discordgo"
 )
 
 func ProcessCleanupUnusedDynamicChannels(s *discordgo.Session, guildId string) {
 
 	var numSec int
-	if globals.CleanupDynamicChannelsFrequencyErr != nil {
+	if globalConfiguration.CleanupDynamicChannelsFrequencyErr != nil {
 		numSec = 5
 	} else {
-		numSec = globals.CleanupDynamicChannelsFrequency
+		numSec = globalConfiguration.CleanupDynamicChannelsFrequency
 	}
 
 	fmt.Println("[CRON] Starting Cron Ticker CleanupUnusedDynamicChannels() at", time.Now(), "running every", numSec, "seconds")
@@ -66,7 +67,7 @@ func CleanupUnusedDynamicChannels(s *discordgo.Session, guildId string) {
 					fmt.Printf("An error ocurred while cleaning up hanging dynamic channels: %v\n", err)
 					continue
 				}
-				globals.DynamicChannelsCount -= 1
+				globalState.DynamicChannelsCount -= 1
 			}
 		}
 	}

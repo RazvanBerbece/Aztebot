@@ -6,8 +6,9 @@ import (
 
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
 	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -18,7 +19,7 @@ func JailMember(s *discordgo.Session, guildId string, userId string, reason stri
 	var err error
 
 	// Ensure that a user won't be jailed twice
-	isJailedResult := globalsRepo.JailRepository.UserIsJailed(userId)
+	isJailedResult := globalRepositories.JailRepository.UserIsJailed(userId)
 	if isJailedResult <= 0 {
 		if isJailedResult == -1 {
 			return nil, nil, fmt.Errorf("could not verify whether user `%s` is already jailed", userId)
@@ -27,7 +28,7 @@ func JailMember(s *discordgo.Session, guildId string, userId string, reason stri
 		return nil, nil, fmt.Errorf("a user cannot be jailed twice")
 	}
 
-	user, err := globalsRepo.UsersRepository.GetUser(userId)
+	user, err := globalRepositories.UsersRepository.GetUser(userId)
 	if err != nil {
 		fmt.Printf("Failed to JailMember %s: %v", userId, err)
 		return nil, nil, err
@@ -36,7 +37,7 @@ func JailMember(s *discordgo.Session, guildId string, userId string, reason stri
 	currentTimestamp := time.Now()
 
 	// Pick a random task to assign to the jailed user
-	taskToFree := utils.GetRandomFromArray(globals.JailTasks)
+	taskToFree := utils.GetRandomFromArray(globalConfiguration.JailTasks)
 
 	// Build a record of the jailed user for the command feedback
 	var jailedRecord *dataModels.JailedUser = &dataModels.JailedUser{
@@ -47,7 +48,7 @@ func JailMember(s *discordgo.Session, guildId string, userId string, reason stri
 	}
 
 	// Add User to Jail in the DB
-	err = globalsRepo.JailRepository.AddUserToJail(userId, reason, taskToFree, currentTimestamp.Unix(), user.CurrentRoleIds)
+	err = globalRepositories.JailRepository.AddUserToJail(userId, reason, taskToFree, currentTimestamp.Unix(), user.CurrentRoleIds)
 	if err != nil {
 		fmt.Printf("Failed to JailMember %s: %v", userId, err)
 		return nil, nil, err
@@ -82,7 +83,7 @@ func JailMember(s *discordgo.Session, guildId string, userId string, reason stri
 		AddField("Tasked With", taskToFree, false).
 		AddField("Convincted At", currentTimestamp.String(), false)
 
-	globals.NotificationsChannel <- events.NotificationEvent{
+	globalMessaging.NotificationsChannel <- events.NotificationEvent{
 		TargetChannelId: notificationChannelId,
 		Type:            "EMBED_PASSTHROUGH",
 		Embed:           notificationEmbed,
@@ -104,25 +105,25 @@ func UnjailMember(s *discordgo.Session, guildId string, userId string, jailRoleN
 	var err error
 
 	// Make sure that a user can't be unjailed if not in jail at a certain point in time
-	isJailedResult := globalsRepo.JailRepository.UserIsJailed(userId)
+	isJailedResult := globalRepositories.JailRepository.UserIsJailed(userId)
 	if isJailedResult <= 0 {
 		return nil, nil, fmt.Errorf("cannot unjail a user who is not in jail. user `%s` not found in jail", userId)
 	}
 
-	user, err := globalsRepo.UsersRepository.GetUser(userId)
+	user, err := globalRepositories.UsersRepository.GetUser(userId)
 	if err != nil {
 		fmt.Printf("Failed to UnjailMember (Retrieve OTA Member) %s: %v", userId, err)
 		return nil, nil, err
 	}
 
-	jailedUser, err := globalsRepo.JailRepository.GetJailedUser(userId)
+	jailedUser, err := globalRepositories.JailRepository.GetJailedUser(userId)
 	if err != nil {
 		fmt.Printf("Failed to UnjailMember (Retrieve Jailed Member Entry) %s: %v", userId, err)
 		return nil, nil, err
 	}
 
 	// Remove User from Jail in the DB
-	err = globalsRepo.JailRepository.RemoveUserFromJail(userId)
+	err = globalRepositories.JailRepository.RemoveUserFromJail(userId)
 	if err != nil {
 		fmt.Printf("Failed to UnjailMember (Remove user from OTA Jail) %s: %v", userId, err)
 		return nil, nil, err
@@ -150,7 +151,7 @@ func UnjailMember(s *discordgo.Session, guildId string, userId string, jailRoleN
 		AddField("Completed Release Task", jailedUser.TaskToComplete, false).
 		AddField("Convincted At", utils.FormatUnixAsString(jailedUser.JailedAt, "Mon, 02 Jan 2006 15:04:05 MST"), false)
 
-	globals.NotificationsChannel <- events.NotificationEvent{
+	globalMessaging.NotificationsChannel <- events.NotificationEvent{
 		TargetChannelId: notificationChannelId,
 		Type:            "EMBED_PASSTHROUGH",
 		Embed:           notificationEmbed,

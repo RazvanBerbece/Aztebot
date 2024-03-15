@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
@@ -90,7 +90,7 @@ func AddRolesToDiscordUser(s *discordgo.Session, guildId string, userId string, 
 
 	// For each role
 	for _, roleId := range roleIds {
-		role, err := globalsRepo.RolesRepository.GetRoleById(roleId)
+		role, err := globalRepositories.RolesRepository.GetRoleById(roleId)
 		if err != nil {
 			fmt.Printf("Error ocurred while adding DB roles to Discord member: %v\n", err)
 			return err
@@ -106,7 +106,7 @@ func AddRolesToDiscordUser(s *discordgo.Session, guildId string, userId string, 
 			}
 
 			// If a staff role, add a default 'STAFF' role as well
-			if utils.StringInSlice(role.DisplayName, globals.StaffRoles) {
+			if utils.StringInSlice(role.DisplayName, globalConfiguration.StaffRoles) {
 				discordDefaultStaffRoleId := GetDiscordRoleIdForRoleWithName(s, guildId, "STAFF")
 				if discordDefaultStaffRoleId != nil {
 					err = s.GuildMemberRoleAdd(guildId, userId, *discordDefaultStaffRoleId)

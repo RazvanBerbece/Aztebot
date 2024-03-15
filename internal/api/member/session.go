@@ -1,21 +1,21 @@
 package member
 
-import "github.com/RazvanBerbece/Aztebot/internal/globals"
+import globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
 
 // Checks against the global maps if a user has an active voice session.
 func MemberHasActiveVoiceSession(uid string) bool {
 
 	status := 0
 
-	if _, ok := globals.VoiceSessions[uid]; ok {
+	if _, ok := globalState.VoiceSessions[uid]; ok {
 		status += 1
 	}
 
-	if _, ok := globals.MusicSessions[uid]; ok {
+	if _, ok := globalState.MusicSessions[uid]; ok {
 		status += 1
 	}
 
-	if _, ok := globals.StreamSessions[uid]; ok {
+	if _, ok := globalState.StreamSessions[uid]; ok {
 		status += 1
 	}
 

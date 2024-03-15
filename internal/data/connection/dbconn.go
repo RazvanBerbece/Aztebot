@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"log"
 
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -14,14 +14,14 @@ type Database struct {
 
 func (d *Database) ConnectDatabaseHandle() {
 
-	db, err := sql.Open("mysql", globals.MySqlRootConnectionString)
+	db, err := sql.Open("mysql", globalConfiguration.MySqlRootConnectionString)
 	if err != nil {
 		log.Fatal("Connection to database cannot be established :", err)
 	}
 
 	pingErr := db.Ping()
 	if pingErr != nil {
-		log.Fatalf("Database at %s cannot be reached : %s", globals.MySqlRootConnectionString, pingErr)
+		log.Fatalf("Database at %s cannot be reached : %s", globalConfiguration.MySqlRootConnectionString, pingErr)
 	}
 
 	d.Db = db

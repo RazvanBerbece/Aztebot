@@ -5,8 +5,8 @@ import (
 	"log"
 
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
@@ -14,7 +14,7 @@ import (
 // Removes all roles from the database member.
 func RemoveAllMemberRoles(userId string) error {
 
-	err := globalsRepo.UsersRepository.RemoveUserRoles(userId)
+	err := globalRepositories.UsersRepository.RemoveUserRoles(userId)
 	if err != nil {
 		return err
 	}
@@ -25,7 +25,7 @@ func RemoveAllMemberRoles(userId string) error {
 
 func IsStaff(userId string, staffRoles []string) bool {
 
-	roles, err := globalsRepo.UsersRepository.GetRolesForUser(userId)
+	roles, err := globalRepositories.UsersRepository.GetRolesForUser(userId)
 	if err != nil {
 		log.Printf("Cannot retrieve roles for user with id %s: %v", userId, err)
 	}
@@ -42,14 +42,14 @@ func IsStaff(userId string, staffRoles []string) bool {
 // Allows demotion either from a staff role or an inner order role.
 func DemoteMember(s *discordgo.Session, guildId string, userId string, demoteType string) error {
 
-	userToUpdate, err := globalsRepo.UsersRepository.GetUser(userId)
+	userToUpdate, err := globalRepositories.UsersRepository.GetUser(userId)
 	if err != nil {
 		fmt.Printf("Error ocurred while trying to demote member with ID %s: %v", userId, err)
 		return err
 	}
 
 	// DEMOTE STRATEGY (BOTH INNER CIRCLE ORDERS AND STAFF ROLE DEMOTIONS)
-	userRoles, errUsrRole := globalsRepo.UsersRepository.GetRolesForUser(userId)
+	userRoles, errUsrRole := globalRepositories.UsersRepository.GetRolesForUser(userId)
 	if errUsrRole != nil {
 		fmt.Printf("Error ocurred while trying to demote member with ID %s: %v", userId, errUsrRole)
 		return err
@@ -73,7 +73,7 @@ func DemoteMember(s *discordgo.Session, guildId string, userId string, demoteTyp
 					roleBeforeDemotion = role
 					roleIdsPriorDemote = append(roleIdsPriorDemote, role.Id)
 				} else {
-					demotedRole, err := globalsRepo.RolesRepository.GetRoleById(role.Id - 1)
+					demotedRole, err := globalRepositories.RolesRepository.GetRoleById(role.Id - 1)
 					if err != nil {
 						fmt.Printf("Error ocurred while trying to demote member with ID %s: %v", userId, err)
 						return err
@@ -106,7 +106,7 @@ func DemoteMember(s *discordgo.Session, guildId string, userId string, demoteTyp
 						}
 					} else if role.Id-1 == 4 {
 						// Demotion from Administrator leads to Moderator
-						demotedRole, err := globalsRepo.RolesRepository.GetRoleById(role.Id - 2)
+						demotedRole, err := globalRepositories.RolesRepository.GetRoleById(role.Id - 2)
 						if err != nil {
 							fmt.Printf("Error ocurred while trying to demote staff role for member with ID %s: %v", userId, err)
 							return err
@@ -115,7 +115,7 @@ func DemoteMember(s *discordgo.Session, guildId string, userId string, demoteTyp
 						roleIdsPostDemote = append(roleIdsPostDemote, demotedRole.Id)
 						roleIdsPriorDemote = append(roleIdsPriorDemote, roleBeforeDemotion.Id)
 					} else {
-						demotedRole, err := globalsRepo.RolesRepository.GetRoleById(role.Id - 1)
+						demotedRole, err := globalRepositories.RolesRepository.GetRoleById(role.Id - 1)
 						if err != nil {
 							fmt.Printf("Error ocurred while trying to demote staff role for member with ID %s: %v", userId, err)
 							return err
@@ -140,7 +140,7 @@ func DemoteMember(s *discordgo.Session, guildId string, userId string, demoteTyp
 	userToUpdate.CurrentInnerOrder = currentOrder
 
 	// Update User in the database
-	_, errDemoteUserUpdate := globalsRepo.UsersRepository.UpdateUser(*userToUpdate)
+	_, errDemoteUserUpdate := globalRepositories.UsersRepository.UpdateUser(*userToUpdate)
 	if errDemoteUserUpdate != nil {
 		fmt.Printf("Error ocurred while trying to demote member: %v", errDemoteUserUpdate)
 		return err
@@ -148,18 +148,18 @@ func DemoteMember(s *discordgo.Session, guildId string, userId string, demoteTyp
 
 	// Update Member in the Discord guild
 	// Remove all roles
-	err = RemoveAllDiscordUserRoles(s, globals.DiscordMainGuildId, userId)
+	err = RemoveAllDiscordUserRoles(s, globalConfiguration.DiscordMainGuildId, userId)
 	if err != nil {
 		// Revert
 		fmt.Printf("An error ocurred while removing all roles for member: %v\n", err)
-		err = AddRolesToDiscordUser(s, globals.DiscordMainGuildId, userId, roleIdsPriorDemote)
+		err = AddRolesToDiscordUser(s, globalConfiguration.DiscordMainGuildId, userId, roleIdsPriorDemote)
 		if err != nil {
 			fmt.Printf("An error ocurred while reverting all roles deletion: %v\n", err)
 		}
 	}
 
 	// Add new roles
-	err = AddRolesToDiscordUser(s, globals.DiscordMainGuildId, userId, roleIdsPostDemote)
+	err = AddRolesToDiscordUser(s, globalConfiguration.DiscordMainGuildId, userId, roleIdsPostDemote)
 	if err != nil {
 		fmt.Printf("An error ocurred while adding all roles from DB for member: %v\n", err)
 	}

@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
+	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
 	actionEventsUtils "github.com/RazvanBerbece/Aztebot/internal/handlers/actionEvents/utils"
 	supportSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashCommandEvent/commands/support"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
@@ -17,16 +19,16 @@ func HandleApproveConfession(s *discordgo.Session, i *discordgo.InteractionCreat
 	originalApprovalMessageChannelId := i.Message.ChannelID
 
 	// Get original interaction if it can be found in the in-memory map
-	confessionMessage, exists := globals.ConfessionsToApprove[originalApprovalMessageId]
+	confessionMessage, exists := globalState.ConfessionsToApprove[originalApprovalMessageId]
 	if !exists {
 		utils.SendErrorEmbedResponse(s, i.Interaction, "This confession message could not be found in the internal records.")
 		return
 	} else {
 		// Send confession to designated text channel
-		if channel, channelExists := globals.NotificationChannels["notif-confess"]; channelExists {
+		if channel, channelExists := globalConfiguration.NotificationChannels["notif-confess"]; channelExists {
 			go supportSlashHandlers.SendApprovedConfessionNotification(s, channel.ChannelId, confessionMessage)
 		}
-		delete(globals.ConfessionsToApprove, originalApprovalMessageChannelId)
+		delete(globalState.ConfessionsToApprove, originalApprovalMessageChannelId)
 	}
 
 	// Respond to the button press
@@ -43,8 +45,8 @@ func HandleApproveConfession(s *discordgo.Session, i *discordgo.InteractionCreat
 
 	// Cleanup
 	go utils.DeleteInteractionResponse(s, i.Interaction, 3000)
-	go actionEventsUtils.DisableButtonsForApprovalActionRow(s, originalApprovalMessageChannelId, originalApprovalMessageId, globals.ConfessionApprovalEventId, globals.ConfessionDisprovalEventId)
-	go actionEventsUtils.UpdateApprovedActionRowOriginalMessage(s, i.Member.User.Username, "APPROVED", originalApprovalMessageChannelId, originalApprovalMessageId, globals.ConfessionApprovalEventId, globals.ConfessionDisprovalEventId)
+	go actionEventsUtils.DisableButtonsForApprovalActionRow(s, originalApprovalMessageChannelId, originalApprovalMessageId, globalMessaging.ConfessionApprovalEventId, globalMessaging.ConfessionDisprovalEventId)
+	go actionEventsUtils.UpdateApprovedActionRowOriginalMessage(s, i.Member.User.Username, "APPROVED", originalApprovalMessageChannelId, originalApprovalMessageId, globalMessaging.ConfessionApprovalEventId, globalMessaging.ConfessionDisprovalEventId)
 }
 
 func HandleDeclineConfession(s *discordgo.Session, i *discordgo.InteractionCreate) {
@@ -53,12 +55,12 @@ func HandleDeclineConfession(s *discordgo.Session, i *discordgo.InteractionCreat
 	originalApprovalMessageChannelId := i.Message.ChannelID
 
 	// Get original interaction if it can be found in the in-memory map
-	_, exists := globals.ConfessionsToApprove[originalApprovalMessageId]
+	_, exists := globalState.ConfessionsToApprove[originalApprovalMessageId]
 	if !exists {
 		utils.SendErrorEmbedResponse(s, i.Interaction, "This confession message could not be found in the internal records.")
 		return
 	} else {
-		delete(globals.ConfessionsToApprove, originalApprovalMessageId)
+		delete(globalState.ConfessionsToApprove, originalApprovalMessageId)
 	}
 
 	// Respond to the button press
@@ -76,6 +78,6 @@ func HandleDeclineConfession(s *discordgo.Session, i *discordgo.InteractionCreat
 
 	// Cleanup
 	go utils.DeleteInteractionResponse(s, i.Interaction, 3000)
-	go actionEventsUtils.DisableButtonsForApprovalActionRow(s, originalApprovalMessageChannelId, originalApprovalMessageId, globals.ConfessionApprovalEventId, globals.ConfessionDisprovalEventId)
-	go actionEventsUtils.UpdateApprovedActionRowOriginalMessage(s, i.Member.User.Username, "DECLINED", originalApprovalMessageChannelId, originalApprovalMessageId, globals.ConfessionApprovalEventId, globals.ConfessionDisprovalEventId)
+	go actionEventsUtils.DisableButtonsForApprovalActionRow(s, originalApprovalMessageChannelId, originalApprovalMessageId, globalMessaging.ConfessionApprovalEventId, globalMessaging.ConfessionDisprovalEventId)
+	go actionEventsUtils.UpdateApprovedActionRowOriginalMessage(s, i.Member.User.Username, "DECLINED", originalApprovalMessageChannelId, originalApprovalMessageId, globalMessaging.ConfessionApprovalEventId, globalMessaging.ConfessionDisprovalEventId)
 }

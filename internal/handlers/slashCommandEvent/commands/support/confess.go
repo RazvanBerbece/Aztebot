@@ -2,7 +2,8 @@ package supportSlashHandlers
 
 import (
 	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -13,7 +14,7 @@ func HandleSlashConfess(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	message := i.ApplicationCommandData().Options[0].StringValue()
 
 	// Send notification to target channel to announce the confession
-	if channel, channelExists := globals.NotificationChannels["notif-confessApproval"]; channelExists {
+	if channel, channelExists := globalConfiguration.NotificationChannels["notif-confessApproval"]; channelExists {
 		SendConfessionApprovalNotification(s, channel.ChannelId, message)
 
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
@@ -47,10 +48,10 @@ func SendConfessionApprovalNotification(s *discordgo.Session, channelId string, 
 	}
 
 	// Add action row with approval/disproval buttons to the confession approval embed being posted
-	actionRow := embed.GetApprovalActionRowForEmbed(globals.ConfessionApprovalEventId, globals.ConfessionDisprovalEventId)
+	actionRow := embed.GetApprovalActionRowForEmbed(globalMessaging.ConfessionApprovalEventId, globalMessaging.ConfessionDisprovalEventId)
 	notificationTitle := "New `/confess` to Approve"
 	useThumbnail := false
-	globals.NotificationsChannel <- events.NotificationEvent{
+	globalMessaging.NotificationsChannel <- events.NotificationEvent{
 		TargetChannelId: channelId,
 		Title:           &notificationTitle,
 		Type:            "EMBED_WITH_ACTION_ROW",
@@ -74,7 +75,7 @@ func SendApprovedConfessionNotification(s *discordgo.Session, channelId string, 
 
 	emptyTitle := ""
 	useThumbnail := false
-	globals.NotificationsChannel <- events.NotificationEvent{
+	globalMessaging.NotificationsChannel <- events.NotificationEvent{
 		TargetChannelId: channelId,
 		Title:           &emptyTitle,
 		Type:            "EMBED_WITH_TITLE_AND_FIELDS",

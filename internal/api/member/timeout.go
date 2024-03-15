@@ -6,7 +6,7 @@ import (
 	"time"
 
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -17,7 +17,7 @@ func GetMemberTimeouts(userId string) (*dataModels.Timeout, []dataModels.Archive
 	var archivedTimeoutResults []dataModels.ArchivedTimeout = []dataModels.ArchivedTimeout{}
 
 	// Active timeout
-	activeTimeout, err := globalsRepo.TimeoutsRepository.GetUserTimeout(userId)
+	activeTimeout, err := globalRepositories.TimeoutsRepository.GetUserTimeout(userId)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			activeTimeoutResult = nil
@@ -28,7 +28,7 @@ func GetMemberTimeouts(userId string) (*dataModels.Timeout, []dataModels.Archive
 	activeTimeoutResult = activeTimeout
 
 	// Archived timeouts
-	archivedTimeoutResults, err = globalsRepo.TimeoutsRepository.GetAllArchivedTimeoutsForUser(userId)
+	archivedTimeoutResults, err = globalRepositories.TimeoutsRepository.GetAllArchivedTimeoutsForUser(userId)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -39,13 +39,13 @@ func GetMemberTimeouts(userId string) (*dataModels.Timeout, []dataModels.Archive
 
 func GiveTimeoutToMemberWithId(s *discordgo.Session, guildId string, userId string, reason string, creationTimestamp int64, sTimeoutLength float64) error {
 
-	result := globalsRepo.TimeoutsRepository.GetTimeoutsCountForUser(userId)
+	result := globalRepositories.TimeoutsRepository.GetTimeoutsCountForUser(userId)
 	if result > 0 {
 		return fmt.Errorf("a user cannot be given more than 1 timeout at a time")
 	}
 
 	// If the user is on their 10th timeout
-	numArchivedTimeouts := globalsRepo.TimeoutsRepository.GetArchivedTimeoutsCountForUser(userId)
+	numArchivedTimeouts := globalRepositories.TimeoutsRepository.GetArchivedTimeoutsCountForUser(userId)
 	if numArchivedTimeouts == 9 {
 		// ban them instead
 		err := s.GuildBanCreateWithReason(guildId, userId, "Received 10th and final timeout", 1)
@@ -61,7 +61,7 @@ func GiveTimeoutToMemberWithId(s *discordgo.Session, guildId string, userId stri
 		}
 	}
 
-	err := globalsRepo.TimeoutsRepository.SaveTimeout(userId, reason, creationTimestamp, int(sTimeoutLength))
+	err := globalRepositories.TimeoutsRepository.SaveTimeout(userId, reason, creationTimestamp, int(sTimeoutLength))
 	if err != nil {
 		fmt.Printf("Error ocurred while storing timeout for user: %s\n", err)
 		return fmt.Errorf(err.Error())
@@ -81,7 +81,7 @@ func GiveTimeoutToMemberWithId(s *discordgo.Session, guildId string, userId stri
 
 func ClearMemberActiveTimeout(s *discordgo.Session, guildId string, userId string) error {
 
-	err := globalsRepo.TimeoutsRepository.ClearTimeoutForUser(userId)
+	err := globalRepositories.TimeoutsRepository.ClearTimeoutForUser(userId)
 	if err != nil {
 		return err
 	}

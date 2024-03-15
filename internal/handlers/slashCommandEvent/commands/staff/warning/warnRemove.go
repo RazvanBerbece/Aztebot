@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -70,13 +70,13 @@ func HandleSlashWarnRemoveOldest(s *discordgo.Session, i *discordgo.InteractionC
 
 func RemoveWarningFromUser(s *discordgo.Session, i *discordgo.InteractionCreate, userId string) (*dataModels.Warn, error) {
 
-	warn, err := globalsRepo.WarnsRepository.GetOldestWarnForUser(userId)
+	warn, err := globalRepositories.WarnsRepository.GetOldestWarnForUser(userId)
 	if err != nil {
 		fmt.Printf("Error occured while getting oldest warning for user %s: %v\n", userId, err)
 		return nil, err
 	}
 
-	err = globalsRepo.WarnsRepository.DeleteOldestWarningForUser(userId)
+	err = globalRepositories.WarnsRepository.DeleteOldestWarningForUser(userId)
 	if err != nil {
 		fmt.Printf("Error occured while deleting oldest warnings for user: %v\n", err)
 		return nil, err

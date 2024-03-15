@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -13,7 +13,7 @@ import (
 func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
 
 	// For each available default message resource in local storage
-	for id, details := range globals.DefaultInformationChannels {
+	for id, details := range globalConfiguration.DefaultInformationChannels {
 		hasMessage, err := utils.ChannelHasDefaultInformationMessage(s, id)
 		if err != nil {
 			fmt.Printf("Could not check for default message in channel %s (%s): %v", id, details, err)

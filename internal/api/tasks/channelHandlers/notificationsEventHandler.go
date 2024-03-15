@@ -4,13 +4,14 @@ import (
 	"fmt"
 
 	"github.com/RazvanBerbece/Aztebot/internal/api/notifications"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
+	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
 	"github.com/bwmarrin/discordgo"
 )
 
 func HandleNotificationEvents(s *discordgo.Session) {
 
-	for notificationEvent := range globals.NotificationsChannel {
+	for notificationEvent := range globalMessaging.NotificationsChannel {
 		switch notificationEvent.Type {
 		case "EMBED_WITH_TITLE_AND_FIELDS":
 			err := notifications.SendNotificationWithFieldsToTextChannel(
@@ -44,7 +45,7 @@ func HandleNotificationEvents(s *discordgo.Session) {
 			}
 
 			// Keep to-be-approved confessions in-memory in order to forward them after approval
-			globals.ConfessionsToApprove[*approvalMessageId] = *notificationEvent.TextData
+			globalState.ConfessionsToApprove[*approvalMessageId] = *notificationEvent.TextData
 
 		default:
 			fmt.Printf("Notification of type %s is not currently supported.", notificationEvent.Type)
