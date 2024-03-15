@@ -4,14 +4,18 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/RazvanBerbece/Aztebot/internal/api/notifications"
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/bwmarrin/discordgo"
 )
 
+// Process the monthly leaderboard results at the given h:m:s timestamp.
+// actualLastDay defines whether this will execute on the actual day of the month. if false, it will execute on current day.
+// dryrun defines whether this will clear out the monthlyLeaderboard table after execution. if false, it will leave the table in place.
 func ProcessMonthlyLeaderboard(s *discordgo.Session, hour int, minute int, second int, actualLastDay bool, dryrun bool) {
 
 	initialMonthlyLeaderboardDelay, monthlyLeaderboardTicker := GetDelayAndTickerForMonthlyLeaderboardCron(actualLastDay, hour, minute, second)
@@ -76,7 +80,7 @@ func ExtractMonthlyLeaderboardWinners(s *discordgo.Session, monthlyLeaderboardRe
 	}
 
 	// Send winner notification to designated channel
-	if channel, channelExists := globals.NotificationChannels["notif-monthlyWinners"]; channelExists {
+	if channel, channelExists := globalConfiguration.NotificationChannels["notif-monthlyWinners"]; channelExists {
 		go sendMonthlyLeaderboardWinnerNotification(s, channel.ChannelId, kingEntry, queenEntry, nonbinaryEntry, otherEntry)
 	}
 
@@ -166,6 +170,10 @@ func sendMonthlyLeaderboardWinnerNotification(s *discordgo.Session, channelId st
 		AddLineBreakField().
 		AtTagEveryone()
 
-	go notifications.SendEmbedToTextChannel(s, channelId, *embed)
+	globalMessaging.NotificationsChannel <- events.NotificationEvent{
+		TargetChannelId: channelId,
+		Type:            "EMBED_PASSTHROUGH",
+		Embed:           embed,
+	}
 
 }

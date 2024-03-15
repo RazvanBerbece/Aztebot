@@ -6,7 +6,7 @@ import (
 
 	"github.com/RazvanBerbece/Aztebot/internal/api/member"
 	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
@@ -24,7 +24,7 @@ func CleanupMemberAtStartup(s *discordgo.Session, uids []string) error {
 	// For each tag in the DB, delete user from table
 	for i := 0; i < uidsLength; i++ {
 		uid := uids[i]
-		_, err := s.GuildMember(globals.DiscordMainGuildId, uid)
+		_, err := s.GuildMember(globalConfiguration.DiscordMainGuildId, uid)
 		if err != nil {
 			// if the member does not exist on the main server, delete from the database
 			err = member.DeleteAllMemberData(uid)

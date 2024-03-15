@@ -6,8 +6,8 @@ import (
 	"github.com/RazvanBerbece/Aztebot/internal/api/tasks/channelHandlers"
 	cron "github.com/RazvanBerbece/Aztebot/internal/api/tasks/cron"
 	"github.com/RazvanBerbece/Aztebot/internal/api/tasks/startup"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
@@ -21,7 +21,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	LoadStaticData()
 
 	// Retrieve list of DB users at startup time (for convenience and some optimisation further down the line)
-	uids, err := globalsRepo.UsersRepository.GetAllDiscordUids()
+	uids, err := globalRepositories.UsersRepository.GetAllDiscordUids()
 	if err != nil {
 		fmt.Printf("Failed to load users at startup time: %v", err)
 	}
@@ -47,15 +47,16 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	// Run background task to periodically update voice session durations in the DB
 	go cron.UpdateVoiceSessionDurations(s)
 
-	// Run channel message handlers
-	go channelHandlers.HandleExperienceGrantsMessages(false)
-	go channelHandlers.HandleChannelCreationMessages(s)
+	// Run event handlers
+	go channelHandlers.HandleNotificationEvents(s)
+	go channelHandlers.HandleExperienceGrantEvents()
+	go channelHandlers.HandleDynamicChannelCreationEvents(s)
 
 	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, cleanups, etc.)
 	cron.ProcessUpdateActivityStreaks(24, 0, 0)               // the hh:mm:ss timestamp in a day to run the cron at (i.e 24:00:00)
-	cron.ProcessMonthlyLeaderboard(s, 23, 55, 00, true, true) // run on last day of current month at given time (i.e 23:55:00)
+	cron.ProcessMonthlyLeaderboard(s, 23, 55, 0, true, false) // run on last day of current month at given time (i.e 23:55:00)
 	cron.ProcessClearExpiredTimeouts(s)
-	cron.ProcessCleanupUnusedDynamicChannels(s, globals.DiscordMainGuildId)
+	cron.ProcessCleanupUnusedDynamicChannels(s, globalConfiguration.DiscordMainGuildId)
 	cron.ProcessRemoveExpiredWarns()
 	cron.ProcessRemoveArchivedTimeouts()
 

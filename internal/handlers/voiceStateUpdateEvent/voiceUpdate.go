@@ -6,10 +6,11 @@ import (
 	"strings"
 	"time"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
 	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
+	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
@@ -36,7 +37,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 	userId := member.User.ID
 
 	// If a dynamic room creation command
-	if newChannelName, isCreateChannelCommand := globals.DynamicChannelCreateButtonIds[vs.ChannelID]; isCreateChannelCommand {
+	if newChannelName, isCreateChannelCommand := globalConfiguration.DynamicChannelCreateButtonIds[vs.ChannelID]; isCreateChannelCommand {
 
 		// Privacy status of channel (public or private)
 		channelIsPrivate := false
@@ -45,7 +46,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 		}
 
 		// Publish channel creation event
-		globals.ChannelCreationsChannel <- events.VoiceChannelCreateEvent{
+		globalMessaging.ChannelCreationsChannel <- events.VoiceChannelCreateEvent{
 			Name:            newChannelName,
 			Private:         channelIsPrivate,
 			ParentChannelId: vs.ChannelID,
@@ -58,12 +59,12 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 	}
 
 	if vs.ChannelID != "" {
-		if _, isAfkChannel := globals.AfkChannels[vs.ChannelID]; isAfkChannel {
+		if _, isAfkChannel := globalConfiguration.AfkChannels[vs.ChannelID]; isAfkChannel {
 			// Don't register audio sessions in the AFK zones
-			delete(globals.MusicSessions, userId)
-			delete(globals.VoiceSessions, userId)
-			delete(globals.StreamSessions, userId)
-			delete(globals.DeafSessions, userId)
+			delete(globalState.MusicSessions, userId)
+			delete(globalState.VoiceSessions, userId)
+			delete(globalState.StreamSessions, userId)
+			delete(globalState.DeafSessions, userId)
 			return
 		}
 	}
@@ -71,67 +72,66 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 	if vs.SelfStream && vs.ChannelID != "" {
 		// User STARTED STREAMING
 		now := time.Now()
-		globals.StreamSessions[userId] = &now
+		globalState.StreamSessions[userId] = &now
 
-		err = globalsRepo.UserStatsRepository.IncrementActivitiesTodayForUser(userId)
+		err = globalRepositories.UserStatsRepository.IncrementActivitiesTodayForUser(userId)
 		if err != nil {
 			fmt.Printf("An error ocurred while incrementing user (%s) activities count: %v", userId, err)
 		}
 
-		err = globalsRepo.UserStatsRepository.UpdateLastActiveTimestamp(userId, now.Unix())
+		err = globalRepositories.UserStatsRepository.UpdateLastActiveTimestamp(userId, now.Unix())
 		if err != nil {
 			fmt.Printf("An error ocurred while updating user (%s) last timestamp: %v", userId, err)
 		}
 	} else if vs.SelfStream && vs.ChannelID == "" {
 		// The Discord API does something weird and sends SelfStream as true
 		// when a user leaves a VC directly without stopping streaming first
-		if joinTime, ok := globals.VoiceSessions[userId]; ok {
+		if joinTime, ok := globalState.VoiceSessions[userId]; ok {
 
 			duration := time.Since(joinTime)
 			secondsSpent := duration.Seconds()
 
-			err := globalsRepo.UserStatsRepository.AddToTimeSpentInVoiceChannels(userId, int(secondsSpent))
+			err := globalRepositories.UserStatsRepository.AddToTimeSpentInVoiceChannels(userId, int(secondsSpent))
 			if err != nil {
 				fmt.Printf("An error ocurred while adding time spent to voice channels for user with id %s: %v", userId, err)
 			}
 
-			// Publish experience grant message on the channel
-			globals.ExperienceGrantsChannel <- dataModels.ExperienceGrant{
+			globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 				UserId:   userId,
-				Points:   globals.ExperienceReward_InMusic * secondsSpent,
+				Points:   globalConfiguration.ExperienceReward_InMusic * secondsSpent,
 				Activity: "Time Spent Streaming",
 			}
 
-			delete(globals.VoiceSessions, userId)
-			delete(globals.StreamSessions, userId)
-			delete(globals.MusicSessions, userId)
+			delete(globalState.VoiceSessions, userId)
+			delete(globalState.StreamSessions, userId)
+			delete(globalState.MusicSessions, userId)
 		}
 	} else {
-		if vs.ChannelID != "" && globals.StreamSessions[userId] == nil && globals.MusicSessions[userId] == nil {
+		if vs.ChannelID != "" && globalState.StreamSessions[userId] == nil && globalState.MusicSessions[userId] == nil {
 			// User JOINED a VC but NOT STREAMING
-			if utils.TargetChannelIsForMusicListening(globals.MusicChannels, vs.ChannelID) {
+			if utils.TargetChannelIsForMusicListening(globalConfiguration.MusicChannels, vs.ChannelID) {
 				now := time.Now()
-				globals.MusicSessions[userId] = map[string]*time.Time{
+				globalState.MusicSessions[userId] = map[string]*time.Time{
 					vs.ChannelID: &now,
 				}
 			} else {
-				globals.VoiceSessions[userId] = time.Now()
+				globalState.VoiceSessions[userId] = time.Now()
 			}
 
-			err = globalsRepo.UserStatsRepository.IncrementActivitiesTodayForUser(userId)
+			err = globalRepositories.UserStatsRepository.IncrementActivitiesTodayForUser(userId)
 			if err != nil {
 				fmt.Printf("An error ocurred while incrementing user (%s) activities count: %v", userId, err)
 			}
 
-			err = globalsRepo.UserStatsRepository.UpdateLastActiveTimestamp(userId, time.Now().Unix())
+			err = globalRepositories.UserStatsRepository.UpdateLastActiveTimestamp(userId, time.Now().Unix())
 			if err != nil {
 				fmt.Printf("An error ocurred while updating user (%s) last timestamp: %v", userId, err)
 			}
-		} else if vs.ChannelID != "" && globals.StreamSessions[userId] != nil {
-			delete(globals.StreamSessions, userId)
-		} else if vs.ChannelID == "" && globals.StreamSessions[userId] == nil {
+		} else if vs.ChannelID != "" && globalState.StreamSessions[userId] != nil {
+			delete(globalState.StreamSessions, userId)
+		} else if vs.ChannelID == "" && globalState.StreamSessions[userId] == nil {
 			// User LEFT THE VOICE CHANNEL
-			musicSession, userHadMusicSession := globals.MusicSessions[userId]
+			musicSession, userHadMusicSession := globalState.MusicSessions[userId]
 			if userHadMusicSession {
 				// User was on a music channel
 				for _, joinTime := range musicSession {
@@ -139,43 +139,41 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 					duration := time.Since(*joinTime)
 					secondsSpent := duration.Seconds()
 
-					err := globalsRepo.UserStatsRepository.AddToTimeSpentListeningMusic(userId, int(secondsSpent))
+					err := globalRepositories.UserStatsRepository.AddToTimeSpentListeningMusic(userId, int(secondsSpent))
 					if err != nil {
 						fmt.Printf("An error ocurred while adding time spent listening music for user with id %s: %v", userId, err)
 					}
 
-					// Publish experience grant message on the channel
-					globals.ExperienceGrantsChannel <- dataModels.ExperienceGrant{
+					globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 						UserId:   userId,
-						Points:   globals.ExperienceReward_InMusic * secondsSpent,
+						Points:   globalConfiguration.ExperienceReward_InMusic * secondsSpent,
 						Activity: "Time Spent in Music Channels",
 					}
 
 				}
 			} else {
 				// User was on any other VC
-				if joinTime, ok := globals.VoiceSessions[userId]; ok {
+				if joinTime, ok := globalState.VoiceSessions[userId]; ok {
 
 					duration := time.Since(joinTime)
 					secondsSpent := duration.Seconds()
 
-					err := globalsRepo.UserStatsRepository.AddToTimeSpentInVoiceChannels(userId, int(duration.Seconds()))
+					err := globalRepositories.UserStatsRepository.AddToTimeSpentInVoiceChannels(userId, int(duration.Seconds()))
 					if err != nil {
 						fmt.Printf("An error ocurred while adding time spent to voice channels for user with id %s: %v", userId, err)
 					}
 
-					// Publish experience grant message on the channel
-					globals.ExperienceGrantsChannel <- dataModels.ExperienceGrant{
+					globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 						UserId:   userId,
-						Points:   globals.ExperienceReward_InVc * secondsSpent,
+						Points:   globalConfiguration.ExperienceReward_InVc * secondsSpent,
 						Activity: "Time Spent in Voice Channels",
 					}
 				}
 			}
-			delete(globals.MusicSessions, userId)
-			delete(globals.VoiceSessions, userId)
-			delete(globals.StreamSessions, userId)
-			delete(globals.DeafSessions, userId)
+			delete(globalState.MusicSessions, userId)
+			delete(globalState.VoiceSessions, userId)
+			delete(globalState.StreamSessions, userId)
+			delete(globalState.DeafSessions, userId)
 		}
 	}
 

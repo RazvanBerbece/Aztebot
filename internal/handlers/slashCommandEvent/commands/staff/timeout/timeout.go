@@ -5,8 +5,9 @@ import (
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/api/member"
-	"github.com/RazvanBerbece/Aztebot/internal/api/notifications"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -63,7 +64,7 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	timestamp := time.Now().Unix()
 
-	err = member.GiveTimeoutToMemberWithId(s, globals.DiscordMainGuildId, targetUserId, reason, timestamp, *sTimeLength)
+	err = member.GiveTimeoutToMemberWithId(s, globalConfiguration.DiscordMainGuildId, targetUserId, reason, timestamp, *sTimeLength)
 	if err != nil {
 		errMsg := fmt.Sprintf("Error ocurred giving timeout to user with UID `%s`: `%s`", targetUserId, err)
 		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
@@ -86,7 +87,7 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	var timeoutLengthString string = fmt.Sprintf("%dd, %dh:%dm:%ds", dd, hr, mm, ss)
 
 	// Send notification to target channel to announce the timeout
-	if channel, channelExists := globals.NotificationChannels["notif-timeout"]; channelExists {
+	if channel, channelExists := globalConfiguration.NotificationChannels["notif-timeout"]; channelExists {
 		go sendTimeoutNotification(s, channel.ChannelId, targetUserId, reason, creationTimestampString, timeoutLengthString, commandOwnerUserId)
 	}
 
@@ -141,6 +142,13 @@ func sendTimeoutNotification(s *discordgo.Session, channelId string, targetUserI
 
 	notificationTitle := fmt.Sprintf("`/timeout` given to User with UID `%s`", targetUserId)
 
-	go notifications.SendNotificationToTextChannel(s, channelId, notificationTitle, fields, true)
+	useThumbnail := true
+	globalMessaging.NotificationsChannel <- events.NotificationEvent{
+		TargetChannelId: channelId,
+		Title:           &notificationTitle,
+		Type:            "EMBED_WITH_TITLE_AND_FIELDS",
+		Fields:          fields,
+		UseThumbnail:    &useThumbnail,
+	}
 
 }

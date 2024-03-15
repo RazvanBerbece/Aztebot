@@ -6,7 +6,8 @@ import (
 	"github.com/bwmarrin/discordgo"
 
 	"github.com/RazvanBerbece/Aztebot/internal/api/member"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/dm"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
@@ -34,7 +35,7 @@ func sendHelpGuideToUser(s *discordgo.Session, i *discordgo.InteractionCreate, u
 		SetColor(000000)
 
 	// Build guide message from all available and registered commands
-	for _, cmd := range globals.AztebotRegisteredCommands {
+	for _, cmd := range globalState.AztebotRegisteredCommands {
 
 		title := fmt.Sprintf("`/%s`", cmd.Name)
 		if len(cmd.Options) > 0 {
@@ -49,9 +50,9 @@ func sendHelpGuideToUser(s *discordgo.Session, i *discordgo.InteractionCreate, u
 			}
 		}
 
-		if utils.StringInSlice(cmd.Name, globals.RestrictedCommands) || utils.StringInSlice(cmd.Name, globals.StaffCommands) {
+		if utils.StringInSlice(cmd.Name, globalConfiguration.RestrictedCommands) || utils.StringInSlice(cmd.Name, globalConfiguration.StaffCommands) {
 			// If a restricted or staff command, do not show
-			if member.IsStaff(userId, globals.StaffRoles) {
+			if member.IsStaff(userId, globalConfiguration.StaffRoles) {
 				// unless a member of staff executed the command
 				embed.AddField(fmt.Sprintf("%s *(staff command)*", title), cmd.Description, false)
 			} else {
@@ -62,11 +63,12 @@ func sendHelpGuideToUser(s *discordgo.Session, i *discordgo.InteractionCreate, u
 		}
 	}
 
-	errDm := dm.SendEmbedForOriginalMsgToUser(s, i, userId, embed.MessageEmbed)
+	errDm := dm.DmUserWithOriginalMessageFeedback(s, i, userId, embed.MessageEmbed)
 	if errDm != nil {
 		fmt.Println("Error sending DM: ", errDm)
 		return "An error occured while DMing you the help guide."
 	}
+
 	return "You should have received a help guide for the `AzteBot` in your DMs."
 
 }

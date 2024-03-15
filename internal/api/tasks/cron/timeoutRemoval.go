@@ -5,17 +5,17 @@ import (
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	"github.com/bwmarrin/discordgo"
 )
 
 func ProcessClearExpiredTimeouts(s *discordgo.Session) {
 
 	var numSec int
-	if globals.TimeoutClearFrequencyErr != nil {
+	if globalConfiguration.TimeoutClearFrequencyErr != nil {
 		numSec = 300
 	} else {
-		numSec = globals.TimeoutClearFrequency
+		numSec = globalConfiguration.TimeoutClearFrequency
 	}
 
 	fmt.Println("[CRON] Starting Task ClearExpiredTimeouts() at", time.Now(), "running every", numSec, "seconds")

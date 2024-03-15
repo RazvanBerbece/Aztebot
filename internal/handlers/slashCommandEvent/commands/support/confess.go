@@ -1,10 +1,9 @@
 package supportSlashHandlers
 
 import (
-	"fmt"
-
-	"github.com/RazvanBerbece/Aztebot/internal/api/notifications"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -15,7 +14,7 @@ func HandleSlashConfess(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	message := i.ApplicationCommandData().Options[0].StringValue()
 
 	// Send notification to target channel to announce the confession
-	if channel, channelExists := globals.NotificationChannels["notif-confessApproval"]; channelExists {
+	if channel, channelExists := globalConfiguration.NotificationChannels["notif-confessApproval"]; channelExists {
 		SendConfessionApprovalNotification(s, channel.ChannelId, message)
 
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
@@ -49,15 +48,18 @@ func SendConfessionApprovalNotification(s *discordgo.Session, channelId string, 
 	}
 
 	// Add action row with approval/disproval buttons to the confession approval embed being posted
-	actionRow := embed.GetApprovalActionRowForEmbed(globals.ConfessionApprovalEventId, globals.ConfessionDisprovalEventId)
-	approvalMessageId, err := notifications.SendNotificationWithActionRowToTextChannel(s, channelId, "New `/confess` to Approve", fields, actionRow, false)
-	if err != nil {
-		fmt.Printf("An error ocurred while sending confession approval notification: %v\n", err)
-		return
+	actionRow := embed.GetApprovalActionRowForEmbed(globalMessaging.ConfessionApprovalEventId, globalMessaging.ConfessionDisprovalEventId)
+	notificationTitle := "New `/confess` to Approve"
+	useThumbnail := false
+	globalMessaging.NotificationsChannel <- events.NotificationEvent{
+		TargetChannelId: channelId,
+		Title:           &notificationTitle,
+		Type:            "EMBED_WITH_ACTION_ROW",
+		Fields:          fields,
+		ActionRow:       &actionRow,
+		TextData:        &message,
+		UseThumbnail:    &useThumbnail,
 	}
-
-	// Keep to-be-approved confessions in-memory in order to forward them after approval
-	globals.ConfessionsToApprove[*approvalMessageId] = message
 
 }
 
@@ -71,6 +73,14 @@ func SendApprovedConfessionNotification(s *discordgo.Session, channelId string, 
 		},
 	}
 
-	go notifications.SendNotificationToTextChannel(s, channelId, "", fields, false)
+	emptyTitle := ""
+	useThumbnail := false
+	globalMessaging.NotificationsChannel <- events.NotificationEvent{
+		TargetChannelId: channelId,
+		Title:           &emptyTitle,
+		Type:            "EMBED_WITH_TITLE_AND_FIELDS",
+		Fields:          fields,
+		UseThumbnail:    &useThumbnail,
+	}
 
 }

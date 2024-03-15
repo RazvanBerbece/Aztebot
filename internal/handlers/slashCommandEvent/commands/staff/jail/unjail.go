@@ -5,7 +5,7 @@ import (
 
 	"github.com/RazvanBerbece/Aztebot/internal/api/member"
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -30,8 +30,8 @@ func HandleSlashUnjail(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	var err error
 	var user *dataModels.User
-	if channel, channelExists := globals.NotificationChannels["notif-jail"]; channelExists {
-		_, user, err = member.UnjailMember(s, globals.DiscordMainGuildId, targetUserId, globals.JailedRoleName, channel.ChannelId)
+	if channel, channelExists := globalConfiguration.NotificationChannels["notif-jail"]; channelExists {
+		_, user, err = member.UnjailMember(s, globalConfiguration.DiscordMainGuildId, targetUserId, globalConfiguration.JailedRoleName, channel.ChannelId)
 		if err != nil {
 			utils.ErrorEmbedResponseEdit(s, i.Interaction, err.Error())
 			return

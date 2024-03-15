@@ -5,9 +5,10 @@ import (
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/api/member"
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -27,7 +28,7 @@ func ReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 	messageOwnerUid := message.Author.ID
 
 	// Ignore all messages created by bots
-	authorIsBot, err := member.IsBot(s, globals.DiscordMainGuildId, messageOwnerUid, false)
+	authorIsBot, err := member.IsBot(s, globalConfiguration.DiscordMainGuildId, messageOwnerUid, false)
 	if err != nil {
 		return
 	}
@@ -38,24 +39,23 @@ func ReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 		return
 	}
 
-	err = globalsRepo.UserStatsRepository.IncrementReactionsReceivedForUser(messageOwnerUid)
+	err = globalRepositories.UserStatsRepository.IncrementReactionsReceivedForUser(messageOwnerUid)
 	if err != nil {
 		fmt.Printf("An error ocurred while updating user (%s) reaction count: %v", messageOwnerUid, err)
 	}
 
-	err = globalsRepo.UserStatsRepository.IncrementActivitiesTodayForUser(r.UserID)
+	err = globalRepositories.UserStatsRepository.IncrementActivitiesTodayForUser(r.UserID)
 	if err != nil {
 		fmt.Printf("An error ocurred while incrementing user (%s) activities count: %v", r.UserID, err)
 	}
-	err = globalsRepo.UserStatsRepository.UpdateLastActiveTimestamp(r.UserID, time.Now().Unix())
+	err = globalRepositories.UserStatsRepository.UpdateLastActiveTimestamp(r.UserID, time.Now().Unix())
 	if err != nil {
 		fmt.Printf("An error ocurred while udpating user (%s) last timestamp: %v", r.UserID, err)
 	}
 
-	// Publish experience grant message on the channel
-	globals.ExperienceGrantsChannel <- dataModels.ExperienceGrant{
+	globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 		UserId:   messageOwnerUid,
-		Points:   globals.ExperienceReward_ReactionReceived,
+		Points:   globalConfiguration.ExperienceReward_ReactionReceived,
 		Activity: "Reaction Received",
 	}
 

@@ -5,9 +5,8 @@ import (
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/api/member"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
-	"github.com/RazvanBerbece/Aztebot/pkg/shared/dm"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -78,7 +77,7 @@ func HandleSlashWarn(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 func GiveWarnToUserWithId(s *discordgo.Session, i *discordgo.InteractionCreate, userId string, reason string, timestamp int64) error {
 
-	result := globalsRepo.WarnsRepository.GetWarningsCountForUser(userId)
+	result := globalRepositories.WarnsRepository.GetWarningsCountForUser(userId)
 	if result < 0 {
 		fmt.Println("ERROR occured while getting all warnings count for user")
 		return fmt.Errorf("ERROR SendWarnDmToUser")
@@ -90,54 +89,54 @@ func GiveWarnToUserWithId(s *discordgo.Session, i *discordgo.InteractionCreate, 
 		// Send rule guide to user and tell them to follow it
 		staffRules := utils.GetTextFromFile("internal/handlers/readyEvent/assets/defaultContent/staff-rules.txt")
 		dmContent := fmt.Sprintf("⚠️ You received a warning with reason: `%s`. You have %d out of 4 warnings.\nKeep in mind that on receiving 4 warnings you will be kicked out of the OTA community.\n\nSee below the OTA Staff rulebook.\n%s", reason, result+1, staffRules)
-		err := sendWarnDmToUser(s, i, userId, dmContent)
+		err := sendWarnDmToUser(s, userId, dmContent)
 		if err != nil {
 			fmt.Printf("An error ocurred while sending staff rules DM to user: %v\n", err)
 		}
 	case 1:
 		// 1 downgrade for staff role
 		demoteType := "STAFF"
-		errDemote := member.DemoteMember(s, globals.DiscordMainGuildId, userId, demoteType)
+		errDemote := member.DemoteMember(s, globalConfiguration.DiscordMainGuildId, userId, demoteType)
 		if errDemote != nil {
 			fmt.Printf("An error ocurred while demoting user: %v\n", errDemote)
 			return errDemote
 		}
 		// Send demotion message
 		demotionMessageContent := fmt.Sprintf("⚠️ This is a message to inform you that you have been demoted from your %s role as you received your second warning.", demoteType)
-		err := sendWarnDmToUser(s, i, userId, demotionMessageContent)
+		err := sendWarnDmToUser(s, userId, demotionMessageContent)
 		if err != nil {
 			fmt.Printf("An error ocurred while sending demotion message content 1 DM to user: %v\n", err)
 		}
 	case 2:
 		// 1 downgrade for role
 		demoteType := "STAFF"
-		errDemote := member.DemoteMember(s, globals.DiscordMainGuildId, userId, "STAFF")
+		errDemote := member.DemoteMember(s, globalConfiguration.DiscordMainGuildId, userId, "STAFF")
 		if errDemote != nil {
 			fmt.Printf("An error ocurred while demoting user: %v\n", errDemote)
 			return errDemote
 		}
 		// Send demotion message
 		demotionMessageContent := fmt.Sprintf("⚠️ This is a message to inform you that you have been demoted from your %s role as you received your third warning.", demoteType)
-		err := sendWarnDmToUser(s, i, userId, demotionMessageContent)
+		err := sendWarnDmToUser(s, userId, demotionMessageContent)
 		if err != nil {
 			fmt.Printf("An error ocurred while sending demotion message content 2 DM to user: %v\n", err)
 		}
 	case 3:
 		// Send kick message
 		kickMessageContent := "⚠️ This is a message to inform you that you have been kicked from the OTA community as you received your fourth, and final warning."
-		err := sendWarnDmToUser(s, i, userId, kickMessageContent)
+		err := sendWarnDmToUser(s, userId, kickMessageContent)
 		if err != nil {
 			fmt.Printf("An error ocurred while sending kick message content DM to user: %v\n", err)
 		}
 		// kick from guild, timeout
-		err = member.KickMember(s, globals.DiscordMainGuildId, userId)
+		err = member.KickMember(s, globalConfiguration.DiscordMainGuildId, userId)
 		if err != nil {
 			fmt.Println("Error kicking member for receiving 4th warning:", err)
 			return err
 		}
 	}
 
-	err := globalsRepo.WarnsRepository.SaveWarn(userId, reason, timestamp)
+	err := globalRepositories.WarnsRepository.SaveWarn(userId, reason, timestamp)
 	if err != nil {
 		fmt.Printf("ERROR GiveWarnToUserWithId: %v", err)
 		return err
@@ -147,12 +146,12 @@ func GiveWarnToUserWithId(s *discordgo.Session, i *discordgo.InteractionCreate, 
 
 }
 
-func sendWarnDmToUser(s *discordgo.Session, i *discordgo.InteractionCreate, userId string, reason string) error {
+func sendWarnDmToUser(s *discordgo.Session, userId string, reason string) error {
 
-	errDm := dm.SendHelpDmToUser(s, i, userId, reason)
-	if errDm != nil {
-		fmt.Println("Error sending DM: ", errDm)
-		return errDm
+	err := member.SendDirectSimpleEmbedToMember(s, userId, "", reason)
+	if err != nil {
+		fmt.Println("Error sending DM: ", err)
+		return err
 	}
 	return nil
 

@@ -4,19 +4,21 @@ import (
 	"fmt"
 	"time"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
+	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
 	"github.com/bwmarrin/discordgo"
 )
 
 func UpdateVoiceSessionDurations(s *discordgo.Session) {
 
 	var numSec int
-	if globals.UpdateVoiceStateFrequencyErr != nil {
+	if globalConfiguration.UpdateVoiceStateFrequencyErr != nil {
 		numSec = 5
 	} else {
-		numSec = globals.UpdateVoiceStateFrequency
+		numSec = globalConfiguration.UpdateVoiceStateFrequency
 	}
 
 	fmt.Println("[CRON] Starting Cron Ticker UpdateVoiceSesionDurations() at", time.Now(), "running every", numSec, "seconds")
@@ -43,7 +45,7 @@ func UpdateVoiceSessionDurations(s *discordgo.Session) {
 }
 
 func updateVoiceSessions(userStatsRepo *repositories.UsersStatsRepository) {
-	for uid, joinTime := range globals.VoiceSessions {
+	for uid, joinTime := range globalState.VoiceSessions {
 
 		duration := time.Since(joinTime)
 		secondsSpent := duration.Seconds()
@@ -55,19 +57,18 @@ func updateVoiceSessions(userStatsRepo *repositories.UsersStatsRepository) {
 
 		// Reset join time
 		now := time.Now()
-		globals.VoiceSessions[uid] = now
+		globalState.VoiceSessions[uid] = now
 
-		// Publish experience grant message on the channel
-		globals.ExperienceGrantsChannel <- dataModels.ExperienceGrant{
+		globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 			UserId:   uid,
-			Points:   globals.ExperienceReward_InMusic * secondsSpent,
+			Points:   globalConfiguration.ExperienceReward_InMusic * secondsSpent,
 			Activity: "Time Spent in Voice Channels",
 		}
 	}
 }
 
 func updateStreamingSessions(userStatsRepo *repositories.UsersStatsRepository) {
-	for uid, joinTime := range globals.StreamSessions {
+	for uid, joinTime := range globalState.StreamSessions {
 
 		duration := time.Since(*joinTime)
 		secondsSpent := duration.Seconds()
@@ -79,21 +80,20 @@ func updateStreamingSessions(userStatsRepo *repositories.UsersStatsRepository) {
 
 		// Reset join time
 		now := time.Now()
-		globals.StreamSessions[uid] = &now
+		globalState.StreamSessions[uid] = &now
 
-		// Publish experience grant message on the channel
-		globals.ExperienceGrantsChannel <- dataModels.ExperienceGrant{
+		globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 			UserId:   uid,
-			Points:   globals.ExperienceReward_InMusic * secondsSpent,
+			Points:   globalConfiguration.ExperienceReward_InMusic * secondsSpent,
 			Activity: "Time Spent Streaming",
 		}
 	}
 }
 
 func updateMusicSessions(userStatsRepo *repositories.UsersStatsRepository) {
-	for uid := range globals.MusicSessions {
+	for uid := range globalState.MusicSessions {
 
-		session, userHadMusicSession := globals.MusicSessions[uid]
+		session, userHadMusicSession := globalState.MusicSessions[uid]
 		if userHadMusicSession {
 			// User was on a music channel
 			for channelId, joinTime := range session {
@@ -108,14 +108,13 @@ func updateMusicSessions(userStatsRepo *repositories.UsersStatsRepository) {
 
 				// Reset join time
 				now := time.Now()
-				globals.MusicSessions[uid] = map[string]*time.Time{
+				globalState.MusicSessions[uid] = map[string]*time.Time{
 					channelId: &now,
 				}
 
-				// Publish experience grant message on the channel
-				globals.ExperienceGrantsChannel <- dataModels.ExperienceGrant{
+				globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 					UserId:   uid,
-					Points:   globals.ExperienceReward_InMusic * secondsSpent,
+					Points:   globalConfiguration.ExperienceReward_InMusic * secondsSpent,
 					Activity: "Time Spent in Music Channels",
 				}
 			}

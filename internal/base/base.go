@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	"github.com/RazvanBerbece/Aztebot/internal/handlers/slashCommandEvent"
 	"github.com/bwmarrin/discordgo"
 )
@@ -23,7 +23,7 @@ func (b *DiscordBotBase) ConfigureBase() {
 	// Create session based on the required app
 	b.isConnected = false
 
-	session, err := discordgo.New("Bot " + globals.DiscordAztebotToken)
+	session, err := discordgo.New("Bot " + globalConfiguration.DiscordAztebotToken)
 	if err != nil {
 		log.Fatal("Could not create an AzteBot session: ", err)
 	}
@@ -49,7 +49,7 @@ func (b *DiscordBotBase) AddHandlers(handlers []interface{}) {
 	b.setBotIntents()
 
 	// Register slash commands based on app type
-	if globals.DiscordMainGuildId != "" {
+	if globalConfiguration.DiscordMainGuildId != "" {
 		// Register slash commands only for main guild
 		err := slashCommandEvent.RegisterAztebotSlashCommands(b.botSession, true)
 		if err != nil {

@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/RazvanBerbece/Aztebot/internal/api/member"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -21,7 +21,7 @@ func MessageDelete(s *discordgo.Session, m *discordgo.MessageDelete) {
 	deletedMessageAuthorId := deletedMessage.Author.ID
 
 	// Ignore all messages created by bots
-	authorIsBot, err := member.IsBot(s, globals.DiscordMainGuildId, deletedMessageAuthorId, false)
+	authorIsBot, err := member.IsBot(s, globalConfiguration.DiscordMainGuildId, deletedMessageAuthorId, false)
 	if err != nil {
 		return
 	}
@@ -32,18 +32,16 @@ func MessageDelete(s *discordgo.Session, m *discordgo.MessageDelete) {
 		return
 	}
 
-	if deletedMessage != nil {
-		// Decrease stats for user
-		err := globalsRepo.UserStatsRepository.DecrementMessagesSentForUser(deletedMessageAuthorId)
-		if err != nil {
-			fmt.Printf("An error ocurred while updating user (%s) message count: %v", deletedMessageAuthorId, err)
-		}
+	// Decrease stats for user
+	err = globalRepositories.UserStatsRepository.DecrementMessagesSentForUser(deletedMessageAuthorId)
+	if err != nil {
+		fmt.Printf("An error ocurred while updating user (%s) message count: %v", deletedMessageAuthorId, err)
+	}
 
-		// Remove experience points
-		currentXp, err := member.RemoveMemberExperience(deletedMessageAuthorId, "MSG_REWARD")
-		if err != nil {
-			fmt.Printf("An error ocurred while removing message rewards (%d) from user (%s): %v", currentXp, deletedMessageAuthorId, err)
-		}
+	// Remove experience points
+	currentXp, err := member.RemoveMemberExperience(deletedMessageAuthorId, "MSG_REWARD")
+	if err != nil {
+		fmt.Printf("An error ocurred while removing message rewards (%d) from user (%s): %v", currentXp, deletedMessageAuthorId, err)
 	}
 
 }

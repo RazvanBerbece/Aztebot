@@ -1,7 +1,7 @@
 package actionEvent
 
 import (
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	actionEventConfessionApproval "github.com/RazvanBerbece/Aztebot/internal/handlers/actionEvents/confess"
 	"github.com/bwmarrin/discordgo"
 )
@@ -12,9 +12,9 @@ func HandleMessageComponentInteraction(s *discordgo.Session, i *discordgo.Intera
 
 	// Future button event handlers should be added here by custom ID
 	switch eventCustomId {
-	case globals.ConfessionApprovalEventId:
+	case globalMessaging.ConfessionApprovalEventId:
 		actionEventConfessionApproval.HandleApproveConfession(s, i)
-	case globals.ConfessionDisprovalEventId:
+	case globalMessaging.ConfessionDisprovalEventId:
 		actionEventConfessionApproval.HandleDeclineConfession(s, i)
 	}
 }

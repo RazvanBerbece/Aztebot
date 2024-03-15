@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/RazvanBerbece/Aztebot/internal/api/member"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -25,7 +25,7 @@ func ReactionRemove(s *discordgo.Session, r *discordgo.MessageReactionRemove) {
 	messageOwnerUid := message.Author.ID
 
 	// Ignore all messages created by bots
-	authorIsBot, err := member.IsBot(s, globals.DiscordMainGuildId, messageOwnerUid, false)
+	authorIsBot, err := member.IsBot(s, globalConfiguration.DiscordMainGuildId, messageOwnerUid, false)
 	if err != nil {
 		return
 	}
@@ -36,7 +36,7 @@ func ReactionRemove(s *discordgo.Session, r *discordgo.MessageReactionRemove) {
 		return
 	}
 
-	err = globalsRepo.UserStatsRepository.DecrementReactionsReceivedForUser(messageOwnerUid)
+	err = globalRepositories.UserStatsRepository.DecrementReactionsReceivedForUser(messageOwnerUid)
 	if err != nil {
 		fmt.Printf("An error ocurred while updating user (%s) reaction count: %v", messageOwnerUid, err)
 	}

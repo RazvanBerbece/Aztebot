@@ -3,7 +3,7 @@ package jailSlashHandlers
 import (
 	"fmt"
 
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -27,7 +27,7 @@ func HandleSlashJailedUser(s *discordgo.Session, i *discordgo.InteractionCreate)
 		},
 	})
 
-	userIsInJail := globalsRepo.JailRepository.UserIsJailed(targetUserId)
+	userIsInJail := globalRepositories.JailRepository.UserIsJailed(targetUserId)
 	if userIsInJail <= 0 {
 		if userIsInJail == -1 {
 			utils.ErrorEmbedResponseEdit(s, i.Interaction, "an error ocurred while checking if the given user is currently in jail")
@@ -37,7 +37,7 @@ func HandleSlashJailedUser(s *discordgo.Session, i *discordgo.InteractionCreate)
 		return
 	}
 
-	jailedUser, err := globalsRepo.JailRepository.GetJailedUser(targetUserId)
+	jailedUser, err := globalRepositories.JailRepository.GetJailedUser(targetUserId)
 	if err != nil {
 		utils.ErrorEmbedResponseEdit(s, i.Interaction, err.Error())
 		return

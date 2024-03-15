@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/RazvanBerbece/Aztebot/internal/api/member"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -29,7 +29,7 @@ func HandleSlashTimeoutAppeal(s *discordgo.Session, i *discordgo.InteractionCrea
 	}
 
 	// Timeout appeal logic
-	err = member.AppealTimeout(globals.DiscordMainGuildId, userId)
+	err = member.AppealTimeout(globalConfiguration.DiscordMainGuildId, userId)
 	if err != nil {
 		errMsg := fmt.Sprintf("An error ocurred while appealing timeout for user with UID `%s`: %v", userId, err)
 		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)

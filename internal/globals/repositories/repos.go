@@ -1,4 +1,4 @@
-package globalsRepo
+package globalRepositories
 
 import "github.com/RazvanBerbece/Aztebot/internal/data/repositories"
 
