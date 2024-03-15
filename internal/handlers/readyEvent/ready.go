@@ -47,14 +47,14 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	// Run background task to periodically update voice session durations in the DB
 	go cron.UpdateVoiceSessionDurations(s)
 
-	// Run channel message handlers
+	// Run event handlers
 	go channelHandlers.HandleNotificationEvents()
 	go channelHandlers.HandleExperienceGrantEvents()
 	go channelHandlers.HandleDynamicChannelCreationEvents(s)
 
 	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, cleanups, etc.)
 	cron.ProcessUpdateActivityStreaks(24, 0, 0)               // the hh:mm:ss timestamp in a day to run the cron at (i.e 24:00:00)
-	cron.ProcessMonthlyLeaderboard(s, 23, 55, 00, true, true) // run on last day of current month at given time (i.e 23:55:00)
+	cron.ProcessMonthlyLeaderboard(s, 23, 55, 0, true, false) // run on last day of current month at given time (i.e 23:55:00)
 	cron.ProcessClearExpiredTimeouts(s)
 	cron.ProcessCleanupUnusedDynamicChannels(s, globals.DiscordMainGuildId)
 	cron.ProcessRemoveExpiredWarns()

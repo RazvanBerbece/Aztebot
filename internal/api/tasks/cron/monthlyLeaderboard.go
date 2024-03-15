@@ -12,6 +12,9 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// Process the monthly leaderboard results at the given h:m:s timestamp.
+// actualLastDay defines whether this will execute on the actual day of the month. if false, it will execute on current day.
+// dryrun defines whether this will clear out the monthlyLeaderboard table after execution. if false, it will leave the table in place.
 func ProcessMonthlyLeaderboard(s *discordgo.Session, hour int, minute int, second int, actualLastDay bool, dryrun bool) {
 
 	initialMonthlyLeaderboardDelay, monthlyLeaderboardTicker := GetDelayAndTickerForMonthlyLeaderboardCron(actualLastDay, hour, minute, second)
