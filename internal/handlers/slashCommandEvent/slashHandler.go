@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	"github.com/RazvanBerbece/Aztebot/internal/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
 	actionEvent "github.com/RazvanBerbece/Aztebot/internal/handlers/actionEvents"
@@ -111,7 +111,7 @@ func RegisterSlashHandler(s *discordgo.Session) {
 		}
 
 		// Publish experience grant message on the channel
-		globals.ExperienceGrantsChannel <- dataModels.ExperienceGrant{
+		globals.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 			UserId:   ownerUserId,
 			Points:   globals.ExperienceReward_SlashCommandUsed,
 			Activity: "Slash Command Used",

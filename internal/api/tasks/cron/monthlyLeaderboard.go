@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/RazvanBerbece/Aztebot/internal/api/notifications"
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
 	"github.com/RazvanBerbece/Aztebot/internal/globals"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
@@ -166,6 +166,12 @@ func sendMonthlyLeaderboardWinnerNotification(s *discordgo.Session, channelId st
 		AddLineBreakField().
 		AtTagEveryone()
 
-	go notifications.SendEmbedToTextChannel(s, channelId, *embed)
+	// Publish notification event
+	globals.NotificationsChannel <- events.NotificationEvent{
+		Session:         s,
+		TargetChannelId: channelId,
+		Type:            "EMBED_PASSTHROUGH",
+		Embed:           embed,
+	}
 
 }

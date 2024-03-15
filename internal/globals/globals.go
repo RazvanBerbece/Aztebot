@@ -81,7 +81,8 @@ var MusicChannels map[string]string
 var DynamicChannelCreateButtonIds map[string]string
 
 // =============== RUNTIME GLOBAL EVENT CHANNELS ===============
-var ExperienceGrantsChannel = make(chan dataModels.ExperienceGrant)
+var NotificationsChannel = make(chan events.NotificationEvent)
+var ExperienceGrantsChannel = make(chan events.ExperienceGrantEvent)
 var ChannelCreationsChannel = make(chan events.VoiceChannelCreateEvent)
 
 // =============== RUNTIME CUSTOM EVENT IDs (FOR BUTTON PRESS EVENT HANDLERS) ===============

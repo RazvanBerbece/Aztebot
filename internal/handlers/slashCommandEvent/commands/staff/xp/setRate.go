@@ -3,7 +3,7 @@ package xpRateSettingSlashHandlers
 import (
 	"fmt"
 
-	"github.com/RazvanBerbece/Aztebot/internal/api/notifications"
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	"github.com/RazvanBerbece/Aztebot/internal/globals"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
@@ -120,7 +120,13 @@ func sendXpRateChangeNotification(s *discordgo.Session, channelId string, activi
 
 	embed.AtTagEveryone()
 
-	go notifications.SendEmbedToTextChannel(s, channelId, *embed)
+	// Publish notification event
+	globals.NotificationsChannel <- events.NotificationEvent{
+		Session:         s,
+		TargetChannelId: channelId,
+		Type:            "EMBED_PASSTHROUGH",
+		Embed:           embed,
+	}
 
 }
 

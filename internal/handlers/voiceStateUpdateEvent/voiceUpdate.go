@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
 	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	"github.com/RazvanBerbece/Aztebot/internal/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
@@ -96,7 +95,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 			}
 
 			// Publish experience grant message on the channel
-			globals.ExperienceGrantsChannel <- dataModels.ExperienceGrant{
+			globals.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 				UserId:   userId,
 				Points:   globals.ExperienceReward_InMusic * secondsSpent,
 				Activity: "Time Spent Streaming",
@@ -145,7 +144,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 					}
 
 					// Publish experience grant message on the channel
-					globals.ExperienceGrantsChannel <- dataModels.ExperienceGrant{
+					globals.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 						UserId:   userId,
 						Points:   globals.ExperienceReward_InMusic * secondsSpent,
 						Activity: "Time Spent in Music Channels",
@@ -165,7 +164,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 					}
 
 					// Publish experience grant message on the channel
-					globals.ExperienceGrantsChannel <- dataModels.ExperienceGrant{
+					globals.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 						UserId:   userId,
 						Points:   globals.ExperienceReward_InVc * secondsSpent,
 						Activity: "Time Spent in Voice Channels",

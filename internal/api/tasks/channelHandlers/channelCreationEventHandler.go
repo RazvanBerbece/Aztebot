@@ -8,7 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func HandleChannelCreationMessages(s *discordgo.Session) {
+func HandleDynamicChannelCreationEvents(s *discordgo.Session) {
 
 	for channelEvent := range globals.ChannelCreationsChannel {
 

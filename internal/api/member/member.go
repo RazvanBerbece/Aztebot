@@ -6,8 +6,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/RazvanBerbece/Aztebot/internal/api/notifications"
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	"github.com/RazvanBerbece/Aztebot/internal/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/dm"
@@ -789,7 +789,13 @@ func JailMember(s *discordgo.Session, guildId string, userId string, reason stri
 		AddField("Tasked With", taskToFree, false).
 		AddField("Convincted At", currentTimestamp.String(), false)
 
-	go notifications.SendEmbedToTextChannel(s, notificationChannelId, *notificationEmbed)
+	// Publish notification event
+	globals.NotificationsChannel <- events.NotificationEvent{
+		Session:         s,
+		TargetChannelId: notificationChannelId,
+		Type:            "EMBED_PASSTHROUGH",
+		Embed:           notificationEmbed,
+	}
 
 	// Send Jail DM to jailed user
 	dmEmbed := embed.NewEmbed().
@@ -853,7 +859,13 @@ func UnjailMember(s *discordgo.Session, guildId string, userId string, jailRoleN
 		AddField("Completed Release Task", jailedUser.TaskToComplete, false).
 		AddField("Convincted At", utils.FormatUnixAsString(jailedUser.JailedAt, "Mon, 02 Jan 2006 15:04:05 MST"), false)
 
-	go notifications.SendEmbedToTextChannel(s, notificationChannelId, *notificationEmbed)
+	// Publish notification event
+	globals.NotificationsChannel <- events.NotificationEvent{
+		Session:         s,
+		TargetChannelId: notificationChannelId,
+		Type:            "EMBED_PASSTHROUGH",
+		Embed:           notificationEmbed,
+	}
 
 	// Send Unjail DM to jailed user
 	dmEmbed := embed.NewEmbed().

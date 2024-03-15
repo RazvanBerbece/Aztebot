@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/api/member"
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	"github.com/RazvanBerbece/Aztebot/internal/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
 	"github.com/bwmarrin/discordgo"
@@ -40,7 +40,7 @@ func Any(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	// Publish experience grant message on the channel
-	globals.ExperienceGrantsChannel <- dataModels.ExperienceGrant{
+	globals.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 		UserId:   messageCreatorUserId,
 		Points:   globals.ExperienceReward_MessageSent,
 		Activity: "Message Sent Reward",

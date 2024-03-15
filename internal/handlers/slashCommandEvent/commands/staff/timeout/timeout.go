@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/api/member"
-	"github.com/RazvanBerbece/Aztebot/internal/api/notifications"
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	"github.com/RazvanBerbece/Aztebot/internal/globals"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
@@ -141,6 +141,14 @@ func sendTimeoutNotification(s *discordgo.Session, channelId string, targetUserI
 
 	notificationTitle := fmt.Sprintf("`/timeout` given to User with UID `%s`", targetUserId)
 
-	go notifications.SendNotificationToTextChannel(s, channelId, notificationTitle, fields, true)
+	useThumbnail := true
+	globals.NotificationsChannel <- events.NotificationEvent{
+		Session:         s,
+		TargetChannelId: channelId,
+		Title:           &notificationTitle,
+		Type:            "EMBED_WITH_TITLE_AND_FIELDS",
+		Fields:          fields,
+		UseThumbnail:    &useThumbnail,
+	}
 
 }

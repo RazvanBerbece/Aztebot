@@ -48,8 +48,9 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	go cron.UpdateVoiceSessionDurations(s)
 
 	// Run channel message handlers
-	go channelHandlers.HandleExperienceGrantsMessages(false)
-	go channelHandlers.HandleChannelCreationMessages(s)
+	go channelHandlers.HandleNotificationEvents()
+	go channelHandlers.HandleExperienceGrantEvents()
+	go channelHandlers.HandleDynamicChannelCreationEvents(s)
 
 	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, cleanups, etc.)
 	cron.ProcessUpdateActivityStreaks(24, 0, 0)               // the hh:mm:ss timestamp in a day to run the cron at (i.e 24:00:00)
