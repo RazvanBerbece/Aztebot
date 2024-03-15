@@ -127,6 +127,12 @@ func MonthlyLeaderboardCommandResultsEmbed(s *discordgo.Session, i *discordgo.In
 		SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		AddLineBreakField()
 
+	// If no valid entries found
+	if kingsName == "" && queensName == "" && nonbinsName == "" && othersName == "" {
+		embed.AddField("", "There are no valid monthly leaderboard entries at the moment.", false)
+		return []*discordgo.MessageEmbed{embed.MessageEmbed}
+	}
+
 	if kingsName != "" {
 		fieldValue := fmt.Sprintf("Accumulated a total of 💠 `%d` XP !", int64(kingEntry.XpEarnedInCurrentMonth))
 		embed.AddField(fmt.Sprintf("♂ Best so far, `%s`", kingsName), fieldValue, false)
