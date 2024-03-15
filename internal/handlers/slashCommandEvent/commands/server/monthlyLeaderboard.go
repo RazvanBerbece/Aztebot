@@ -14,8 +14,8 @@ import (
 
 func HandleSlashMonthlyLeaderboard(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
-	durationSinceLastTopCommand := time.Since(globalState.LastUsedMonthlyLeaderboardTimestamp)
-	if int(durationSinceLastTopCommand.Minutes()) < 5 {
+	durationSinceLastMlbCommand := time.Since(globalState.LastUsedMonthlyLeaderboardTimestamp)
+	if int(durationSinceLastMlbCommand.Minutes()) < 5 {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
@@ -41,6 +41,8 @@ func HandleSlashMonthlyLeaderboard(s *discordgo.Session, i *discordgo.Interactio
 		Embeds:  &results,
 	}
 	s.InteractionResponseEdit(i.Interaction, &editWebhook)
+
+	globalState.LastUsedMonthlyLeaderboardTimestamp = time.Now()
 
 }
 
