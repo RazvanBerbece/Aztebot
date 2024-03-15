@@ -32,18 +32,16 @@ func MessageDelete(s *discordgo.Session, m *discordgo.MessageDelete) {
 		return
 	}
 
-	if deletedMessage != nil {
-		// Decrease stats for user
-		err := globalRepositories.UserStatsRepository.DecrementMessagesSentForUser(deletedMessageAuthorId)
-		if err != nil {
-			fmt.Printf("An error ocurred while updating user (%s) message count: %v", deletedMessageAuthorId, err)
-		}
+	// Decrease stats for user
+	err = globalRepositories.UserStatsRepository.DecrementMessagesSentForUser(deletedMessageAuthorId)
+	if err != nil {
+		fmt.Printf("An error ocurred while updating user (%s) message count: %v", deletedMessageAuthorId, err)
+	}
 
-		// Remove experience points
-		currentXp, err := member.RemoveMemberExperience(deletedMessageAuthorId, "MSG_REWARD")
-		if err != nil {
-			fmt.Printf("An error ocurred while removing message rewards (%d) from user (%s): %v", currentXp, deletedMessageAuthorId, err)
-		}
+	// Remove experience points
+	currentXp, err := member.RemoveMemberExperience(deletedMessageAuthorId, "MSG_REWARD")
+	if err != nil {
+		fmt.Printf("An error ocurred while removing message rewards (%d) from user (%s): %v", currentXp, deletedMessageAuthorId, err)
 	}
 
 }
