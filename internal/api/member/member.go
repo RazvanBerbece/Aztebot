@@ -789,7 +789,6 @@ func JailMember(s *discordgo.Session, guildId string, userId string, reason stri
 		AddField("Tasked With", taskToFree, false).
 		AddField("Convincted At", currentTimestamp.String(), false)
 
-	// Publish notification event
 	globals.NotificationsChannel <- events.NotificationEvent{
 		TargetChannelId: notificationChannelId,
 		Type:            "EMBED_PASSTHROUGH",
@@ -858,7 +857,6 @@ func UnjailMember(s *discordgo.Session, guildId string, userId string, jailRoleN
 		AddField("Completed Release Task", jailedUser.TaskToComplete, false).
 		AddField("Convincted At", utils.FormatUnixAsString(jailedUser.JailedAt, "Mon, 02 Jan 2006 15:04:05 MST"), false)
 
-	// Publish notification event
 	globals.NotificationsChannel <- events.NotificationEvent{
 		TargetChannelId: notificationChannelId,
 		Type:            "EMBED_PASSTHROUGH",

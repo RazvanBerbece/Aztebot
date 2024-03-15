@@ -94,7 +94,6 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 				fmt.Printf("An error ocurred while adding time spent to voice channels for user with id %s: %v", userId, err)
 			}
 
-			// Publish experience grant message on the channel
 			globals.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 				UserId:   userId,
 				Points:   globals.ExperienceReward_InMusic * secondsSpent,
@@ -143,7 +142,6 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 						fmt.Printf("An error ocurred while adding time spent listening music for user with id %s: %v", userId, err)
 					}
 
-					// Publish experience grant message on the channel
 					globals.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 						UserId:   userId,
 						Points:   globals.ExperienceReward_InMusic * secondsSpent,
@@ -163,7 +161,6 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 						fmt.Printf("An error ocurred while adding time spent to voice channels for user with id %s: %v", userId, err)
 					}
 
-					// Publish experience grant message on the channel
 					globals.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 						UserId:   userId,
 						Points:   globals.ExperienceReward_InVc * secondsSpent,

@@ -120,7 +120,6 @@ func sendXpRateChangeNotification(channelId string, activityName string, multipl
 
 	embed.AtTagEveryone()
 
-	// Publish notification event
 	globals.NotificationsChannel <- events.NotificationEvent{
 		TargetChannelId: channelId,
 		Type:            "EMBED_PASSTHROUGH",

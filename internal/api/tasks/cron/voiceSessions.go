@@ -57,7 +57,6 @@ func updateVoiceSessions(userStatsRepo *repositories.UsersStatsRepository) {
 		now := time.Now()
 		globals.VoiceSessions[uid] = now
 
-		// Publish experience grant message on the channel
 		globals.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 			UserId:   uid,
 			Points:   globals.ExperienceReward_InMusic * secondsSpent,
@@ -81,7 +80,6 @@ func updateStreamingSessions(userStatsRepo *repositories.UsersStatsRepository) {
 		now := time.Now()
 		globals.StreamSessions[uid] = &now
 
-		// Publish experience grant message on the channel
 		globals.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 			UserId:   uid,
 			Points:   globals.ExperienceReward_InMusic * secondsSpent,
@@ -112,7 +110,6 @@ func updateMusicSessions(userStatsRepo *repositories.UsersStatsRepository) {
 					channelId: &now,
 				}
 
-				// Publish experience grant message on the channel
 				globals.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 					UserId:   uid,
 					Points:   globals.ExperienceReward_InMusic * secondsSpent,

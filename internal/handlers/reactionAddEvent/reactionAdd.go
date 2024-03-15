@@ -52,7 +52,6 @@ func ReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 		fmt.Printf("An error ocurred while udpating user (%s) last timestamp: %v", r.UserID, err)
 	}
 
-	// Publish experience grant message on the channel
 	globals.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 		UserId:   messageOwnerUid,
 		Points:   globals.ExperienceReward_ReactionReceived,

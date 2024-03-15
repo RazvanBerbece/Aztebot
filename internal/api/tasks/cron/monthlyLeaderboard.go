@@ -169,7 +169,6 @@ func sendMonthlyLeaderboardWinnerNotification(s *discordgo.Session, channelId st
 		AddLineBreakField().
 		AtTagEveryone()
 
-	// Publish notification event
 	globals.NotificationsChannel <- events.NotificationEvent{
 		TargetChannelId: channelId,
 		Type:            "EMBED_PASSTHROUGH",
