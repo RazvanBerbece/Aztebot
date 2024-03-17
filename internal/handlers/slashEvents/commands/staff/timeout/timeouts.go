@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/RazvanBerbece/Aztebot/internal/api/member"
+	"github.com/RazvanBerbece/Aztebot/internal/services/member"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"

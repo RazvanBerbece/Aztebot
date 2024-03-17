@@ -3,11 +3,11 @@ package readyEvent
 import (
 	"fmt"
 
-	cron "github.com/RazvanBerbece/Aztebot/internal/api/tasks/cron"
-	"github.com/RazvanBerbece/Aztebot/internal/api/tasks/startup"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
-	channelHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/localEvents"
+	channelHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/channelEvents"
+	cron "github.com/RazvanBerbece/Aztebot/internal/services/tasks/cron"
+	"github.com/RazvanBerbece/Aztebot/internal/services/tasks/startup"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )

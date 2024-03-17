@@ -5,9 +5,9 @@ import (
 	"strings"
 	"time"
 
-	server_channel "github.com/RazvanBerbece/Aztebot/internal/api/server/channel"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
+	server_channel "github.com/RazvanBerbece/Aztebot/internal/services/server/channel"
 	"github.com/bwmarrin/discordgo"
 )
 

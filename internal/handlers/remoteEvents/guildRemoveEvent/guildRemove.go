@@ -3,7 +3,7 @@ package guildRemoveEvent
 import (
 	"fmt"
 
-	"github.com/RazvanBerbece/Aztebot/internal/api/member"
+	"github.com/RazvanBerbece/Aztebot/internal/services/member"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )

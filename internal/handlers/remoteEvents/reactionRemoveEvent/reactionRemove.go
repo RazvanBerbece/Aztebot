@@ -3,9 +3,9 @@ package messageEvent
 import (
 	"fmt"
 
-	"github.com/RazvanBerbece/Aztebot/internal/api/member"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
+	"github.com/RazvanBerbece/Aztebot/internal/services/member"
 	"github.com/bwmarrin/discordgo"
 )
 

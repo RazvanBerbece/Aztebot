@@ -3,8 +3,8 @@ package channelHandlers
 import (
 	"fmt"
 
-	"github.com/RazvanBerbece/Aztebot/internal/api/member"
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
+	"github.com/RazvanBerbece/Aztebot/internal/services/member"
 )
 
 func HandleExperienceGrantEvents() {

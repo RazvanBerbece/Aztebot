@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/RazvanBerbece/Aztebot/internal/api/member"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
+	"github.com/RazvanBerbece/Aztebot/internal/services/member"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )

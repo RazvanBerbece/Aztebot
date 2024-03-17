@@ -5,9 +5,9 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/RazvanBerbece/Aztebot/internal/api/member"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
+	"github.com/RazvanBerbece/Aztebot/internal/services/member"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/dm"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"

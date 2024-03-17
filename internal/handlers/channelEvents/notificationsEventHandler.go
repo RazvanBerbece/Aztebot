@@ -3,9 +3,9 @@ package channelHandlers
 import (
 	"fmt"
 
-	"github.com/RazvanBerbece/Aztebot/internal/api/notifications"
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
+	"github.com/RazvanBerbece/Aztebot/internal/services/notifications"
 	"github.com/bwmarrin/discordgo"
 )
 
