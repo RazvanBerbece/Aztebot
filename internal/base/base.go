@@ -8,7 +8,7 @@ import (
 	"syscall"
 
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
-	"github.com/RazvanBerbece/Aztebot/internal/handlers/slashCommandEvent"
+	slashCommandEvent "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents"
 	"github.com/bwmarrin/discordgo"
 )
 

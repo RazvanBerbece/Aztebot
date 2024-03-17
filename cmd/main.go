@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/RazvanBerbece/Aztebot/internal/base"
-	"github.com/RazvanBerbece/Aztebot/internal/handlers"
+	discordHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/remoteEvents"
 )
 
 func main() {
@@ -10,7 +10,7 @@ func main() {
 	// Configure the bot base with the key, handlers and intents
 	bot := base.DiscordBotBase{}
 	bot.ConfigureBase()
-	bot.AddHandlers(handlers.GetAztebotHandlersAsList())
+	bot.AddHandlers(discordHandlers.GetAztebotHandlersAsList())
 
 	// Cleanup used resources when program stops executing
 	defer bot.Cleanup()
