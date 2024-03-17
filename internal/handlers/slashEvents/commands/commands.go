@@ -1,15 +1,15 @@
 package commands
 
 import (
-	gamesSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashCommandEvent/commands/games"
-	profileSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashCommandEvent/commands/profile"
-	serverSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashCommandEvent/commands/server"
-	jailSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashCommandEvent/commands/staff/jail"
-	timeoutSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashCommandEvent/commands/staff/timeout"
-	warningSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashCommandEvent/commands/staff/warning"
-	xpRateSettingSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashCommandEvent/commands/staff/xp"
-	supportSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashCommandEvent/commands/support"
-	slashUtils "github.com/RazvanBerbece/Aztebot/internal/handlers/slashCommandEvent/commands/utils"
+	gamesSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/games"
+	profileSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/profile"
+	serverSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/server"
+	jailSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/jail"
+	timeoutSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/timeout"
+	warningSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/warning"
+	xpRateSettingSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/xp"
+	supportSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/support"
+	slashUtils "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/utils"
 	"github.com/bwmarrin/discordgo"
 )
 

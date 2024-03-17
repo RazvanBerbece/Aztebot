@@ -7,8 +7,8 @@ import (
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
-	actionEventsUtils "github.com/RazvanBerbece/Aztebot/internal/handlers/actionEvents/utils"
-	supportSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashCommandEvent/commands/support"
+	actionEventsUtils "github.com/RazvanBerbece/Aztebot/internal/handlers/remoteEvents/actionEvents/utils"
+	supportSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/support"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )

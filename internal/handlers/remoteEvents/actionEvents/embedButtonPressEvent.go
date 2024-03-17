@@ -2,7 +2,7 @@ package actionEvent
 
 import (
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
-	actionEventConfessionApproval "github.com/RazvanBerbece/Aztebot/internal/handlers/actionEvents/confess"
+	actionEventConfessionApproval "github.com/RazvanBerbece/Aztebot/internal/handlers/remoteEvents/actionEvents/confess"
 	"github.com/bwmarrin/discordgo"
 )
 
