@@ -10,6 +10,7 @@ Ca un membru din `Outer Circle` să fie inițiat în `Inner Circle`, va avea nev
 \n:white_small_square: **OUTER CIRCLE**
 • `@👁‍🗨 Arhitect` - Fondatorii comunității.
 • `@Dominus` - Persoană desemnată cu sprijin pentru @`👁‍🗨 Arhitect` in management.
+• `@Developer` - Persoană desemnată cu management-ul si construirea boților OTA..
 • `@Consul` - Persoană ce se ocupă cu îndrumarea staff-ului.
 • `@Senior Administrator` - Administratorii seniori ai comunității.
 • `@Administrator` - Administratorii comunității.
