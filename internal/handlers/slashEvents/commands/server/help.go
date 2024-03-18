@@ -5,10 +5,11 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
 	"github.com/RazvanBerbece/Aztebot/internal/services/member"
-	"github.com/RazvanBerbece/Aztebot/pkg/shared/dm"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 )
@@ -17,7 +18,7 @@ func HandleSlashAztebotHelp(s *discordgo.Session, i *discordgo.InteractionCreate
 
 	userId := i.Interaction.Member.User.ID
 
-	msg := sendHelpGuideToUser(s, i, userId)
+	msg := sendHelpGuideToUser(userId)
 
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
@@ -27,7 +28,7 @@ func HandleSlashAztebotHelp(s *discordgo.Session, i *discordgo.InteractionCreate
 	})
 }
 
-func sendHelpGuideToUser(s *discordgo.Session, i *discordgo.InteractionCreate, userId string) string {
+func sendHelpGuideToUser(userId string) string {
 
 	embed := embed.NewEmbed().
 		SetTitle("🤖   Command Guide").
@@ -63,10 +64,9 @@ func sendHelpGuideToUser(s *discordgo.Session, i *discordgo.InteractionCreate, u
 		}
 	}
 
-	errDm := dm.DmUserWithOriginalMessageFeedback(s, i, userId, embed.MessageEmbed)
-	if errDm != nil {
-		fmt.Println("Error sending DM: ", errDm)
-		return "An error occured while DMing you the help guide."
+	globalMessaging.DirectMessagesChannel <- events.DirectMessageEvent{
+		UserId: userId,
+		Embed:  embed,
 	}
 
 	return "You should have received a help guide for the `AzteBot` in your DMs."
