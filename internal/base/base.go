@@ -111,6 +111,7 @@ func (b *DiscordBotBase) setBotIntents() {
 
 func (b *DiscordBotBase) setBotPermissions() {
 	b.botSession.Identify.Intents = discordgo.PermissionManageMessages |
+		discordgo.PermissionReadMessageHistory |
 		discordgo.PermissionManageServer |
 		discordgo.PermissionManageRoles |
 		discordgo.PermissionManageChannels |
@@ -121,5 +122,5 @@ func (b *DiscordBotBase) setBotPermissions() {
 func (b *DiscordBotBase) setBotStateTrackers() {
 	b.botSession.State.TrackVoice = true
 	b.botSession.State.TrackChannels = true
-	b.botSession.State.MaxMessageCount = 100
+	b.botSession.State.MaxMessageCount = 500
 }

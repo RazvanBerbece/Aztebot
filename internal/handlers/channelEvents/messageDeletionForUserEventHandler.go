@@ -11,7 +11,7 @@ import (
 
 func HandleMemberMessageDeletionEvents(s *discordgo.Session) {
 
-	searchDepth := 1 // how many messages (n * 100) in each channel to check for deletion
+	searchDepth := 5 // how many messages (n * 100) in each channel to check for deletion
 	timeLimit := time.Hour * 24
 
 	for deletionEvent := range globalMessaging.MessageDeletionChannel {

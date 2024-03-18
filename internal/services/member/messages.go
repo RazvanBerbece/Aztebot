@@ -27,6 +27,12 @@ func DeleteMostRecentMemberMessages(s *discordgo.Session, guildId string, userId
 			if err != nil {
 				return err
 			}
+
+			if len(channelMessages) == 0 {
+				// Empty channel
+				continue
+			}
+
 			lastMessageId = channelMessages[len(channelMessages)-1].ID
 
 			// Delete any messages belonging to the target user from the current batch
