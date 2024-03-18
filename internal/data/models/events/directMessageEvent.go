@@ -6,7 +6,7 @@ import (
 
 type DirectMessageEvent struct {
 	UserId string
+	Embed  *embed.Embed
 	Title  *string
 	Text   *string
-	Embed  *embed.Embed
 }
