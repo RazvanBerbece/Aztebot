@@ -96,6 +96,12 @@ func JailMember(s *discordgo.Session, guildId string, userId string, reason stri
 
 	go SendDirectEmbedToMember(s, userId, *dmEmbed)
 
+	// Raise message deletion event to clear jailed member messages
+	globalMessaging.MessageDeletionChannel <- events.MessageDeletionForUserEvent{
+		UserId:  userId,
+		GuildId: guildId,
+	}
+
 	return jailedRecord, user, nil
 
 }
