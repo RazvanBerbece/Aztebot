@@ -29,19 +29,19 @@ func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
 			var longEmbed *embed.Embed
 			switch details {
 			case "default":
-				embedText = utils.GetTextFromFile("internal/handlers/readyEvent/assets/defaultContent/default.txt")
+				embedText = utils.GetTextFromFile("internal/handlers/remoteEvents/readyEvent/assets/defaultContent/default.txt")
 			case "info-music":
-				embedText = utils.GetTextFromFile("internal/handlers/readyEvent/assets/defaultContent/music-info.txt")
+				embedText = utils.GetTextFromFile("internal/handlers/remoteEvents/readyEvent/assets/defaultContent/music-info.txt")
 			case "staff-rules":
-				embedText = utils.GetTextFromFile("internal/handlers/readyEvent/assets/defaultContent/staff-rules.txt")
+				embedText = utils.GetTextFromFile("internal/handlers/remoteEvents/readyEvent/assets/defaultContent/staff-rules.txt")
 				hasOwnEmbed = true
 				longEmbed = utils.GetLongEmbedFromStaticData(embedText)
 			case "server-rules":
-				embedText = utils.GetTextFromFile("internal/handlers/readyEvent/assets/defaultContent/server-rules.txt")
+				embedText = utils.GetTextFromFile("internal/handlers/remoteEvents/readyEvent/assets/defaultContent/server-rules.txt")
 				hasOwnEmbed = true
 				longEmbed = utils.GetLongEmbedFromStaticData(embedText)
 			case "legends":
-				embedText = utils.GetTextFromFile("internal/handlers/readyEvent/assets/defaultContent/legends.txt")
+				embedText = utils.GetTextFromFile("internal/handlers/remoteEvents/readyEvent/assets/defaultContent/legends.txt")
 				hasOwnEmbed = true
 				longEmbed = utils.GetLongEmbedFromStaticData(embedText)
 			}
