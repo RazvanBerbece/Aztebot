@@ -88,7 +88,7 @@ func LoadStaticDiscordChannels() {
 			"1176277764001767464": "info-music",
 			"1100486860058398770": "staff-rules",
 			"1100142572141281460": "server-rules",
-			"1100762035450544219": "legends",
+			"1219417926482788443": "legends",
 		}
 	}
 
