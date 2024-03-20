@@ -1,6 +1,7 @@
 package member
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 
@@ -183,5 +184,43 @@ func DemoteMember(s *discordgo.Session, guildId string, userId string, demoteTyp
 	}
 
 	return nil
+
+}
+
+// Returns a string which contains a comma-separated list of role IDs (to be saved in the User entity in the DB),
+// an array of integers representing the role IDs as seen in the DB,
+// and error, if applicable.
+func GetMemberRolesFromDiscordAsLocalIdList(s *discordgo.Session, guildId string, user dataModels.User, member discordgo.Member) (string, []int, error) {
+
+	var currentRoleIds string // string representing a list of role IDs (this is to be stored in the DB)
+	var roleIds []int         // integer list of the role IDs (like above, but an array of int IDs)
+
+	// Build a list of roles taken from the Discord guild
+	// and then use the list to update the role IDs, circle and order in the database for the given user & member pair
+	for _, role := range member.Roles {
+
+		userRoleObj, err := s.State.Role(guildId, role) // role DisplayName in OTA DB
+		if err != nil {
+			log.Println("Error getting role from Discord servers:", err)
+			return "", nil, err
+		}
+
+		roleDax, err := globalRepositories.RolesRepository.GetRole(userRoleObj.Name)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				// This will probably be a role which is assigned to the three orders or something, so we can ignore
+				// and move on to the other roles of the user
+				continue
+			} else {
+				return "", nil, err
+			}
+		} else {
+			// Build up the role data for the current member as observed in the Roles DB
+			currentRoleIds += fmt.Sprintf("%d,", roleDax.Id)
+			roleIds = append(roleIds, roleDax.Id)
+		}
+	}
+
+	return currentRoleIds, roleIds, nil
 
 }

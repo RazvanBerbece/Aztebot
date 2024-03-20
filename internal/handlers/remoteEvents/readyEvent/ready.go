@@ -30,7 +30,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	s.UpdateGameStatus(0, "/help")
 
 	// Initial sync of members on server with the database
-	go startup.SyncUsersAtStartup(s)
+	go startup.SyncMembersAtStartup(s)
 
 	// Initial cleanup of members from database against the Discord server
 	go startup.CleanupMemberAtStartup(s, uids)
