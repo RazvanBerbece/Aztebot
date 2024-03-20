@@ -39,14 +39,14 @@ func GetCircleAndOrderForGivenRoles(roleIds []int) (string, *int) {
 
 func GetCircleAndOrderFromRoleId(roleId int) (int, int) {
 
-	if roleId <= 8 {
+	if roleId <= 9 {
 		return 0, -1
 	} else {
-		if roleId >= 9 && roleId < 13 {
+		if roleId >= 10 && roleId < 14 {
 			return 1, 1
-		} else if roleId >= 13 && roleId < 16 {
+		} else if roleId >= 14 && roleId < 17 {
 			return 1, 2
-		} else if roleId >= 16 {
+		} else if roleId >= 17 {
 			return 1, 3
 		}
 	}
