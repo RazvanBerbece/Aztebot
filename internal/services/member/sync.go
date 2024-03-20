@@ -67,10 +67,17 @@ func SyncMember(s *discordgo.Session, guildId string, userId string, member *dis
 
 		user.CurrentRoleIds = currentRoleIds
 
-		// Circle and Order (for Inner members)
+		// Circle and Order (for Inner members) in the DB
 		currentCircle, currentOrder := utils.GetCircleAndOrderForGivenRoles(roleIds)
 		user.CurrentCircle = currentCircle
 		user.CurrentInnerOrder = currentOrder
+
+		// Update Discord circle role with newly processed one (to eliminate mismatches)
+		err = RefreshDiscordOrderRoleForMember(s, guildId, userId, currentOrder)
+		if err != nil {
+			log.Printf("Error refreshing order role for user %s: %v\n", userId, err)
+			return err
+		}
 
 		// Save changes
 		_, updateErr := globalRepositories.UsersRepository.UpdateUser(*user)
@@ -161,6 +168,13 @@ func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, m
 		currentCircle, currentOrder := utils.GetCircleAndOrderForGivenRoles(roleIds)
 		user.CurrentCircle = currentCircle
 		user.CurrentInnerOrder = currentOrder
+
+		// Update Discord circle role with newly processed one (to eliminate mismatches)
+		err = RefreshDiscordOrderRoleForMember(s, guildId, userId, currentOrder)
+		if err != nil {
+			log.Printf("Error refreshing order role for user %s: %v\n", userId, err)
+			return err
+		}
 
 		_, updateErr := usersRepository.UpdateUser(*user)
 		if updateErr != nil {
