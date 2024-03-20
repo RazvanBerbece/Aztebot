@@ -27,7 +27,7 @@ func IsBot(s *discordgo.Session, guildId string, userId string, debug bool) (*bo
 }
 
 // Removes all roles on the actual Discord member.
-func RemoveAllDiscordUserRoles(s *discordgo.Session, guildId string, userId string) error {
+func RemoveAllDiscordRolesFromMember(s *discordgo.Session, guildId string, userId string) error {
 
 	// Get the member's roles
 	member, err := s.GuildMember(guildId, userId)
@@ -67,7 +67,7 @@ func RemoveDiscordRoleFromMember(s *discordgo.Session, guildId string, userId st
 
 }
 
-func GiveDiscordRoleToMember(s *discordgo.Session, guildId string, userId string, roleName string) error {
+func AddDiscordRoleToMember(s *discordgo.Session, guildId string, userId string, roleName string) error {
 
 	// Get the ID of the given role by name
 	discordRoleId := GetDiscordRoleIdForRoleWithName(s, guildId, roleName)
@@ -86,7 +86,7 @@ func GiveDiscordRoleToMember(s *discordgo.Session, guildId string, userId string
 
 }
 
-func AddRolesToDiscordUser(s *discordgo.Session, guildId string, userId string, roleIds []int) error {
+func AddDiscordRolesToMember(s *discordgo.Session, guildId string, userId string, roleIds []int) error {
 
 	// For each role
 	for _, roleId := range roleIds {

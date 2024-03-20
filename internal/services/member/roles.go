@@ -166,18 +166,18 @@ func DemoteMember(s *discordgo.Session, guildId string, userId string, demoteTyp
 
 	// Update Member in the Discord guild
 	// Remove all roles
-	err = RemoveAllDiscordUserRoles(s, globalConfiguration.DiscordMainGuildId, userId)
+	err = RemoveAllDiscordRolesFromMember(s, globalConfiguration.DiscordMainGuildId, userId)
 	if err != nil {
 		// Revert
 		fmt.Printf("An error ocurred while removing all roles for member: %v\n", err)
-		err = AddRolesToDiscordUser(s, globalConfiguration.DiscordMainGuildId, userId, roleIdsPriorDemote)
+		err = AddDiscordRolesToMember(s, globalConfiguration.DiscordMainGuildId, userId, roleIdsPriorDemote)
 		if err != nil {
 			fmt.Printf("An error ocurred while reverting all roles deletion: %v\n", err)
 		}
 	}
 
 	// Add new roles
-	err = AddRolesToDiscordUser(s, globalConfiguration.DiscordMainGuildId, userId, roleIdsPostDemote)
+	err = AddDiscordRolesToMember(s, globalConfiguration.DiscordMainGuildId, userId, roleIdsPostDemote)
 	if err != nil {
 		fmt.Printf("An error ocurred while adding all roles from DB for member: %v\n", err)
 	}
