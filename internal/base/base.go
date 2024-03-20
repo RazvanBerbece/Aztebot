@@ -106,7 +106,7 @@ func (b *DiscordBotBase) setBotIntents() {
 		discordgo.IntentsGuildMembers |
 		discordgo.IntentGuildVoiceStates |
 		discordgo.IntentsGuildBans |
-		discordgo.IntentsAll
+		discordgo.IntentsAllWithoutPrivileged
 }
 
 func (b *DiscordBotBase) setBotPermissions() {

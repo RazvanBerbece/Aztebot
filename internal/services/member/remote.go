@@ -10,6 +10,24 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+func GetDiscordRole(s *discordgo.Session, guildId string, roleId string) (*discordgo.Role, error) {
+
+	roles, err := s.GuildRoles(guildId)
+	if err != nil {
+		fmt.Printf("Error retrieving roles for guild with ID %s: %v\n", guildId, err)
+		return nil, err
+	}
+
+	for _, role := range roles {
+		if role.ID == roleId {
+			return role, nil
+		}
+	}
+
+	return nil, fmt.Errorf("a role with ID %s hasn't been found", roleId)
+
+}
+
 func IsBot(s *discordgo.Session, guildId string, userId string, debug bool) (*bool, error) {
 
 	// Fetch user information from Discord API.
@@ -40,7 +58,7 @@ func RemoveAllDiscordRolesFromMember(s *discordgo.Session, guildId string, userI
 
 		// 20 Mar 2024: Discord does not allow any way of removing the default Server Booster role from a guild member
 		// so we just ignore it like it doesn't exist and hope that it goes away. :thumbs_down
-		role, err := s.State.Role(guildId, roleID)
+		role, err := GetDiscordRole(s, guildId, roleID)
 		if err != nil {
 			fmt.Printf("Error retrieving role with ID %s: %v\n", roleID, err)
 			return err
