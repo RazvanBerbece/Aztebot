@@ -141,7 +141,7 @@ func UnjailMember(s *discordgo.Session, guildId string, userId string, jailRoleN
 	// Give roles back to member to return permsisions
 	err = AddRolesToDiscordUser(s, guildId, userId, utils.GetRoleIdsFromRoleString(jailedUser.RoleIdsBeforeJail))
 	if err != nil {
-		fmt.Printf("Failed to UnjailMember (Return roles before jail) %s: %v\n", userId, err)
+		fmt.Printf("Failed to UnjailMember (Add original roles back to Discord user) %s: %v\n", userId, err)
 		return nil, nil, err
 	}
 
