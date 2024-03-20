@@ -45,7 +45,7 @@ func RemoveAllDiscordRolesFromMember(s *discordgo.Session, guildId string, userI
 			fmt.Printf("Error retrieving role with ID %s: %v\n", roleID, err)
 			return err
 		}
-		if role.Name == "Server Booster" {
+		if role.Name == globalConfiguration.ServerBoosterDefaultRoleName {
 			continue
 		}
 
@@ -63,7 +63,7 @@ func RemoveAllDiscordRolesFromMember(s *discordgo.Session, guildId string, userI
 func RemoveDiscordRoleFromMember(s *discordgo.Session, guildId string, userId string, roleName string) error {
 
 	// 20 Mar 2024: Same Server Booster trick as above
-	if roleName == "Server Booster" {
+	if roleName == globalConfiguration.ServerBoosterDefaultRoleName {
 		return nil
 	}
 
@@ -87,7 +87,7 @@ func RemoveDiscordRoleFromMember(s *discordgo.Session, guildId string, userId st
 func AddDiscordRoleToMember(s *discordgo.Session, guildId string, userId string, roleName string) error {
 
 	// 20 Mar 2024: Same Server Booster trick as above
-	if roleName == "Server Booster" {
+	if roleName == globalConfiguration.ServerBoosterDefaultRoleName {
 		return nil
 	}
 
@@ -119,7 +119,7 @@ func AddDiscordRolesToMember(s *discordgo.Session, guildId string, userId string
 		}
 
 		// 20 Mar 2024: Same Server Booster trick as above
-		if role.DisplayName == "Server Booster" {
+		if role.DisplayName == globalConfiguration.ServerBoosterDefaultRoleName {
 			continue
 		}
 
