@@ -43,7 +43,7 @@ func SyncUserPersistent(s *discordgo.Session, guildId string, userId string, mem
 			log.Fatalf("Error ocurred retrieving user from the DB: %v\n", err)
 			return err
 		}
-		// Check whether use has user stats entity
+		// Check whether user has user stats entity
 		userStatsExistsResult := globalsRepo.UserStatsRepository.UserStatsExist(userId)
 		switch userStatsExistsResult {
 		case -1:
