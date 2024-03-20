@@ -37,6 +37,18 @@ func RemoveAllDiscordRolesFromMember(s *discordgo.Session, guildId string, userI
 
 	// Find all user's roles and delete them
 	for _, roleID := range member.Roles {
+
+		// 20 Mar 2024: Discord does not allow any way of removing the default Server Booster role from a guild member
+		// so we just ignore it like it doesn't exist and hope that it goes away. :thumbs_down
+		role, err := s.State.Role(guildId, roleID)
+		if err != nil {
+			fmt.Printf("Error retrieving role with ID %s: %v\n", roleID, err)
+			return err
+		}
+		if role.Name == "Server Booster" {
+			continue
+		}
+
 		err = s.GuildMemberRoleRemove(guildId, userId, roleID)
 		if err != nil {
 			fmt.Printf("Error removing role with ID %s: %v\n", roleID, err)
@@ -49,6 +61,11 @@ func RemoveAllDiscordRolesFromMember(s *discordgo.Session, guildId string, userI
 }
 
 func RemoveDiscordRoleFromMember(s *discordgo.Session, guildId string, userId string, roleName string) error {
+
+	// 20 Mar 2024: Same Server Booster trick as above
+	if roleName == "Server Booster" {
+		return nil
+	}
 
 	// Get the ID of the given role by name
 	discordRoleId := GetDiscordRoleIdForRoleWithName(s, guildId, roleName)
@@ -68,6 +85,11 @@ func RemoveDiscordRoleFromMember(s *discordgo.Session, guildId string, userId st
 }
 
 func AddDiscordRoleToMember(s *discordgo.Session, guildId string, userId string, roleName string) error {
+
+	// 20 Mar 2024: Same Server Booster trick as above
+	if roleName == "Server Booster" {
+		return nil
+	}
 
 	// Get the ID of the given role by name
 	discordRoleId := GetDiscordRoleIdForRoleWithName(s, guildId, roleName)
@@ -95,6 +117,12 @@ func AddDiscordRolesToMember(s *discordgo.Session, guildId string, userId string
 			fmt.Printf("Error ocurred while adding DB roles to Discord member: %v\n", err)
 			return err
 		}
+
+		// 20 Mar 2024: Same Server Booster trick as above
+		if role.DisplayName == "Server Booster" {
+			continue
+		}
+
 		// Get the role ID by display name from Discord
 		discordRoleId := GetDiscordRoleIdForRoleWithName(s, guildId, role.DisplayName)
 		if discordRoleId != nil {
