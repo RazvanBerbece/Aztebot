@@ -39,7 +39,7 @@ func RemoveAllDiscordUserRoles(s *discordgo.Session, guildId string, userId stri
 	for _, roleID := range member.Roles {
 		err = s.GuildMemberRoleRemove(guildId, userId, roleID)
 		if err != nil {
-			fmt.Println("Error removing role:", err)
+			fmt.Printf("Error removing role with ID %s: %v\n", roleID, err)
 			return err
 		}
 	}
@@ -78,7 +78,7 @@ func GiveDiscordRoleToMember(s *discordgo.Session, guildId string, userId string
 	// Add the role by role ID to the Discord member
 	err := s.GuildMemberRoleAdd(guildId, userId, *discordRoleId)
 	if err != nil {
-		fmt.Println("Error giving role to Discord member:\n", err)
+		fmt.Printf("Error giving role with name %s to Discord member: %v\n", roleName, err)
 		return err
 	}
 
@@ -101,7 +101,7 @@ func AddRolesToDiscordUser(s *discordgo.Session, guildId string, userId string, 
 			// Add the role by role ID to the Discord member
 			err = s.GuildMemberRoleAdd(guildId, userId, *discordRoleId)
 			if err != nil {
-				fmt.Println("Error adding DB role to Discord member:", err)
+				fmt.Printf("Error adding DB role with name %s to Discord member: %v\n", role.DisplayName, err)
 				return err
 			}
 
