@@ -27,7 +27,7 @@ func IsBot(s *discordgo.Session, guildId string, userId string, debug bool) (*bo
 }
 
 // Removes all roles on the actual Discord member.
-func RemoveAllDiscordUserRoles(s *discordgo.Session, guildId string, userId string) error {
+func RemoveAllDiscordRolesFromMember(s *discordgo.Session, guildId string, userId string) error {
 
 	// Get the member's roles
 	member, err := s.GuildMember(guildId, userId)
@@ -37,6 +37,18 @@ func RemoveAllDiscordUserRoles(s *discordgo.Session, guildId string, userId stri
 
 	// Find all user's roles and delete them
 	for _, roleID := range member.Roles {
+
+		// 20 Mar 2024: Discord does not allow any way of removing the default Server Booster role from a guild member
+		// so we just ignore it like it doesn't exist and hope that it goes away. :thumbs_down
+		role, err := s.State.Role(guildId, roleID)
+		if err != nil {
+			fmt.Printf("Error retrieving role with ID %s: %v\n", roleID, err)
+			return err
+		}
+		if role.Name == globalConfiguration.ServerBoosterDefaultRoleName {
+			continue
+		}
+
 		err = s.GuildMemberRoleRemove(guildId, userId, roleID)
 		if err != nil {
 			fmt.Printf("Error removing role with ID %s: %v\n", roleID, err)
@@ -49,6 +61,11 @@ func RemoveAllDiscordUserRoles(s *discordgo.Session, guildId string, userId stri
 }
 
 func RemoveDiscordRoleFromMember(s *discordgo.Session, guildId string, userId string, roleName string) error {
+
+	// 20 Mar 2024: Same Server Booster trick as above
+	if roleName == globalConfiguration.ServerBoosterDefaultRoleName {
+		return nil
+	}
 
 	// Get the ID of the given role by name
 	discordRoleId := GetDiscordRoleIdForRoleWithName(s, guildId, roleName)
@@ -67,7 +84,12 @@ func RemoveDiscordRoleFromMember(s *discordgo.Session, guildId string, userId st
 
 }
 
-func GiveDiscordRoleToMember(s *discordgo.Session, guildId string, userId string, roleName string) error {
+func AddDiscordRoleToMember(s *discordgo.Session, guildId string, userId string, roleName string) error {
+
+	// 20 Mar 2024: Same Server Booster trick as above
+	if roleName == globalConfiguration.ServerBoosterDefaultRoleName {
+		return nil
+	}
 
 	// Get the ID of the given role by name
 	discordRoleId := GetDiscordRoleIdForRoleWithName(s, guildId, roleName)
@@ -86,7 +108,7 @@ func GiveDiscordRoleToMember(s *discordgo.Session, guildId string, userId string
 
 }
 
-func AddRolesToDiscordUser(s *discordgo.Session, guildId string, userId string, roleIds []int) error {
+func AddDiscordRolesToMember(s *discordgo.Session, guildId string, userId string, roleIds []int) error {
 
 	// For each role
 	for _, roleId := range roleIds {
@@ -95,6 +117,12 @@ func AddRolesToDiscordUser(s *discordgo.Session, guildId string, userId string, 
 			fmt.Printf("Error ocurred while adding DB roles to Discord member: %v\n", err)
 			return err
 		}
+
+		// 20 Mar 2024: Same Server Booster trick as above
+		if role.DisplayName == globalConfiguration.ServerBoosterDefaultRoleName {
+			continue
+		}
+
 		// Get the role ID by display name from Discord
 		discordRoleId := GetDiscordRoleIdForRoleWithName(s, guildId, role.DisplayName)
 		if discordRoleId != nil {
