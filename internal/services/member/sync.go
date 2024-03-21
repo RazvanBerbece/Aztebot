@@ -72,13 +72,6 @@ func SyncMember(s *discordgo.Session, guildId string, userId string, member *dis
 		user.CurrentCircle = currentCircle
 		user.CurrentInnerOrder = currentOrder
 
-		// Update Discord circle role with newly processed one (to eliminate mismatches)
-		err = RefreshDiscordOrderRoleForMember(s, guildId, userId, currentOrder)
-		if err != nil {
-			log.Printf("Error refreshing order role for user %s: %v\n", userId, err)
-			return err
-		}
-
 		// Save changes
 		_, updateErr := globalRepositories.UsersRepository.UpdateUser(*user)
 		if updateErr != nil {
@@ -170,10 +163,19 @@ func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, m
 		user.CurrentInnerOrder = currentOrder
 
 		// Update Discord circle role with newly processed one (to eliminate mismatches)
-		err = RefreshDiscordOrderRoleForMember(s, guildId, userId, currentOrder)
+		// if necessary
+		discordOrder, err := GetDiscordOrderRoleNameForMember(s, guildId, userId)
 		if err != nil {
-			log.Printf("Error refreshing order role for user %s: %v\n", userId, err)
+			log.Printf("Error retrieving Discord order role for user %s: %v\n", userId, err)
 			return err
+		}
+		if discordOrder != nil && *discordOrder != utils.GetOrderAsString(*currentOrder) {
+			// Disocrd order role is different to the one in the DB
+			err = RefreshDiscordOrderRoleForMember(s, guildId, userId, currentOrder)
+			if err != nil {
+				log.Printf("Error refreshing order role for user %s: %v\n", userId, err)
+				return err
+			}
 		}
 
 		_, updateErr := usersRepository.UpdateUser(*user)

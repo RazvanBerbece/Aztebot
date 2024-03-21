@@ -208,6 +208,27 @@ func GetDiscordRolesForMember(s *discordgo.Session, guildId string, userId strin
 	return roles, nil
 }
 
+func GetDiscordOrderRoleNameForMember(s *discordgo.Session, guildId string, userId string) (*string, error) {
+
+	member, err := s.GuildMember(guildId, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, roleID := range member.Roles {
+		role, err := GetDiscordRole(s, guildId, roleID)
+		if err != nil {
+			fmt.Printf("Error retrieving role with ID %s: %v\n", roleID, err)
+			return nil, err
+		}
+		if role.Name == "---- Third Order ----" || role.Name == "---- Second Order ----" || role.Name == "---- First Order ----" {
+			return &role.Name, nil
+		}
+	}
+
+	return nil, nil
+}
+
 // Recalculates and re-assigns the order Discord role for a member.
 func RefreshDiscordOrderRoleForMember(s *discordgo.Session, guildId string, userId string, updatedOrder *int) error {
 
