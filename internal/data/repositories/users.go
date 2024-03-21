@@ -126,7 +126,7 @@ func (r UsersRepository) DeleteUser(userId string) error {
 	return nil
 }
 
-func (r UsersRepository) SaveInitialUserDetails(tag string, userId string) (*dataModels.User, error) {
+func (r UsersRepository) SaveInitialUserDetails(tag string, userId string, timestamp int64) (*dataModels.User, error) {
 
 	user := &dataModels.User{
 		DiscordTag:        tag,
@@ -136,7 +136,7 @@ func (r UsersRepository) SaveInitialUserDetails(tag string, userId string) (*dat
 		CurrentInnerOrder: nil,
 		CurrentLevel:      0,
 		CurrentExperience: 0,
-		CreatedAt:         nil,
+		CreatedAt:         &timestamp,
 		Gender:            -1,
 	}
 
