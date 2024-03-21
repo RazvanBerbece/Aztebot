@@ -19,13 +19,6 @@ func HandleSlashMe(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	userId := i.Interaction.Member.User.ID
 
-	// Attempt a sync
-	err := ProcessUserUpdate(userId, s, i)
-	if err != nil {
-		utils.ErrorEmbedResponseEdit(s, i.Interaction, fmt.Sprintf("An error ocurred while trying to sync your profile card: `%s`", err))
-		return
-	}
-
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{

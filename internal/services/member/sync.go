@@ -24,7 +24,7 @@ func SyncMember(s *discordgo.Session, guildId string, userId string, member *dis
 		fmt.Printf("Cannot check whether user %s (%s) exists in the DB\n", member.User.Username, userId)
 	case 0:
 		var err error
-		user, err = globalRepositories.UsersRepository.SaveInitialUserDetails(member.User.Username, userId)
+		user, err = globalRepositories.UsersRepository.SaveInitialUserDetails(member.User.Username, userId, time.Now().Unix())
 		if err != nil {
 			log.Fatalf("Cannot store initial user %s with id %s: %v\n", member.User.Username, userId, err)
 			return err
@@ -97,7 +97,7 @@ func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, m
 		fmt.Printf("Cannot check whether user %s (%s) exists in the DB during bot startup sync\n", member.User.Username, userId)
 	case 0:
 		var err error
-		user, err = globalRepositories.UsersRepository.SaveInitialUserDetails(member.User.Username, userId)
+		user, err = globalRepositories.UsersRepository.SaveInitialUserDetails(member.User.Username, userId, time.Now().Unix())
 		if err != nil {
 			log.Fatalf("Cannot store initial user %s with id %s during bot startup sync: %v", member.User.Username, userId, err)
 			return err
