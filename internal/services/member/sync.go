@@ -171,8 +171,7 @@ func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, m
 		}
 		if discordOrder != nil {
 			if *discordOrder != utils.GetOrderAsString(*currentOrder) {
-				fmt.Println("UNEQUAL", *discordOrder, utils.GetOrderAsString(*currentOrder))
-				// Disocrd order role is different to the one in the DB
+				// Discord order role is different to the one in the DB
 				err = RefreshDiscordOrderRoleForMember(s, guildId, userId, currentOrder)
 				if err != nil {
 					log.Printf("Error refreshing order role for user %s: %v\n", userId, err)
