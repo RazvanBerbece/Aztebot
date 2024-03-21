@@ -37,16 +37,29 @@ func GetCircleAndOrderForGivenRoles(roleIds []int) (string, *int) {
 	return circle, order
 }
 
+func GetOrderAsString(orderId int) string {
+	switch orderId {
+	case 1:
+		return "---- FIRST ORDER ----"
+	case 2:
+		return "---- SECOND ORDER ----"
+	case 3:
+		return "---- THIRD ORDER ----"
+	default:
+		return "not supported"
+	}
+}
+
 func GetCircleAndOrderFromRoleId(roleId int) (int, int) {
 
-	if roleId <= 8 {
+	if roleId <= 9 {
 		return 0, -1
 	} else {
-		if roleId >= 9 && roleId < 13 {
+		if roleId >= 10 && roleId < 14 {
 			return 1, 1
-		} else if roleId >= 13 && roleId < 16 {
+		} else if roleId >= 14 && roleId < 17 {
 			return 1, 2
-		} else if roleId >= 16 {
+		} else if roleId >= 17 {
 			return 1, 3
 		}
 	}
