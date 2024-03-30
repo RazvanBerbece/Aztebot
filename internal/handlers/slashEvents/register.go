@@ -15,32 +15,11 @@ func RegisterAztebotSlashCommands(s *discordgo.Session, mainGuildOnly bool) erro
 
 	fmt.Printf("[STARTUP] Registering %d slash commands...\n", len(commands.AztebotSlashCommands))
 
-	// TODO: Optimise this as it take ~2 mins to finish executing and it seems to scale poorly with more slash commands
-
-	if mainGuildOnly {
-		// Register commands only for the main guild
-		// This is more performant when the bot is not supposed to be in more guilds
-		globalState.AztebotRegisteredCommands = make([]*discordgo.ApplicationCommand, len(commands.AztebotSlashCommands))
-		for index, cmd := range commands.AztebotSlashCommands {
-			_, err := s.ApplicationCommandCreate(globalConfiguration.DiscordAztebotAppId, globalConfiguration.DiscordMainGuildId, cmd)
-			if err != nil {
-				return err
-			}
-			globalState.AztebotRegisteredCommands[index] = cmd
-		}
-	} else {
-		// For each guild where the bot exists in, register the available commands
-		guildIds := strings.Fields(globalConfiguration.DiscordGuildIds)
-		for _, guildId := range guildIds {
-			globalState.AztebotRegisteredCommands = make([]*discordgo.ApplicationCommand, len(commands.AztebotSlashCommands))
-			for index, cmd := range commands.AztebotSlashCommands {
-				_, err := s.ApplicationCommandCreate(globalConfiguration.DiscordAztebotAppId, guildId, cmd)
-				if err != nil {
-					return err
-				}
-				globalState.AztebotRegisteredCommands[index] = cmd
-			}
-		}
+	// TODO: Optimise this one as it takes ~2 mins to finish executing and it seems to scale poorly with more slash commands
+	err := RegisterGuildSlashCommands(s, globalConfiguration.DiscordAztebotAppId, mainGuildOnly, &globalConfiguration.DiscordMainGuildId)
+	if err != nil {
+		fmt.Printf("error in RegisterGuildSlashCommands: %v\n", err)
+		return err
 	}
 
 	// Register global commands (available in bot DMs as well)
@@ -65,4 +44,35 @@ func RegisterDmCommands(s *discordgo.Session, dmCommands []string) {
 			}
 		}
 	}
+}
+
+func RegisterGuildSlashCommands(s *discordgo.Session, appId string, mainGuildOnly bool, mainGuildId *string) error {
+
+	if mainGuildOnly {
+		// Register commands only for the main guild
+		// This is more performant when the bot is not supposed to be in more guilds
+		globalState.AztebotRegisteredCommands = make([]*discordgo.ApplicationCommand, len(commands.AztebotSlashCommands))
+		for index, cmd := range commands.AztebotSlashCommands {
+			_, err := s.ApplicationCommandCreate(appId, *mainGuildId, cmd)
+			if err != nil {
+				return fmt.Errorf("an error ocurred while registering slash command %s: %v", cmd.Name, err)
+			}
+			globalState.AztebotRegisteredCommands[index] = cmd
+		}
+	} else {
+		// For each guild where the bot exists in, register the available commands
+		guildIds := strings.Fields(globalConfiguration.DiscordGuildIds)
+		for _, guildId := range guildIds {
+			globalState.AztebotRegisteredCommands = make([]*discordgo.ApplicationCommand, len(commands.AztebotSlashCommands))
+			for index, cmd := range commands.AztebotSlashCommands {
+				_, err := s.ApplicationCommandCreate(appId, guildId, cmd)
+				if err != nil {
+					return fmt.Errorf("an error ocurred while registering slash command %s: %v", cmd.Name, err)
+				}
+				globalState.AztebotRegisteredCommands[index] = cmd
+			}
+		}
+	}
+
+	return nil
 }
