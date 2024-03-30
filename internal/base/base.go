@@ -8,7 +8,9 @@ import (
 	"syscall"
 
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
 	slashCommandEvent "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents"
+	"github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -62,6 +64,8 @@ func (b *DiscordBotBase) AddHandlers(handlers []interface{}) {
 			log.Fatal("Error registering slash commands for AzteBot: ", err)
 		}
 	}
+
+	globalState.AztebotSlashCommands = commands.AztebotSlashCommands
 
 }
 

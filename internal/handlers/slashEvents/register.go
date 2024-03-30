@@ -3,10 +3,8 @@ package slashCommandEvent
 import (
 	"fmt"
 	"strings"
-	"sync"
 
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
-	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
 	"github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -49,49 +47,33 @@ func RegisterDmCommands(s *discordgo.Session, dmCommands []string) {
 
 func RegisterGuildSlashCommands(s *discordgo.Session, appId string, mainGuildOnly bool, mainGuildId *string) error {
 
-	var wg sync.WaitGroup
-	var errGroup []string
-
 	if mainGuildOnly {
 		// Register commands only for the main guild
 		// This is more performant when the bot is not supposed to be in more guilds
-		globalState.AztebotRegisteredCommands = make([]*discordgo.ApplicationCommand, len(commands.AztebotSlashCommands))
-		for index, cmd := range commands.AztebotSlashCommands {
-			wg.Add(1)
-			go func() {
-				defer wg.Done()
-				go SlashRegisterWorker(s, globalConfiguration.DiscordAztebotAppId, *mainGuildId, index, cmd, errGroup)
-			}()
+		err := RegisterSlashCommandWorker(s, globalConfiguration.DiscordAztebotAppId, *mainGuildId)
+		if err != nil {
+			return err
 		}
 	} else {
 		// For each guild where the bot exists in, register the available commands
 		guildIds := strings.Fields(globalConfiguration.DiscordGuildIds)
 		for _, guildId := range guildIds {
-			globalState.AztebotRegisteredCommands = make([]*discordgo.ApplicationCommand, len(commands.AztebotSlashCommands))
-			for index, cmd := range commands.AztebotSlashCommands {
-				wg.Add(1)
-				go func() {
-					defer wg.Done()
-					go SlashRegisterWorker(s, globalConfiguration.DiscordAztebotAppId, guildId, index, cmd, errGroup)
-				}()
+			err := RegisterSlashCommandWorker(s, globalConfiguration.DiscordAztebotAppId, guildId)
+			if err != nil {
+				return err
 			}
 		}
-	}
-
-	wg.Wait()
-	if len(errGroup) > 0 {
-		// errors ocurred in registrations
-		return fmt.Errorf("%d errors ocurred in RegisterGuildSlashCommands\nfor instance: %s", len(errGroup), errGroup[0])
 	}
 
 	return nil
 }
 
-func SlashRegisterWorker(s *discordgo.Session, appId string, guildId string, index int, cmd *discordgo.ApplicationCommand, errGroup []string) {
-	_, err := s.ApplicationCommandCreate(appId, guildId, cmd)
+func RegisterSlashCommandWorker(s *discordgo.Session, appId string, guildId string) error {
+	// A bulk overwrite is desirable as it's preferred to have matching commands between the Discord state and the app code
+	_, err := s.ApplicationCommandBulkOverwrite(appId, guildId, commands.AztebotSlashCommands)
 	if err != nil {
-		errString := fmt.Sprintf("an error ocurred while registering slash command %s: %v", cmd.Name, err)
-		errGroup = append(errGroup, errString)
+		return fmt.Errorf("an error ocurred while bulk overwriting slash commands: %v", err)
 	}
-	globalState.AztebotRegisteredCommands[index] = cmd
+
+	return nil
 }
