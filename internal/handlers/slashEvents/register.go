@@ -3,6 +3,7 @@ package slashCommandEvent
 import (
 	"fmt"
 	"strings"
+	"sync"
 
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
@@ -48,16 +49,21 @@ func RegisterDmCommands(s *discordgo.Session, dmCommands []string) {
 
 func RegisterGuildSlashCommands(s *discordgo.Session, appId string, mainGuildOnly bool, mainGuildId *string) error {
 
+	var wg sync.WaitGroup
+	var errGroup []string
+
+	fmt.Println(mainGuildOnly)
+
 	if mainGuildOnly {
 		// Register commands only for the main guild
 		// This is more performant when the bot is not supposed to be in more guilds
 		globalState.AztebotRegisteredCommands = make([]*discordgo.ApplicationCommand, len(commands.AztebotSlashCommands))
 		for index, cmd := range commands.AztebotSlashCommands {
-			_, err := s.ApplicationCommandCreate(appId, *mainGuildId, cmd)
-			if err != nil {
-				return fmt.Errorf("an error ocurred while registering slash command %s: %v", cmd.Name, err)
-			}
-			globalState.AztebotRegisteredCommands[index] = cmd
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				SlashRegisterWorker(s, globalConfiguration.DiscordAztebotAppId, *mainGuildId, index, cmd, errGroup)
+			}()
 		}
 	} else {
 		// For each guild where the bot exists in, register the available commands
@@ -74,5 +80,20 @@ func RegisterGuildSlashCommands(s *discordgo.Session, appId string, mainGuildOnl
 		}
 	}
 
+	wg.Wait()
+	if len(errGroup) > 0 {
+		// errors ocurred in registrations
+		return fmt.Errorf("%d errors ocurred in RegisterGuildSlashCommands\nfor instance: %s", len(errGroup), errGroup[0])
+	}
+
 	return nil
+}
+
+func SlashRegisterWorker(s *discordgo.Session, appId string, guildId string, index int, cmd *discordgo.ApplicationCommand, errGroup []string) {
+	_, err := s.ApplicationCommandCreate(appId, guildId, cmd)
+	if err != nil {
+		errString := fmt.Sprintf("an error ocurred while registering slash command %s: %v", cmd.Name, err)
+		errGroup = append(errGroup, errString)
+	}
+	globalState.AztebotRegisteredCommands[index] = cmd
 }
