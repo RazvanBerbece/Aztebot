@@ -52,8 +52,6 @@ func RegisterGuildSlashCommands(s *discordgo.Session, appId string, mainGuildOnl
 	var wg sync.WaitGroup
 	var errGroup []string
 
-	fmt.Println(mainGuildOnly)
-
 	if mainGuildOnly {
 		// Register commands only for the main guild
 		// This is more performant when the bot is not supposed to be in more guilds
@@ -62,7 +60,7 @@ func RegisterGuildSlashCommands(s *discordgo.Session, appId string, mainGuildOnl
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
-				SlashRegisterWorker(s, globalConfiguration.DiscordAztebotAppId, *mainGuildId, index, cmd, errGroup)
+				go SlashRegisterWorker(s, globalConfiguration.DiscordAztebotAppId, *mainGuildId, index, cmd, errGroup)
 			}()
 		}
 	} else {
@@ -71,11 +69,11 @@ func RegisterGuildSlashCommands(s *discordgo.Session, appId string, mainGuildOnl
 		for _, guildId := range guildIds {
 			globalState.AztebotRegisteredCommands = make([]*discordgo.ApplicationCommand, len(commands.AztebotSlashCommands))
 			for index, cmd := range commands.AztebotSlashCommands {
-				_, err := s.ApplicationCommandCreate(appId, guildId, cmd)
-				if err != nil {
-					return fmt.Errorf("an error ocurred while registering slash command %s: %v", cmd.Name, err)
-				}
-				globalState.AztebotRegisteredCommands[index] = cmd
+				wg.Add(1)
+				go func() {
+					defer wg.Done()
+					go SlashRegisterWorker(s, globalConfiguration.DiscordAztebotAppId, guildId, index, cmd, errGroup)
+				}()
 			}
 		}
 	}
