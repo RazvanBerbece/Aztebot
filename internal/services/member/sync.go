@@ -27,7 +27,7 @@ func SyncMember(s *discordgo.Session, guildId string, userId string, member *dis
 		fmt.Printf("Cannot check whether user %s (%s) exists in the DB\n", member.User.Username, userId)
 	case 0:
 		var err error
-		user, err = globalRepositories.UsersRepository.SaveInitialUserDetails(member.User.Username, userId, time.Now().Unix())
+		user, err = globalRepositories.UsersRepository.SaveInitialUserDetails(member.User.Username, userId, nil)
 		if err != nil {
 			log.Fatalf("Cannot store initial user %s with id %s: %v\n", member.User.Username, userId, err)
 			return err
@@ -71,13 +71,13 @@ func SyncMember(s *discordgo.Session, guildId string, userId string, member *dis
 					fields := []discordgo.MessageEmbedField{
 						{
 							Name:   "",
-							Value:  fmt.Sprintf("<@%s> has joined the OTA community. Say hello 🍻", user.UserId),
+							Value:  fmt.Sprintf("<@%s> has joined the OTA community! Say hello 🍻", user.UserId),
 							Inline: false,
 						},
 					}
 
 					notificationTitle := ""
-					useThumbnail := true
+					useThumbnail := false
 					globalMessaging.NotificationsChannel <- events.NotificationEvent{
 						TargetChannelId: channel.ChannelId,
 						Title:           &notificationTitle,
@@ -121,7 +121,7 @@ func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, m
 		fmt.Printf("Cannot check whether user %s (%s) exists in the DB during bot startup sync\n", member.User.Username, userId)
 	case 0:
 		var err error
-		user, err = globalRepositories.UsersRepository.SaveInitialUserDetails(member.User.Username, userId, time.Now().Unix())
+		user, err = globalRepositories.UsersRepository.SaveInitialUserDetails(member.User.Username, userId, nil)
 		if err != nil {
 			log.Fatalf("Cannot store initial user %s with id %s during bot startup sync: %v", member.User.Username, userId, err)
 			return err
@@ -176,6 +176,27 @@ func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, m
 			if roleId == 1 && user.CreatedAt == nil {
 				unixNow := time.Now().Unix()
 				user.CreatedAt = &unixNow
+
+				// Newly verified user, so announce in global (if notification channel exists)
+				if channel, channelExists := globalConfiguration.NotificationChannels["notif-global"]; channelExists {
+					fields := []discordgo.MessageEmbedField{
+						{
+							Name:   "",
+							Value:  fmt.Sprintf("<@%s> has joined the OTA community! Say hello 🍻", user.UserId),
+							Inline: false,
+						},
+					}
+
+					notificationTitle := ""
+					useThumbnail := false
+					globalMessaging.NotificationsChannel <- events.NotificationEvent{
+						TargetChannelId: channel.ChannelId,
+						Title:           &notificationTitle,
+						Type:            "EMBED_WITH_TITLE_AND_FIELDS",
+						Fields:          fields,
+						UseThumbnail:    &useThumbnail,
+					}
+				}
 			}
 		}
 
