@@ -6,7 +6,10 @@ import (
 	"time"
 
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -62,6 +65,27 @@ func SyncMember(s *discordgo.Session, guildId string, userId string, member *dis
 			if roleId == 1 && user.CreatedAt == nil {
 				unixNow := time.Now().Unix()
 				user.CreatedAt = &unixNow
+
+				// Newly verified user, so announce in global (if notification channel exists)
+				if channel, channelExists := globalConfiguration.NotificationChannels["notif-global"]; channelExists {
+					fields := []discordgo.MessageEmbedField{
+						{
+							Name:   "",
+							Value:  fmt.Sprintf("<@%s> has joined the OTA community. Say hello 🍻", user.UserId),
+							Inline: false,
+						},
+					}
+
+					notificationTitle := ""
+					useThumbnail := true
+					globalMessaging.NotificationsChannel <- events.NotificationEvent{
+						TargetChannelId: channel.ChannelId,
+						Title:           &notificationTitle,
+						Type:            "EMBED_WITH_TITLE_AND_FIELDS",
+						Fields:          fields,
+						UseThumbnail:    &useThumbnail,
+					}
+				}
 			}
 		}
 
