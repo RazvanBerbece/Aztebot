@@ -2,4 +2,4 @@ package globalState
 
 import "github.com/bwmarrin/discordgo"
 
-var AztebotRegisteredCommands []*discordgo.ApplicationCommand
+var AztebotSlashCommands []*discordgo.ApplicationCommand
