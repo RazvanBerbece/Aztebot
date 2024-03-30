@@ -29,7 +29,7 @@ func TestGetRoleById(t *testing.T) {
 			RoleName:    "magus",
 			DisplayName: "🧙🏼 Magus",
 		}},
-		{19, dataModels.Role{
+		{20, dataModels.Role{
 			Id:          20,
 			RoleName:    "arhitect",
 			DisplayName: "Arhitect",
