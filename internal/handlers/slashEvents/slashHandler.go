@@ -15,7 +15,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func RegisterSlashHandler(s *discordgo.Session) {
+func AddRegisteredSlashEventHandlers(s *discordgo.Session) {
 
 	// This handler runs on EVERY slash command registered with the main bot application
 	s.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {

@@ -53,13 +53,13 @@ func (b *DiscordBotBase) AddHandlers(handlers []interface{}) {
 	// Register slash commands based on app type
 	if globalConfiguration.DiscordMainGuildId != "" {
 		// Register slash commands only for main guild
-		err := slashCommandEvent.RegisterAztebotSlashCommands(b.botSession, true)
+		err := slashCommandEvent.RegisterSlashEventHandlers(b.botSession, true)
 		if err != nil {
 			log.Fatal("Error registering slash commands for AzteBot: ", err)
 		}
 	} else {
 		// Register slash commands for all guilds
-		err := slashCommandEvent.RegisterAztebotSlashCommands(b.botSession, false)
+		err := slashCommandEvent.RegisterSlashEventHandlers(b.botSession, false)
 		if err != nil {
 			log.Fatal("Error registering slash commands for AzteBot: ", err)
 		}

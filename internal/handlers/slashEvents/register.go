@@ -10,22 +10,21 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func RegisterAztebotSlashCommands(s *discordgo.Session, mainGuildOnly bool) error {
+func RegisterSlashEventHandlers(s *discordgo.Session, mainGuildOnly bool) error {
 
-	fmt.Printf("[STARTUP] Registering %d slash commands...\n", len(commands.AztebotSlashCommands))
+	fmt.Printf("[STARTUP] Overwriting %d slash commands...\n", len(commands.AztebotSlashCommands))
 
-	// TODO: Optimise this one as it takes ~2 mins to finish executing and it seems to scale poorly with more slash commands
 	err := RegisterGuildSlashCommands(s, globalConfiguration.DiscordAztebotAppId, mainGuildOnly, &globalConfiguration.DiscordMainGuildId)
 	if err != nil {
-		fmt.Printf("error in RegisterGuildSlashCommands: %v\n", err)
+		fmt.Printf("error registering slash event handlers: %v\n", err)
 		return err
 	}
 
 	// Register global commands (available in bot DMs as well)
 	go RegisterDmCommands(s, globalConfiguration.GlobalCommands)
 
-	// Register actual slash command handler
-	go RegisterSlashHandler(s)
+	// Register actual slash command handler - the
+	go AddRegisteredSlashEventHandlers(s)
 
 	return nil
 }
