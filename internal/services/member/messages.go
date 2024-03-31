@@ -36,7 +36,7 @@ func DeleteMostRecentMemberMessages(s *discordgo.Session, guildId string, userId
 
 			if len(channelMessages) == 0 {
 				// Empty channel
-				continue
+				break
 			}
 
 			lastMessageId = channelMessages[len(channelMessages)-1].ID
