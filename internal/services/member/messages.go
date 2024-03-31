@@ -3,6 +3,7 @@ package member
 import (
 	"time"
 
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -17,6 +18,11 @@ func DeleteMostRecentMemberMessages(s *discordgo.Session, guildId string, userId
 
 	for _, channel := range channels {
 
+		// Don't delete messages from these channels (as they might be important for audits)
+		if _, isDeletionExceptedChannel := globalConfiguration.DeleteExceptedChannels[channel.ID]; isDeletionExceptedChannel {
+			continue
+		}
+
 		lastMessageId := "" // last retrieved message ID / also oldest message in the current batch
 
 		// For multiple iterations of searches on the given channel
@@ -30,7 +36,7 @@ func DeleteMostRecentMemberMessages(s *discordgo.Session, guildId string, userId
 
 			if len(channelMessages) == 0 {
 				// Empty channel
-				continue
+				break
 			}
 
 			lastMessageId = channelMessages[len(channelMessages)-1].ID
