@@ -8,7 +8,7 @@ import (
 	jailSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/jail"
 	timeoutSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/timeout"
 	warningSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/warning"
-	xpRateSettingSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/xp"
+	xpSystemSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/xp"
 	supportSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/support"
 	slashUtils "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/utils"
 	"github.com/bwmarrin/discordgo"
@@ -365,7 +365,7 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 	},
 	{
 		Name:        "set-stats",
-		Description: "Elevated privilege command to set a user's stats in the OTA records. This is used mainly for data restore purposes.",
+		Description: "Elevated privilege command to set a user's stats in the OTA records.",
 		Options: []*discordgo.ApplicationCommandOption{
 			{
 				Type:        discordgo.ApplicationCommandOptionString,
@@ -422,6 +422,8 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"arcade-ladder":         serverSlashHandlers.HandleSlashArcadeLadder,
 	"arcade-winner":         arcadeLadderSlashHandlers.HandleSlashArcadeWinner,
 	"confess":               supportSlashHandlers.HandleSlashConfess,
+	"set-global-xp-rate":    xpSystemSlashHandlers.HandleSlashSetGlobalXpRateForActivity,
+	"set-stats":             xpSystemSlashHandlers.HandleSlashSetStats,
 	"warn":                  warningSlashHandlers.HandleSlashWarn,
 	"warn-remove-oldest":    warningSlashHandlers.HandleSlashWarnRemoveOldest,
 	"warns":                 warningSlashHandlers.HandleSlashWarns,
@@ -429,7 +431,6 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"timeouts":              timeoutSlashHandlers.HandleSlashTimeouts,
 	"timeout-remove-active": timeoutSlashHandlers.HandleSlashTimeoutRemoveActive,
 	"timeout-appeal":        timeoutSlashHandlers.HandleSlashTimeoutAppeal,
-	"set-global-xp-rate":    xpRateSettingSlashHandlers.HandleSlashSetGlobalXpRateForActivity,
 	"jail":                  jailSlashHandlers.HandleSlashJail,
 	"unjail":                jailSlashHandlers.HandleSlashUnjail,
 	"jail-view":             jailSlashHandlers.HandleSlashJailView,
