@@ -36,7 +36,7 @@ func (r ArcadeLadderRepository) AddNewLadderEntry(userId string) error {
 			userId, 
 			wins
 		)
-	VALUES(?, ?, ?);`)
+	VALUES(?, ?);`)
 	if err != nil {
 		return err
 	}
@@ -65,7 +65,7 @@ func (r ArcadeLadderRepository) DeleteEntry(userId string) error {
 func (r ArcadeLadderRepository) AddWin(userId string) error {
 
 	stmt, err := r.Conn.Db.Prepare(`
-		UPDATE MonthlyLeaderboard SET 
+		UPDATE ArcadeLadder SET 
 			wins = wins + ?
 		WHERE userId = ?`)
 	if err != nil {
@@ -84,7 +84,7 @@ func (r ArcadeLadderRepository) AddWin(userId string) error {
 func (r ArcadeLadderRepository) RemoveWin(userId string) error {
 
 	stmt, err := r.Conn.Db.Prepare(`
-		UPDATE MonthlyLeaderboard SET 
+		UPDATE ArcadeLadder SET 
 			wins = wins - ?
 		WHERE userId = ?`)
 	if err != nil {

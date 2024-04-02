@@ -4,6 +4,7 @@ import (
 	gamesSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/games"
 	profileSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/profile"
 	serverSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/server"
+	arcadeLadderSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/arcadeLadder"
 	jailSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/jail"
 	timeoutSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/timeout"
 	warningSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/warning"
@@ -19,7 +20,7 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		Description: "Basic ping slash interaction for the AzteBot.",
 	},
 	{
-		Name:        "my_roles",
+		Name:        "my-roles",
 		Description: "Get a list of your assigned roles.",
 	},
 	{
@@ -81,7 +82,7 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		},
 	},
 	{
-		Name:        "warn_remove_oldest",
+		Name:        "warn-remove-oldest",
 		Description: "Removes a user's oldest warning.",
 		Options: []*discordgo.ApplicationCommandOption{
 			{
@@ -171,7 +172,7 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		},
 	},
 	{
-		Name:        "timeout_remove_active",
+		Name:        "timeout-remove-active",
 		Description: "Removes a user's current active timeout (and skip archiving it).",
 		Options: []*discordgo.ApplicationCommandOption{
 			{
@@ -183,7 +184,7 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		},
 	},
 	{
-		Name:        "timeout_appeal",
+		Name:        "timeout-appeal",
 		Description: "Appeal your current active timeout (if you have one)",
 	},
 	{
@@ -203,7 +204,7 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		Description: "Displays the global OTA leaderboard",
 	},
 	{
-		Name:        "set_global_xp_rate",
+		Name:        "set-global-xp-rate",
 		Description: "Sets the global XP gain rate for a specific activity.",
 		Options: []*discordgo.ApplicationCommandOption{
 			{
@@ -366,7 +367,7 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
 	"ping":                  slashUtils.HandleSlashPingAztebot,
-	"my_roles":              profileSlashHandlers.HandleSlashMyRoles,
+	"my-roles":              profileSlashHandlers.HandleSlashMyRoles,
 	"roles":                 profileSlashHandlers.HandleSlashYouRoles,
 	"me":                    profileSlashHandlers.HandleSlashMe,
 	"you":                   profileSlashHandlers.HandleSlashYou,
@@ -377,15 +378,16 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"top":                   serverSlashHandlers.HandleSlashTop,
 	"monthly-leaderboard":   serverSlashHandlers.HandleSlashMonthlyLeaderboard,
 	"arcade-ladder":         serverSlashHandlers.HandleSlashArcadeLadder,
+	"arcade-winner":         arcadeLadderSlashHandlers.HandleSlashArcadeWinner,
 	"confess":               supportSlashHandlers.HandleSlashConfess,
 	"warn":                  warningSlashHandlers.HandleSlashWarn,
-	"warn_remove_oldest":    warningSlashHandlers.HandleSlashWarnRemoveOldest,
+	"warn-remove-oldest":    warningSlashHandlers.HandleSlashWarnRemoveOldest,
 	"warns":                 warningSlashHandlers.HandleSlashWarns,
 	"timeout":               timeoutSlashHandlers.HandleSlashTimeout,
 	"timeouts":              timeoutSlashHandlers.HandleSlashTimeouts,
-	"timeout_remove_active": timeoutSlashHandlers.HandleSlashTimeoutRemoveActive,
-	"timeout_appeal":        timeoutSlashHandlers.HandleSlashTimeoutAppeal,
-	"set_global_xp_rate":    xpRateSettingSlashHandlers.HandleSlashSetGlobalXpRateForActivity,
+	"timeout-remove-active": timeoutSlashHandlers.HandleSlashTimeoutRemoveActive,
+	"timeout-appeal":        timeoutSlashHandlers.HandleSlashTimeoutAppeal,
+	"set-global-xp-rate":    xpRateSettingSlashHandlers.HandleSlashSetGlobalXpRateForActivity,
 	"jail":                  jailSlashHandlers.HandleSlashJail,
 	"unjail":                jailSlashHandlers.HandleSlashUnjail,
 	"jail-view":             jailSlashHandlers.HandleSlashJailView,
