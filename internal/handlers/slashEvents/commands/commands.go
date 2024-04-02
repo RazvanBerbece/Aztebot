@@ -340,6 +340,28 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		Name:        "monthly-leaderboard",
 		Description: "Displays a high level view of the monthly leaderboard for the current month.",
 	},
+	{
+		Name:        "arcade-ladder",
+		Description: "Displays a high level view of the server's arcade ladder.",
+	},
+	{
+		Name:        "arcade-winner",
+		Description: "Assigns an arcade win to the given user. Also announces their win on the designated channel.",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "user",
+				Description: "The user to assign an arcade win to",
+				Required:    true,
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "arcade-name",
+				Description: "The name of the arcade competition that the user won (e.g: Valorant)",
+				Required:    true,
+			},
+		},
+	},
 }
 
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -354,6 +376,7 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"top5user":              serverSlashHandlers.HandleSlashTop5Users,
 	"top":                   serverSlashHandlers.HandleSlashTop,
 	"monthly-leaderboard":   serverSlashHandlers.HandleSlashMonthlyLeaderboard,
+	"arcade-ladder":         serverSlashHandlers.HandleSlashArcadeLadder,
 	"confess":               supportSlashHandlers.HandleSlashConfess,
 	"warn":                  warningSlashHandlers.HandleSlashWarn,
 	"warn_remove_oldest":    warningSlashHandlers.HandleSlashWarnRemoveOldest,

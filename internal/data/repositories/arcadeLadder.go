@@ -100,11 +100,11 @@ func (r ArcadeLadderRepository) RemoveWin(userId string) error {
 	return nil
 }
 
-func (r ArcadeLadderRepository) GetArcadeLadder(category int8) ([]dataModels.ArcadeLadderEntry, error) {
+func (r ArcadeLadderRepository) GetArcadeLadder() ([]dataModels.ArcadeLadderEntry, error) {
 
 	var entries []dataModels.ArcadeLadderEntry
 
-	rows, err := r.Conn.Db.Query("SELECT * FROM ArcadeLadder ORDER BY wins DESC", category)
+	rows, err := r.Conn.Db.Query("SELECT * FROM ArcadeLadder ORDER BY wins DESC")
 	if err != nil {
 		return nil, fmt.Errorf("GetArcadeLadder: %v", err)
 	}
