@@ -68,6 +68,9 @@ func JailMember(s *discordgo.Session, guildId string, userId string, reason stri
 		return nil, nil, err
 	}
 
+	// Disconnect member from connected VC
+	// TODO
+
 	// Give designated Jailed Discord role to member
 	err = AddDiscordRoleToMember(s, guildId, userId, jailRoleName)
 	if err != nil {
