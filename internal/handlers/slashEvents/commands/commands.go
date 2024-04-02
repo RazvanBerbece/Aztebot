@@ -363,6 +363,48 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 			},
 		},
 	},
+	{
+		Name:        "set-stats",
+		Description: "Elevated privilege command to set a user's stats in the OTA records. This is used mainly for data restore purposes.",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "user",
+				Description: "The user to set the stats for",
+				Required:    true,
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "messages-sent",
+				Description: "How many messages sent to set for the user",
+				Required:    true,
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "slash-cmd-used",
+				Description: "How many slash commands used to set for the user",
+				Required:    true,
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "reactions-received",
+				Description: "How many reactions received to set for the user",
+				Required:    true,
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "time-vc",
+				Description: "How many *seconds* spent in total in voice channels to set for the user",
+				Required:    true,
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "time-music",
+				Description: "How many *seconds* spent in total in music channels to set for the user",
+				Required:    true,
+			},
+		},
+	},
 }
 
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
