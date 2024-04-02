@@ -1,4 +1,4 @@
-package xpRateSettingSlashHandlers
+package xpSystemSlashHandlers
 
 import (
 	"fmt"

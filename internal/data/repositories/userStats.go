@@ -732,3 +732,27 @@ func (r UsersStatsRepository) GetTopUsersByXp(count int) ([]dataModels.TopUserXP
 	return topUsers, nil
 
 }
+
+func (r UsersStatsRepository) SetStats(userId string, msgSent int, slashUsed int, reactReceived int, secondsVc float64, secondsMusic float64) error {
+
+	stmt, err := r.Conn.Db.Prepare(`
+		UPDATE UserStats SET
+			messagesSent = ?,
+			slashCommandsUsed = ?,
+			reactionsReceived = ?,
+			timeSpentInVoiceChannels = ?,
+			timeSpentListeningMusic = ?
+		WHERE userId = ?;`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(msgSent, slashUsed, reactReceived, secondsVc, secondsMusic, userId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
