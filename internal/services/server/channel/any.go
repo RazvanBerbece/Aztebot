@@ -34,10 +34,10 @@ func GetNumberOfDynamicChannelsForCategory(s *discordgo.Session, guildId string,
 	}
 
 	for _, channel := range channels {
-		if channel.ParentID == categoryId {
-			if strings.Contains(channel.Name, "~Extra~") {
-				count++
-			}
+		// If in the provided category, a voice channel and a dynamic one
+		if channel.ParentID == categoryId && channel.Type == discordgo.ChannelTypeGuildVoice && strings.Contains(channel.Name, "~Extra~") {
+			// then count it
+			count++
 		}
 	}
 
