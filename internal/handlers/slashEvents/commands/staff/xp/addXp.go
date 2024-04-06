@@ -38,7 +38,7 @@ func HandleSlashAddXp(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	// Send response embed
 	embed := embed.NewEmbed().
 		SetColor(000000).
-		AddField(fmt.Sprintf("Added `%.2f` XP to `%s`.", *xpFloat, user.DiscordTag), "", false)
+		AddField(fmt.Sprintf("Added `%.1f` XP to `%s`.", *xpFloat, user.DiscordTag), "", false)
 
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
