@@ -62,6 +62,16 @@ func DeleteAllMemberData(userId string) error {
 		fmt.Printf("Error deleting user %s jail entry from DB: %v", userId, err)
 		return err
 	}
+	err = globalRepositories.MonthlyLeaderboardRepository.DeleteEntry(userId)
+	if err != nil {
+		fmt.Printf("Error deleting user %s monthly leaderboard entry from DB: %v", userId, err)
+		return err
+	}
+	err = globalRepositories.ArcadeLadderRepository.DeleteEntry(userId)
+	if err != nil {
+		fmt.Printf("Error deleting user %s arcade ladder entry from DB: %v", userId, err)
+		return err
+	}
 
 	return nil
 }
