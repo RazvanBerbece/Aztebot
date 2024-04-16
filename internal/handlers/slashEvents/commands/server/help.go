@@ -50,11 +50,19 @@ func sendHelpGuideToUser(userId string) string {
 			}
 		}
 
-		if utils.StringInSlice(cmd.Name, globalConfiguration.RestrictedCommands) || utils.StringInSlice(cmd.Name, globalConfiguration.StaffCommands) {
-			// If a restricted or staff command, do not show
+		if utils.StringInSlice(cmd.Name, globalConfiguration.RestrictedCommands) {
+			// don't show restricted commands
 			if member.IsStaff(userId, globalConfiguration.StaffRoles) {
-				// unless a member of staff executed the command
-				embed.AddField(fmt.Sprintf("%s *(staff command)*", title), cmd.Description, false)
+				// unless a member of staff ran the /help handler
+				enrichedTitle := fmt.Sprintf("%s *(higher staff command)*", title)
+				embed.AddField(enrichedTitle, cmd.Description, false)
+			} else {
+				continue
+			}
+		} else if utils.StringInSlice(cmd.Name, globalConfiguration.StaffCommands) {
+			if member.IsStaff(userId, globalConfiguration.StaffRoles) {
+				enrichedTitle := fmt.Sprintf("%s *(staff command)*", title)
+				embed.AddField(enrichedTitle, cmd.Description, false)
 			} else {
 				continue
 			}
