@@ -50,11 +50,11 @@ func SendNotificationWithFieldsToTextChannel(s *discordgo.Session, channelId str
 
 }
 
-func SendNotificationWithActionRowToTextChannel(s *discordgo.Session, channelId string, notificationTitle string, fields []discordgo.MessageEmbedField, actionsRow discordgo.ActionsRow, useThumbnail bool) (*string, error) {
+func SendNotificationWithActionRowToTextChannel(s *discordgo.Session, channelId string, notificationTitle string, fields []discordgo.MessageEmbedField, actionsRow discordgo.ActionsRow, useThumbnail bool, authorName string, authorAvatarUrl string) (*string, error) {
 
 	// Build notification embed
 	embed := embed.NewEmbed().
-		SetAuthor("AzteBot", "https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
+		SetAuthor(authorName, authorAvatarUrl).
 		SetColor(000000)
 
 	// Don't show feedback bot emojis when there is no title,

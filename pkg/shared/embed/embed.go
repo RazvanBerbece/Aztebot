@@ -123,7 +123,7 @@ func (e *Embed) DecorateWithTimestampFooter(timeStringFormat string) *Embed {
 	timeString = ts.Format(timeStringFormat)
 
 	e.Footer = &discordgo.MessageEmbedFooter{
-		Text: fmt.Sprintf("created at: %s", timeString),
+		Text: fmt.Sprintf("timestamp: %s", timeString),
 	}
 
 	return e
