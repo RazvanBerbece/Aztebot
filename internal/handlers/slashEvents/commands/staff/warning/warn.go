@@ -61,8 +61,10 @@ func HandleSlashWarn(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	warnCreatedAtString := utils.FormatUnixAsString(timestamp, "Mon, 02 Jan 2006 15:04:05 MST")
 
 	embed := embed.NewEmbed().
+		SetAuthor("AzteBot", "https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		SetTitle(fmt.Sprintf("🤖⚠️   Warning given to `%s`", user.Username)).
 		SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
+		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
 		SetColor(000000).
 		AddField("Reason", reason, false).
 		AddField("Timestamp", warnCreatedAtString, false)
