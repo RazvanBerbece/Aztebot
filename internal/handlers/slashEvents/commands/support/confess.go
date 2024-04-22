@@ -50,8 +50,6 @@ func SendConfessionApprovalNotification(s *discordgo.Session, channelId string, 
 	// Add action row with approval/disproval buttons to the confession approval embed being posted
 	actionRow := embed.GetApprovalActionRowForEmbed(globalMessaging.ConfessionApprovalEventId, globalMessaging.ConfessionDisprovalEventId)
 	notificationTitle := "New `/confess` to Approve"
-	authorName := "AzteBot Confession Broadcast Programme"
-	authorAvatarUrl := "https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg"
 	useThumbnail := false
 	globalMessaging.NotificationsChannel <- events.NotificationEvent{
 		TargetChannelId: channelId,
@@ -61,8 +59,6 @@ func SendConfessionApprovalNotification(s *discordgo.Session, channelId string, 
 		ActionRow:       &actionRow,
 		TextData:        &message,
 		UseThumbnail:    &useThumbnail,
-		AuthorName:      &authorName,
-		AuthorAvatarURL: &authorAvatarUrl,
 	}
 
 }
@@ -79,12 +75,16 @@ func SendApprovedConfessionNotification(s *discordgo.Session, channelId string, 
 
 	emptyTitle := ""
 	useThumbnail := false
+	authorName := "New Confession Published"
+	authorAvatarUrl := "https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg"
 	globalMessaging.NotificationsChannel <- events.NotificationEvent{
 		TargetChannelId: channelId,
 		Title:           &emptyTitle,
 		Type:            "EMBED_WITH_TITLE_AND_FIELDS",
 		Fields:          fields,
 		UseThumbnail:    &useThumbnail,
+		AuthorName:      &authorName,
+		AuthorAvatarURL: &authorAvatarUrl,
 	}
 
 }
