@@ -293,7 +293,7 @@ func GetApprovalActionRowForEmbed(affirmativeCustomId string, negativeCustomId s
 func GetPaginationActionRowForEmbed(previousPageCustomId string, nextPageCustomId string) discordgo.ActionsRow {
 
 	previousPageButton := discordgo.Button{
-		Emoji: discordgo.ComponentEmoji{
+		Emoji: &discordgo.ComponentEmoji{
 			Name: "<-",
 		},
 		Label:    "Previous",
@@ -303,7 +303,7 @@ func GetPaginationActionRowForEmbed(previousPageCustomId string, nextPageCustomI
 	}
 
 	nextPageButton := discordgo.Button{
-		Emoji: discordgo.ComponentEmoji{
+		Emoji: &discordgo.ComponentEmoji{
 			Name: "->",
 		},
 		Label:    "Next",
