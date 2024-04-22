@@ -50,8 +50,10 @@ func Top5CommandResultsEmbed(s *discordgo.Session, i *discordgo.InteractionCreat
 	topCount := 5
 
 	embed := embed.NewEmbed().
+		SetAuthor("AzteBot", "https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		SetTitle("🤖   OTA Server Top 5s Leaderboard").
 		SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
+		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
 		SetColor(000000)
 
 	// Top by messages sent

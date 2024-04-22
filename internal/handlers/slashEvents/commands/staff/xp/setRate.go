@@ -109,6 +109,7 @@ func sendXpRateChangeNotification(channelId string, activityName string, multipl
 	// Build global XP rate change embed
 	embed := embed.
 		NewEmbed().
+		SetAuthor("AzteBot", "https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		SetTitle("🤖📣	Global XP Rate Change Announcement").
 		SetColor(000000).
 		SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg")

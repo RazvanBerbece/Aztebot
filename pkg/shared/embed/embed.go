@@ -1,6 +1,11 @@
 package embed
 
-import "github.com/bwmarrin/discordgo"
+import (
+	"fmt"
+	"time"
+
+	"github.com/bwmarrin/discordgo"
+)
 
 type Embed struct {
 	*discordgo.MessageEmbed
@@ -102,6 +107,23 @@ func (e *Embed) SetFooter(args ...string) *Embed {
 		IconURL:      iconURL,
 		Text:         text,
 		ProxyIconURL: proxyURL,
+	}
+
+	return e
+}
+
+func (e *Embed) DecorateWithTimestampFooter(timeStringFormat string) *Embed {
+
+	now := time.Now().Unix()
+
+	var ts time.Time
+	var timeString string
+
+	ts = time.Unix(now, 0).UTC()
+	timeString = ts.Format(timeStringFormat)
+
+	e.Footer = &discordgo.MessageEmbedFooter{
+		Text: fmt.Sprintf("created at: %s", timeString),
 	}
 
 	return e
