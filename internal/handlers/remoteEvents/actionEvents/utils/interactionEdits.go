@@ -13,11 +13,11 @@ func DisableButtonsForApprovalActionRow(s *discordgo.Session, channelId string, 
 		Channel: channelId,
 		ID:      messageId,
 		Content: nil,
-		Components: []discordgo.MessageComponent{
+		Components: &[]discordgo.MessageComponent{
 			discordgo.ActionsRow{
 				Components: []discordgo.MessageComponent{
 					discordgo.Button{
-						Emoji: discordgo.ComponentEmoji{
+						Emoji: &discordgo.ComponentEmoji{
 							Name: "👍🏽",
 						},
 						Label:    "Accept",
@@ -26,7 +26,7 @@ func DisableButtonsForApprovalActionRow(s *discordgo.Session, channelId string, 
 						Disabled: true,
 					},
 					discordgo.Button{
-						Emoji: discordgo.ComponentEmoji{
+						Emoji: &discordgo.ComponentEmoji{
 							Name: "👎🏽",
 						},
 						Label:    "Decline",
@@ -69,11 +69,11 @@ func UpdateApprovedActionRowOriginalMessage(s *discordgo.Session, ownerTag strin
 			Channel: channelId,
 			ID:      messageId,
 			Content: nil,
-			Components: []discordgo.MessageComponent{
+			Components: &[]discordgo.MessageComponent{
 				discordgo.ActionsRow{
 					Components: []discordgo.MessageComponent{
 						discordgo.Button{
-							Emoji: discordgo.ComponentEmoji{
+							Emoji: &discordgo.ComponentEmoji{
 								Name: "👍🏽",
 							},
 							Label:    "Accept",
@@ -82,7 +82,7 @@ func UpdateApprovedActionRowOriginalMessage(s *discordgo.Session, ownerTag strin
 							Disabled: true,
 						},
 						discordgo.Button{
-							Emoji: discordgo.ComponentEmoji{
+							Emoji: &discordgo.ComponentEmoji{
 								Name: "👎🏽",
 							},
 							Label:    "Decline",
@@ -93,7 +93,7 @@ func UpdateApprovedActionRowOriginalMessage(s *discordgo.Session, ownerTag strin
 					},
 				},
 			},
-			Embeds: []*discordgo.MessageEmbed{originalEmbed},
+			Embeds: &[]*discordgo.MessageEmbed{originalEmbed},
 		}
 
 		// Edit the original message with the disabled buttons in the action row
