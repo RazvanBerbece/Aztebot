@@ -110,11 +110,9 @@ func UpdateApprovedActionRowOriginalMessage(s *discordgo.Session, ownerTag strin
 	return nil
 }
 
-func UpdatePaginatedEmbedPage(s *discordgo.Session, embedData *dataModels.EmbedData, opCode string, channelId string, messageId string) error {
+func UpdatePaginatedEmbedPage(s *discordgo.Session, embedData *dataModels.EmbedData, opCode string, channelId string, messageId string, pageSize int) error {
 
-	pageSize := 10
-
-	// Retrieve original embed
+	// Retrieve original embed (the one with the pagination action row)
 	message, err := s.ChannelMessage(channelId, messageId)
 	if err != nil {
 		return err
@@ -138,9 +136,12 @@ func UpdatePaginatedEmbedPage(s *discordgo.Session, embedData *dataModels.EmbedD
 		}
 
 		// Update map to hold new page number
+		// assume that key exists
 		globalState.EmbedsToPaginate[messageId] = dataModels.EmbedData{
+			ChannelId:   embedData.ChannelId,
 			CurrentPage: currentPage,
 			FieldData:   embedData.FieldData,
+			Timestamp:   embedData.Timestamp,
 		}
 
 		originalEmbed := message.Embeds[0] // this gets mutated
@@ -151,12 +152,13 @@ func UpdatePaginatedEmbedPage(s *discordgo.Session, embedData *dataModels.EmbedD
 		if endIdx > len(*embedData.FieldData) {
 			endIdx = len(*embedData.FieldData)
 		}
-		fmt.Println(startIdx)
-		fmt.Println(endIdx)
 
 		fields := *embedData.FieldData
 		paginatedFields := fields[startIdx:endIdx]
 		originalEmbed.Fields = paginatedFields
+		originalEmbed.Footer = &discordgo.MessageEmbedFooter{
+			Text: fmt.Sprintf("Page %d / %d", currentPage, pages),
+		}
 		interactionEdit := &discordgo.MessageEdit{
 			Channel: channelId,
 			ID:      messageId,
@@ -193,6 +195,56 @@ func UpdatePaginatedEmbedPage(s *discordgo.Session, embedData *dataModels.EmbedD
 			// Handle error
 			return err
 		}
+	}
+
+	return nil
+}
+
+func DisablePaginatedEmbed(s *discordgo.Session, channelId string, messageId string) error {
+
+	// Retrieve original embed (the one with the pagination action row)
+	message, err := s.ChannelMessage(channelId, messageId)
+	if err != nil {
+		return err
+	}
+
+	originalEmbed := message.Embeds[0]
+
+	interactionEdit := &discordgo.MessageEdit{
+		Channel: channelId,
+		ID:      messageId,
+		Content: nil,
+		Embeds:  &[]*discordgo.MessageEmbed{originalEmbed},
+		Components: &[]discordgo.MessageComponent{
+			discordgo.ActionsRow{
+				Components: []discordgo.MessageComponent{
+					discordgo.Button{
+						Emoji: &discordgo.ComponentEmoji{
+							Name: "⬅️",
+						},
+						Label:    "Previous",
+						Style:    discordgo.PrimaryButton,
+						CustomID: globalMessaging.PreviousPageOnEmbedEventId,
+						Disabled: true,
+					},
+					discordgo.Button{
+						Emoji: &discordgo.ComponentEmoji{
+							Name: "➡️",
+						},
+						Label:    "Next",
+						Style:    discordgo.PrimaryButton,
+						CustomID: globalMessaging.NextPageOnEmbedEventId,
+						Disabled: true,
+					},
+				},
+			},
+		},
+	}
+
+	_, err = s.ChannelMessageEditComplex(interactionEdit)
+	if err != nil {
+		// Handle error
+		return err
 	}
 
 	return nil

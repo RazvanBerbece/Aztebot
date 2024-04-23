@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
 	actionEventsUtils "github.com/RazvanBerbece/Aztebot/internal/handlers/remoteEvents/actionEvents/utils"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
@@ -35,7 +36,7 @@ func HandlePaginateNextOnEmbed(s *discordgo.Session, i *discordgo.InteractionCre
 		fmt.Println("Failed to paginate (Next)")
 		return
 	} else {
-		go actionEventsUtils.UpdatePaginatedEmbedPage(s, &embedData, "NEXT", originalPaginatedEmbedChannelId, originalPaginatedEmbedId)
+		go actionEventsUtils.UpdatePaginatedEmbedPage(s, &embedData, "NEXT", originalPaginatedEmbedChannelId, originalPaginatedEmbedId, globalConfiguration.EmbedPageSize)
 	}
 
 }
@@ -64,7 +65,7 @@ func HandlePaginatePreviousOnEmbed(s *discordgo.Session, i *discordgo.Interactio
 		fmt.Println("Failed to paginate (Previous)")
 		return
 	} else {
-		go actionEventsUtils.UpdatePaginatedEmbedPage(s, &embedData, "PREV", originalPaginatedEmbedChannelId, originalPaginatedEmbedId)
+		go actionEventsUtils.UpdatePaginatedEmbedPage(s, &embedData, "PREV", originalPaginatedEmbedChannelId, originalPaginatedEmbedId, globalConfiguration.EmbedPageSize)
 	}
 
 }

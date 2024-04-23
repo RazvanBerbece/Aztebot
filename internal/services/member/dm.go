@@ -2,6 +2,7 @@ package member
 
 import (
 	"fmt"
+	"time"
 
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
 	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
@@ -47,7 +48,11 @@ func SendDirectComplexEmbedToMember(s *discordgo.Session, userId string, embed e
 	copy(originalAllFields, embed.Fields)
 
 	// Only show fields from page 1 in the beginning
+	pages := (len(originalAllFields) + pageSize - 1) / pageSize
 	embed.Fields = embed.Fields[0:pageSize]
+	embed.Footer = &discordgo.MessageEmbedFooter{
+		Text: fmt.Sprintf("Page %d / %d", 1, pages),
+	}
 	msg, err := dm.DmEmbedComplexUser(s, userId, *embed.MessageEmbed, actionsRow)
 	if err != nil {
 		fmt.Printf("Error sending embed DM to member with UID %s: %v\n", userId, err)
@@ -55,10 +60,11 @@ func SendDirectComplexEmbedToMember(s *discordgo.Session, userId string, embed e
 	}
 
 	// Keep paginated embeds in-memory to enable handling on button presses
-	// TODO: Clean the map once in a while !!
 	globalState.EmbedsToPaginate[msg.ID] = dataModels.EmbedData{
+		ChannelId:   msg.ChannelID,
 		FieldData:   &originalAllFields, // all fields
 		CurrentPage: 1,                  // same for all complex paginated embeds
+		Timestamp:   float64(time.Now().Unix()),
 	}
 
 	return nil

@@ -3,6 +3,7 @@ package channelHandlers
 import (
 	"fmt"
 
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	"github.com/RazvanBerbece/Aztebot/internal/services/member"
 	"github.com/bwmarrin/discordgo"
@@ -16,8 +17,7 @@ func HandleDirectMessageEvents(s *discordgo.Session) {
 			if directMessageEvent.PaginationRow != nil {
 				// and the embed supports pagination !
 				// so add the action row to the request
-				pageSize := 10
-				err := member.SendDirectComplexEmbedToMember(s, directMessageEvent.UserId, *directMessageEvent.Embed, *directMessageEvent.PaginationRow, pageSize)
+				err := member.SendDirectComplexEmbedToMember(s, directMessageEvent.UserId, *directMessageEvent.Embed, *directMessageEvent.PaginationRow, globalConfiguration.EmbedPageSize)
 				if err != nil {
 					fmt.Printf("Failed to process DirectMessageEvent (Pagination: On): %v\n", err)
 				}
