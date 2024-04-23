@@ -11,7 +11,8 @@ import (
 
 func ClearOldPaginatedEmbeds(s *discordgo.Session) {
 
-	var numSec int = 20 // 60 * 15
+	var numSec int = 60 * 15           // cleanup every 15 minutes
+	threshold := time.Second * 60 * 10 // paginated embeds which are older than 10 minutes
 
 	fmt.Println("[CRON] Starting Task ClearOldPaginatedEmbeds() at", time.Now(), "running every", numSec, "seconds")
 
@@ -21,7 +22,7 @@ func ClearOldPaginatedEmbeds(s *discordgo.Session) {
 		for {
 			select {
 			case <-ticker.C:
-				go cleanupOldPaginatedEmbeds(s)
+				go cleanupOldPaginatedEmbeds(s, threshold)
 			case <-quit:
 				ticker.Stop()
 				return
@@ -31,11 +32,9 @@ func ClearOldPaginatedEmbeds(s *discordgo.Session) {
 
 }
 
-func cleanupOldPaginatedEmbeds(s *discordgo.Session) {
-
+func cleanupOldPaginatedEmbeds(s *discordgo.Session, threshold time.Duration) {
 	for msgId, embedData := range globalState.EmbedsToPaginate {
 		// If old enough
-		threshold := time.Second * 5 // 10 minutes ?
 		if time.Since(time.Unix(int64(embedData.Timestamp), 0)) > threshold {
 			// Remove action row from embed
 			go actionEventsUtils.DisablePaginatedEmbed(s, embedData.ChannelId, msgId)
@@ -43,5 +42,4 @@ func cleanupOldPaginatedEmbeds(s *discordgo.Session) {
 			delete(globalState.EmbedsToPaginate, msgId)
 		}
 	}
-
 }
