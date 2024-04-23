@@ -54,7 +54,6 @@ func DmEmbedComplexUser(s *discordgo.Session, userId string, embed discordgo.Mes
 		Embed:      &embed,
 		Components: []discordgo.MessageComponent{actionsRow},
 	})
-
 	if err != nil {
 		fmt.Printf("Error sending complex DM to user: %v\n", err)
 		return nil, err

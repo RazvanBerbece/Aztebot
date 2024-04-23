@@ -10,7 +10,6 @@ import (
 )
 
 func HandleDirectMessageEvents(s *discordgo.Session) {
-
 	for directMessageEvent := range globalMessaging.DirectMessagesChannel {
 		if directMessageEvent.Embed != nil {
 			// The event has an embed to passthrough
@@ -39,5 +38,4 @@ func HandleDirectMessageEvents(s *discordgo.Session) {
 			}
 		}
 	}
-
 }

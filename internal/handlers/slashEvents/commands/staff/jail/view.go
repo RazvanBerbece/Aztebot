@@ -3,6 +3,8 @@ package jailSlashHandlers
 import (
 	"fmt"
 
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
+	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
@@ -25,7 +27,7 @@ func HandleSlashJailView(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	}
 
 	// Build response embed with a detailed jail view
-	embed := embed.NewEmbed().
+	embedToSend := embed.NewEmbed().
 		SetAuthor("AzteBot", "https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		SetTitle("👮🏽‍♀️⛓️   The OTA Jail").
 		SetDescription(fmt.Sprintf("The OTA Jail is the place where the convicted server members are sent to.\nCurrently, there are `%d` members imprisoned in the OTA Jail.", len(jailed))).
@@ -41,14 +43,13 @@ func HandleSlashJailView(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			utils.ErrorEmbedResponseEdit(s, i.Interaction, err.Error())
 			return
 		}
-		embed.AddField("", fmt.Sprintf("%d. `%s`\nConvicted on: `%s`, for the following reason: `%s`\nHas to complete this task for release: `%s`", idx+1, user.DiscordTag, utils.FormatUnixAsString(jailedUser.JailedAt, "Mon, 02 Jan 2006 15:04:05 MST"), jailedUser.Reason, jailedUser.TaskToComplete), false)
+		embedToSend.AddField("", fmt.Sprintf("%d. `%s`\nConvicted on: `%s`, for the following reason: `%s`\nHas to complete this task for release: `%s`", idx+1, user.DiscordTag, utils.FormatUnixAsString(jailedUser.JailedAt, "Mon, 02 Jan 2006 15:04:05 MST"), jailedUser.Reason, jailedUser.TaskToComplete), false)
 	}
 
-	editContent := ""
-	editWebhook := discordgo.WebhookEdit{
-		Content: &editContent,
-		Embeds:  &[]*discordgo.MessageEmbed{embed.MessageEmbed},
+	paginationRow := embed.GetPaginationActionRowForEmbed(globalMessaging.PreviousPageOnEmbedEventId, globalMessaging.NextPageOnEmbedEventId)
+	globalMessaging.ComplexResponsesChannel <- events.ComplexResponseEvent{
+		Interaction:   i.Interaction,
+		Embed:         embedToSend,
+		PaginationRow: &paginationRow,
 	}
-	s.InteractionResponseEdit(i.Interaction, &editWebhook)
-
 }
