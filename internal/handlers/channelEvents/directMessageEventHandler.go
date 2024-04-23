@@ -13,9 +13,19 @@ func HandleDirectMessageEvents(s *discordgo.Session) {
 	for directMessageEvent := range globalMessaging.DirectMessagesChannel {
 		if directMessageEvent.Embed != nil {
 			// The event has an embed to passthrough
-			err := member.SendDirectEmbedToMember(s, directMessageEvent.UserId, *directMessageEvent.Embed)
-			if err != nil {
-				fmt.Printf("Failed to process DirectMessageEvent: %v\n", err)
+			if directMessageEvent.PaginationRow != nil {
+				// and the embed supports pagination !
+				// so add the action row to the request
+				pageSize := 10
+				err := member.SendDirectComplexEmbedToMember(s, directMessageEvent.UserId, *directMessageEvent.Embed, *directMessageEvent.PaginationRow, pageSize)
+				if err != nil {
+					fmt.Printf("Failed to process DirectMessageEvent (Pagination: On): %v\n", err)
+				}
+			} else {
+				err := member.SendDirectEmbedToMember(s, directMessageEvent.UserId, *directMessageEvent.Embed)
+				if err != nil {
+					fmt.Printf("Failed to process DirectMessageEvent: %v\n", err)
+				}
 			}
 		} else {
 			if directMessageEvent.Text != nil && directMessageEvent.Title != nil {

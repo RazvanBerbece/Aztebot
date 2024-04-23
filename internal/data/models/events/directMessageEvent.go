@@ -6,9 +6,9 @@ import (
 )
 
 type DirectMessageEvent struct {
-	UserId    string
-	Embed     *embed.Embed
-	Title     *string
-	Text      *string
-	ActionRow *discordgo.ActionsRow
+	UserId        string
+	Embed         *embed.Embed
+	Title         *string
+	Text          *string
+	PaginationRow *discordgo.ActionsRow
 }
