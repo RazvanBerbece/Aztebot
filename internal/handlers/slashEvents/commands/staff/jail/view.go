@@ -26,11 +26,13 @@ func HandleSlashJailView(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	// Build response embed with a detailed jail view
 	embed := embed.NewEmbed().
+		SetAuthor("AzteBot", "https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		SetTitle("👮🏽‍♀️⛓️   The OTA Jail").
 		SetDescription(fmt.Sprintf("The OTA Jail is the place where the convicted server members are sent to.\nCurrently, there are `%d` members imprisoned in the OTA Jail.", len(jailed))).
 		SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		SetColor(000000).
 		AddLineBreakField().
+		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
 		AddField("Imprisoned Members List", "", false)
 
 	for idx, jailedUser := range jailed {

@@ -11,3 +11,5 @@ var ExperienceReward_SlashCommandUsed float64 = 0.45
 var ExperienceReward_ReactionReceived float64 = 0.33
 var ExperienceReward_InVc float64 = 0.005
 var ExperienceReward_InMusic float64 = 0.0025
+
+var EmbedPageSize int = 10

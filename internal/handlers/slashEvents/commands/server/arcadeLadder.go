@@ -26,9 +26,11 @@ func HandleSlashArcadeLadder(s *discordgo.Session, i *discordgo.InteractionCreat
 
 	// Build response embed with a detailed arcade ladder view
 	embed := embed.NewEmbed().
+		SetAuthor("AzteBot", "https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		SetTitle("👾🎮   The OTA Arcade Ladder").
 		SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
-		SetColor(000000)
+		SetColor(000000).
+		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST")
 
 	if len(entries) == 0 {
 		embed.AddField("", "There are no entries in the arcade ladder at the moment.", false)

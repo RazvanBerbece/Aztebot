@@ -19,11 +19,15 @@ func SendEmbedToTextChannel(s *discordgo.Session, channelId string, embed embed.
 
 }
 
-func SendNotificationWithFieldsToTextChannel(s *discordgo.Session, channelId string, notificationTitle string, fields []discordgo.MessageEmbedField, useThumbnail bool) error {
+func SendNotificationWithFieldsToTextChannel(s *discordgo.Session, channelId string, notificationTitle string, fields []discordgo.MessageEmbedField, useThumbnail bool, authorName *string, authorAvatarUrl *string) error {
 
 	// Build notification embed
 	embed := embed.NewEmbed().
 		SetColor(000000)
+
+	if authorName != nil && authorAvatarUrl != nil {
+		embed.SetAuthor(*authorName, *authorAvatarUrl)
+	}
 
 	// Don't show feedback bot emojis when there is no title,
 	// as usually a notification with no title is meant to be kept minimalistic
@@ -49,11 +53,15 @@ func SendNotificationWithFieldsToTextChannel(s *discordgo.Session, channelId str
 
 }
 
-func SendNotificationWithActionRowToTextChannel(s *discordgo.Session, channelId string, notificationTitle string, fields []discordgo.MessageEmbedField, actionsRow discordgo.ActionsRow, useThumbnail bool) (*string, error) {
+func SendNotificationWithActionRowToTextChannel(s *discordgo.Session, channelId string, notificationTitle string, fields []discordgo.MessageEmbedField, actionsRow discordgo.ActionsRow, useThumbnail bool, authorName *string, authorAvatarUrl *string) (*string, error) {
 
 	// Build notification embed
 	embed := embed.NewEmbed().
 		SetColor(000000)
+
+	if authorName != nil && authorAvatarUrl != nil {
+		embed.SetAuthor(*authorName, *authorAvatarUrl)
+	}
 
 	// Don't show feedback bot emojis when there is no title,
 	// as usually a notification with n otitle is meant to be kept minimalistic

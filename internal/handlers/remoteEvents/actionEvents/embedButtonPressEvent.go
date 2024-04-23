@@ -3,6 +3,7 @@ package actionEvent
 import (
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	actionEventConfessionApproval "github.com/RazvanBerbece/Aztebot/internal/handlers/remoteEvents/actionEvents/confess"
+	actionEventEmbedPagination "github.com/RazvanBerbece/Aztebot/internal/handlers/remoteEvents/actionEvents/embedPagination"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -16,5 +17,11 @@ func HandleMessageComponentInteraction(s *discordgo.Session, i *discordgo.Intera
 		actionEventConfessionApproval.HandleApproveConfession(s, i)
 	case globalMessaging.ConfessionDisprovalEventId:
 		actionEventConfessionApproval.HandleDeclineConfession(s, i)
+
+	// More general use action event handlers, like pagination on an arbitrary embed
+	case globalMessaging.PreviousPageOnEmbedEventId:
+		actionEventEmbedPagination.HandlePaginatePreviousOnEmbed(s, i)
+	case globalMessaging.NextPageOnEmbedEventId:
+		actionEventEmbedPagination.HandlePaginateNextOnEmbed(s, i)
 	}
 }

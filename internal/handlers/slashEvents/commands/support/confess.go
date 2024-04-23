@@ -75,12 +75,16 @@ func SendApprovedConfessionNotification(s *discordgo.Session, channelId string, 
 
 	emptyTitle := ""
 	useThumbnail := false
+	authorName := "New Confession Published"
+	authorAvatarUrl := "https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg"
 	globalMessaging.NotificationsChannel <- events.NotificationEvent{
 		TargetChannelId: channelId,
 		Title:           &emptyTitle,
 		Type:            "EMBED_WITH_TITLE_AND_FIELDS",
 		Fields:          fields,
 		UseThumbnail:    &useThumbnail,
+		AuthorName:      &authorName,
+		AuthorAvatarURL: &authorAvatarUrl,
 	}
 
 }
