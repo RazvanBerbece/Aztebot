@@ -44,6 +44,10 @@ func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
 				embedText = utils.GetTextFromFile("internal/handlers/remoteEvents/readyEvent/assets/defaultContent/legends.txt")
 				hasOwnEmbed = true
 				longEmbed = utils.GetLongEmbedFromStaticData(embedText)
+			case "socials":
+				embedText = utils.GetTextFromFile("internal/handlers/remoteEvents/readyEvent/assets/defaultContent/socials.txt")
+				hasOwnEmbed = true
+				longEmbed = utils.GetLongEmbedFromStaticData(embedText)
 			}
 
 			var messageEmbedToPost *discordgo.MessageEmbed
