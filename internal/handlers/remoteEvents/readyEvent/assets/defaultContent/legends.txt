@@ -16,7 +16,6 @@ Ca un membru din `Outer Circle` să fie inițiat în `Inner Circle`, va avea nev
 • `@Administrator` - Administratorii comunității.
 • `@Moderator` - Moderatorii comunității.
 • `@Trial Moderator` - Rol provizoriu în care membrii aleși dovedesc faptul că merită rolul de moderator.
-• `@Top Contribuitori` - Cei care au contribuit cel mai mult la dezvoltarea server-ului prin sugestiile și ideile pe care le-au exprimat și avut.
 • `@Server Booster` - Cei care au boostat serverul. (Vă mulțumim frumos)
 • `@Aztec` - Membru oficial al acestei comunități.
 ㅤ
