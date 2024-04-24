@@ -5,6 +5,8 @@ import (
 	"log"
 	"time"
 
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
+	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
@@ -35,12 +37,20 @@ func HandleSlashTop(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	// Final response
 	results := TopCommandResultsEmbed(s, i)
-	editContent := ""
-	editWebhook := discordgo.WebhookEdit{
-		Content: &editContent,
-		Embeds:  &results,
+	paginationRow := embed.GetPaginationActionRowForEmbed(globalMessaging.PreviousPageOnEmbedEventId, globalMessaging.NextPageOnEmbedEventId)
+	globalMessaging.ComplexResponsesChannel <- events.ComplexResponseEvent{
+		Interaction: i.Interaction,
+		Embed: &embed.Embed{
+			MessageEmbed: results[0],
+		},
+		PaginationRow: &paginationRow,
 	}
-	s.InteractionResponseEdit(i.Interaction, &editWebhook)
+	// editContent := ""
+	// editWebhook := discordgo.WebhookEdit{
+	// 	Content: &editContent,
+	// 	Embeds:  &results,
+	// }
+	// s.InteractionResponseEdit(i.Interaction, &editWebhook)
 
 }
 
@@ -49,13 +59,15 @@ func TopCommandResultsEmbed(s *discordgo.Session, i *discordgo.InteractionCreate
 	now := time.Now()
 
 	// Leaderboard parameterisation
-	topCount := 12
+	topCount := 25
 
 	embed := embed.NewEmbed().
 		SetAuthor("AzteBot", "https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
+		SetDescription("The top of the most active members in the community based on their achieved experience points and activity stats.").
 		SetTitle("🏆   OTA Server Global Leaderboard").
 		SetColor(000000).
-		SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
+		// SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
+		AddLineBreakField().
 		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST")
 
 	// Top by messages sent
