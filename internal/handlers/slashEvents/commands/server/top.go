@@ -60,7 +60,7 @@ func TopCommandResultsEmbed(s *discordgo.Session, i *discordgo.InteractionCreate
 		SetDescription("The top of the most active members in the community based on their achieved experience points and activity stats.").
 		SetTitle("🏆   OTA Server Global Leaderboard").
 		SetColor(000000).
-		SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
+		// SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		AddLineBreakField().
 		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST")
 
