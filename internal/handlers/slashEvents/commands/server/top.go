@@ -45,12 +45,6 @@ func HandleSlashTop(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		},
 		PaginationRow: &paginationRow,
 	}
-	// editContent := ""
-	// editWebhook := discordgo.WebhookEdit{
-	// 	Content: &editContent,
-	// 	Embeds:  &results,
-	// }
-	// s.InteractionResponseEdit(i.Interaction, &editWebhook)
 
 }
 
