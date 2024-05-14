@@ -3,7 +3,6 @@ package actionEventEmbedPagination
 import (
 	"fmt"
 	"log"
-	"time"
 
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
@@ -18,22 +17,7 @@ func HandlePaginateNextOnEmbed(s *discordgo.Session, i *discordgo.InteractionCre
 	originalPaginatedEmbedChannelId := i.Message.ChannelID
 
 	// Ensure that embed pagination can only be used by its creator
-	if i.Message.Author.ID != i.Member.User.ID {
-		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{
-				Content: "Can't paginate an embed you did not request.",
-				Flags:   1 << 6, // ephemeral response
-			},
-		})
-		if err != nil {
-			log.Printf("Error responding to interaction: %v\n", err)
-			utils.SendErrorEmbedResponse(s, i.Interaction, err.Error())
-		}
-		time.Sleep(5 * time.Second)
-		utils.DeleteInteractionResponse(s, i.Interaction, 0)
-		return
-	}
+	// TODO
 
 	// Respond to the button press (on help embed interaction source)
 	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
@@ -66,22 +50,7 @@ func HandlePaginatePreviousOnEmbed(s *discordgo.Session, i *discordgo.Interactio
 	originalPaginatedEmbedChannelId := i.Message.ChannelID
 
 	// Ensure that embed pagination can only be used by its creator
-	if i.Message.Author.ID != i.Member.User.ID {
-		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{
-				Content: "Can't paginate an embed you did not request.",
-				Flags:   1 << 6, // ephemeral response
-			},
-		})
-		if err != nil {
-			log.Printf("Error responding to interaction: %v\n", err)
-			utils.SendErrorEmbedResponse(s, i.Interaction, err.Error())
-		}
-		time.Sleep(5 * time.Second)
-		utils.DeleteInteractionResponse(s, i.Interaction, 0)
-		return
-	}
+	// TODO
 
 	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
