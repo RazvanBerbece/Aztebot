@@ -39,7 +39,7 @@ func UpdateActivityStreaks(usersRepository *repositories.UsersRepository, userSt
 
 	uids, err := usersRepository.GetAllDiscordUids()
 	if err != nil {
-		fmt.Println("[CRON] Failed Task UpdateActivityStreaks() at", time.Now(), "with error", err)
+		fmt.Println("[STARTUP] Failed Task UpdateActivityStreaks() at", time.Now(), "with error", err)
 	}
 
 	// For all users in the database

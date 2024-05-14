@@ -36,7 +36,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	go startup.CleanupMemberAtStartup(s, uids)
 
 	// Initial update of experience gains in the DB
-	go startup.SyncExperiencePointsGainsAtStartup(s)
+	go startup.SyncExperiencePointsGainsAtStartup(s, uids)
 
 	// Initial publishing of informative messages on certain channels
 	go startup.SendInformationEmbedsToTextChannels(s)

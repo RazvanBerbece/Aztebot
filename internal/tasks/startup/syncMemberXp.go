@@ -11,15 +11,10 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func SyncExperiencePointsGainsAtStartup(s *discordgo.Session) {
+func SyncExperiencePointsGainsAtStartup(s *discordgo.Session, uids []string) {
 
 	usersRepository := repositories.NewUsersRepository()
 	userStatsRepository := repositories.NewUsersStatsRepository()
-
-	uids, err := usersRepository.GetAllDiscordUids()
-	if err != nil {
-		fmt.Println("[STARTUP] Failed Task SyncExperiencePointsGainsAtStartup() at", time.Now(), "with error", err)
-	}
 
 	// For all users in the database
 	fmt.Println("[STARTUP] Checkpoint Task SyncExperiencePointsGainsAtStartup() at", time.Now(), "-> Updating", len(uids), "XP gains")
