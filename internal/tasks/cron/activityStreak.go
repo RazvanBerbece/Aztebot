@@ -10,7 +10,7 @@ import (
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 )
 
-func ProcessUpdateActivityStreaks(h int, m int, s int, uids []string) {
+func ProcessUpdateActivityStreaks(h int, m int, s int) {
 
 	initialActivityStreakDelay, activityStreakTicker := GetDelayAndTickerForActivityStreakCron(h, m, s) // H, m, s
 
@@ -24,18 +24,23 @@ func ProcessUpdateActivityStreaks(h int, m int, s int, uids []string) {
 		userStatsRepository := repositories.NewUsersStatsRepository()
 
 		// The first run should happen at start-up, not after 24 hours
-		UpdateActivityStreaks(globalRepositories.UsersRepository, globalRepositories.UserStatsRepository, uids)
+		UpdateActivityStreaks(globalRepositories.UsersRepository, globalRepositories.UserStatsRepository)
 
 		for range activityStreakTicker.C {
 			// Process
-			UpdateActivityStreaks(usersRepository, userStatsRepository, uids)
+			UpdateActivityStreaks(usersRepository, userStatsRepository)
 		}
 	}()
 }
 
-func UpdateActivityStreaks(usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository, uids []string) {
+func UpdateActivityStreaks(usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository) {
 
 	fmt.Println("[CRON] Starting Task UpdateActivityStreaks() at", time.Now())
+
+	uids, err := usersRepository.GetAllDiscordUids()
+	if err != nil {
+		fmt.Println("[STARTUP] Failed Task UpdateActivityStreaks() at", time.Now(), "with error", err)
+	}
 
 	// For all users in the database
 	fmt.Println("[CRON] Checkpoint Task UpdateActivityStreaks() at", time.Now(), "-> Updating", len(uids), "streaks")
