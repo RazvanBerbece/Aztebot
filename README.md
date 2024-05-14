@@ -17,8 +17,7 @@ In order to run the application, a few prerequisites must be met.
 2. Have Docker installed.
 3. Have Make installed.
 4. Have a fully-configured `.env` file saved in the root of the repository. (contact [@RazvanBerbece](https://github.com/RazvanBerbece) for the configuration)
-5. Additionally, for full local development capabilities and to run the database migrations on the development machine, have the [Aztebot-Infrastructure](https://github.com/RazvanBerbece/Aztebot-Infrastructure) repository cloned locally in a folder which also contains the `Aztebot` repository 
-- For example, the folder `Project` should contain both the `Aztebot` and the `Aztebot-Infrastructure` repository folders. 
+5. Additionally, for full local development capabilities and to run the database migrations on the development machine, have the [Aztebot-Infrastructure](https://github.com/RazvanBerbece/Aztebot-Infrastructure) repository cloned locally in a folder which also contains the `Aztebot` repository (**For example**, the folder `Project` should contain both the `Aztebot` and the `Aztebot-Infrastructure` repository folders) 
 
 _Note:_ At the moment, the Infrastructure submodule has to be updated when there are changes in the remote repository (e.g. a new migration file).
 
