@@ -24,7 +24,7 @@ _Note:_ At the moment, the Infrastructure submodule has to be updated when there
 ## Running the full service composition
 1. Run a freshly built full service composition (app, DBs, etc.) with the `make up` command.
     - This is required so the local development database is configured with all the necessary default data.   
-2. Run migrations locally by executing the following commands from the root of this repository (_requires [Aztebot-Infrastructure](https://github.com/RazvanBerbece/Aztebot-Infrastructure) as described in prerequisite #5_)
+2. Once the `mysql-db` service has sucessfully started, run the DB migrations locally by executing the following commands from the root of this repository (_requires [Aztebot-Infrastructure](https://github.com/RazvanBerbece/Aztebot-Infrastructure) as described in prerequisite #5_)
     - To execute a dryrun and double-check the to-be-applied migrations: `make migrate-up-dry` 
     - To apply the migrations `make migrate-up`
 
