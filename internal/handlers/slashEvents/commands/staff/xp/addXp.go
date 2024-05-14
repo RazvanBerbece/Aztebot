@@ -29,7 +29,7 @@ func HandleSlashAddXp(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	}
 
 	// Give XP to member
-	_, err = member.AddExperienceToMember(targetUserId, *xpFloat)
+	_, err = member.GrantMemberExperience(targetUserId, *xpFloat)
 	if err != nil {
 		utils.SendErrorEmbedResponse(s, i.Interaction, err.Error())
 		return
