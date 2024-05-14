@@ -36,7 +36,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	go startup.CleanupMemberAtStartup(s, uids)
 
 	// Initial update of experience gains in the DB
-	go startup.SyncExperiencePointsGainsAtStartup(s)
+	go startup.SyncExperiencePointsGainsAtStartup(s, uids)
 
 	// Initial publishing of informative messages on certain channels
 	go startup.SendInformationEmbedsToTextChannels(s)
@@ -56,7 +56,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	go channelHandlers.HandleComplexResponseEvents(s, globalConfiguration.EmbedPageSize)
 
 	// CRON FEATS
-	cron.ProcessUpdateActivityStreaks(24, 0, 0)               // the hh:mm:ss timestamp in a day to run the cron at (i.e 24:00:00)
+	cron.ProcessUpdateActivityStreaks(24, 0, 0, uids)         // the hh:mm:ss timestamp in a day to run the cron at (i.e 24:00:00)
 	cron.ProcessMonthlyLeaderboard(s, 23, 55, 0, true, false) // run on last day of current month at given time (i.e 23:55:00)
 
 	// CRON RUNTIME & PERSISTENT ENTITY CLEANUPS
