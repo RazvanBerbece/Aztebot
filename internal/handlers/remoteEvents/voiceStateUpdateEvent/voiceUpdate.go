@@ -98,7 +98,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 
 			globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 				UserId: userId,
-				Points: globalConfiguration.ExperienceReward_InMusic * secondsSpent,
+				Points: globalConfiguration.ExperienceReward_InVc * secondsSpent,
 			}
 
 			delete(globalState.VoiceSessions, userId)
