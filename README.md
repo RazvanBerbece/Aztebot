@@ -27,7 +27,8 @@ _Note:_ At the moment, the Infrastructure submodule has to be updated when there
 2. Run migrations locally by executing the following commands from the root of this repository (_requires [Aztebot-Infrastructure](https://github.com/RazvanBerbece/Aztebot-Infrastructure) as described in prerequisite #5_)
     - To execute a dryrun and double-check the to-be-applied migrations: `make migrate-up-dry` 
     - To apply the migrations `make migrate-up`
-3. Bring down all the services by running `make down`.
+
+To bring down all the services, one can do so by running `make down`.
 
 # CI/CD
 This project will employ CI/CD through the use of GitHub Actions and Google Cloud. 
