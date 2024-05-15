@@ -18,14 +18,14 @@ var EmbedPageSize int = 10
 
 // PROGRESSION RELATED
 var OrderRoleNames []string = []string{
-	"Zelator",
-	"Theoricus",
-	"Practicus",
-	"Philosophus",
-	"Adeptus Minor",
-	"Adeptus Major",
-	"Adeptus Exemptus",
-	"Magister Templi",
-	"Magus",
-	"Ipsississimus",
+	"🔗 Zelator",
+	"📖 Theoricus",
+	"🎩 Practicus",
+	"📿 Philosophus",
+	"🔮 Adeptus Minor",
+	"〽️ Adeptus Major",
+	"🧿 Adeptus Exemptus",
+	"☀️ Magister Templi",
+	"🧙🏼 Magus",
+	"⚔️ Ipsissimus",
 }

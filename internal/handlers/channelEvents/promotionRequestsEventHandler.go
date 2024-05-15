@@ -33,54 +33,54 @@ func HandlePromotionRequestEvents(s *discordgo.Session, orderRoleNames []string)
 		case userXp >= 7500 && userXp < 10000:
 			if userNumberMessagesSent >= 1000 && userTimeSpentInVc >= 60*60*15 {
 				promotedLevel = 1
-				promotedRoleName = "Zelator"
+				promotedRoleName = "🔗 Zelator"
 			}
 		case userXp >= 10000 && userXp < 15000:
 			if userNumberMessagesSent >= 2500 && userTimeSpentInVc >= 60*60*20 {
 				promotedLevel = 2
-				promotedRoleName = "Theoricus"
+				promotedRoleName = "📖 Theoricus"
 			}
 		case userXp >= 15000 && userXp < 20000:
 			if userNumberMessagesSent >= 3500 && userTimeSpentInVc >= 60*60*25 {
 				promotedLevel = 3
-				promotedRoleName = "Practicus"
+				promotedRoleName = "🎩 Practicus"
 			}
 		case userXp >= 20000 && userXp < 30000:
 			if userNumberMessagesSent >= 5000 && userTimeSpentInVc >= 60*60*30 {
 				promotedLevel = 4
-				promotedRoleName = "Philosophus"
+				promotedRoleName = "📿 Philosophus"
 			}
 		// Second order
 		case userXp >= 30000 && userXp < 45000:
 			if userNumberMessagesSent >= 12500 && userTimeSpentInVc >= 60*60*40 {
 				promotedLevel = 5
-				promotedRoleName = "Adeptus Minor"
+				promotedRoleName = "🔮 Adeptus Minor"
 			}
 		case userXp >= 45000 && userXp < 50000:
 			if userNumberMessagesSent >= 15000 && userTimeSpentInVc >= 60*60*45 {
 				promotedLevel = 6
-				promotedRoleName = "Adeptus Major"
+				promotedRoleName = "〽️ Adeptus Major"
 			}
 		case userXp >= 50000 && userXp < 100000:
 			if userNumberMessagesSent >= 20000 && userTimeSpentInVc >= 60*60*50 {
 				promotedLevel = 7
-				promotedRoleName = "Adeptus Exemptus"
+				promotedRoleName = "🧿 Adeptus Exemptus"
 			}
 		// Third order
 		case userXp >= 100000 && userXp < 150000:
 			if userNumberMessagesSent >= 35000 && userTimeSpentInVc >= 60*60*200 {
 				promotedLevel = 8
-				promotedRoleName = "Magister Templi"
+				promotedRoleName = "☀️ Magister Templi"
 			}
 		case userXp >= 150000 && userXp < 200000:
 			if userNumberMessagesSent >= 45000 && userTimeSpentInVc >= 60*60*250 {
 				promotedLevel = 9
-				promotedRoleName = "Magus"
+				promotedRoleName = "🧙🏼 Magus"
 			}
 		case userXp >= 200000:
 			if userNumberMessagesSent >= 50000 && userTimeSpentInVc >= 60*60*300 {
 				promotedLevel = 10
-				promotedRoleName = "Ipsississimus"
+				promotedRoleName = "⚔️ Ipsissimus"
 			}
 		}
 
@@ -97,28 +97,29 @@ func HandlePromotionRequestEvents(s *discordgo.Session, orderRoleNames []string)
 			if err != nil {
 				fmt.Printf("Error ocurred while reading role from DB: %v\n", err)
 			}
-			currentOrderRole, err := member.GetMemberOrderRole(userId, orderRoleNames) // to remove
-			if err != nil {
-				fmt.Printf("Error ocurred while reading member order role from DB: %v\n", err)
+			if promotedLevel != 1 {
+				// no previous order role so no need to remove it
+				currentOrderRole, err := member.GetMemberOrderRole(userId, orderRoleNames) // to remove
+				if err != nil {
+					fmt.Printf("Error ocurred while reading member order role from DB: %v\n", err)
+				}
+				if currentOrderRole != nil {
+					err = globalRepositories.UsersRepository.RemoveUserRoleWithId(userId, currentOrderRole.Id)
+					if err != nil {
+						fmt.Printf("Error ocurred while removing member role from DB: %v\n", err)
+					}
+				}
 			}
-			err = globalRepositories.UsersRepository.RemoveUserRoleWithId(userId, currentOrderRole.Id)
-			if err != nil {
-				fmt.Printf("Error ocurred while removing member role from DB: %v\n", err)
-			}
-			err = globalRepositories.UsersRepository.AppendUserRoleWithId(userId, promotedRole.Id)
-			if err != nil {
-				fmt.Printf("Error ocurred while appending role ID to member in DB: %v\n", err)
+			if promotedRole != nil {
+				err = globalRepositories.UsersRepository.AppendUserRoleWithId(userId, promotedRole.Id)
+				if err != nil {
+					fmt.Printf("Error ocurred while appending role ID to member in DB: %v\n", err)
+				}
 			}
 
 			err = member.RefreshDiscordRolesForMember(s, userGuildId, userId)
 			if err != nil {
 				fmt.Printf("Error ocurred while refreshing member roles on-Discord: %v\n", err)
-			}
-
-			// Refresh order role
-			err = member.RefreshDiscordOrderRoleForMember(s, userGuildId, userId)
-			if err != nil {
-				fmt.Printf("Error ocurred while refreshing member order role on-Discord: %v\n", err)
 			}
 		}
 

@@ -300,6 +300,7 @@ func RefreshDiscordRolesForMember(s *discordgo.Session, guildId string, userId s
 	if err != nil {
 		return err
 	}
+	fmt.Println(user.CurrentRoleIds)
 	err = AddDiscordRolesToMember(s, globalConfiguration.DiscordMainGuildId, userId, utils.GetRoleIdsFromRoleString(user.CurrentRoleIds))
 	if err != nil {
 		fmt.Printf("An error ocurred while adding all roles from DB for member: %v\n", err)
