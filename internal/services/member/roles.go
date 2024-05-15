@@ -30,6 +30,25 @@ func GetMemberStaffRole(userId string, staffRoles []string) (*dataModels.Role, e
 
 }
 
+// Gets the order role of a given member.
+func GetMemberOrderRole(userId string, orderRoles []string) (*dataModels.Role, error) {
+
+	roles, err := globalRepositories.UsersRepository.GetRolesForUser(userId)
+	if err != nil {
+		log.Printf("Cannot retrieve roles for user with id %s: %v", userId, err)
+		return nil, err
+	}
+
+	for _, role := range roles {
+		if utils.StringInSlice(role.DisplayName, orderRoles) {
+			return &role, nil
+		}
+	}
+
+	return nil, nil
+
+}
+
 // Removes all roles from the database member.
 func RemoveAllMemberRoles(userId string) error {
 

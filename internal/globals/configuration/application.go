@@ -16,4 +16,16 @@ var ExperienceReward_InMusic float64 = 0.005
 // UI/UX CUSTOMISATION
 var EmbedPageSize int = 10
 
-// PROGRESSION TABLE
+// PROGRESSION RELATED
+var OrderRoleNames []string = []string{
+	"Zelator",
+	"Theoricus",
+	"Practicus",
+	"Philosophus",
+	"Adeptus Minor",
+	"Adeptus Major",
+	"Adeptus Exemptus",
+	"Magister Templi",
+	"Magus",
+	"Ipsississimus",
+}

@@ -286,6 +286,29 @@ func GetDiscordOrderRoleNameForMember(s *discordgo.Session, guildId string, user
 	return nil, nil
 }
 
+func RefreshDiscordRolesForMember(s *discordgo.Session, guildId string, userId string) error {
+
+	// Remove all roles
+	err := RemoveAllDiscordRolesFromMember(s, guildId, userId)
+	if err != nil {
+		fmt.Printf("An error ocurred while removing all roles for member: %v\n", err)
+		return err
+	}
+
+	// Add existing roles
+	user, err := globalRepositories.UsersRepository.GetUser(userId)
+	if err != nil {
+		return err
+	}
+	err = AddDiscordRolesToMember(s, globalConfiguration.DiscordMainGuildId, userId, utils.GetRoleIdsFromRoleString(user.CurrentRoleIds))
+	if err != nil {
+		fmt.Printf("An error ocurred while adding all roles from DB for member: %v\n", err)
+		return err
+	}
+
+	return nil
+}
+
 // Recalculates and re-assigns the order Discord role for a member based on their role IDs in the DB.
 func RefreshDiscordOrderRoleForMember(s *discordgo.Session, guildId string, userId string) error {
 

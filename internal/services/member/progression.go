@@ -54,6 +54,7 @@ func ProcessProgressionForMember(userId string, guildId string) error {
 	}
 	// Frame the given stats into one of the pre-defined ranks
 	var xp = user.CurrentExperience
+	var currentLevel = user.CurrentLevel
 	var messagesSent = stats.NumberMessagesSent
 	var timeSpentInVoice = stats.TimeSpentInVoiceChannels
 
@@ -61,6 +62,7 @@ func ProcessProgressionForMember(userId string, guildId string) error {
 	globalMessaging.PromotionRequestsChannel <- events.PromotionRequestEvent{
 		GuildId:       guildId,
 		UserId:        userId,
+		CurrentLevel:  currentLevel,
 		CurrentXp:     xp,
 		MessagesSent:  messagesSent,
 		TimeSpentInVc: timeSpentInVoice,

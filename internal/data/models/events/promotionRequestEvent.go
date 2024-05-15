@@ -6,4 +6,5 @@ type PromotionRequestEvent struct {
 	CurrentXp     float64
 	MessagesSent  int
 	TimeSpentInVc int
+	CurrentLevel  int
 }
