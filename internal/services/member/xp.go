@@ -119,6 +119,13 @@ func GrantMemberExperience(userId string, points float64) (float64, error) {
 		}
 	}
 
+	// Kickstart automatic progression process
+	err = ProcessProgressionForMember(userId, globalConfiguration.DiscordMainGuildId)
+	if err != nil {
+		fmt.Printf("An error ocurred while starting automatic progression for user: %v\n", err)
+		return -1, err
+	}
+
 	return user.CurrentExperience + points, nil
 
 }
@@ -167,6 +174,13 @@ func RemoveMemberExperience(userId string, activityType string) (*float64, error
 			fmt.Printf("An error ocurred while removing monthly leaderboard XP from user: %v\n", err)
 			return nil, err
 		}
+	}
+
+	// Kickstart automatic progression process
+	err = ProcessProgressionForMember(userId, globalConfiguration.DiscordMainGuildId)
+	if err != nil {
+		fmt.Printf("An error ocurred while starting automatic progression for user: %v\n", err)
+		return nil, err
 	}
 
 	user, err := globalRepositories.UsersRepository.GetUser(userId)

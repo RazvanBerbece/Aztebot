@@ -167,6 +167,18 @@ func AddDiscordRoleToMember(s *discordgo.Session, guildId string, userId string,
 		return err
 	}
 
+	// If a staff role, add a default 'STAFF Team' role as well
+	if utils.StringInSlice(roleName, globalConfiguration.StaffRoles) {
+		discordDefaultStaffRoleId := GetDiscordRoleIdForRoleWithName(s, guildId, "STAFF Team")
+		if discordDefaultStaffRoleId != nil {
+			err = s.GuildMemberRoleAdd(guildId, userId, *discordDefaultStaffRoleId)
+			if err != nil {
+				fmt.Println("Error adding default STAFF role to Discord member:", err)
+				return err
+			}
+		}
+	}
+
 	return nil
 
 }
@@ -196,9 +208,9 @@ func AddDiscordRolesToMember(s *discordgo.Session, guildId string, userId string
 				return err
 			}
 
-			// If a staff role, add a default 'STAFF' role as well
+			// If a staff role, add a default 'STAFF Team' role as well
 			if utils.StringInSlice(role.DisplayName, globalConfiguration.StaffRoles) {
-				discordDefaultStaffRoleId := GetDiscordRoleIdForRoleWithName(s, guildId, "STAFF")
+				discordDefaultStaffRoleId := GetDiscordRoleIdForRoleWithName(s, guildId, "STAFF Team")
 				if discordDefaultStaffRoleId != nil {
 					err = s.GuildMemberRoleAdd(guildId, userId, *discordDefaultStaffRoleId)
 					if err != nil {
@@ -274,10 +286,10 @@ func GetDiscordOrderRoleNameForMember(s *discordgo.Session, guildId string, user
 	return nil, nil
 }
 
-// Recalculates and re-assigns the order Discord role for a member.
-func RefreshDiscordOrderRoleForMember(s *discordgo.Session, guildId string, userId string, updatedOrder *int) error {
+// Recalculates and re-assigns the order Discord role for a member based on their role IDs in the DB.
+func RefreshDiscordOrderRoleForMember(s *discordgo.Session, guildId string, userId string) error {
 
-	// Retrieve current member Discord role from the Discord servers
+	// Retrieve current order role ID from the Discord servers
 	// i.e ---- Third Order ----
 	roles, err := GetDiscordRolesForMember(s, guildId, userId)
 	if err != nil {
@@ -286,23 +298,30 @@ func RefreshDiscordOrderRoleForMember(s *discordgo.Session, guildId string, user
 	}
 	for _, role := range roles {
 		if role.Name == "---- Third Order ----" || role.Name == "---- Second Order ----" || role.Name == "---- First Order ----" {
-			// Remove the old one
+			// And remove it on-Discord if ID is available
 			err := s.GuildMemberRoleRemove(guildId, userId, role.ID)
 			if err != nil {
 				fmt.Println("Error removing order role from Discord member:\n", err)
 				return err
 			}
+			break
 		}
 	}
 
 	// Process ORDER role from the DB entry and assign in to the target member
-	if updatedOrder != nil {
+	user, err := globalRepositories.UsersRepository.GetUser(userId)
+	if err != nil {
+		return err
+	}
+	var currentRoleIds = user.CurrentRoleIds
+	_, currentOrder := utils.GetCircleAndOrderForGivenRoles(utils.GetRoleIdsFromRoleString(currentRoleIds))
+	if currentOrder != nil {
 		var discordOrderRoleIdToAdd *string
-		if *updatedOrder == 3 {
+		if *currentOrder == 3 {
 			discordOrderRoleIdToAdd = GetDiscordRoleIdForRoleWithName(s, guildId, "---- Third Order ----")
-		} else if *updatedOrder == 2 {
+		} else if *currentOrder == 2 {
 			discordOrderRoleIdToAdd = GetDiscordRoleIdForRoleWithName(s, guildId, "---- Second Order ----")
-		} else if *updatedOrder == 1 {
+		} else if *currentOrder == 1 {
 			discordOrderRoleIdToAdd = GetDiscordRoleIdForRoleWithName(s, guildId, "---- First Order ----")
 		}
 		err := s.GuildMemberRoleAdd(guildId, userId, *discordOrderRoleIdToAdd)

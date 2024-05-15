@@ -1,5 +1,9 @@
 package events
 
 type PromotionRequestEvent struct {
-	UserId string
+	GuildId       string
+	UserId        string
+	CurrentXp     float64
+	MessagesSent  int
+	TimeSpentInVc int
 }

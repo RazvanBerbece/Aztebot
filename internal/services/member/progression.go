@@ -1,6 +1,10 @@
 package member
 
-import globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
+import (
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
+	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
+)
 
 /*
 |-------------------|--------------|----------------|-------------------|
@@ -12,13 +16,15 @@ import globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/rep
 |-------------------|--------------|----------------|-------------------|
 | Theoricus         | 10,000 XP    | 20 HOURS       | 2,500 MESSAGES    |
 |-------------------|--------------|----------------|-------------------|
-| Philosophus       | 15,000 XP    | 30 HOURS       | 5,000 MESSAGES    |
+| Practicus         | 15,000 XP    | 25 HOURS       | 3,500 MESSAGES    |
 |-------------------|--------------|----------------|-------------------|
-| Second Order      |												    |
+| Philosophus       | 20,000 XP    | 30 HOURS       | 5,000 MESSAGES    |
 |-------------------|--------------|----------------|-------------------|
-| Adeptus Minor     | 25,000 XP    | 40 HOURS       | 12,500 MESSAGES   |
+| Second Order      												    |
 |-------------------|--------------|----------------|-------------------|
-| Adeptus Major     | 35,000 XP    | 45 HOURS       | 15,000 MESSAGES   |
+| Adeptus Minor     | 30,000 XP    | 40 HOURS       | 12,500 MESSAGES   |
+|-------------------|--------------|----------------|-------------------|
+| Adeptus Major     | 45,000 XP    | 45 HOURS       | 15,000 MESSAGES   |
 |-------------------|--------------|----------------|-------------------|
 | Adeptus Exemptus  | 50,000 XP    | 50 HOURS       | 20,000 MESSAGES   |
 |-------------------|--------------|----------------|-------------------|
@@ -34,7 +40,7 @@ import globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/rep
 
 // Checks whether for the current stats of a member (XP, messages, time spent in VCs, etc.)
 // a progression is due and sends the associated event to kickstart the promotion for the member.
-func ProcessProgressionForMember(userId string) error {
+func ProcessProgressionForMember(userId string, guildId string) error {
 
 	user, err := globalRepositories.UsersRepository.GetUser(userId)
 	if err != nil {
@@ -51,8 +57,14 @@ func ProcessProgressionForMember(userId string) error {
 	var messagesSent = stats.NumberMessagesSent
 	var timeSpentInVoice = stats.TimeSpentInVoiceChannels
 
-	// Send event to process promotion
-	// TODO
+	// Send event to process supposed promotion for user with updated stats
+	globalMessaging.PromotionRequestsChannel <- events.PromotionRequestEvent{
+		GuildId:       guildId,
+		UserId:        userId,
+		CurrentXp:     xp,
+		MessagesSent:  messagesSent,
+		TimeSpentInVc: timeSpentInVoice,
+	}
 
 	return nil
 }
