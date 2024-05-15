@@ -86,38 +86,55 @@ func HandlePromotionRequestEvents(s *discordgo.Session, orderRoleNames []string)
 
 		// Promotion is available for current member
 		if promotedLevel > userCurrentLevel {
+
+			fmt.Println("Processing promotion...")
+
 			// Give promoted level in DB
 			err := globalRepositories.UsersRepository.SetLevel(userId, promotedLevel)
 			if err != nil {
 				fmt.Printf("Error ocurred while setting member level in DB: %v\n", err)
 			}
 
+			fmt.Printf("Level up ! (%d -> %d)\n", userCurrentLevel, promotedLevel)
+
 			// Give promoted role in DB (and cleanup the old one)
 			promotedRole, err := globalRepositories.RolesRepository.GetRole(promotedRoleName) // to append
 			if err != nil {
 				fmt.Printf("Error ocurred while reading role from DB: %v\n", err)
 			}
-			if promotedLevel != 1 {
-				// no previous order role so no need to remove it
+			fmt.Println("Role to promote to: ", promotedRole)
+
+			if promotedLevel == 1 {
+				fmt.Println("First level up !")
+				// no previous order role so no need to remove it, only append to list of IDs
+				err = globalRepositories.UsersRepository.AppendUserRoleWithId(userId, promotedRole.Id)
+				if err != nil {
+					fmt.Printf("Error ocurred while appending role ID to member in DB: %v\n", err)
+				}
+			} else if promotedLevel > 1 {
 				currentOrderRole, err := member.GetMemberOrderRole(userId, orderRoleNames) // to remove
 				if err != nil {
 					fmt.Printf("Error ocurred while reading member order role from DB: %v\n", err)
 				}
-				if currentOrderRole != nil {
-					err = globalRepositories.UsersRepository.RemoveUserRoleWithId(userId, currentOrderRole.Id)
-					if err != nil {
-						fmt.Printf("Error ocurred while removing member role from DB: %v\n", err)
-					}
+				fmt.Println("Current order role to remove:", currentOrderRole.DisplayName)
+				err = globalRepositories.UsersRepository.RemoveUserRoleWithId(userId, currentOrderRole.Id)
+				if err != nil {
+					fmt.Printf("Error ocurred while removing member role from DB: %v\n", err)
 				}
-			}
-			if promotedRole != nil {
+				fmt.Println("Removed:", currentOrderRole.DisplayName)
 				err = globalRepositories.UsersRepository.AppendUserRoleWithId(userId, promotedRole.Id)
 				if err != nil {
 					fmt.Printf("Error ocurred while appending role ID to member in DB: %v\n", err)
 				}
 			}
 
-			err = member.RefreshDiscordRolesForMember(s, userGuildId, userId)
+			// Get refreshed role IDs after processing
+			user, err := globalRepositories.UsersRepository.GetUser(userId)
+			if err != nil {
+				fmt.Printf("Error ocurred while retrieving user and roles from DB: %v\n", err)
+			}
+			fmt.Println("UPDATED ROLES:", user.CurrentRoleIds)
+			err = member.RefreshDiscordRolesWithIdForMember(s, userGuildId, userId, user.CurrentRoleIds)
 			if err != nil {
 				fmt.Printf("Error ocurred while refreshing member roles on-Discord: %v\n", err)
 			}

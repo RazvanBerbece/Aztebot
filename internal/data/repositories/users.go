@@ -277,11 +277,15 @@ func (r UsersRepository) AppendUserRoleWithId(userId string, roleId int) error {
 		return err
 	}
 
+	fmt.Println("Before set:", roles)
+
 	roleIdsString := ""
 	for _, role := range roles {
 		roleIdsString += fmt.Sprintf("%d,", role.Id)
 	}
 	roleIdsString += fmt.Sprintf("%d,", roleId)
+
+	fmt.Println("To set:", roleIdsString)
 
 	stmt, err := r.Conn.Db.Prepare(`
 		UPDATE Users SET 
