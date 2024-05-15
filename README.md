@@ -17,17 +17,18 @@ In order to run the application, a few prerequisites must be met.
 2. Have Docker installed.
 3. Have Make installed.
 4. Have a fully-configured `.env` file saved in the root of the repository. (contact [@RazvanBerbece](https://github.com/RazvanBerbece) for the configuration)
-5. Additionally, for full local development capabilities, have the [Aztebot-Infrastructure](https://github.com/RazvanBerbece/Aztebot-Infrastructure) repository cloned locally in a folder which also contains the `Aztebot` repository - i.e. Folder `Project` should contain both the `Aztebot` and the `Aztebot-Infrastructure` repository folders. 
+5. Additionally, for full local development capabilities and to run the database migrations on the development machine, have the [Aztebot-Infrastructure](https://github.com/RazvanBerbece/Aztebot-Infrastructure) repository cloned locally in a folder which also contains the `Aztebot` repository (**For example**, the folder `Project` should contain both the `Aztebot` and the `Aztebot-Infrastructure` repository folders) 
 
 _Note:_ At the moment, the Infrastructure submodule has to be updated when there are changes in the remote repository (e.g. a new migration file).
 
 ## Running the full service composition
 1. Run a freshly built full service composition (app, DBs, etc.) with the `make up` command.
     - This is required so the local development database is configured with all the necessary default data.   
-2. Run migrations locally by executing the following commands from the root of this repository
+2. Once the `mysql-db` service has sucessfully started, run the DB migrations locally by executing the following commands from the root of this repository (_requires [Aztebot-Infrastructure](https://github.com/RazvanBerbece/Aztebot-Infrastructure) as described in prerequisite #5_)
     - To execute a dryrun and double-check the to-be-applied migrations: `make migrate-up-dry` 
     - To apply the migrations `make migrate-up`
-3. Bring down all the services by running `make down`.
+
+To bring down all the services, one can do so by running `make down`.
 
 # CI/CD
 This project will employ CI/CD through the use of GitHub Actions and Google Cloud. 

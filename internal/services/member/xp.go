@@ -84,7 +84,7 @@ func GetMemberRankInLeaderboards(userId string) (map[string]int, error) {
 
 }
 
-func GrantMemberExperience(userId string, activityType string, points float64) (float64, error) {
+func GrantMemberExperience(userId string, points float64) (float64, error) {
 
 	user, err := globalRepositories.UsersRepository.GetUser(userId)
 	if err != nil {
@@ -117,6 +117,13 @@ func GrantMemberExperience(userId string, activityType string, points float64) (
 			fmt.Printf("An error ocurred while granting monthly leaderboard XP to user: %v\n", err)
 			return -1, err
 		}
+	}
+
+	// Kickstart automatic progression process
+	err = ProcessProgressionForMember(userId, globalConfiguration.DiscordMainGuildId)
+	if err != nil {
+		fmt.Printf("An error ocurred while starting automatic progression for user: %v\n", err)
+		return -1, err
 	}
 
 	return user.CurrentExperience + points, nil
@@ -169,6 +176,13 @@ func RemoveMemberExperience(userId string, activityType string) (*float64, error
 		}
 	}
 
+	// Kickstart automatic progression process
+	err = ProcessProgressionForMember(userId, globalConfiguration.DiscordMainGuildId)
+	if err != nil {
+		fmt.Printf("An error ocurred while starting automatic progression for user: %v\n", err)
+		return nil, err
+	}
+
 	user, err := globalRepositories.UsersRepository.GetUser(userId)
 	if err != nil {
 		fmt.Printf("An error ocurred while retrieving User (%s) from DB after removing XP. Member may have left the server.\n", userId)
@@ -176,43 +190,5 @@ func RemoveMemberExperience(userId string, activityType string) (*float64, error
 	}
 
 	return &user.CurrentExperience, nil
-
-}
-
-func AddExperienceToMember(userId string, points float64) (float64, error) {
-
-	user, err := globalRepositories.UsersRepository.GetUser(userId)
-	if err != nil {
-		return -1, err
-	}
-
-	err = globalRepositories.UsersRepository.AddUserExpriencePoints(userId, points)
-	if err != nil {
-		fmt.Printf("An error ocurred while adding XP for user: %v\n", err)
-		return -1, err
-	}
-
-	// If not a staff membber
-	if !IsStaff(userId, globalConfiguration.StaffRoles) {
-		// Also store records for the monthly leaderboard
-		monthlyEntryExists := globalRepositories.MonthlyLeaderboardRepository.EntryExists(userId)
-		if monthlyEntryExists <= 0 {
-			if monthlyEntryExists == -1 {
-				return -1, fmt.Errorf("monthly leaderboard entry to was not found in the DB; likely an error has ocurred")
-			}
-			// Entry doesn't exist for member, so create one
-			err := globalRepositories.MonthlyLeaderboardRepository.AddLeaderboardEntry(userId, user.Gender)
-			if err != nil {
-				return -1, err
-			}
-		}
-		err = globalRepositories.MonthlyLeaderboardRepository.AddLeaderboardExpriencePoints(userId, points)
-		if err != nil {
-			fmt.Printf("An error ocurred while granting monthly leaderboard XP to user: %v\n", err)
-			return -1, err
-		}
-	}
-
-	return user.CurrentExperience + points, nil
 
 }

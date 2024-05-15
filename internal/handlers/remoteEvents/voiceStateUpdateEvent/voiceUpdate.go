@@ -97,9 +97,8 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 			}
 
 			globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
-				UserId:   userId,
-				Points:   globalConfiguration.ExperienceReward_InMusic * secondsSpent,
-				Activity: "Time Spent Streaming",
+				UserId: userId,
+				Points: globalConfiguration.ExperienceReward_InVc * secondsSpent,
 			}
 
 			delete(globalState.VoiceSessions, userId)
@@ -145,9 +144,8 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 					}
 
 					globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
-						UserId:   userId,
-						Points:   globalConfiguration.ExperienceReward_InMusic * secondsSpent,
-						Activity: "Time Spent in Music Channels",
+						UserId: userId,
+						Points: globalConfiguration.ExperienceReward_InMusic * secondsSpent,
 					}
 
 				}
@@ -164,9 +162,8 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 					}
 
 					globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
-						UserId:   userId,
-						Points:   globalConfiguration.ExperienceReward_InVc * secondsSpent,
-						Activity: "Time Spent in Voice Channels",
+						UserId: userId,
+						Points: globalConfiguration.ExperienceReward_InVc * secondsSpent,
 					}
 				}
 			}
