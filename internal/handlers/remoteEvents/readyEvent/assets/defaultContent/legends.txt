@@ -23,7 +23,6 @@ Ca un membru din `Outer Circle` să fie inițiat în `Inner Circle`, va avea nev
 **FIRST ORDER**
 • `@🔗 Zelator`
 • `@📖 Theoricus`
-• `@🎩 Practicus`
 • `@📿 Philosophus`
 
 **SECOND ORDER**
