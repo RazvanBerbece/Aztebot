@@ -19,6 +19,7 @@ func GetAztebotHandlersAsList() []interface{} {
 		readyEventHandlers.Ready,
 		// <---- On Message Created ---->
 		messageEventHandlers.Any, messageEventHandlers.Ping, messageEventHandlers.SimpleMsgReply,
+		messageEventHandlers.SimpleListenReply,
 		// <---- On Message Deleted ---->
 		messageDeleteEventHandlers.MessageDelete,
 		// <---- On Reaction Added ---->
