@@ -228,8 +228,7 @@ func syncProgressionForUser(s *discordgo.Session, userGuildId string, userId str
 	}
 
 	// Solve mismatches where the member has a rank on the server but shouldn't
-	// according to the progression rules (type 1, 2, 3)
-	solvedMismatch := false
+	// according to the progression rules (type 1, 2, 3, 4)
 	if processedLevel == 0 && processedRoleName == "" && len(currentOrderRoles) > 0 {
 		// mismatch, need to reset
 		err := globalRepositories.UsersRepository.SetLevel(userId, processedLevel)
@@ -255,8 +254,6 @@ func syncProgressionForUser(s *discordgo.Session, userGuildId string, userId str
 		}
 
 		fmt.Printf("Mismatch (type 1) for %s resolved.\n", user.DiscordTag)
-
-		solvedMismatch = true
 	} else if processedLevel > 0 && processedRoleName != "" && len(currentOrderRoles) == 1 {
 		if currentOrderRoles[0].DisplayName != processedRoleName {
 			// Solve mismatches where the member has a rank on the server but their
@@ -293,8 +290,6 @@ func syncProgressionForUser(s *discordgo.Session, userGuildId string, userId str
 			}
 
 			fmt.Printf("Mismatch (type 2) for %s resolved.\n", user.DiscordTag)
-
-			solvedMismatch = true
 		}
 	} else if processedLevel > 0 && processedRoleName != "" && len(currentOrderRoles) > 1 {
 		// Solve mismatches where the member has multiple ranks on the server but their
@@ -335,18 +330,41 @@ func syncProgressionForUser(s *discordgo.Session, userGuildId string, userId str
 		}
 
 		fmt.Printf("Mismatch (type 3) for %s resolved.\n", user.DiscordTag)
-
-		solvedMismatch = true
-	}
-
-	if !solvedMismatch && processedLevel == 0 {
-		// still reset
-		err = RefreshDiscordOrderRoleForMember(s, userGuildId, userId)
+	} else if processedLevel > 0 && processedRoleName != "" && len(currentOrderRoles) == 0 {
+		// Solve mismatches where the member has no rank on the server but their
+		// actual rank is different and non-zero (type 4)
+		err := globalRepositories.UsersRepository.SetLevel(userId, processedLevel)
 		if err != nil {
-			fmt.Printf("Error refreshing order role on Discord member: %v\n", err)
+			fmt.Printf("Error occurred while setting member level in DB: %v\n", err)
 			return err
 		}
 
+		err = globalRepositories.UsersRepository.RemoveUserRoleWithId(userId, currentOrderRoles[0].Id)
+		if err != nil {
+			fmt.Printf("Error occurred while removing member role from DB: %v\n", err)
+		}
+
+		promotedRole, err := globalRepositories.RolesRepository.GetRole(processedRoleName) // to append
+		if err != nil {
+			fmt.Printf("Error occurred while reading role from DB: %v\n", err)
+			return err
+		}
+
+		err = globalRepositories.UsersRepository.AppendUserRoleWithId(userId, promotedRole.Id)
+		if err != nil {
+			fmt.Printf("Error occurred while appending role ID to member in DB: %v\n", err)
+		}
+
+		user, err := globalRepositories.UsersRepository.GetUser(userId)
+		if err != nil {
+			fmt.Printf("Error occurred while retrieving user and roles from DB: %v\n", err)
+		}
+		err = RefreshDiscordRolesWithIdForMember(s, userGuildId, userId, user.CurrentRoleIds)
+		if err != nil {
+			fmt.Printf("Error occurred while refreshing member roles on-Discord: %v\n", err)
+		}
+
+		fmt.Printf("Mismatch (type 2) for %s resolved.\n", user.DiscordTag)
 	}
 
 	return nil
