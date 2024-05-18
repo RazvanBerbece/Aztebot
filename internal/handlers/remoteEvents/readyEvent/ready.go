@@ -35,7 +35,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	// Initial cleanup of members from database against the Discord server
 	go startup.CleanupMemberAtStartup(s, uids)
 
-	// Initial update of experience gains in the DB
+	// Initial update of experience gains and current levels in the DB
 	go startup.SyncExperiencePointsGainsAtStartup(s, uids)
 	go startup.SyncLevelsAtStartup(s, globalConfiguration.DiscordMainGuildId, uids)
 
@@ -55,7 +55,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	go channelHandlers.HandleMemberMessageDeletionEvents(s)
 	go channelHandlers.HandleDirectMessageEvents(s)
 	go channelHandlers.HandleComplexResponseEvents(s, globalConfiguration.EmbedPageSize)
-	go channelHandlers.HandlePromotionRequestEvents(s, globalConfiguration.OrderRoleNames)
+	go channelHandlers.HandlePromotionRequestEvents(s, globalConfiguration.OrderRoleNames, false)
 
 	// CRON FEATS
 	cron.ProcessUpdateActivityStreaks(24, 0, 0)               // the hh:mm:ss timestamp in a day to run the cron at (i.e 24:00:00)
