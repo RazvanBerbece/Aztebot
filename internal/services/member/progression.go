@@ -69,3 +69,8 @@ func ProcessProgressionForMember(userId string, guildId string) error {
 
 	return nil
 }
+
+func RefreshRolesBasedOnStats(userId string) error {
+
+	return nil
+}

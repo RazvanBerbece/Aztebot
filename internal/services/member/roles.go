@@ -49,6 +49,20 @@ func GetMemberOrderRole(userId string, defaultOrderRoleNames []string) (*dataMod
 
 }
 
+// Removes all *order* roles from the database member.
+func RemoveAllMemberOrderRoles(userId string, defaultOrderRoleNames []string) error {
+
+	for _, roleName := range defaultOrderRoleNames {
+		err := globalRepositories.UsersRepository.RemoveUserRoleWithName(userId, roleName)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+
+}
+
 // Removes all roles from the database member.
 func RemoveAllMemberRoles(userId string) error {
 

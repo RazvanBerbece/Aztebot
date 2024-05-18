@@ -26,6 +26,11 @@ func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []
 
 		const sHour = 60 * 60
 
+		currentOrderRole, err := member.GetMemberOrderRole(userId, defaultOrderRoleNames)
+		if err != nil {
+			fmt.Printf("Error ocurred while reading member order role from DB: %v\n", err)
+		}
+
 		// Check current stats against progression table
 		// Figure out the promoted role to be given
 		var promotedLevel int = 0
@@ -85,8 +90,59 @@ func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []
 			}
 		}
 
+		// This mismatch resolution is a result of the fact that progression roles were given outside the rules of progression
+		// and now the bot has to resolve these mismatches.
+		// Eventually, this code can be removed.
+		resolvedMismatch := false
+		if currentOrderRole != nil {
+			if currentOrderRole.DisplayName != promotedRoleName {
+				// mismatch between deserved role and actual role, so refresh
+
+				// Give promoted level in DB
+				err := globalRepositories.UsersRepository.SetLevel(userId, promotedLevel)
+				if err != nil {
+					fmt.Printf("Error ocurred while setting member level in DB: %v\n", err)
+					continue // skip event to allow retry with correct params
+				}
+
+				promotedRole, err := globalRepositories.RolesRepository.GetRole(promotedRoleName) // to append
+				if err != nil {
+					fmt.Printf("Error ocurred while reading role from DB: %v\n", err)
+					continue // skip event to allow retry with correct params
+				}
+
+				err = member.RemoveAllMemberOrderRoles(userId, defaultOrderRoleNames)
+				if err != nil {
+					fmt.Printf("Error ocurred while removing order member roles from DB: %v\n", err)
+				}
+
+				err = globalRepositories.UsersRepository.AppendUserRoleWithId(userId, promotedRole.Id)
+				if err != nil {
+					fmt.Printf("Error ocurred while appending role ID to member in DB: %v\n", err)
+				}
+
+				user, err := globalRepositories.UsersRepository.GetUser(userId)
+				if err != nil {
+					fmt.Printf("Error ocurred while retrieving user and roles from DB: %v\n", err)
+				}
+				err = member.RefreshDiscordRolesWithIdForMember(s, userGuildId, userId, user.CurrentRoleIds)
+				if err != nil {
+					fmt.Printf("Error ocurred while refreshing member roles on-Discord: %v\n", err)
+				}
+
+				resolvedMismatch = true
+				fmt.Printf("Resolved progression mismatch for %s ! (%d -> %d) | New role: %s\n", userTag, userCurrentLevel, promotedLevel, promotedRole.DisplayName)
+			}
+		}
+
+		// Mismatch resolution means that the user will now be up-to-date with their progression status
+		if resolvedMismatch {
+			continue
+		}
+
 		// Promotion is available for current member
 		if promotedLevel > userCurrentLevel {
+
 			// Give promoted level in DB
 			err := globalRepositories.UsersRepository.SetLevel(userId, promotedLevel)
 			if err != nil {
@@ -94,7 +150,6 @@ func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []
 				continue // skip event to allow retry with correct params
 			}
 
-			// Give promoted role in DB (and cleanup the old one)
 			promotedRole, err := globalRepositories.RolesRepository.GetRole(promotedRoleName) // to append
 			if err != nil {
 				fmt.Printf("Error ocurred while reading role from DB: %v\n", err)
@@ -113,7 +168,7 @@ func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []
 					fmt.Printf("Error ocurred while reading member order role from DB: %v\n", err)
 				}
 				if currentOrderRole != nil {
-					// Only remove the order role if one exists
+					// Only remove the current order role if one exists
 					err = globalRepositories.UsersRepository.RemoveUserRoleWithId(userId, currentOrderRole.Id)
 					if err != nil {
 						fmt.Printf("Error ocurred while removing member role from DB: %v\n", err)

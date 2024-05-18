@@ -21,7 +21,6 @@ func SyncLevelsAtStartup(s *discordgo.Session, guildId string, uids []string) {
 		err := member.ProcessProgressionForMember(uid, guildId)
 		if err != nil {
 			fmt.Printf("Failed to process level at startup for member with uid %s: %v\n", uid, err)
-			continue
 		}
 	}
 
