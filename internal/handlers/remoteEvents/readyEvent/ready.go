@@ -29,6 +29,15 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	// Set initial status for the AzteBot
 	s.UpdateGameStatus(0, "/help")
 
+	// Run gochannel event handlers
+	go channelHandlers.HandleNotificationEvents(s)
+	go channelHandlers.HandleExperienceGrantEvents()
+	go channelHandlers.HandleDynamicChannelCreationEvents(s)
+	go channelHandlers.HandleMemberMessageDeletionEvents(s)
+	go channelHandlers.HandleDirectMessageEvents(s)
+	go channelHandlers.HandleComplexResponseEvents(s, globalConfiguration.EmbedPageSize)
+	go channelHandlers.HandlePromotionRequestEvents(s, globalConfiguration.OrderRoleNames, true)
+
 	// Initial sync of members on server with the database
 	go startup.SyncMembersAtStartup(s)
 
@@ -47,15 +56,6 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 
 	// Run background task to periodically update voice session durations in the DB
 	go cron.UpdateVoiceSessionDurations(s)
-
-	// Run event handlers
-	go channelHandlers.HandleNotificationEvents(s)
-	go channelHandlers.HandleExperienceGrantEvents()
-	go channelHandlers.HandleDynamicChannelCreationEvents(s)
-	go channelHandlers.HandleMemberMessageDeletionEvents(s)
-	go channelHandlers.HandleDirectMessageEvents(s)
-	go channelHandlers.HandleComplexResponseEvents(s, globalConfiguration.EmbedPageSize)
-	go channelHandlers.HandlePromotionRequestEvents(s, globalConfiguration.OrderRoleNames, true)
 
 	// CRON FEATS
 	cron.ProcessUpdateActivityStreaks(24, 0, 0)               // the hh:mm:ss timestamp in a day to run the cron at (i.e 24:00:00)

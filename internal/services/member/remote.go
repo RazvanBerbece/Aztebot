@@ -137,9 +137,14 @@ func RemoveAllDiscordRolesFromMember(s *discordgo.Session, guildId string, userI
 
 	// restore roles which should not be deleted
 	for _, roleId := range roleIdsToRestore {
+		role, err := GetDiscordRole(s, guildId, roleId)
+		if err != nil {
+			fmt.Printf("Error retrieving role with ID %s: %v\n", roleId, err)
+			return err
+		}
 		err = s.GuildMemberRoleAdd(guildId, userId, roleId)
 		if err != nil {
-			fmt.Printf("Error adding role to Discord member: %v\n", err)
+			fmt.Printf("Error restoring role %s to Discord member: %v\n", role.Name, err)
 			return err
 		}
 	}
