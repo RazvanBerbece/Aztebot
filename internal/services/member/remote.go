@@ -364,7 +364,6 @@ func RefreshDiscordRolesWithIdForMember(s *discordgo.Session, guildId string, us
 // Recalculates and re-assigns the order Discord role for a member based on their role IDs in the DB.
 func RefreshDiscordOrderRoleForMember(s *discordgo.Session, guildId string, userId string) error {
 
-	fmt.Println("Refreshing", userId)
 	roles, err := GetDiscordRolesForMember(s, guildId, userId)
 	if err != nil {
 		fmt.Printf("Error retrieving Discord roles for member with UID %s: %v\n", userId, err)
@@ -373,7 +372,6 @@ func RefreshDiscordOrderRoleForMember(s *discordgo.Session, guildId string, user
 	for _, role := range roles {
 		if role.Name == "---- Third Order ----" || role.Name == "---- Second Order ----" || role.Name == "---- First Order ----" {
 			// And remove it on-Discord if ID is available
-			fmt.Printf("Removing %s for %s\n", role.Name, userId)
 			err := s.GuildMemberRoleRemove(guildId, userId, role.ID)
 			if err != nil {
 				fmt.Println("Error removing order role from Discord member:\n", err)
