@@ -4,7 +4,6 @@ import (
 	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
-	"github.com/RazvanBerbece/Aztebot/internal/services/member"
 )
 
 /*
@@ -57,7 +56,7 @@ func ProcessProgressionForMember(userId string, guildId string) error {
 	var messagesSent = stats.NumberMessagesSent
 	var timeSpentInVoice = stats.TimeSpentInVoiceChannels
 
-	if !member.IsVerified(userId) {
+	if IsVerified(userId) {
 		// don't progress unverified members
 		return nil
 	}
