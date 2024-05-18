@@ -48,39 +48,39 @@ func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []
 			}
 		case userXp >= 15000 && userXp < 30000:
 			if userNumberMessagesSent >= 5000 && userTimeSpentInVc >= sHour*30 {
-				promotedLevel = 4
+				promotedLevel = 3
 				promotedRoleName = "📿 Philosophus"
 			}
 		// Second order
 		case userXp >= 30000 && userXp < 45000:
 			if userNumberMessagesSent >= 12500 && userTimeSpentInVc >= sHour*40 {
-				promotedLevel = 5
+				promotedLevel = 4
 				promotedRoleName = "🔮 Adeptus Minor"
 			}
 		case userXp >= 45000 && userXp < 50000:
 			if userNumberMessagesSent >= 15000 && userTimeSpentInVc >= sHour*45 {
-				promotedLevel = 6
+				promotedLevel = 5
 				promotedRoleName = "〽️ Adeptus Major"
 			}
 		case userXp >= 50000 && userXp < 100000:
 			if userNumberMessagesSent >= 20000 && userTimeSpentInVc >= sHour*50 {
-				promotedLevel = 7
+				promotedLevel = 6
 				promotedRoleName = "🧿 Adeptus Exemptus"
 			}
 		// Third order
 		case userXp >= 100000 && userXp < 150000:
 			if userNumberMessagesSent >= 35000 && userTimeSpentInVc >= sHour*200 {
-				promotedLevel = 8
+				promotedLevel = 7
 				promotedRoleName = "☀️ Magister Templi"
 			}
 		case userXp >= 150000 && userXp < 200000:
 			if userNumberMessagesSent >= 45000 && userTimeSpentInVc >= sHour*250 {
-				promotedLevel = 9
+				promotedLevel = 8
 				promotedRoleName = "🧙🏼 Magus"
 			}
 		case userXp >= 200000:
 			if userNumberMessagesSent >= 50000 && userTimeSpentInVc >= sHour*300 {
-				promotedLevel = 10
+				promotedLevel = 9
 				promotedRoleName = "⚔️ Ipsissimus"
 			}
 		}
