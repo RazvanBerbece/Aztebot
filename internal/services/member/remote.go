@@ -112,7 +112,6 @@ func RemoveAllDiscordRolesFromMember(s *discordgo.Session, guildId string, userI
 		// Don't delete roles which should be skipped
 		// like: server booster role, roles which are not in the DB (i.e added manually in Discord), etc.
 		roleExistsInDb := globalRepositories.RolesRepository.RoleByDisplayNameExists(role.Name)
-		fmt.Println(role.Name, roleExistsInDb)
 		if roleExistsInDb < 0 {
 			errMsg := fmt.Sprintf("An error ocurred while checking if role by displayName %s exists in the DB", role.Name)
 			fmt.Printf("%s\n", errMsg)

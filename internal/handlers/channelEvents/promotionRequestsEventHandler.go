@@ -3,13 +3,16 @@ package channelHandlers
 import (
 	"fmt"
 
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/internal/services/member"
+	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/bwmarrin/discordgo"
 )
 
-func HandlePromotionRequestEvents(s *discordgo.Session, orderRoleNames []string) {
+func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []string) {
 
 	for xpEvent := range globalMessaging.PromotionRequestsChannel {
 
@@ -105,7 +108,7 @@ func HandlePromotionRequestEvents(s *discordgo.Session, orderRoleNames []string)
 					fmt.Printf("Error ocurred while appending role ID to member in DB: %v\n", err)
 				}
 			} else if promotedLevel > 1 {
-				currentOrderRole, err := member.GetMemberOrderRole(userId, orderRoleNames) // to remove
+				currentOrderRole, err := member.GetMemberOrderRole(userId, defaultOrderRoleNames) // to remove
 				if err != nil {
 					fmt.Printf("Error ocurred while reading member order role from DB: %v\n", err)
 				}
@@ -133,8 +136,37 @@ func HandlePromotionRequestEvents(s *discordgo.Session, orderRoleNames []string)
 			}
 
 			fmt.Printf("%s leveled up ! (%d -> %d) | New role: %s\n", userTag, userCurrentLevel, promotedLevel, promotedRole.DisplayName)
+
+			// Send notification to audit progression
+			go auditProgression(userId, promotedRole.DisplayName)
+
+			// Send direct message to user to announce level up
+			go announceLevelUp(userId, promotedLevel, promotedRole.DisplayName)
 		}
 
 	}
 
+}
+
+func auditProgression(userId string, newRoleName string) {
+	// Audit by sending notification on designated channel
+	if channel, channelExists := globalConfiguration.NotificationChannels["notif-aztebotUpdatesChannel"]; channelExists {
+		content := fmt.Sprintf("<@%s> has leveled up ! They attained the `%s` order role.", userId, newRoleName)
+		globalMessaging.NotificationsChannel <- events.NotificationEvent{
+			TargetChannelId: channel.ChannelId,
+			Type:            "DEFAULT",
+			TextData:        &content,
+		}
+	}
+}
+
+func announceLevelUp(userId string, newLevel int, newRoleName string) {
+	dmEmbed := embed.NewEmbed().
+		SetTitle("🤖⭐    Level up!").
+		AddField("", fmt.Sprintf("You have officially attained the required activity metrics to progress to the `%s` order role. You are now level `%d`.", newRoleName, newLevel), false)
+
+	globalMessaging.DirectMessagesChannel <- events.DirectMessageEvent{
+		UserId: userId,
+		Embed:  dmEmbed,
+	}
 }

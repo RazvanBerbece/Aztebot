@@ -13,6 +13,14 @@ func HandleNotificationEvents(s *discordgo.Session) {
 
 	for notificationEvent := range globalMessaging.NotificationsChannel {
 		switch notificationEvent.Type {
+		case "DEFAULT":
+			err := notifications.SendDefaultEmbedToTextChannel(
+				s,
+				notificationEvent.TargetChannelId,
+				*notificationEvent.TextData)
+			if err != nil {
+				fmt.Printf("Failed to process NotificationEvent (%s): %v\n", notificationEvent.Type, err)
+			}
 		case "EMBED_WITH_TITLE_AND_FIELDS":
 			err := notifications.SendNotificationWithFieldsToTextChannel(
 				s,
