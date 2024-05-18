@@ -202,6 +202,11 @@ func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, m
 				log.Println("Error syncing progression for member:", updateErr)
 				return err
 			}
+			err = RefreshDiscordOrderRoleForMember(s, guildId, userId)
+			if err != nil {
+				log.Println("Error refreshing order role for member:", updateErr)
+				return err
+			}
 		}
 
 		return nil
