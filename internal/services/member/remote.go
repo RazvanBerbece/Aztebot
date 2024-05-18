@@ -109,6 +109,12 @@ func RemoveAllDiscordRolesFromMember(s *discordgo.Session, guildId string, userI
 			return err
 		}
 
+		// 20 Mar 2024: Discord does not allow any way of removing the default Server Booster role from a guild member
+		// so we just ignore it like it doesn't exist and hope that it goes away. :thumbs_down
+		if role.Name == globalConfiguration.ServerBoosterDefaultRoleName {
+			continue
+		}
+
 		// Don't delete roles which should be skipped
 		// like: server booster role, roles which are not in the DB (i.e added manually in Discord), etc.
 		roleExistsInDb := globalRepositories.RolesRepository.RoleByDisplayNameExists(role.Name)
@@ -119,13 +125,6 @@ func RemoveAllDiscordRolesFromMember(s *discordgo.Session, guildId string, userI
 		} else if roleExistsInDb == 0 {
 			// roles not in the DB need to be given back to user after refresh
 			roleIdsToRestore = append(roleIdsToRestore, roleID)
-		}
-
-		// 20 Mar 2024: Discord does not allow any way of removing the default Server Booster role from a guild member
-		// so we just ignore it like it doesn't exist and hope that it goes away. :thumbs_down
-		if role.Name == globalConfiguration.ServerBoosterDefaultRoleName {
-			roleIdsToRestore = append(roleIdsToRestore, roleID)
-			continue
 		}
 
 		err = s.GuildMemberRoleRemove(guildId, userId, roleID)
