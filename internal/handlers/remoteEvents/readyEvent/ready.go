@@ -36,7 +36,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	go channelHandlers.HandlePromotionRequestEvents(s, globalConfiguration.OrderRoleNames, true, false)
 
 	// Initial sync of members on server with the database
-	go startup.SyncMembersAtStartup(s, globalConfiguration.OrderRoleNames, true)
+	go startup.SyncMembersAtStartup(s, globalConfiguration.OrderRoleNames, false)
 
 	// Initial cleanup of members from database against the Discord server
 	go startup.CleanupMemberAtStartup(s, uids)
