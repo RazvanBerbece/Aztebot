@@ -11,7 +11,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func SyncMembersAtStartup(s *discordgo.Session) error {
+func SyncMembersAtStartup(s *discordgo.Session, defaultOrderRoleNames []string) error {
 
 	fmt.Println("[STARTUP] Starting Task SyncMembersAtStartup() at", time.Now())
 
@@ -28,7 +28,7 @@ func SyncMembersAtStartup(s *discordgo.Session) error {
 	}
 
 	// Process the current batch of members
-	processMembers(s, members, rolesRepository, usersRepository, userStatsRepository)
+	processMembers(s, members, rolesRepository, usersRepository, userStatsRepository, defaultOrderRoleNames)
 
 	// Paginate
 	for len(members) == 1000 {
@@ -41,7 +41,7 @@ func SyncMembersAtStartup(s *discordgo.Session) error {
 		}
 
 		// Process the next batch of members
-		processMembers(s, members, rolesRepository, usersRepository, userStatsRepository)
+		processMembers(s, members, rolesRepository, usersRepository, userStatsRepository, defaultOrderRoleNames)
 	}
 
 	// Cleanup
@@ -53,14 +53,14 @@ func SyncMembersAtStartup(s *discordgo.Session) error {
 
 }
 
-func processMembers(s *discordgo.Session, members []*discordgo.Member, rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository) {
+func processMembers(s *discordgo.Session, members []*discordgo.Member, rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository, defaultOrderRoleNames []string) {
 	for _, member := range members {
 		// If it's a bot, skip
 		if member.User.Bot {
 			continue
 		}
 		// For each member, sync their details (either add to DB or update)
-		err := memberService.SyncMemberPersistent(s, globalConfiguration.DiscordMainGuildId, member.User.ID, member, rolesRepository, usersRepository, userStatsRepository)
+		err := memberService.SyncMemberPersistent(s, globalConfiguration.DiscordMainGuildId, member.User.ID, member, rolesRepository, usersRepository, userStatsRepository, defaultOrderRoleNames)
 		if err != nil && err.Error() != "no update was executed" {
 			fmt.Printf("Error syncing member %s: %v\n", member.User.Username, err)
 		}
