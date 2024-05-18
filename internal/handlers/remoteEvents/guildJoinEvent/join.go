@@ -5,7 +5,6 @@ import (
 
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	"github.com/RazvanBerbece/Aztebot/internal/services/member"
-	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -16,8 +15,6 @@ func GuildJoin(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
 	if m.Member.User.Bot {
 		return
 	}
-
-	utils.LogHandlerCall("GuildJoin", "")
 
 	// Store newly-joined user to DB tables (probably only the initial details and awaiting for verification and cron sync)
 	err := member.SyncMember(s, globalConfiguration.DiscordMainGuildId, m.Member.User.ID, m.Member)
