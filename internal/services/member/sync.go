@@ -339,11 +339,6 @@ func syncProgressionForUser(s *discordgo.Session, userGuildId string, userId str
 			return err
 		}
 
-		err = globalRepositories.UsersRepository.RemoveUserRoleWithId(userId, currentOrderRoles[0].Id)
-		if err != nil {
-			fmt.Printf("Error occurred while removing member role from DB: %v\n", err)
-		}
-
 		promotedRole, err := globalRepositories.RolesRepository.GetRole(processedRoleName) // to append
 		if err != nil {
 			fmt.Printf("Error occurred while reading role from DB: %v\n", err)
