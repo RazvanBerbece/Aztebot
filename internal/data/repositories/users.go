@@ -399,6 +399,10 @@ func (r UsersRepository) GetRolesForUser(userId string) ([]dataModels.Role, erro
 		if err := rows.Scan(&roleIdsString); err != nil {
 			return nil, fmt.Errorf("GetRolesForUser %s - User: %v", userId, err)
 		}
+		if roleIdsString == "" {
+			// no roles assigned for user
+			return []dataModels.Role{}, nil
+		}
 		placeholders, ids = GetSqlPlaceholderAndValueRoleCommand(idArray(roleIdsString))
 	}
 	if err := rows.Err(); err != nil {
