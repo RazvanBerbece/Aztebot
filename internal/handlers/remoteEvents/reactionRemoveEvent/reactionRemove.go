@@ -38,13 +38,13 @@ func ReactionRemove(s *discordgo.Session, r *discordgo.MessageReactionRemove) {
 
 	err = globalRepositories.UserStatsRepository.DecrementReactionsReceivedForUser(messageOwnerUid)
 	if err != nil {
-		fmt.Printf("An error ocurred while updating user (%s) reaction count: %v", messageOwnerUid, err)
+		fmt.Printf("An error ocurred while updating user (%s) reaction count: %v\n", messageOwnerUid, err)
 	}
 
 	// Remove experience points from message owner
 	currentXp, err := member.RemoveMemberExperience(messageOwnerUid, "REACT_REWARD")
 	if err != nil {
-		fmt.Printf("An error ocurred while removing reaction received rewards (%d) from user (%s): %v", currentXp, messageOwnerUid, err)
+		fmt.Printf("An error ocurred while removing reaction received rewards (%d) from user (%s): %v\n", currentXp, messageOwnerUid, err)
 	}
 
 }
