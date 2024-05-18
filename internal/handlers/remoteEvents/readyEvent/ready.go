@@ -36,7 +36,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	go channelHandlers.HandleMemberMessageDeletionEvents(s)
 	go channelHandlers.HandleDirectMessageEvents(s)
 	go channelHandlers.HandleComplexResponseEvents(s, globalConfiguration.EmbedPageSize)
-	go channelHandlers.HandlePromotionRequestEvents(s, globalConfiguration.OrderRoleNames, false)
+	go channelHandlers.HandlePromotionRequestEvents(s, globalConfiguration.OrderRoleNames, true)
 
 	// Initial sync of members on server with the database
 	go startup.SyncMembersAtStartup(s)
@@ -46,7 +46,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 
 	// Initial update of experience gains and current levels in the DB
 	go startup.SyncExperiencePointsGainsAtStartup(s, uids)
-	go startup.SyncLevelsAtStartup(s, globalConfiguration.DiscordMainGuildId, uids)
+	// go startup.SyncLevelsAtStartup(s, globalConfiguration.DiscordMainGuildId, uids)
 
 	// Initial publishing of informative messages on certain channels
 	go startup.SendInformationEmbedsToTextChannels(s)
