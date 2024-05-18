@@ -28,6 +28,14 @@ func HandleSlashAddXp(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		return
 	}
 
+	low := 0.0
+	high := 500000.0
+	if *xpFloat <= low || *xpFloat > high {
+		errMsg := fmt.Sprintf("The provided `xp` command argument is invalid. (term: `%s` outside bounds)", xpStr)
+		utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
+		return
+	}
+
 	// Give XP to member
 	_, err = member.GrantMemberExperience(targetUserId, *xpFloat)
 	if err != nil {

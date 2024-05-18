@@ -229,6 +229,7 @@ func syncProgressionForUser(s *discordgo.Session, userGuildId string, userId str
 
 	// Solve mismatches where the member has a rank on the server but shouldn't
 	// according to the progression rules (type 1, 2, 3)
+	solvedMismatch := false
 	if processedLevel == 0 && processedRoleName == "" && len(currentOrderRoles) > 0 {
 		// mismatch, need to reset
 		err := globalRepositories.UsersRepository.SetLevel(userId, processedLevel)
@@ -255,7 +256,7 @@ func syncProgressionForUser(s *discordgo.Session, userGuildId string, userId str
 
 		fmt.Printf("Mismatch (type 1) for %s resolved.\n", user.DiscordTag)
 
-		return nil
+		solvedMismatch = true
 	} else if processedLevel > 0 && processedRoleName != "" && len(currentOrderRoles) == 1 {
 		if currentOrderRoles[0].DisplayName != processedRoleName {
 			// Solve mismatches where the member has a rank on the server but their
@@ -293,7 +294,7 @@ func syncProgressionForUser(s *discordgo.Session, userGuildId string, userId str
 
 			fmt.Printf("Mismatch (type 2) for %s resolved.\n", user.DiscordTag)
 
-			return nil
+			solvedMismatch = true
 		}
 	} else if processedLevel > 0 && processedRoleName != "" && len(currentOrderRoles) > 1 {
 		// Solve mismatches where the member has multiple ranks on the server but their
@@ -335,7 +336,17 @@ func syncProgressionForUser(s *discordgo.Session, userGuildId string, userId str
 
 		fmt.Printf("Mismatch (type 3) for %s resolved.\n", user.DiscordTag)
 
-		return nil
+		solvedMismatch = true
+	}
+
+	if !solvedMismatch && processedLevel == 0 {
+		// still reset
+		err = RefreshDiscordOrderRoleForMember(s, userGuildId, userId)
+		if err != nil {
+			fmt.Printf("Error refreshing order role on Discord member: %v\n", err)
+			return err
+		}
+
 	}
 
 	return nil
