@@ -147,6 +147,11 @@ func RemoveAllDiscordRolesFromMember(s *discordgo.Session, guildId string, userI
 			return err
 		}
 	}
+	err = RefreshDiscordOrderRoleForMember(s, guildId, userId)
+	if err != nil {
+		fmt.Printf("Error refreshing order role on Discord member: %v\n", err)
+		return err
+	}
 
 	return nil
 
@@ -374,7 +379,6 @@ func RefreshDiscordOrderRoleForMember(s *discordgo.Session, guildId string, user
 				fmt.Println("Error removing order role from Discord member:\n", err)
 				return err
 			}
-			break
 		}
 	}
 

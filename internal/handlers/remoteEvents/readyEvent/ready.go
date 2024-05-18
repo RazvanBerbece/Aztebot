@@ -36,7 +36,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	go channelHandlers.HandleMemberMessageDeletionEvents(s)
 	go channelHandlers.HandleDirectMessageEvents(s)
 	go channelHandlers.HandleComplexResponseEvents(s, globalConfiguration.EmbedPageSize)
-	go channelHandlers.HandlePromotionRequestEvents(s, globalConfiguration.OrderRoleNames, false)
+	go channelHandlers.HandlePromotionRequestEvents(s, globalConfiguration.OrderRoleNames, false, true)
 
 	// Initial sync of members on server with the database
 	go startup.SyncMembersAtStartup(s)
