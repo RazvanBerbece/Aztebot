@@ -359,7 +359,7 @@ func syncProgressionForUser(s *discordgo.Session, userGuildId string, userId str
 			fmt.Printf("Error occurred while refreshing member roles on-Discord: %v\n", err)
 		}
 
-		fmt.Printf("Mismatch (type 2) for %s resolved.\n", user.DiscordTag)
+		fmt.Printf("Mismatch (type 4) for %s resolved.\n", user.DiscordTag)
 	}
 
 	return nil
