@@ -74,3 +74,68 @@ func RefreshRolesBasedOnStats(userId string) error {
 
 	return nil
 }
+
+func GetRoleNameAndLevelFromStats(userXp float64, userNumberMessagesSent int, userTimeSpentInVc int) (string, int) {
+
+	const sHour = 60 * 60
+
+	// Check current stats against progression table
+	// Figure out the promoted role to be given
+	var level int = 0
+	var roleName string = ""
+	switch {
+	// No order
+	case userXp < 7500:
+		// outer circle, so no role or level
+	// First order
+	case userXp >= 7500 && userXp < 10000:
+		if userNumberMessagesSent >= 1000 && userTimeSpentInVc >= sHour*15 {
+			level = 1
+			roleName = "🔗 Zelator"
+		}
+	case userXp >= 10000 && userXp < 15000:
+		if userNumberMessagesSent >= 2500 && userTimeSpentInVc >= sHour*20 {
+			level = 2
+			roleName = "📖 Theoricus"
+		}
+	case userXp >= 15000 && userXp < 30000:
+		if userNumberMessagesSent >= 5000 && userTimeSpentInVc >= sHour*30 {
+			level = 3
+			roleName = "📿 Philosophus"
+		}
+	// Second order
+	case userXp >= 30000 && userXp < 45000:
+		if userNumberMessagesSent >= 12500 && userTimeSpentInVc >= sHour*40 {
+			level = 4
+			roleName = "🔮 Adeptus Minor"
+		}
+	case userXp >= 45000 && userXp < 50000:
+		if userNumberMessagesSent >= 15000 && userTimeSpentInVc >= sHour*45 {
+			level = 5
+			roleName = "〽️ Adeptus Major"
+		}
+	case userXp >= 50000 && userXp < 100000:
+		if userNumberMessagesSent >= 20000 && userTimeSpentInVc >= sHour*50 {
+			level = 6
+			roleName = "🧿 Adeptus Exemptus"
+		}
+	// Third order
+	case userXp >= 100000 && userXp < 150000:
+		if userNumberMessagesSent >= 35000 && userTimeSpentInVc >= sHour*200 {
+			level = 7
+			roleName = "☀️ Magister Templi"
+		}
+	case userXp >= 150000 && userXp < 200000:
+		if userNumberMessagesSent >= 45000 && userTimeSpentInVc >= sHour*250 {
+			level = 8
+			roleName = "🧙🏼 Magus"
+		}
+	case userXp >= 200000:
+		if userNumberMessagesSent >= 50000 && userTimeSpentInVc >= sHour*300 {
+			level = 9
+			roleName = "⚔️ Ipsissimus"
+		}
+	}
+
+	return roleName, level
+}

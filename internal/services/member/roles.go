@@ -30,8 +30,8 @@ func GetMemberStaffRole(userId string, staffRoles []string) (*dataModels.Role, e
 
 }
 
-// Gets the order role of a given member.
-func GetMemberOrderRole(userId string, defaultOrderRoleNames []string) (*dataModels.Role, error) {
+// Gets the order roles of a given member.
+func GetMemberOrderRoles(userId string, defaultOrderRoleNames []string) ([]*dataModels.Role, error) {
 
 	roles, err := globalRepositories.UsersRepository.GetRolesForUser(userId)
 	if err != nil {
@@ -39,13 +39,14 @@ func GetMemberOrderRole(userId string, defaultOrderRoleNames []string) (*dataMod
 		return nil, err
 	}
 
+	var rolesResult []*dataModels.Role
 	for _, role := range roles {
 		if utils.StringInSlice(role.DisplayName, defaultOrderRoleNames) {
-			return &role, nil
+			rolesResult = append(rolesResult, &role)
 		}
 	}
 
-	return nil, nil
+	return rolesResult, nil
 
 }
 
