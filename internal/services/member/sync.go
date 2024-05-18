@@ -100,7 +100,7 @@ func SyncMember(s *discordgo.Session, guildId string, userId string, member *dis
 
 // Takes in a discord member and syncs the database User with the current member details
 // as they appear on the Discord guild. It uses repositories injected via the argument list to prevent connection attempt floods.
-func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, member *discordgo.Member, rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository, defaultOrderRoleNames []string) error {
+func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, member *discordgo.Member, rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository, defaultOrderRoleNames []string, syncProgression bool) error {
 
 	var user *dataModels.User
 	var userStats *dataModels.UserStats
@@ -196,7 +196,13 @@ func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, m
 			return err
 		}
 
-		go syncProgressionForUser(s, guildId, userId, user.CurrentExperience, userStats.NumberMessagesSent, userStats.TimeSpentInVoiceChannels, defaultOrderRoleNames)
+		if syncProgression {
+			err = syncProgressionForUser(s, guildId, userId, user.CurrentExperience, userStats.NumberMessagesSent, userStats.TimeSpentInVoiceChannels, defaultOrderRoleNames)
+			if err != nil {
+				log.Println("Error syncing progression for member:", updateErr)
+				return err
+			}
+		}
 
 		return nil
 	}
