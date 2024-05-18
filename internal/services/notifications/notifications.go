@@ -7,6 +7,23 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+func SendDefaultEmbedToTextChannel(s *discordgo.Session, channelId string, content string) error {
+
+	embed := embed.NewEmbed().
+		SetColor(000000)
+
+	embed.AddField("", content, false)
+
+	_, err := s.ChannelMessageSendEmbed(channelId, embed.MessageEmbed)
+	if err != nil {
+		fmt.Printf("Error sending notification to channel %s: %v", channelId, err)
+		return err
+	}
+
+	return nil
+
+}
+
 func SendEmbedToTextChannel(s *discordgo.Session, channelId string, embed embed.Embed) error {
 
 	_, err := s.ChannelMessageSendEmbed(channelId, embed.MessageEmbed)

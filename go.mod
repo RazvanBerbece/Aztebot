@@ -1,8 +1,6 @@
 module github.com/RazvanBerbece/Aztebot
 
-go 1.22
-
-toolchain go1.22.0
+go 1.22.3
 
 require (
 	github.com/brianvoe/gofakeit/v6 v6.28.0
