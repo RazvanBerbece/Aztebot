@@ -10,7 +10,7 @@ import (
 
 func IsVerified(userId string) bool {
 
-	hasAtLeastOneRole := false
+	hasMultipleRoles := false
 	hasVerifiedRole := false
 	hasCreatedAtTimestamp := false
 
@@ -22,7 +22,7 @@ func IsVerified(userId string) bool {
 	roleIds := utils.GetRoleIdsFromRoleString(user.CurrentRoleIds)
 
 	if len(roleIds) > 0 {
-		hasAtLeastOneRole = true
+		hasMultipleRoles = true
 	}
 
 	if user.CreatedAt != nil {
@@ -33,10 +33,11 @@ func IsVerified(userId string) bool {
 		if roleId == 1 {
 			// role with ID = 1 is always the verified role
 			hasVerifiedRole = true
+			break
 		}
 	}
 
-	return hasAtLeastOneRole && hasVerifiedRole && hasCreatedAtTimestamp
+	return hasMultipleRoles && hasVerifiedRole && hasCreatedAtTimestamp
 }
 
 func IsStaff(userId string, staffRoles []string) bool {

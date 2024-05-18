@@ -74,6 +74,7 @@ func SyncMember(s *discordgo.Session, guildId string, userId string, member *dis
 						TextData:        &content,
 					}
 				}
+				break
 			}
 		}
 
@@ -164,27 +165,16 @@ func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, m
 			if roleId == 1 && user.CreatedAt == nil {
 				unixNow := time.Now().Unix()
 				user.CreatedAt = &unixNow
-
 				// Newly verified user, so announce in global (if notification channel exists)
 				if channel, channelExists := globalConfiguration.NotificationChannels["notif-globalGeneralChat"]; channelExists {
-					fields := []discordgo.MessageEmbedField{
-						{
-							Name:   "",
-							Value:  fmt.Sprintf("<@%s> has joined the OTA community! Say hello 🍻", user.UserId),
-							Inline: false,
-						},
-					}
-
-					notificationTitle := ""
-					useThumbnail := false
+					content := fmt.Sprintf("<@%s> has recently joined the OTA community! Say hello 🍻", user.UserId)
 					globalMessaging.NotificationsChannel <- events.NotificationEvent{
 						TargetChannelId: channel.ChannelId,
-						Title:           &notificationTitle,
-						Type:            "EMBED_WITH_TITLE_AND_FIELDS",
-						Fields:          fields,
-						UseThumbnail:    &useThumbnail,
+						Type:            "DEFAULT",
+						TextData:        &content,
 					}
 				}
+				break
 			}
 		}
 

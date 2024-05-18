@@ -129,7 +129,7 @@ func RemoveAllDiscordRolesFromMember(s *discordgo.Session, guildId string, userI
 
 		err = s.GuildMemberRoleRemove(guildId, userId, roleID)
 		if err != nil {
-			fmt.Printf("Error removing role with ID %s: %v\n", roleID, err)
+			fmt.Printf("Error removing role %s: %v\n", role.Name, err)
 			return err
 		}
 	}
