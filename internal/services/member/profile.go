@@ -8,6 +8,37 @@ import (
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 )
 
+func IsVerified(userId string) bool {
+
+	hasAtLeastOneRole := false
+	hasVerifiedRole := false
+	hasCreatedAtTimestamp := false
+
+	user, err := globalRepositories.UsersRepository.GetUser(userId)
+	if err != nil {
+		log.Printf("Cannot retrieve user with id %s: %v", userId, err)
+	}
+
+	roleIds := utils.GetRoleIdsFromRoleString(user.CurrentRoleIds)
+
+	if len(roleIds) > 0 {
+		hasAtLeastOneRole = true
+	}
+
+	if user.CreatedAt != nil {
+		hasCreatedAtTimestamp = true
+	}
+
+	for _, roleId := range roleIds {
+		if roleId == 1 {
+			// role with ID = 1 is always the verified role
+			hasVerifiedRole = true
+		}
+	}
+
+	return hasAtLeastOneRole && hasVerifiedRole && hasCreatedAtTimestamp
+}
+
 func IsStaff(userId string, staffRoles []string) bool {
 
 	roles, err := globalRepositories.UsersRepository.GetRolesForUser(userId)
