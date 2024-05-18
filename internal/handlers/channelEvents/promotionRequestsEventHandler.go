@@ -2,6 +2,7 @@ package channelHandlers
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
@@ -12,7 +13,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []string, audit bool) {
+func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []string, audit bool, resolveMismatches bool) {
 
 	for xpEvent := range globalMessaging.PromotionRequestsChannel {
 
@@ -38,8 +39,22 @@ func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []
 			continue
 		}
 
+		if resolveMismatches {
+			err = member.ResolveProgressionMismatchForMember(s, userGuildId, userId, userXp, userNumberMessagesSent, userTimeSpentInVc, defaultOrderRoleNames)
+			if err != nil {
+				log.Println("Error resolving mismatches for member:", err)
+				continue
+			}
+		}
+
+		// Get refreshed role IDs, level and XP after mismatch resolution
+		user, err := globalRepositories.UsersRepository.GetUser(userId)
+		if err != nil {
+			fmt.Printf("Error occurred while retrieving user and roles from DB: %v\n", err)
+		}
+
 		// Promotion is available for current member (and no mismatch was detected)
-		if processedLevel != 0 && processedRoleName != "" && processedLevel > userCurrentLevel {
+		if processedLevel != 0 && processedRoleName != "" && processedLevel > user.CurrentLevel {
 
 			// Give promoted level in DB
 			err := globalRepositories.UsersRepository.SetLevel(userId, processedLevel)

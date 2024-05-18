@@ -197,7 +197,7 @@ func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, m
 		}
 
 		if syncProgression {
-			err = syncProgressionForUser(s, guildId, userId, user.CurrentExperience, userStats.NumberMessagesSent, userStats.TimeSpentInVoiceChannels, defaultOrderRoleNames)
+			err = ResolveProgressionMismatchForMember(s, guildId, userId, user.CurrentExperience, userStats.NumberMessagesSent, userStats.TimeSpentInVoiceChannels, defaultOrderRoleNames)
 			if err != nil {
 				log.Println("Error syncing progression for member:", updateErr)
 				return err
@@ -210,7 +210,7 @@ func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, m
 	return fmt.Errorf("no update was executed")
 }
 
-func syncProgressionForUser(s *discordgo.Session, userGuildId string, userId string, userXp float64, userNumberMessagesSent int, userTimeSpentInVc int, defaultOrderRoleNames []string) error {
+func ResolveProgressionMismatchForMember(s *discordgo.Session, userGuildId string, userId string, userXp float64, userNumberMessagesSent int, userTimeSpentInVc int, defaultOrderRoleNames []string) error {
 
 	// don't sync progression for unverified users
 	if !IsVerified(userId) {

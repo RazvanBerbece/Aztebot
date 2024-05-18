@@ -89,8 +89,42 @@ func IsBot(s *discordgo.Session, guildId string, userId string, debug bool) (*bo
 	return &isBot, nil
 }
 
+// Removes all roles on the actual Discord member.
+func ClearAllDiscordRolesFromMember(s *discordgo.Session, guildId string, userId string) error {
+
+	// Get the member's assigned roles in Discord
+	member, err := s.GuildMember(guildId, userId)
+	if err != nil {
+		return err
+	}
+
+	// Find all user's roles and delete them
+	for _, roleID := range member.Roles {
+
+		role, err := GetDiscordRole(s, guildId, roleID)
+		if err != nil {
+			fmt.Printf("Error retrieving role with ID %s: %v\n", roleID, err)
+			return err
+		}
+
+		// 20 Mar 2024: Discord does not allow any way of removing the default Server Booster role from a guild member
+		// so we just ignore it like it doesn't exist and hope that it goes away. :thumbs_down
+		if role.Name == globalConfiguration.ServerBoosterDefaultRoleName {
+			continue
+		}
+
+		err = s.GuildMemberRoleRemove(guildId, userId, roleID)
+		if err != nil {
+			fmt.Printf("Error removing role %s: %v\n", role.Name, err)
+			return err
+		}
+	}
+
+	return nil
+}
+
 // Removes all roles (except non-DB ones) on the actual Discord member.
-func RemoveAllDiscordRolesFromMember(s *discordgo.Session, guildId string, userId string) error {
+func ClearDiscordRolesFromMember(s *discordgo.Session, guildId string, userId string) error {
 
 	// Get the member's assigned roles in Discord
 	member, err := s.GuildMember(guildId, userId)
@@ -154,7 +188,6 @@ func RemoveAllDiscordRolesFromMember(s *discordgo.Session, guildId string, userI
 	}
 
 	return nil
-
 }
 
 func RemoveDiscordRoleFromMember(s *discordgo.Session, guildId string, userId string, roleName string) error {
@@ -323,7 +356,7 @@ func GetDiscordOrderRoleNameForMember(s *discordgo.Session, guildId string, user
 func RefreshDiscordRolesForMember(s *discordgo.Session, guildId string, userId string) error {
 
 	// Remove all roles
-	err := RemoveAllDiscordRolesFromMember(s, guildId, userId)
+	err := ClearDiscordRolesFromMember(s, guildId, userId)
 	if err != nil {
 		fmt.Printf("An error ocurred while removing all roles for member: %v\n", err)
 		return err
@@ -346,7 +379,7 @@ func RefreshDiscordRolesForMember(s *discordgo.Session, guildId string, userId s
 func RefreshDiscordRolesWithIdForMember(s *discordgo.Session, guildId string, userId string, roleIds string) error {
 
 	// Remove all roles
-	err := RemoveAllDiscordRolesFromMember(s, guildId, userId)
+	err := ClearDiscordRolesFromMember(s, guildId, userId)
 	if err != nil {
 		fmt.Printf("An error ocurred while removing all roles for member: %v\n", err)
 		return err
