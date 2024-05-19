@@ -1,6 +1,6 @@
 package globalConfiguration
 
-import dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
+import dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
 
 var JailTasks = []string{}
 

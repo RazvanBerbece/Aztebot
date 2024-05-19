@@ -3,7 +3,7 @@ package repository_test
 import (
 	"testing"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
+	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
 	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
 )
 

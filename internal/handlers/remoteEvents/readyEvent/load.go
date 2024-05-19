@@ -3,7 +3,7 @@ package readyEvent
 import (
 	"strings"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
+	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 )
 

@@ -3,7 +3,7 @@ package globalState
 import (
 	"time"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
+	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
 )
 
 var VoiceSessions = make(map[string]time.Time)

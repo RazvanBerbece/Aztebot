@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/domain"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
@@ -12,6 +13,8 @@ import (
 )
 
 func UserRepReact(s *discordgo.Session, m *discordgo.MessageCreate) {
+
+	authorUserId := m.Author.ID
 
 	phrase := m.Content // looks like "+rep @Usertag" / "-rep @Usertag"
 
@@ -49,12 +52,10 @@ func UserRepReact(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	// Delay +- reps so the action can't be spammed
-	mRepDelay := 5 // in minutes
-	if timestamp, exists := globalState.LastUserReps[targetUserId]; exists {
-		durationSinceRep := time.Since(timestamp)
-		if int(durationSinceRep.Minutes()) < mRepDelay {
-			// ignore it
-			s.MessageReactionAdd(m.ChannelID, m.ID, "❌")
+	if targetReps, exists := globalState.LastGivenUserReps[authorUserId]; exists {
+		if domain.IdInAuthorRepTargetList(targetUserId, targetReps) {
+			// rep author already repped this target user
+			s.MessageReactionAdd(m.ChannelID, m.ID, "⏳")
 			return
 		}
 	}
@@ -77,7 +78,14 @@ func UserRepReact(s *discordgo.Session, m *discordgo.MessageCreate) {
 				fmt.Printf("An error ocurred while adding rep to user in the DB for %s: %v\n", targetUserId, err)
 				return
 			}
-			globalState.LastUserReps[targetUserId] = time.Now()
+
+			// Register given rep to block follow-up reps to the same target from the same author
+			reps := globalState.LastGivenUserReps[authorUserId]
+			reps = append(reps, domain.GivenRep{
+				To:        targetUserId,
+				Timestamp: time.Now(),
+			})
+			globalState.LastGivenUserReps[authorUserId] = reps
 		} else if repModeInput == "-rep" {
 			err := globalRepositories.UserRepRepository.AddNewEntry(targetUserId)
 			if err != nil {
@@ -89,7 +97,14 @@ func UserRepReact(s *discordgo.Session, m *discordgo.MessageCreate) {
 				fmt.Printf("An error ocurred while removing rep from user in the DB for %s: %v\n", targetUserId, err)
 				return
 			}
-			globalState.LastUserReps[targetUserId] = time.Now()
+
+			// Register given rep to block follow-up reps to the same target from the same author
+			reps := globalState.LastGivenUserReps[authorUserId]
+			reps = append(reps, domain.GivenRep{
+				To:        targetUserId,
+				Timestamp: time.Now(),
+			})
+			globalState.LastGivenUserReps[authorUserId] = reps
 		}
 		s.MessageReactionAdd(m.ChannelID, m.ID, "✅")
 	case 1:
@@ -99,14 +114,28 @@ func UserRepReact(s *discordgo.Session, m *discordgo.MessageCreate) {
 				fmt.Printf("An error ocurred while adding rep to user in the DB for %s: %v\n", targetUserId, err)
 				return
 			}
-			globalState.LastUserReps[targetUserId] = time.Now()
+
+			// Register given rep to block follow-up reps to the same target from the same author
+			reps := globalState.LastGivenUserReps[authorUserId]
+			reps = append(reps, domain.GivenRep{
+				To:        targetUserId,
+				Timestamp: time.Now(),
+			})
+			globalState.LastGivenUserReps[authorUserId] = reps
 		} else if repModeInput == "-rep" {
 			err := globalRepositories.UserRepRepository.RemoveRep(targetUserId)
 			if err != nil {
 				fmt.Printf("An error ocurred while removing rep from user in the DB for %s: %v\n", targetUserId, err)
 				return
 			}
-			globalState.LastUserReps[targetUserId] = time.Now()
+
+			// Register given rep to block follow-up reps to the same target from the same author
+			reps := globalState.LastGivenUserReps[authorUserId]
+			reps = append(reps, domain.GivenRep{
+				To:        targetUserId,
+				Timestamp: time.Now(),
+			})
+			globalState.LastGivenUserReps[authorUserId] = reps
 		}
 		s.MessageReactionAdd(m.ChannelID, m.ID, "✅")
 	default:

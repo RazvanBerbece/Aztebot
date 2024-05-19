@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
+	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
 	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
 	"github.com/brianvoe/gofakeit/v6"
 )

@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
+	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
 	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
