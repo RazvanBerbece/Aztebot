@@ -45,7 +45,7 @@ func GetProfileEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Me
 
 	user, err := globalRepositories.UsersRepository.GetUser(userId)
 	if err != nil {
-		log.Printf("Cannot retrieve user with id %s: %v", userId, err)
+		log.Printf("Cannot retrieve user with id %s: %v\n", userId, err)
 		return nil
 	}
 
@@ -93,7 +93,7 @@ func GetProfileEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Me
 	// Fetch user information from Discord API.
 	apiUser, err := s.User(userId)
 	if err != nil {
-		log.Printf("Cannot retrieve user %s from Discord API: %v", userId, err)
+		log.Printf("Cannot retrieve user %s from Discord API: %v\n", userId, err)
 		return nil
 	}
 
@@ -107,6 +107,20 @@ func GetProfileEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Me
 			orderText = " | SECOND ORDER"
 		case 3:
 			orderText = " | THIRD ORDER"
+		}
+	}
+
+	var repText string = ""
+	userRep, err := globalRepositories.UserRepRepository.GetRepForUser(userId)
+	if err != nil {
+		log.Printf("Cannot retrieve user rep %s from DB: %v\n", userId, err)
+		return nil
+	}
+	if userRep != nil {
+		if userRep.Rep > 0 {
+			repText = fmt.Sprintf(" | +%d rep", userRep.Rep)
+		} else if userRep.Rep < 0 {
+			repText = fmt.Sprintf(" | %d rep", userRep.Rep)
 		}
 	}
 
@@ -126,7 +140,7 @@ func GetProfileEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Me
 
 	embed := embed.NewEmbed().
 		SetTitle(fmt.Sprintf("🤖   `%s`'s Profile Card%s", user.DiscordTag, genderDisplayString)).
-		SetDescription(fmt.Sprintf("`%s%s CIRCLE%s`", orderRoleText, user.CurrentCircle, orderText)).
+		SetDescription(fmt.Sprintf("`%s%s CIRCLE%s%s`", orderRoleText, user.CurrentCircle, orderText, repText)).
 		SetThumbnail(fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.png", userId, apiUser.Avatar)).
 		SetColor(000000).
 		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
@@ -143,7 +157,7 @@ func GetProfileEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Me
 		xpRankString := ""
 		ranks, err := member.GetMemberRankInLeaderboards(userId)
 		if err != nil {
-			log.Printf("Cannot retrieve user %s leaderboard ranks: %v", userId, err)
+			log.Printf("Cannot retrieve user %s leaderboard ranks: %v\n", userId, err)
 			return nil
 		}
 		if msgRank, ok := ranks["msg"]; ok {
@@ -165,13 +179,13 @@ func GetProfileEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Me
 		// Retrieve experience points for user
 		xp, err := member.GetMemberExperiencePoints(userId)
 		if err != nil {
-			log.Printf("Cannot retrieve user %s XP: %v", userId, err)
+			log.Printf("Cannot retrieve user %s XP: %v\n", userId, err)
 			return nil
 		}
 		xpInt := int(*xp)
 		xpRank, rankErr := member.GetMemberXpRank(userId)
 		if rankErr != nil {
-			log.Printf("Cannot retrieve user %s XP rank: %v", userId, rankErr)
+			log.Printf("Cannot retrieve user %s XP rank: %v\n", userId, rankErr)
 			return nil
 		}
 		xpRankString = fmt.Sprintf(" (`🏆 #%d`)", *xpRank)
