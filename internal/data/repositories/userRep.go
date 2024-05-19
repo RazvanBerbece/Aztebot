@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"database/sql"
 	"fmt"
 
 	databaseconn "github.com/RazvanBerbece/Aztebot/internal/data/connection"
@@ -102,26 +103,24 @@ func (r UserRepRepository) RemoveRep(userId string) error {
 
 func (r UserRepRepository) GetRepForUser(userId string) (*dataModels.UserRep, error) {
 
-	var result *dataModels.UserRep
+	// Get assigned role IDs for given user from the DB
+	query := "SELECT * FROM UserRep WHERE userId = ?"
+	row := r.Conn.Db.QueryRow(query, userId)
 
-	rows, err := r.Conn.Db.Query("SELECT * FROM UserRep WHERE userId = ?")
+	// Scan the role IDs and process them into query arguments to use
+	// in the Roles table
+	var userRep dataModels.UserRep
+	err := row.Scan(&userRep.UserId, &userRep.Rep)
+
 	if err != nil {
-		return nil, fmt.Errorf("GetRepForUser: %v", err)
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var entry dataModels.UserRep
-		if err := rows.Scan(&entry.UserId, &entry.Rep); err != nil {
-			return nil, fmt.Errorf("GetRepForUser: %v", err)
+		if err == sql.ErrNoRows {
+			return nil, nil
+		} else {
+			return nil, err
 		}
-		result = &entry
-	}
-	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("GetRepForUser: %v", err)
 	}
 
-	return result, nil
+	return &userRep, nil
 
 }
 
