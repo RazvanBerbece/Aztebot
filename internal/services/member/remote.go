@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/domain"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
@@ -44,7 +44,7 @@ func ReplyComplexToInteraction(s *discordgo.Session, i *discordgo.Interaction, e
 		}
 
 		// Keep paginated embeds in-memory to enable handling on button presses
-		globalState.EmbedsToPaginate[msg.ID] = dataModels.EmbedData{
+		globalState.EmbedsToPaginate[msg.ID] = domain.EmbedData{
 			ChannelId:   msg.ChannelID,
 			FieldData:   &originalAllFields, // all fields
 			CurrentPage: 1,                  // same for all complex paginated embeds

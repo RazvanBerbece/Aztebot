@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/domain"
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
 	"github.com/bwmarrin/discordgo"
@@ -110,7 +110,7 @@ func UpdateApprovedActionRowOriginalMessage(s *discordgo.Session, ownerTag strin
 	return nil
 }
 
-func UpdatePaginatedEmbedPage(s *discordgo.Session, embedData *dataModels.EmbedData, opCode string, channelId string, messageId string, pageSize int) error {
+func UpdatePaginatedEmbedPage(s *discordgo.Session, embedData *domain.EmbedData, opCode string, channelId string, messageId string, pageSize int) error {
 
 	// Retrieve original embed (the one with the pagination action row)
 	message, err := s.ChannelMessage(channelId, messageId)
@@ -137,7 +137,7 @@ func UpdatePaginatedEmbedPage(s *discordgo.Session, embedData *dataModels.EmbedD
 
 		// Update map to hold new page number
 		// assume that key exists
-		globalState.EmbedsToPaginate[messageId] = dataModels.EmbedData{
+		globalState.EmbedsToPaginate[messageId] = domain.EmbedData{
 			ChannelId:   embedData.ChannelId,
 			CurrentPage: currentPage,
 			FieldData:   embedData.FieldData,

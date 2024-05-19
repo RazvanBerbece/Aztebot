@@ -6,6 +6,7 @@ import (
 
 	databaseconn "github.com/RazvanBerbece/Aztebot/internal/data/connection"
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/domain"
 )
 
 type UsersStatsRepository struct {
@@ -385,7 +386,7 @@ func (r UsersStatsRepository) AddToTimeSpentListeningMusic(userId string, sTimeL
 	return nil
 }
 
-func (r UsersStatsRepository) GetTopUsersByMessageSent(count int) ([]dataModels.TopUserMS, error) {
+func (r UsersStatsRepository) GetTopUsersByMessageSent(count int) ([]domain.TopUserMS, error) {
 
 	// This could use something similar to a strategy pattern
 	// and only pass the column we want to filter on as a parameter to a more generic function
@@ -403,10 +404,10 @@ func (r UsersStatsRepository) GetTopUsersByMessageSent(count int) ([]dataModels.
 	}
 	defer rows.Close()
 
-	var topUsers []dataModels.TopUserMS
+	var topUsers []domain.TopUserMS
 
 	for rows.Next() {
-		var user dataModels.TopUserMS
+		var user domain.TopUserMS
 		err := rows.Scan(&user.DiscordTag, &user.UserId, &user.MessagesSent)
 		if err != nil {
 			return nil, err
@@ -422,7 +423,7 @@ func (r UsersStatsRepository) GetTopUsersByMessageSent(count int) ([]dataModels.
 
 }
 
-func (r UsersStatsRepository) GetTopUsersByTimeSpentInVC(count int) ([]dataModels.TopUserVC, error) {
+func (r UsersStatsRepository) GetTopUsersByTimeSpentInVC(count int) ([]domain.TopUserVC, error) {
 
 	// This could use something similar to a strategy pattern
 	// and only pass the column we want to filter on as a parameter to a more generic function
@@ -440,10 +441,10 @@ func (r UsersStatsRepository) GetTopUsersByTimeSpentInVC(count int) ([]dataModel
 	}
 	defer rows.Close()
 
-	var topUsers []dataModels.TopUserVC
+	var topUsers []domain.TopUserVC
 
 	for rows.Next() {
-		var user dataModels.TopUserVC
+		var user domain.TopUserVC
 		err := rows.Scan(&user.DiscordTag, &user.UserId, &user.TimeSpentInVCs)
 		if err != nil {
 			return nil, err
@@ -459,7 +460,7 @@ func (r UsersStatsRepository) GetTopUsersByTimeSpentInVC(count int) ([]dataModel
 
 }
 
-func (r UsersStatsRepository) GetTopUsersByTimeSpentListeningMusic(count int) ([]dataModels.TopUserMusic, error) {
+func (r UsersStatsRepository) GetTopUsersByTimeSpentListeningMusic(count int) ([]domain.TopUserMusic, error) {
 
 	// This could use something similar to a strategy pattern
 	// and only pass the column we want to filter on as a parameter to a more generic function
@@ -477,10 +478,10 @@ func (r UsersStatsRepository) GetTopUsersByTimeSpentListeningMusic(count int) ([
 	}
 	defer rows.Close()
 
-	var topUsers []dataModels.TopUserMusic
+	var topUsers []domain.TopUserMusic
 
 	for rows.Next() {
-		var user dataModels.TopUserMusic
+		var user domain.TopUserMusic
 		err := rows.Scan(&user.DiscordTag, &user.UserId, &user.TimeSpentListeningMusic)
 		if err != nil {
 			return nil, err
@@ -496,7 +497,7 @@ func (r UsersStatsRepository) GetTopUsersByTimeSpentListeningMusic(count int) ([
 
 }
 
-func (r UsersStatsRepository) GetTopUsersByActiveDayStreak(count int) ([]dataModels.TopUserADS, error) {
+func (r UsersStatsRepository) GetTopUsersByActiveDayStreak(count int) ([]domain.TopUserADS, error) {
 
 	// This could use something similar to a strategy pattern
 	// and only pass the column we want to filter on as a parameter to a more generic function
@@ -513,10 +514,10 @@ func (r UsersStatsRepository) GetTopUsersByActiveDayStreak(count int) ([]dataMod
 	}
 	defer rows.Close()
 
-	var topUsers []dataModels.TopUserADS
+	var topUsers []domain.TopUserADS
 
 	for rows.Next() {
-		var user dataModels.TopUserADS
+		var user domain.TopUserADS
 		err := rows.Scan(&user.DiscordTag, &user.UserId, &user.Streak)
 		if err != nil {
 			return nil, err
@@ -532,7 +533,7 @@ func (r UsersStatsRepository) GetTopUsersByActiveDayStreak(count int) ([]dataMod
 
 }
 
-func (r UsersStatsRepository) GetTopUsersByReceivedReactions(count int) ([]dataModels.TopUserRCT, error) {
+func (r UsersStatsRepository) GetTopUsersByReceivedReactions(count int) ([]domain.TopUserRCT, error) {
 
 	// This could use something similar to a strategy pattern
 	// and only pass the column we want to filter on as a parameter to a more generic function
@@ -550,10 +551,10 @@ func (r UsersStatsRepository) GetTopUsersByReceivedReactions(count int) ([]dataM
 	}
 	defer rows.Close()
 
-	var topUsers []dataModels.TopUserRCT
+	var topUsers []domain.TopUserRCT
 
 	for rows.Next() {
-		var user dataModels.TopUserRCT
+		var user domain.TopUserRCT
 		err := rows.Scan(&user.DiscordTag, &user.UserId, &user.ReactionsReceived)
 		if err != nil {
 			return nil, err
@@ -697,7 +698,7 @@ func (r UsersStatsRepository) GetUserLeaderboardRank(userId string, leaderboardN
 
 }
 
-func (r UsersStatsRepository) GetTopUsersByXp(count int) ([]dataModels.TopUserXP, error) {
+func (r UsersStatsRepository) GetTopUsersByXp(count int) ([]domain.TopUserXP, error) {
 
 	// This could use something similar to a strategy pattern
 	// and only pass the column we want to filter on as a parameter to a more generic function
@@ -714,10 +715,10 @@ func (r UsersStatsRepository) GetTopUsersByXp(count int) ([]dataModels.TopUserXP
 	}
 	defer rows.Close()
 
-	var topUsers []dataModels.TopUserXP
+	var topUsers []domain.TopUserXP
 
 	for rows.Next() {
-		var user dataModels.TopUserXP
+		var user domain.TopUserXP
 		err := rows.Scan(&user.DiscordTag, &user.UserId, &user.XpGained)
 		if err != nil {
 			return nil, err

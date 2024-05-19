@@ -3,7 +3,7 @@ package globalState
 import (
 	"time"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/domain"
 )
 
 var VoiceSessions = make(map[string]time.Time)
@@ -13,4 +13,4 @@ var DeafSessions = make(map[string]time.Time)
 
 var ConfessionsToApprove = make(map[string]string)
 
-var EmbedsToPaginate = make(map[string]dataModels.EmbedData)
+var EmbedsToPaginate = make(map[string]domain.EmbedData)

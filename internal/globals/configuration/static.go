@@ -1,6 +1,6 @@
 package globalConfiguration
 
-import dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
+import "github.com/RazvanBerbece/Aztebot/internal/data/models/domain"
 
 var JailTasks = []string{}
 
@@ -11,4 +11,4 @@ var DynamicChannelCreateButtonIds map[string]string
 
 var DeleteExceptedChannels map[string]string
 
-var NotificationChannels = make(map[string]dataModels.Channel)
+var NotificationChannels = make(map[string]domain.Channel)
