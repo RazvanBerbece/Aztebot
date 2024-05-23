@@ -7,12 +7,16 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func SendDefaultEmbedToTextChannel(s *discordgo.Session, channelId string, content string) error {
+func SendDefaultEmbedToTextChannel(s *discordgo.Session, channelId string, content string, addTimestampFooter bool) error {
 
 	embed := embed.NewEmbed().
 		SetColor(000000)
 
 	embed.AddField("", content, false)
+
+	if addTimestampFooter {
+		embed.DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST")
+	}
 
 	_, err := s.ChannelMessageSendEmbed(channelId, embed.MessageEmbed)
 	if err != nil {
