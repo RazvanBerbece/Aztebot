@@ -21,7 +21,7 @@ func TestGetCircleAndOrderFromRoleId(t *testing.T) {
 		{7, []int{0, -1}},
 		{8, []int{0, -1}},
 		{9, []int{0, -1}},
-		{10, []int{1, 1}},
+		{10, []int{0, -1}},
 		{11, []int{1, 1}},
 		{12, []int{1, 1}},
 		{13, []int{1, 1}},
@@ -31,6 +31,8 @@ func TestGetCircleAndOrderFromRoleId(t *testing.T) {
 		{17, []int{1, 3}},
 		{18, []int{1, 3}},
 		{19, []int{1, 3}},
+		{20, []int{1, 3}},
+		{21, []int{1, 3}},
 	}
 
 	for _, c := range cases {
