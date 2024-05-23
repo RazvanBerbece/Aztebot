@@ -19,18 +19,18 @@ func TestGetRoleById(t *testing.T) {
 			RoleName:    "aztec",
 			DisplayName: "Aztec",
 		}},
-		{11, dataModels.Role{
-			Id:          11,
+		{12, dataModels.Role{
+			Id:          12,
 			RoleName:    "theoricus",
 			DisplayName: "📖 Theoricus",
 		}},
-		{18, dataModels.Role{
-			Id:          18,
+		{19, dataModels.Role{
+			Id:          19,
 			RoleName:    "magus",
 			DisplayName: "🧙🏼 Magus",
 		}},
-		{20, dataModels.Role{
-			Id:          20,
+		{21, dataModels.Role{
+			Id:          21,
 			RoleName:    "arhitect",
 			DisplayName: "Arhitect",
 		}},
@@ -72,17 +72,17 @@ func TestGetRole(t *testing.T) {
 			DisplayName: "Aztec",
 		}},
 		{"Arhitect", dataModels.Role{
-			Id:          20,
+			Id:          21,
 			RoleName:    "arhitect",
 			DisplayName: "Arhitect",
 		}},
 		{"Dominus", dataModels.Role{
-			Id:          9,
+			Id:          10,
 			RoleName:    "dominus",
 			DisplayName: "Dominus",
 		}},
 		{"Developer", dataModels.Role{
-			Id:          8,
+			Id:          9,
 			RoleName:    "developer",
 			DisplayName: "Developer",
 		}},
