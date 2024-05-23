@@ -117,7 +117,7 @@ func (r MonthlyLeaderboardRepository) GetLeaderboardEntriesByCategory(category i
 
 	var entries []dataModels.MonthlyLeaderboardEntry
 
-	rows, err := r.Conn.Db.Query("SELECT * FROM MonthlyLeaderboard WHERE category = ? ORDER BY xpEarnedInCurrentMonth DESC", category)
+	rows, err := r.Conn.Db.Query("SELECT * FROM MonthlyLeaderboard WHERE category = ? AND xpEarnedInCurrentMonth > 0 ORDER BY xpEarnedInCurrentMonth DESC", category)
 	if err != nil {
 		return nil, fmt.Errorf("GetAllLeaderboardEntries: %v", err)
 	}
