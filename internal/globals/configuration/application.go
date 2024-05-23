@@ -17,6 +17,7 @@ var ExperienceReward_InMusic float64 = 0.005
 var EmbedPageSize int = 10
 
 // PROGRESSION RELATED
+var SyncProgressionInMemberUpdates = true
 var OrderRoleNames []string = []string{
 	"🔗 Zelator",
 	"📖 Theoricus",

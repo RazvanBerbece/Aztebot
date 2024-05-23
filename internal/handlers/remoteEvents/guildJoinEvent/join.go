@@ -17,7 +17,7 @@ func GuildJoin(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
 	}
 
 	// Store newly-joined user to DB tables (probably only the initial details and awaiting for verification and cron sync)
-	err := member.SyncMember(s, globalConfiguration.DiscordMainGuildId, m.Member.User.ID, m.Member)
+	err := member.SyncMember(s, globalConfiguration.DiscordMainGuildId, m.Member.User.ID, m.Member, globalConfiguration.OrderRoleNames, globalConfiguration.SyncProgressionInMemberUpdates)
 	if err != nil {
 		fmt.Printf("Error storing new member %s to DB: %v", m.Member.User.Username, err)
 	}
