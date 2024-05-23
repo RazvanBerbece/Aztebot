@@ -52,14 +52,14 @@ func GetOrderAsString(orderId int) string {
 
 func GetCircleAndOrderFromRoleId(roleId int) (int, int) {
 
-	if roleId <= 9 {
+	if roleId <= 10 {
 		return 0, -1
 	} else {
-		if roleId >= 10 && roleId < 14 {
+		if roleId >= 11 && roleId < 15 {
 			return 1, 1
-		} else if roleId >= 14 && roleId < 17 {
+		} else if roleId >= 15 && roleId < 18 {
 			return 1, 2
-		} else if roleId >= 17 {
+		} else if roleId >= 18 {
 			return 1, 3
 		}
 	}
