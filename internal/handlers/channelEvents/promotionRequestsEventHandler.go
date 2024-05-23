@@ -8,6 +8,7 @@ import (
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
+	"github.com/RazvanBerbece/Aztebot/internal/services/logging"
 	"github.com/RazvanBerbece/Aztebot/internal/services/member"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/bwmarrin/discordgo"
@@ -50,16 +51,10 @@ func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []
 		// Promotion is available for current member (and no mismatch was detected)
 		if processedLevel != 0 && processedRoleName != "" && processedLevel > user.CurrentLevel {
 
-			fmt.Printf("Promoting %s to level %d (role: %s)\n", user.DiscordTag, processedLevel, processedRoleName)
 			if globalConfiguration.AuditPromotionStateInChannel {
-				if channel, channelExists := globalConfiguration.NotificationChannels["notif-debug"]; channelExists {
-					content := fmt.Sprintf("Promoting %s to level %d (role: %s)\n", user.DiscordTag, processedLevel, processedRoleName)
-					globalMessaging.NotificationsChannel <- events.NotificationEvent{
-						TargetChannelId: channel.ChannelId,
-						Type:            "DEFAULT",
-						TextData:        &content,
-					}
-				}
+				logMsg := fmt.Sprintf("Promoting %s to level %d (role: %s)", user.DiscordTag, processedLevel, processedRoleName)
+				discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
+				discordChannelLogger.LogInfo(logMsg)
 			}
 
 			// Give promoted level in DB

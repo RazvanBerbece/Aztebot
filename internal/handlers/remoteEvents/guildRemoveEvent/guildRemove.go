@@ -3,9 +3,8 @@ package guildRemoveEvent
 import (
 	"fmt"
 
-	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
-	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
+	"github.com/RazvanBerbece/Aztebot/internal/services/logging"
 	"github.com/RazvanBerbece/Aztebot/internal/services/member"
 	"github.com/bwmarrin/discordgo"
 )
@@ -18,14 +17,9 @@ func GuildRemove(s *discordgo.Session, m *discordgo.GuildMemberRemove) {
 	}
 
 	if globalConfiguration.AuditMemberDeletesInChannel {
-		if channel, channelExists := globalConfiguration.NotificationChannels["notif-debug"]; channelExists {
-			content := fmt.Sprintf("%s left the server", m.Member.User.Username)
-			globalMessaging.NotificationsChannel <- events.NotificationEvent{
-				TargetChannelId: channel.ChannelId,
-				Type:            "DEFAULT",
-				TextData:        &content,
-			}
-		}
+		logMsg := fmt.Sprintf("%s left the server", m.Member.User.Username)
+		discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
+		discordChannelLogger.LogInfo(logMsg)
 	}
 
 	// Delete user from all tables
