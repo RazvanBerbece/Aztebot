@@ -14,6 +14,17 @@ func MemberRoleUpdate(s *discordgo.Session, m *discordgo.GuildMemberUpdate) {
 		return
 	}
 
+	// DEBUG
+	// TODO: Remove this once role-related issues have been identified
+	currentRoles := m.Roles
+	currentRolesString := ""
+	for _, roleId := range currentRoles {
+		role, err := member.GetDiscordRole(s, m.GuildID, roleId)
+		if err != nil {
+			fmt.Printf("Error ocurred while retrieving Discord role: %v\n", err)
+		}
+		currentRolesString += fmt.Sprintf("%s,", role.Name)
+	}
 	fmt.Printf("Handling role update for %s (updated roles: %s)\n", m.Member.User.Username, m.Roles)
 
 	// Sync user in DB with the current Discord member state
