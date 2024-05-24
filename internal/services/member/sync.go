@@ -269,11 +269,11 @@ func ResolveProgressionMismatchForMember(s *discordgo.Session, userGuildId strin
 	}
 
 	// Solve mismatches where the member has a rank on the server but shouldn't
-	// according to the progression rules (type 1, 2, 3, 4)
+	// according to the progression rules (types 1, 2, 3, 4)
 	if processedLevel == 0 && processedRoleName == "" && len(currentOrderRoles) > 0 {
 
 		if globalConfiguration.AuditPromotionMismatchesInChannel {
-			logMsg := fmt.Sprintf("Mismatch (type 1) discovered for %s", userId)
+			logMsg := fmt.Sprintf("Mismatch (type 1) discovered for `%s`", userId)
 			discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
 			discordChannelLogger.LogInfo(logMsg)
 		}
@@ -306,7 +306,7 @@ func ResolveProgressionMismatchForMember(s *discordgo.Session, userGuildId strin
 		if currentOrderRoles[0].DisplayName != processedRoleName {
 
 			if globalConfiguration.AuditPromotionMismatchesInChannel {
-				logMsg := fmt.Sprintf("Mismatch (type 2) discovered for %s", userId)
+				logMsg := fmt.Sprintf("Mismatch (type 2) discovered for `%s`", userId)
 				discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
 				discordChannelLogger.LogInfo(logMsg)
 			}
@@ -349,7 +349,7 @@ func ResolveProgressionMismatchForMember(s *discordgo.Session, userGuildId strin
 	} else if processedLevel > 0 && processedRoleName != "" && len(currentOrderRoles) > 1 {
 
 		if globalConfiguration.AuditPromotionMismatchesInChannel {
-			logMsg := fmt.Sprintf("Mismatch (type 3) discovered for %s", userId)
+			logMsg := fmt.Sprintf("Mismatch (type 3) discovered for `%s`", userId)
 			discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
 			discordChannelLogger.LogInfo(logMsg)
 		}
@@ -395,7 +395,7 @@ func ResolveProgressionMismatchForMember(s *discordgo.Session, userGuildId strin
 	} else if processedLevel > 0 && processedRoleName != "" && len(currentOrderRoles) == 0 {
 
 		if globalConfiguration.AuditPromotionMismatchesInChannel {
-			logMsg := fmt.Sprintf("Mismatch (type 4) discovered for %s", userId)
+			logMsg := fmt.Sprintf("Mismatch (type 4) discovered for `%s`", userId)
 			discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
 			discordChannelLogger.LogInfo(logMsg)
 		}

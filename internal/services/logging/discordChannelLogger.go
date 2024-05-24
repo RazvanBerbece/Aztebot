@@ -1,6 +1,8 @@
 package logging
 
 import (
+	"fmt"
+
 	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
@@ -20,11 +22,12 @@ func NewDiscordLogger(s *discordgo.Session, topic string) *DiscordChannelLogger 
 }
 
 func (l DiscordChannelLogger) LogInfo(msg string) {
+	log := fmt.Sprintf("INFO: %s", msg)
 	if channel, channelExists := globalConfiguration.NotificationChannels[l.Topic]; channelExists {
 		globalMessaging.NotificationsChannel <- events.NotificationEvent{
 			TargetChannelId:             channel.ChannelId,
 			Type:                        "DEFAULT",
-			TextData:                    &msg,
+			TextData:                    &log,
 			DecorateWithTimestampFooter: true,
 		}
 	}
