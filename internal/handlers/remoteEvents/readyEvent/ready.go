@@ -6,6 +6,7 @@ import (
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	channelHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/channelEvents"
+	"github.com/RazvanBerbece/Aztebot/internal/services/logging"
 	cron "github.com/RazvanBerbece/Aztebot/internal/tasks/cron"
 	"github.com/RazvanBerbece/Aztebot/internal/tasks/startup"
 	"github.com/bwmarrin/discordgo"
@@ -13,6 +14,9 @@ import (
 
 // Called once the Discord servers confirm a succesful connection.
 func Ready(s *discordgo.Session, event *discordgo.Ready) {
+
+	// Inject some dependencies at runtime
+	discordDebugChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
 
 	// Load static data once Discord API runtime features are confirmed
 	LoadStaticData()
@@ -28,12 +32,12 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 
 	// Run gochannel event handlers
 	go channelHandlers.HandleNotificationEvents(s)
-	go channelHandlers.HandleExperienceGrantEvents(s)
+	go channelHandlers.HandleExperienceGrantEvents(s, discordDebugChannelLogger)
 	go channelHandlers.HandleDynamicChannelCreationEvents(s)
 	go channelHandlers.HandleMemberMessageDeletionEvents(s)
 	go channelHandlers.HandleDirectMessageEvents(s)
 	go channelHandlers.HandleComplexResponseEvents(s, globalConfiguration.EmbedPageSize)
-	go channelHandlers.HandlePromotionRequestEvents(s, globalConfiguration.OrderRoleNames, true, false)
+	go channelHandlers.HandlePromotionRequestEvents(s, globalConfiguration.OrderRoleNames, true, discordDebugChannelLogger)
 
 	// Initial sync of members on server with the database
 	go startup.SyncMembersAtStartup(s, globalConfiguration.OrderRoleNames, false)

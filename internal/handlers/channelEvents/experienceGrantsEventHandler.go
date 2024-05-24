@@ -9,7 +9,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func HandleExperienceGrantEvents(s *discordgo.Session) {
+func HandleExperienceGrantEvents(s *discordgo.Session, logger logging.Logger) {
 
 	for xpEvent := range globalMessaging.ExperienceGrantsChannel {
 		_, err := member.GrantMemberExperience(xpEvent.UserId, xpEvent.Points)
@@ -17,8 +17,7 @@ func HandleExperienceGrantEvents(s *discordgo.Session) {
 			fmt.Println("An error ocurred in the XP grant message handler for message", xpEvent, ":", err)
 
 			logMsg := fmt.Sprintf("Failed to grant `%f` XP to `%s`", xpEvent.Points, xpEvent.UserId)
-			discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
-			go discordChannelLogger.LogError(logMsg)
+			go logger.LogError(logMsg)
 		}
 	}
 
