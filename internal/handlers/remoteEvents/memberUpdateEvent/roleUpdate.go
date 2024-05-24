@@ -35,7 +35,7 @@ func MemberRoleUpdate(s *discordgo.Session, m *discordgo.GuildMemberUpdate) {
 		// Audit update by logging in provided debug channel
 		logMsg := fmt.Sprintf("Handling role update for `%s` [`%s`] (updated roles: %s)", m.Member.User.Username, m.Member.User.ID, currentRolesString)
 		discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
-		discordChannelLogger.LogInfo(logMsg)
+		go discordChannelLogger.LogInfo(logMsg)
 	}
 
 	// Sync user in DB with the current Discord member state

@@ -1,5 +1,7 @@
 package logging
 
 type Logger interface {
-	Info(msg string)
+	LogInfo(msg string)
+	LogWarn(msg string)
+	LogError(msg string)
 }

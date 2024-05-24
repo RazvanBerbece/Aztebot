@@ -275,7 +275,7 @@ func ResolveProgressionMismatchForMember(s *discordgo.Session, userGuildId strin
 		if globalConfiguration.AuditPromotionMismatchesInChannel {
 			logMsg := fmt.Sprintf("Mismatch (type 1) discovered for `%s`", userId)
 			discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
-			discordChannelLogger.LogInfo(logMsg)
+			go discordChannelLogger.LogInfo(logMsg)
 		}
 
 		// mismatch, need to reset
@@ -308,7 +308,7 @@ func ResolveProgressionMismatchForMember(s *discordgo.Session, userGuildId strin
 			if globalConfiguration.AuditPromotionMismatchesInChannel {
 				logMsg := fmt.Sprintf("Mismatch (type 2) discovered for `%s`", userId)
 				discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
-				discordChannelLogger.LogInfo(logMsg)
+				go discordChannelLogger.LogInfo(logMsg)
 			}
 
 			// Solve mismatches where the member has a rank on the server but their
@@ -351,7 +351,7 @@ func ResolveProgressionMismatchForMember(s *discordgo.Session, userGuildId strin
 		if globalConfiguration.AuditPromotionMismatchesInChannel {
 			logMsg := fmt.Sprintf("Mismatch (type 3) discovered for `%s`", userId)
 			discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
-			discordChannelLogger.LogInfo(logMsg)
+			go discordChannelLogger.LogInfo(logMsg)
 		}
 
 		// Solve mismatches where the member has multiple ranks on the server but their
@@ -397,7 +397,7 @@ func ResolveProgressionMismatchForMember(s *discordgo.Session, userGuildId strin
 		if globalConfiguration.AuditPromotionMismatchesInChannel {
 			logMsg := fmt.Sprintf("Mismatch (type 4) discovered for `%s`", userId)
 			discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
-			discordChannelLogger.LogInfo(logMsg)
+			go discordChannelLogger.LogInfo(logMsg)
 		}
 
 		// Solve mismatches where the member has no rank on the server but their
