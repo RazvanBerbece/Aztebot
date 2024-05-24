@@ -6,6 +6,7 @@ import (
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	"github.com/RazvanBerbece/Aztebot/internal/services/logging"
 	"github.com/RazvanBerbece/Aztebot/internal/services/member"
+	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -14,6 +15,16 @@ func MemberRoleUpdate(s *discordgo.Session, m *discordgo.GuildMemberUpdate) {
 	// If it's a bot, skip
 	if m.Member.User.Bot {
 		return
+	}
+
+	// Only run this handler if it's a role update event or if we can't check for the previous member state
+	if m.BeforeUpdate != nil {
+		// The previous member state can be found in the cache
+		if utils.EqualSlices(m.BeforeUpdate.Roles, m.Roles) {
+			fmt.Println("Not a role update")
+			// no change in roles, return early
+			return
+		}
 	}
 
 	// DEBUG
@@ -28,7 +39,7 @@ func MemberRoleUpdate(s *discordgo.Session, m *discordgo.GuildMemberUpdate) {
 			if idx < len(currentRoles)-1 {
 				currentRolesString += fmt.Sprintf("`%s`,", role.Name)
 			} else if idx == len(currentRoles)-1 {
-				currentRolesString += fmt.Sprintf(role.Name)
+				currentRolesString += fmt.Sprintf("`%s`", role.Name)
 			}
 		}
 

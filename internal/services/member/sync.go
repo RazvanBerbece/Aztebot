@@ -86,8 +86,10 @@ func SyncMember(s *discordgo.Session, guildId string, userId string, member *dis
 		// `Aztec` verification -- user has Aztec role and is verified
 		for _, roleId := range roleIds {
 			if roleId == 1 && user.CreatedAt == nil {
+
 				unixNow := time.Now().Unix()
 				user.CreatedAt = &unixNow
+
 				// Newly verified user, so announce in global (if notification channel exists)
 				if channel, channelExists := globalConfiguration.NotificationChannels["notif-globalGeneralChat"]; channelExists {
 					content := fmt.Sprintf("<@%s> has joined the OTA community! Say hello 🍻", user.UserId)
@@ -97,6 +99,13 @@ func SyncMember(s *discordgo.Session, guildId string, userId string, member *dis
 						TextData:        &content,
 					}
 				}
+
+				if globalConfiguration.AuditMemberVerificationsInChannel {
+					logMsg := fmt.Sprintf("`%s` has completed their verification", user.DiscordTag)
+					discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
+					go discordChannelLogger.LogInfo(logMsg)
+				}
+
 				break
 			}
 		}
@@ -204,8 +213,10 @@ func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, m
 		// `Aztec` verification -- user has Aztec role and is verified
 		for _, roleId := range roleIds {
 			if roleId == 1 && user.CreatedAt == nil {
+
 				unixNow := time.Now().Unix()
 				user.CreatedAt = &unixNow
+
 				// Newly verified user, so announce in global (if notification channel exists)
 				if channel, channelExists := globalConfiguration.NotificationChannels["notif-globalGeneralChat"]; channelExists {
 					content := fmt.Sprintf("<@%s> has recently joined the OTA community! Say hello 🍻", user.UserId)
@@ -215,6 +226,13 @@ func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, m
 						TextData:        &content,
 					}
 				}
+
+				if globalConfiguration.AuditMemberVerificationsInChannel {
+					logMsg := fmt.Sprintf("`%s` has completed their verification while bot was offline", user.DiscordTag)
+					discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
+					go discordChannelLogger.LogInfo(logMsg)
+				}
+
 				break
 			}
 		}
