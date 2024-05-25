@@ -38,31 +38,31 @@ func SyncExperiencePointsGainsAtStartup(s *discordgo.Session, uids []string) {
 			fmt.Println("[STARTUP] Failed Task SyncExperiencePointsGainsAtStartup() at", time.Now(), "for UID", "with error", errStats)
 		}
 
-		updatedXp := utils.CalculateExperiencePointsFromStats(
+		computedXp := utils.CalculateExperiencePointsFromStats(
 			stats.NumberMessagesSent,
 			stats.NumberSlashCommandsUsed,
 			stats.NumberReactionsReceived,
 			stats.TimeSpentInVoiceChannels,
 			stats.TimeSpentListeningToMusic,
-			globalConfiguration.ExperienceReward_MessageSent,
-			globalConfiguration.ExperienceReward_SlashCommandUsed,
-			globalConfiguration.ExperienceReward_ReactionReceived,
-			globalConfiguration.ExperienceReward_InVc,
-			globalConfiguration.ExperienceReward_InMusic)
+			globalConfiguration.DefaultExperienceReward_MessageSent,
+			globalConfiguration.DefaultExperienceReward_SlashCommandUsed,
+			globalConfiguration.DefaultExperienceReward_ReactionReceived,
+			globalConfiguration.DefaultExperienceReward_InVc,
+			globalConfiguration.DefaultExperienceReward_InMusic)
 
 		// XP can also be added via bonuses, so take that into consideration
 		// by picking the max between them
 		// todo: this could instead use an XpGrants table ?
 		var actualXp float64
-		if updatedXp != currentXp {
+		if computedXp != currentXp {
 			// mismatch resolution
-			if currentXp > updatedXp {
+			if currentXp > computedXp {
 				actualXp = currentXp // current XP would include awards, grants, etc.
 			} else {
-				actualXp = updatedXp
+				actualXp = computedXp
 			}
 		} else {
-			actualXp = updatedXp
+			actualXp = computedXp
 		}
 		user.CurrentExperience = actualXp
 
