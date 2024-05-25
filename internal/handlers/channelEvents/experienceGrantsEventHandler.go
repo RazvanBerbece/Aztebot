@@ -15,8 +15,7 @@ func HandleExperienceGrantEvents(s *discordgo.Session, logger logging.Logger) {
 		_, err := member.GrantMemberExperience(xpEvent.UserId, xpEvent.Points)
 		if err != nil {
 			fmt.Println("An error ocurred in the XP grant message handler for message", xpEvent, ":", err)
-
-			logMsg := fmt.Sprintf("Failed to grant `%f` XP to `%s`", xpEvent.Points, xpEvent.UserId)
+			logMsg := fmt.Sprintf("Failed to grant `%f` XP (`%s`) to `%s`\nTrace: %s", xpEvent.Points, xpEvent.Type, xpEvent.UserId, err)
 			go logger.LogError(logMsg)
 		}
 	}

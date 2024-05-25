@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
 	"github.com/RazvanBerbece/Aztebot/internal/services/logging"
 	"github.com/RazvanBerbece/Aztebot/internal/services/member"
 	"github.com/bwmarrin/discordgo"
@@ -16,20 +17,25 @@ func GuildRemove(s *discordgo.Session, m *discordgo.GuildMemberRemove) {
 		return
 	}
 
+	userId := m.Member.User.ID
+
 	if globalConfiguration.AuditMemberDeletesInChannel {
-		logMsg := fmt.Sprintf("`%s` left the server", m.Member.User.Username)
+		logMsg := fmt.Sprintf("`%s` left the server", userId)
 		discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
 		go discordChannelLogger.LogInfo(logMsg)
 	}
 
-	// Delete user from all tables
-	userId := m.Member.User.ID
+	// Clear all stored member data
 	err := member.DeleteAllMemberData(userId)
 	if err != nil {
 		fmt.Printf("Error deleting member %s data from DB tables on kick action: %v", userId, err)
 		return
 	}
 
-	// Other actions to do on guild leave
+	// Clear all local member data
+	delete(globalState.MusicSessions, userId)
+	delete(globalState.VoiceSessions, userId)
+	delete(globalState.StreamSessions, userId)
+	delete(globalState.DeafSessions, userId)
 
 }

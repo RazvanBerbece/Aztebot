@@ -99,6 +99,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 			globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 				UserId: userId,
 				Points: globalConfiguration.ExperienceReward_InVc * secondsSpent,
+				Type:   "VOICE_ACTIVITY",
 			}
 
 			delete(globalState.VoiceSessions, userId)
@@ -146,6 +147,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 					globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 						UserId: userId,
 						Points: globalConfiguration.ExperienceReward_InMusic * secondsSpent,
+						Type:   "MUSIC_ACTIVITY",
 					}
 
 				}
@@ -164,6 +166,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 					globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 						UserId: userId,
 						Points: globalConfiguration.ExperienceReward_InVc * secondsSpent,
+						Type:   "VOICE_ACTIVITY",
 					}
 				}
 			}
