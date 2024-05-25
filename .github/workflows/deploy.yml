@@ -56,10 +56,6 @@ jobs:
         with:
           github_token: ${{ secrets.GH_TOKEN }}
           dry_run: true
-      
-      - name: Setup creds to access private submodules
-        run: |
-          git config --global url.https://${{ secrets.GH_TOKEN }}@github.com/.insteadOf https://github.com/
 
       - name: Setup deployment environment
         run: |
