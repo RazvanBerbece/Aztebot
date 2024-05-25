@@ -20,7 +20,9 @@ In order to run the application, a few prerequisites must be met.
 4. Have a fully-configured `.env` file saved in the root of the repository. (contact [@RazvanBerbece](https://github.com/RazvanBerbece) for the configuration)
 5. Additionally, for full local development capabilities and to run the database migrations on the development machine, have the [Aztebot-Infrastructure](https://github.com/RazvanBerbece/Aztebot-Infrastructure) repository cloned locally in a folder which also contains the `Aztebot` repository (**For example**, the folder `Project` should contain both the `Aztebot` and the `Aztebot-Infrastructure` repository folders) 
 
-_Note:_ At the moment, to propagate remote DB changes to the local dev environment, the `Infrastructure` submodule has to be updated manually when there are changes in the remote source (e.g. a new migration file). This can be done by running `git submodule update --recursive --remote --init` in the root of this repository.
+### Notes
+At the moment, to propagate remote DB changes to the local dev environment, the `Infrastructure` submodule has to be updated manually when there are changes in the remote source (e.g. a new migration file). 
+This can be done by running `git submodule update --recursive --remote --init` in the root of this repository.
 
 ## Running the full service composition
 1. Run a freshly built full service composition (app, DBs, etc.) with the `make up` command.
