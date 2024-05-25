@@ -131,6 +131,6 @@ jobs:
       
       - name: Cleanup stale Artifact Registry images
         run: |
-          cd Infrastructure/scripts
-          sh clear_stale_artifact_images.sh 1
+          chmod +x ./Infrastructure/scripts/clear_stale_artifact_images.sh
+          ./Infrastructure/scripts/clear_stale_artifact_images.sh 1
       
