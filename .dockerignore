@@ -17,3 +17,5 @@ base64.prod.env.out
 .example.env
 
 .DS_Store
+
+Infrastructure/
