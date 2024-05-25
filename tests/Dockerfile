@@ -17,8 +17,5 @@ COPY ./.env ./.env
 # Build project
 RUN CGO_ENABLED=0 GOOS=linux go build -o build/bot/main ./cmd/main.go 
 
-# Other configs
-VOLUME /app/logs
-
-# Run the Discord bot service application
-CMD ["go", "test", "-v", "./..."]
+# No entrypoint here as the entrypoint is defined in the docker-compose file for CI.
+# This is because before the tests are run, some dependency services need to be booted up.
