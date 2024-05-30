@@ -8,6 +8,7 @@ import (
 	"github.com/RazvanBerbece/Aztebot/internal/data/models/domain"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
+	"github.com/RazvanBerbece/Aztebot/internal/services/member"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
@@ -106,7 +107,16 @@ func UserRepReact(s *discordgo.Session, m *discordgo.MessageCreate) {
 			})
 			globalState.LastGivenUserReps[authorUserId] = reps
 		}
+
 		s.MessageReactionAdd(m.ChannelID, m.ID, "✅")
+
+		// Reply with current rep status for target user
+		rep, err := member.GetRep(targetUserId)
+		if err != nil {
+			fmt.Println("Failed to reply to user rep event")
+			return
+		}
+		s.ChannelMessageSendReply(m.ChannelID, fmt.Sprintf("<@%s>: `%d` Rep", targetUserId, rep), m.MessageReference)
 	case 1:
 		if repModeInput == "+rep" {
 			err := globalRepositories.UserRepRepository.AddRep(targetUserId)
@@ -137,7 +147,16 @@ func UserRepReact(s *discordgo.Session, m *discordgo.MessageCreate) {
 			})
 			globalState.LastGivenUserReps[authorUserId] = reps
 		}
+
 		s.MessageReactionAdd(m.ChannelID, m.ID, "✅")
+
+		// Reply with current rep status for target user
+		rep, err := member.GetRep(targetUserId)
+		if err != nil {
+			fmt.Println("Failed to reply to user rep event")
+			return
+		}
+		s.ChannelMessageSendReply(m.ChannelID, fmt.Sprintf("<@%s>: `%d` Rep", targetUserId, rep), m.MessageReference)
 	default:
 		fmt.Printf("Multiple rep entries in the DB for %s\n", targetUserId)
 		return

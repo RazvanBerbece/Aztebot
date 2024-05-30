@@ -97,3 +97,14 @@ func SetGender(userId string, genderValue string) error {
 	return nil
 
 }
+
+func GetRep(userId string) (int, error) {
+
+	rep, err := globalRepositories.UserRepRepository.GetRepForUser(userId)
+	if err != nil {
+		return 0, err
+	}
+
+	return rep.Rep, nil
+
+}
