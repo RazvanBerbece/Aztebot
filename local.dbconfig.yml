@@ -1,13 +1,25 @@
 # Local development database migration configuration
-local:
+local-aztebot:
   dialect: mysql
   datasource: root:6oFqJERp8X0V9RGN0lfhu80lqAx940@tcp(0.0.0.0:3306)/aztebotBotDb?parseTime=true
-  dir: ../Aztebot-Infrastructure/cloud-sql/migrations/history
+  dir: ../Aztebot-Infrastructure/cloud-sql/migrations/history/aztebot
+  table: migrations
+
+local-aztemarket:
+  dialect: mysql
+  datasource: root:6oFqJERp8X0V9RGN0lfhu80lqAx940@tcp(0.0.0.0:3307)/azteMarketDb?parseTime=true
+  dir: ../Aztebot-Infrastructure/cloud-sql/migrations/history/aztemarket
   table: migrations
 
 # Local & remote CI database migration configuration
-test:
+test-aztebot:
   dialect: mysql
-  datasource: root:6oFqJERp8X0V9RGN0lfhu80lqAx940@tcp(mysql-db:3306)/aztebotBotDb?parseTime=true
-  dir: Infrastructure/cloud-sql/migrations/history
+  datasource: root:6oFqJERp8X0V9RGN0lfhu80lqAx940@tcp(aztebot-db:3306)/aztebotBotDb?parseTime=true
+  dir: Infrastructure/cloud-sql/migrations/history/aztebot
+  table: migrations
+
+test-aztemarket:
+  dialect: mysql
+  datasource: root:6oFqJERp8X0V9RGN0lfhu80lqAx940@tcp(aztemarket-db:3307)/azteMarketDb?parseTime=true
+  dir: ../Aztebot-Infrastructure/cloud-sql/migrations/history/aztemarket
   table: migrations

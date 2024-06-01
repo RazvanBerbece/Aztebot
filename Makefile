@@ -1,12 +1,12 @@
 # LOCAL DEVELOPMENT UTILITY SHELL APPS
 migrate-up:
-	sql-migrate up -config=local.dbconfig.yml -env="local"
+	sql-migrate up -config=local.dbconfig.yml -env="local-aztebot"
 
 migrate-up-dry:
-	sql-migrate up -config=local.dbconfig.yml -env="local" -dryrun
+	sql-migrate up -config=local.dbconfig.yml -env="local-aztebot" -dryrun
 
 migrate-rollback:
-	sql-migrate down -config=local.dbconfig.yml -env="local"
+	sql-migrate down -config=local.dbconfig.yml -env="local-aztebot"
 
 up:
 	docker compose up -d --remove-orphans --build
@@ -21,7 +21,3 @@ ci:
 update-envs:
 	openssl base64 -A -in .prod.env -out base64.prod.env.out
 	openssl base64 -A -in .env -out base64.ci.env.out
-
-# APP STARTUP SHELL APPS
-run-aztebot-bot-service:
-	./build/bot/main
