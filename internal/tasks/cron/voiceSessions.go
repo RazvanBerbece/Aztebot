@@ -33,9 +33,9 @@ func UpdateVoiceSessionDurations(s *discordgo.Session) {
 		for {
 			select {
 			case <-ticker.C:
-				go updateVoiceSessions(userStatsRepository)
-				go updateStreamingSessions(userStatsRepository)
-				go updateMusicSessions(userStatsRepository)
+				go updateVoiceSessions(s, userStatsRepository)
+				go updateStreamingSessions(s, userStatsRepository)
+				go updateMusicSessions(s, userStatsRepository)
 			case <-quit:
 				ticker.Stop()
 				return
@@ -45,7 +45,7 @@ func UpdateVoiceSessionDurations(s *discordgo.Session) {
 
 }
 
-func updateVoiceSessions(userStatsRepo *repositories.UsersStatsRepository) {
+func updateVoiceSessions(s *discordgo.Session, userStatsRepo *repositories.UsersStatsRepository) {
 	for uid, joinTime := range globalState.VoiceSessions {
 
 		duration := time.Since(joinTime)
@@ -66,11 +66,11 @@ func updateVoiceSessions(userStatsRepo *repositories.UsersStatsRepository) {
 			Type:   "VOICE_ACTIVITY",
 		}
 
-		go member.AwardFunds(uid, globalConfiguration.CoinReward_InVc*secondsSpent)
+		go member.AwardFunds(s, uid, globalConfiguration.CoinReward_InVc*secondsSpent)
 	}
 }
 
-func updateStreamingSessions(userStatsRepo *repositories.UsersStatsRepository) {
+func updateStreamingSessions(s *discordgo.Session, userStatsRepo *repositories.UsersStatsRepository) {
 	for uid, joinTime := range globalState.StreamSessions {
 
 		duration := time.Since(*joinTime)
@@ -91,11 +91,11 @@ func updateStreamingSessions(userStatsRepo *repositories.UsersStatsRepository) {
 			Type:   "VOICE_ACTIVITY",
 		}
 
-		go member.AwardFunds(uid, globalConfiguration.CoinReward_InVc*secondsSpent)
+		go member.AwardFunds(s, uid, globalConfiguration.CoinReward_InVc*secondsSpent)
 	}
 }
 
-func updateMusicSessions(userStatsRepo *repositories.UsersStatsRepository) {
+func updateMusicSessions(s *discordgo.Session, userStatsRepo *repositories.UsersStatsRepository) {
 	for uid := range globalState.MusicSessions {
 
 		session, userHadMusicSession := globalState.MusicSessions[uid]
@@ -123,7 +123,7 @@ func updateMusicSessions(userStatsRepo *repositories.UsersStatsRepository) {
 					Type:   "MUSIC_ACTIVITY",
 				}
 
-				go member.AwardFunds(uid, globalConfiguration.CoinReward_InMusic*secondsSpent)
+				go member.AwardFunds(s, uid, globalConfiguration.CoinReward_InMusic*secondsSpent)
 			}
 		}
 	}

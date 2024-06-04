@@ -4,9 +4,11 @@ import (
 	"fmt"
 
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
+	"github.com/RazvanBerbece/Aztebot/internal/services/logging"
+	"github.com/bwmarrin/discordgo"
 )
 
-func AwardFunds(userId string, funds float64) error {
+func AwardFunds(s *discordgo.Session, userId string, funds float64) error {
 
 	if funds < 0 || funds > 500000.0 {
 		return fmt.Errorf("cannot award funds to user with ID `%s`, because the number of awarded `funds` (`%.2f`) is invalid", userId, funds)
@@ -14,9 +16,16 @@ func AwardFunds(userId string, funds float64) error {
 
 	err := globalRepositories.WalletsRepository.AddFundsToWalletForUser(userId, funds)
 	if err != nil {
-		fmt.Printf("An error ocurred while awarding funds to user %s: %v\n", userId, err)
+		log := fmt.Sprintf("An error ocurred while awarding funds to user `%s`: %v\n", userId, err)
+		discordChannelLogger := logging.NewDiscordLogger(s, "notif-coinTransactions")
+		go discordChannelLogger.LogError(log)
 		return err
 	}
+
+	// Audit update by logging in provided ledger
+	logMsg := fmt.Sprintf("Awarded `%.2f` AzteCoins to `%s`", funds, userId)
+	discordChannelLogger := logging.NewDiscordLogger(s, "notif-coinTransactions")
+	go discordChannelLogger.LogInfo(logMsg)
 
 	return nil
 
