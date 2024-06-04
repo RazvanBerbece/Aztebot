@@ -3,6 +3,6 @@ package dax
 type Wallet struct {
 	UserId    string
 	Id        string
-	Funds     int
+	Funds     float64
 	Inventory string
 }

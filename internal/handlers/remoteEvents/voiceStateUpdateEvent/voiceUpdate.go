@@ -11,6 +11,7 @@ import (
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
+	memberService "github.com/RazvanBerbece/Aztebot/internal/services/member"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
@@ -102,6 +103,8 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 				Type:   "VOICE_ACTIVITY",
 			}
 
+			go memberService.AwardFunds(userId, globalConfiguration.CoinReward_InVc*secondsSpent)
+
 			delete(globalState.VoiceSessions, userId)
 			delete(globalState.StreamSessions, userId)
 			delete(globalState.MusicSessions, userId)
@@ -150,6 +153,8 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 						Type:   "MUSIC_ACTIVITY",
 					}
 
+					go memberService.AwardFunds(userId, globalConfiguration.CoinReward_InMusic*secondsSpent)
+
 				}
 			} else {
 				// User was on any other VC
@@ -168,6 +173,8 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 						Points: globalConfiguration.ExperienceReward_InVc * secondsSpent,
 						Type:   "VOICE_ACTIVITY",
 					}
+
+					go memberService.AwardFunds(userId, globalConfiguration.CoinReward_InVc*secondsSpent)
 				}
 			}
 			delete(globalState.MusicSessions, userId)

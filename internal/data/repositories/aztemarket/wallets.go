@@ -5,7 +5,7 @@ import (
 )
 
 type DbWalletsRepository interface {
-	AwardFunds(userId string, funds int)
+	AwardFunds(userId string, funds float64)
 }
 
 type WalletsRepository struct {
@@ -20,7 +20,7 @@ func NewWalletsRepository(connString string) WalletsRepository {
 	return repo
 }
 
-func (r WalletsRepository) AddFundsToWalletForUser(userId string, funds int) error {
+func (r WalletsRepository) AddFundsToWalletForUser(userId string, funds float64) error {
 
 	stmt, err := r.DbContext.SqlDb.Prepare(`
 		UPDATE Wallets SET 
