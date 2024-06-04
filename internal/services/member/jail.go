@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
+	dax "github.com/RazvanBerbece/Aztebot/internal/data/models/dax/aztebot"
 	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
@@ -14,7 +14,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func JailMember(s *discordgo.Session, guildId string, userId string, reason string, jailRoleName string, notificationChannelId string) (*dataModels.JailedUser, *dataModels.User, error) {
+func JailMember(s *discordgo.Session, guildId string, userId string, reason string, jailRoleName string, notificationChannelId string) (*dax.JailedUser, *dax.User, error) {
 
 	var err error
 
@@ -40,7 +40,7 @@ func JailMember(s *discordgo.Session, guildId string, userId string, reason stri
 	taskToFree := utils.GetRandomFromArray(globalConfiguration.JailTasks)
 
 	// Build a record of the jailed user for the command feedback
-	var jailedRecord *dataModels.JailedUser = &dataModels.JailedUser{
+	var jailedRecord *dax.JailedUser = &dax.JailedUser{
 		UserId:         userId,
 		JailedAt:       currentTimestamp.Unix(),
 		TaskToComplete: taskToFree,
@@ -117,7 +117,7 @@ func JailMember(s *discordgo.Session, guildId string, userId string, reason stri
 
 }
 
-func UnjailMember(s *discordgo.Session, guildId string, userId string, jailRoleName string, notificationChannelId string) (*dataModels.JailedUser, *dataModels.User, error) {
+func UnjailMember(s *discordgo.Session, guildId string, userId string, jailRoleName string, notificationChannelId string) (*dax.JailedUser, *dax.User, error) {
 
 	var err error
 

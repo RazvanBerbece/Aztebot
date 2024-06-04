@@ -1,4 +1,4 @@
-package dataModels
+package dax
 
 type ArcadeLadderEntry struct {
 	UserId string

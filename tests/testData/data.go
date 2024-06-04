@@ -3,14 +3,14 @@ package testData
 import (
 	"time"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
-	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
+	dax "github.com/RazvanBerbece/Aztebot/internal/data/models/dax/aztebot"
+	repositories "github.com/RazvanBerbece/Aztebot/internal/data/repositories/aztebot"
 	"github.com/brianvoe/gofakeit/v6"
 )
 
-func AddUser(r repositories.TimeoutsRepository, userId string) dataModels.User {
+func AddUser(r repositories.TimeoutsRepository, userId string) dax.User {
 
-	stmt, _ := r.Conn.Db.Prepare(`
+	stmt, _ := r.Conn.SqlDb.Prepare(`
 		INSERT INTO 
 			Users(
 				discordTag, 
@@ -32,7 +32,7 @@ func AddUser(r repositories.TimeoutsRepository, userId string) dataModels.User {
 	circle := "OUTER"
 	_, _ = stmt.Exec(fakeTag, userId, fakeRoleIds, circle, nil, 0, 0, now)
 
-	return dataModels.User{
+	return dax.User{
 		Id:                gofakeit.IntRange(100000, 200000),
 		UserId:            userId,
 		CurrentRoleIds:    fakeRoleIds,
@@ -45,9 +45,9 @@ func AddUser(r repositories.TimeoutsRepository, userId string) dataModels.User {
 
 }
 
-func AddTimeoutForUser(r repositories.TimeoutsRepository, t *dataModels.Timeout) (*int64, error) {
+func AddTimeoutForUser(r repositories.TimeoutsRepository, t *dax.Timeout) (*int64, error) {
 
-	stmt, _ := r.Conn.Db.Prepare(`
+	stmt, _ := r.Conn.SqlDb.Prepare(`
 		INSERT INTO 
 			Timeouts(
 				userId, 

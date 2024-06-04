@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
+	dax "github.com/RazvanBerbece/Aztebot/internal/data/models/dax/aztebot"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
@@ -68,7 +68,7 @@ func HandleSlashWarnRemoveOldest(s *discordgo.Session, i *discordgo.InteractionC
 
 }
 
-func RemoveWarningFromUser(s *discordgo.Session, i *discordgo.InteractionCreate, userId string) (*dataModels.Warn, error) {
+func RemoveWarningFromUser(s *discordgo.Session, i *discordgo.InteractionCreate, userId string) (*dax.Warn, error) {
 
 	warn, err := globalRepositories.WarnsRepository.GetOldestWarnForUser(userId)
 	if err != nil {

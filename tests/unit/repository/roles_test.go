@@ -3,8 +3,8 @@ package repository_test
 import (
 	"testing"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
-	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
+	dax "github.com/RazvanBerbece/Aztebot/internal/data/models/dax/aztebot"
+	repositories "github.com/RazvanBerbece/Aztebot/internal/data/repositories/aztebot"
 )
 
 func TestGetRoleById(t *testing.T) {
@@ -12,24 +12,24 @@ func TestGetRoleById(t *testing.T) {
 	// Arrange
 	cases := []struct {
 		input          int
-		expectedOutput dataModels.Role
+		expectedOutput dax.Role
 	}{
-		{1, dataModels.Role{
+		{1, dax.Role{
 			Id:          1,
 			RoleName:    "aztec",
 			DisplayName: "Aztec",
 		}},
-		{12, dataModels.Role{
+		{12, dax.Role{
 			Id:          12,
 			RoleName:    "theoricus",
 			DisplayName: "📖 Theoricus",
 		}},
-		{19, dataModels.Role{
+		{19, dax.Role{
 			Id:          19,
 			RoleName:    "magus",
 			DisplayName: "🧙🏼 Magus",
 		}},
-		{21, dataModels.Role{
+		{21, dax.Role{
 			Id:          21,
 			RoleName:    "arhitect",
 			DisplayName: "Arhitect",
@@ -64,24 +64,24 @@ func TestGetRole(t *testing.T) {
 	// Arrange
 	cases := []struct {
 		input          string
-		expectedOutput dataModels.Role
+		expectedOutput dax.Role
 	}{
-		{"Aztec", dataModels.Role{
+		{"Aztec", dax.Role{
 			Id:          1,
 			RoleName:    "aztec",
 			DisplayName: "Aztec",
 		}},
-		{"Arhitect", dataModels.Role{
+		{"Arhitect", dax.Role{
 			Id:          21,
 			RoleName:    "arhitect",
 			DisplayName: "Arhitect",
 		}},
-		{"Dominus", dataModels.Role{
+		{"Dominus", dax.Role{
 			Id:          10,
 			RoleName:    "dominus",
 			DisplayName: "Dominus",
 		}},
-		{"Developer", dataModels.Role{
+		{"Developer", dax.Role{
 			Id:          9,
 			RoleName:    "developer",
 			DisplayName: "Developer",

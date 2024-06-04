@@ -1,4 +1,4 @@
-package dataModels
+package dax
 
 type Warn struct {
 	Id                int64

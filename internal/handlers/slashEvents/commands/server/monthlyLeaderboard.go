@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
+	dax "github.com/RazvanBerbece/Aztebot/internal/data/models/dax/aztebot"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
@@ -65,10 +65,10 @@ func MonthlyLeaderboardCommandResultsEmbed(s *discordgo.Session, i *discordgo.In
 		fmt.Printf("An error ocurred in MonthlyLeaderboardCommandResultsEmbed: %v\n", err)
 	}
 
-	var kingEntry *dataModels.MonthlyLeaderboardEntry = nil
-	var queenEntry *dataModels.MonthlyLeaderboardEntry = nil
-	var nonbinaryEntry *dataModels.MonthlyLeaderboardEntry = nil
-	var otherEntry *dataModels.MonthlyLeaderboardEntry = nil
+	var kingEntry *dax.MonthlyLeaderboardEntry = nil
+	var queenEntry *dax.MonthlyLeaderboardEntry = nil
+	var nonbinaryEntry *dax.MonthlyLeaderboardEntry = nil
+	var otherEntry *dax.MonthlyLeaderboardEntry = nil
 	if len(maleEntries) > 0 {
 		kingEntry = &maleEntries[0]
 	}

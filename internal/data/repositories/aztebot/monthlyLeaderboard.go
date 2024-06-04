@@ -4,23 +4,23 @@ import (
 	"fmt"
 
 	databaseconn "github.com/RazvanBerbece/Aztebot/internal/data/connection"
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
+	dax "github.com/RazvanBerbece/Aztebot/internal/data/models/dax/aztebot"
 )
 
 type MonthlyLeaderboardRepository struct {
-	Conn databaseconn.Database
+	Conn databaseconn.AztebotDbContext
 }
 
 func NewMonthlyLeaderboardRepository() *MonthlyLeaderboardRepository {
 	repo := new(MonthlyLeaderboardRepository)
-	repo.Conn.ConnectDatabaseHandle()
+	repo.Conn.Connect()
 	return repo
 }
 
 func (r MonthlyLeaderboardRepository) EntryExists(userId string) int {
 	query := "SELECT COUNT(*) FROM MonthlyLeaderboard WHERE userId = ?"
 	var count int
-	err := r.Conn.Db.QueryRow(query, userId).Scan(&count)
+	err := r.Conn.SqlDb.QueryRow(query, userId).Scan(&count)
 	if err != nil {
 		fmt.Printf("An error ocurred while checking monthly entry: %v\n", err)
 		return -1
@@ -30,7 +30,7 @@ func (r MonthlyLeaderboardRepository) EntryExists(userId string) int {
 
 func (r MonthlyLeaderboardRepository) AddLeaderboardEntry(userId string, category int8) error {
 
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 	INSERT INTO 
 		MonthlyLeaderboard(
 			userId, 
@@ -55,7 +55,7 @@ func (r MonthlyLeaderboardRepository) DeleteEntry(userId string) error {
 
 	query := "DELETE FROM MonthlyLeaderboard WHERE userId = ?"
 
-	_, err := r.Conn.Db.Exec(query, userId)
+	_, err := r.Conn.SqlDb.Exec(query, userId)
 	if err != nil {
 		return fmt.Errorf("error deleting monthly leaderboard entry: %w", err)
 	}
@@ -67,7 +67,7 @@ func (r MonthlyLeaderboardRepository) ClearLeaderboard() error {
 
 	query := "TRUNCATE TABLE MonthlyLeaderboard"
 
-	_, err := r.Conn.Db.Exec(query)
+	_, err := r.Conn.SqlDb.Exec(query)
 	if err != nil {
 		return fmt.Errorf("error clearing monthly leaderboard: %w", err)
 	}
@@ -77,7 +77,7 @@ func (r MonthlyLeaderboardRepository) ClearLeaderboard() error {
 
 func (r MonthlyLeaderboardRepository) AddLeaderboardExpriencePoints(userId string, experiencePoints float64) error {
 
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE MonthlyLeaderboard SET 
 			xpEarnedInCurrentMonth = xpEarnedInCurrentMonth + ?
 		WHERE userId = ?`)
@@ -96,7 +96,7 @@ func (r MonthlyLeaderboardRepository) AddLeaderboardExpriencePoints(userId strin
 
 func (r MonthlyLeaderboardRepository) RemoveUserExpriencePoints(userId string, experiencePoints float64) error {
 
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE MonthlyLeaderboard SET 
 			xpEarnedInCurrentMonth = xpEarnedInCurrentMonth - ?
 		WHERE userId = ?`)
@@ -113,18 +113,18 @@ func (r MonthlyLeaderboardRepository) RemoveUserExpriencePoints(userId string, e
 	return nil
 }
 
-func (r MonthlyLeaderboardRepository) GetLeaderboardEntriesByCategory(category int8) ([]dataModels.MonthlyLeaderboardEntry, error) {
+func (r MonthlyLeaderboardRepository) GetLeaderboardEntriesByCategory(category int8) ([]dax.MonthlyLeaderboardEntry, error) {
 
-	var entries []dataModels.MonthlyLeaderboardEntry
+	var entries []dax.MonthlyLeaderboardEntry
 
-	rows, err := r.Conn.Db.Query("SELECT * FROM MonthlyLeaderboard WHERE category = ? AND xpEarnedInCurrentMonth > 0 ORDER BY xpEarnedInCurrentMonth DESC", category)
+	rows, err := r.Conn.SqlDb.Query("SELECT * FROM MonthlyLeaderboard WHERE category = ? AND xpEarnedInCurrentMonth > 0 ORDER BY xpEarnedInCurrentMonth DESC", category)
 	if err != nil {
 		return nil, fmt.Errorf("GetAllLeaderboardEntries: %v", err)
 	}
 	defer rows.Close()
 
 	for rows.Next() {
-		var entry dataModels.MonthlyLeaderboardEntry
+		var entry dax.MonthlyLeaderboardEntry
 		if err := rows.Scan(&entry.UserId, &entry.XpEarnedInCurrentMonth, &entry.Category); err != nil {
 			return nil, fmt.Errorf("GetAllLeaderboardEntries: %v", err)
 		}
@@ -139,7 +139,7 @@ func (r MonthlyLeaderboardRepository) GetLeaderboardEntriesByCategory(category i
 }
 
 func (r MonthlyLeaderboardRepository) UpdateCategoryForUser(userId string, category int8) error {
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE MonthlyLeaderboard SET 
 			category = ?
 		WHERE userId = ?`)

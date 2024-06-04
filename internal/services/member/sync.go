@@ -5,9 +5,9 @@ import (
 	"log"
 	"time"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
+	dax "github.com/RazvanBerbece/Aztebot/internal/data/models/dax/aztebot"
 	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
-	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
+	repositories "github.com/RazvanBerbece/Aztebot/internal/data/repositories/aztebot"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
@@ -20,8 +20,8 @@ import (
 // as they appear on the Discord guild. This function uses the shared global DB connections.
 func SyncMember(s *discordgo.Session, guildId string, userId string, member *discordgo.Member, defaultOrderRoleNames []string, syncProgression bool) error {
 
-	var user *dataModels.User
-	var userStats *dataModels.UserStats
+	var user *dax.User
+	var userStats *dax.UserStats
 
 	userExistsResult := globalRepositories.UsersRepository.UserExists(userId)
 	switch userExistsResult {
@@ -147,8 +147,8 @@ func SyncMember(s *discordgo.Session, guildId string, userId string, member *dis
 // as they appear on the Discord guild. It uses repositories injected via the argument list to prevent connection attempt floods.
 func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, member *discordgo.Member, rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository, defaultOrderRoleNames []string, syncProgression bool) error {
 
-	var user *dataModels.User
-	var userStats *dataModels.UserStats
+	var user *dax.User
+	var userStats *dax.UserStats
 
 	userExistsResult := globalRepositories.UsersRepository.UserExists(userId)
 	switch userExistsResult {

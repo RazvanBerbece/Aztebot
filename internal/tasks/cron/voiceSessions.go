@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
-	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
+	repositories "github.com/RazvanBerbece/Aztebot/internal/data/repositories/aztebot"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"

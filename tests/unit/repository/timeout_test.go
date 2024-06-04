@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
-	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
+	dax "github.com/RazvanBerbece/Aztebot/internal/data/models/dax/aztebot"
+	repositories "github.com/RazvanBerbece/Aztebot/internal/data/repositories/aztebot"
 	"github.com/RazvanBerbece/Aztebot/tests/testData"
 	"github.com/brianvoe/gofakeit/v6"
 )
@@ -18,7 +18,7 @@ func TestGetUserTimeout(t *testing.T) {
 	idUserWithActiveTimeout := "1234567890123"
 	idUserWithNoActiveTimeout := "1234567890"
 
-	arrangedTimeout := dataModels.Timeout{
+	arrangedTimeout := dax.Timeout{
 		UserId:            idUserWithActiveTimeout,
 		Reason:            gofakeit.Sentence(gofakeit.Number(3, 15)),
 		CreationTimestamp: time.Now().Unix(),
@@ -32,7 +32,7 @@ func TestGetUserTimeout(t *testing.T) {
 
 	cases := []struct {
 		input          string
-		expectedOutput *dataModels.Timeout
+		expectedOutput *dax.Timeout
 	}{
 		{idUserWithActiveTimeout, &arrangedTimeout},
 		{idUserWithNoActiveTimeout, nil},

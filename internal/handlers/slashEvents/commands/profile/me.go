@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
+	dax "github.com/RazvanBerbece/Aztebot/internal/data/models/dax/aztebot"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/internal/services/member"
@@ -60,8 +60,8 @@ func GetProfileEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Me
 	}
 
 	// Process highest roles
-	var highestOrderRole *dataModels.Role = nil
-	var highestStaffRole *dataModels.Role = nil
+	var highestOrderRole *dax.Role = nil
+	var highestStaffRole *dax.Role = nil
 	var orderRoleText string = ""
 	roles, err := globalRepositories.UsersRepository.GetRolesForUser(userId)
 	if err != nil {
@@ -215,7 +215,7 @@ func GetProfileEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Me
 	return []*discordgo.MessageEmbed{embed.MessageEmbed}
 }
 
-func DecorateProfileEmbed(embed *embed.Embed, staffRole *dataModels.Role, userId string) {
+func DecorateProfileEmbed(embed *embed.Embed, staffRole *dax.Role, userId string) {
 
 	// Special users segment
 	if userId == "526512064794066945" {

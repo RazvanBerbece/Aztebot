@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
+	dax "github.com/RazvanBerbece/Aztebot/internal/data/models/dax/aztebot"
 	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
-	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
+	repositories "github.com/RazvanBerbece/Aztebot/internal/data/repositories/aztebot"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
@@ -62,10 +62,10 @@ func ExtractMonthlyLeaderboardWinners(s *discordgo.Session, monthlyLeaderboardRe
 		fmt.Println("[CRON] Failed Task ExtractMonthlyLeaderboardWinners() at", time.Now(), "with error", err)
 	}
 
-	var kingEntry *dataModels.MonthlyLeaderboardEntry = nil
-	var queenEntry *dataModels.MonthlyLeaderboardEntry = nil
-	var nonbinaryEntry *dataModels.MonthlyLeaderboardEntry = nil
-	var otherEntry *dataModels.MonthlyLeaderboardEntry = nil
+	var kingEntry *dax.MonthlyLeaderboardEntry = nil
+	var queenEntry *dax.MonthlyLeaderboardEntry = nil
+	var nonbinaryEntry *dax.MonthlyLeaderboardEntry = nil
+	var otherEntry *dax.MonthlyLeaderboardEntry = nil
 	if len(maleEntries) > 0 {
 		kingEntry = &maleEntries[0]
 	}
@@ -96,7 +96,7 @@ func ExtractMonthlyLeaderboardWinners(s *discordgo.Session, monthlyLeaderboardRe
 
 }
 
-func sendMonthlyLeaderboardWinnerNotification(s *discordgo.Session, channelId string, king *dataModels.MonthlyLeaderboardEntry, queen *dataModels.MonthlyLeaderboardEntry, nonbinary *dataModels.MonthlyLeaderboardEntry, other *dataModels.MonthlyLeaderboardEntry) {
+func sendMonthlyLeaderboardWinnerNotification(s *discordgo.Session, channelId string, king *dax.MonthlyLeaderboardEntry, queen *dax.MonthlyLeaderboardEntry, nonbinary *dax.MonthlyLeaderboardEntry, other *dax.MonthlyLeaderboardEntry) {
 
 	// Get winner discord names for display purposes
 	var kingsName string = ""
