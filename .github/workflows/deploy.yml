@@ -36,6 +36,9 @@ jobs:
     needs: [continuous-integration]
     runs-on: ubuntu-latest
     if: needs.continuous-integration.result == 'success'
+    outputs:
+      new-tag: ${{ steps.release-store.outputs.NEW_TAG }}
+      previous-tag: ${{ steps.release-store.outputs.PREV_TAG }}
 
     permissions:
       contents: 'read'
@@ -125,4 +128,17 @@ jobs:
           tag: ${{ steps.tag_version.outputs.new_tag }}
           name: Release ${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
-      
+
+      - name: Store releases for changelog processing
+        id: release-store
+        run: |
+          echo "NEW_TAG=${{ steps.tag_version.outputs.new_tag }}" >> $GITHUB_OUTPUT
+          echo "PREV_TAG=${{ steps.tag_version.outputs.previous_tag }}" >> $GITHUB_OUTPUT
+
+  release-changelog:
+    needs: [continuous-deployment]
+    uses: ./.github/workflows/changelog.yml
+    secrets: inherit
+    with:
+      newRelease: ${{ needs.continuous-deployment.outputs.new-tag }}
+      previousRelease: ${{ needs.continuous-deployment.outputs.previous-tag }}
