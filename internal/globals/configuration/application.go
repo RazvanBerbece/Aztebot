@@ -22,17 +22,17 @@ var ExperienceReward_InVc float64 = 0.0033
 var ExperienceReward_InMusic float64 = 0.00175
 
 // COIN RATES
-var DefaultCoinReward_MessageSent float64 = 1.0
-var DefaultCoinReward_SlashCommandUsed float64 = 0.75
-var DefaultCoinReward_ReactionReceived float64 = 0.66
-var DefaultCoinReward_InVc float64 = 0.0033
-var DefaultCoinReward_InMusic float64 = 0.00175
+var DefaultCoinReward_MessageSent float64 = 2.5
+var DefaultCoinReward_SlashCommandUsed float64 = 2.5
+var DefaultCoinReward_ReactionReceived float64 = 7.5
+var DefaultCoinReward_InVc float64 = 0.04     // 144.0 coins / hr
+var DefaultCoinReward_InMusic float64 = 0.003 // 10.8 coins / hr
 
-var CoinReward_MessageSent float64 = 1.0
-var CoinReward_SlashCommandUsed float64 = 0.75
-var CoinReward_ReactionReceived float64 = 0.66
-var CoinReward_InVc float64 = 0.0033
-var CoinReward_InMusic float64 = 0.00175
+var CoinReward_MessageSent float64 = 2.5
+var CoinReward_SlashCommandUsed float64 = 2.5
+var CoinReward_ReactionReceived float64 = 7.5
+var CoinReward_InVc float64 = 0.04
+var CoinReward_InMusic float64 = 0.003
 
 // UI/UX CUSTOMISATION
 var EmbedPageSize int = 10
