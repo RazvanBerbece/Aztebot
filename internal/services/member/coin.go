@@ -23,7 +23,6 @@ func AwardFunds(s *discordgo.Session, userId string, funds float64, activity str
 		return err
 	}
 
-	// Audit update by logging in provided ledger
 	walletId, err := globalRepositories.WalletsRepository.GetWalletIdForUser(userId)
 	if err != nil {
 		if err == sql.ErrNoRows {

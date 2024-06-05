@@ -5,6 +5,7 @@ import (
 	profileSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/profile"
 	serverSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/server"
 	arcadeLadderSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/arcadeLadder"
+	coinSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/coin"
 	jailSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/jail"
 	timeoutSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/timeout"
 	warningSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/warning"
@@ -423,6 +424,24 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 			},
 		},
 	},
+	{
+		Name:        "add-coins",
+		Description: "Adds AzteCoins points to a user's wallet.",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "user",
+				Description: "The user to give XP to.",
+				Required:    true,
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "coins",
+				Description: "How much AzteCoin to award to a user.",
+				Required:    true,
+			},
+		},
+	},
 }
 
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -454,4 +473,5 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"unjail":                jailSlashHandlers.HandleSlashUnjail,
 	"jail-view":             jailSlashHandlers.HandleSlashJailView,
 	"jailed-user":           jailSlashHandlers.HandleSlashJailedUser,
+	"add-coins":             coinSlashHandlers.HandleSlashAddCoins,
 }
