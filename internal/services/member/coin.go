@@ -18,7 +18,7 @@ func AwardFunds(s *discordgo.Session, userId string, funds float64, activity str
 	err := globalRepositories.WalletsRepository.AddFundsToWalletForUser(userId, funds)
 	if err != nil {
 		log := fmt.Sprintf("An error ocurred while awarding funds to user `%s`: %v\n", userId, err)
-		discordChannelLogger := logging.NewDiscordLogger(s, "notif-coinTransactions")
+		discordChannelLogger := logging.NewDiscordLogger(s, "notif-coinAwards")
 		go discordChannelLogger.LogError(log)
 		return err
 	}
@@ -46,7 +46,7 @@ func AwardFunds(s *discordgo.Session, userId string, funds float64, activity str
 
 	// Add audit log to ledger channel to keep a track record of *all* coin awards
 	log := fmt.Sprintf("Awarded `%.2f` AzteCoins\nto user `%s` (`%s`)\nwith wallet ID `%s`\nfor activity ID `%s`", funds, user.DiscordTag, userId, *walletId, activity)
-	discordChannelLogger := logging.NewDiscordLogger(s, "notif-coinTransactions")
+	discordChannelLogger := logging.NewDiscordLogger(s, "notif-coinAwards")
 	go discordChannelLogger.LogInfo(log)
 
 	return nil
