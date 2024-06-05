@@ -131,7 +131,7 @@ func AddRegisteredSlashEventHandlers(s *discordgo.Session) {
 			Type:   "SLASH_ACTIVITY",
 		}
 
-		go member.AwardFunds(s, ownerUserId, 1*globalConfiguration.CoinReward_SlashCommandUsed)
+		go member.AwardFunds(s, ownerUserId, 1*globalConfiguration.CoinReward_SlashCommandUsed, "CMD-SEND")
 
 		if handlerFunc, ok := commands.AztebotSlashCommandHandlers[i.ApplicationCommandData().Name]; ok {
 			handlerFunc(s, i)

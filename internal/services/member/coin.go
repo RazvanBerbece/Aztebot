@@ -9,7 +9,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func AwardFunds(s *discordgo.Session, userId string, funds float64) error {
+func AwardFunds(s *discordgo.Session, userId string, funds float64, activity string) error {
 
 	if funds < 0 || funds > 500000.0 {
 		return fmt.Errorf("cannot award funds to user with ID `%s`, because the number of awarded `funds` (`%.2f`) is invalid", userId, funds)
@@ -39,12 +39,13 @@ func AwardFunds(s *discordgo.Session, userId string, funds float64) error {
 	user, err := globalRepositories.UsersRepository.GetUser(userId)
 	if err != nil {
 		log := fmt.Sprintf("An error ocurred while retrieving user `%s` to awards funds to: %v\n", userId, err)
-		discordChannelLogger := logging.NewDiscordLogger(s, "notif-coinTransactions")
+		discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
 		go discordChannelLogger.LogError(log)
 		return err
 	}
 
-	logMsg := fmt.Sprintf("Awarded `%.2f` AzteCoins to user `%s` (`%s`) [ Wallet ID: `%s` ]", funds, user.DiscordTag, userId, *walletId)
+	// Add audit log to ledger channel to keep a track record of *all* coin awards
+	logMsg := fmt.Sprintf("Awarded `%.2f` AzteCoins to user `%s` (`%s`) [`%s`] for `%s`", funds, user.DiscordTag, userId, *walletId, activity)
 	discordChannelLogger := logging.NewDiscordLogger(s, "notif-coinTransactions")
 	go discordChannelLogger.LogInfo(logMsg)
 

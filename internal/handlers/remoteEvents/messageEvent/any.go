@@ -48,6 +48,6 @@ func Any(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	// Award coins for activity
-	go member.AwardFunds(s, messageCreatorUserId, 1*globalConfiguration.CoinReward_MessageSent)
+	go member.AwardFunds(s, messageCreatorUserId, 1*globalConfiguration.CoinReward_MessageSent, "MSG-SEND")
 
 }

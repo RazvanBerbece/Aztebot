@@ -66,7 +66,7 @@ func updateVoiceSessions(s *discordgo.Session, userStatsRepo *repositories.Users
 			Type:   "VOICE_ACTIVITY",
 		}
 
-		go member.AwardFunds(s, uid, globalConfiguration.CoinReward_InVc*secondsSpent)
+		go member.AwardFunds(s, uid, globalConfiguration.CoinReward_InVc*secondsSpent, "TIME-VC")
 	}
 }
 
@@ -91,7 +91,7 @@ func updateStreamingSessions(s *discordgo.Session, userStatsRepo *repositories.U
 			Type:   "VOICE_ACTIVITY",
 		}
 
-		go member.AwardFunds(s, uid, globalConfiguration.CoinReward_InVc*secondsSpent)
+		go member.AwardFunds(s, uid, globalConfiguration.CoinReward_InVc*secondsSpent, "TIME-VC")
 	}
 }
 
@@ -123,7 +123,7 @@ func updateMusicSessions(s *discordgo.Session, userStatsRepo *repositories.Users
 					Type:   "MUSIC_ACTIVITY",
 				}
 
-				go member.AwardFunds(s, uid, globalConfiguration.CoinReward_InMusic*secondsSpent)
+				go member.AwardFunds(s, uid, globalConfiguration.CoinReward_InMusic*secondsSpent, "TIME-MUSIC")
 			}
 		}
 	}
