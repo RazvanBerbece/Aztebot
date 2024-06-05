@@ -45,7 +45,7 @@ func AwardFunds(s *discordgo.Session, userId string, funds float64, activity str
 	}
 
 	// Add audit log to ledger channel to keep a track record of *all* coin awards
-	log := fmt.Sprintf("Awarded `%.2f` AzteCoins\nto user `%s` (`%s`)\nwith wallet ID `%s`\nfor activity ID `%s`", funds, user.DiscordTag, userId, *walletId, activity)
+	log := fmt.Sprintf("Awarded `🪙 %.2f` AzteCoins\nto user `%s` (`%s`)\nwith wallet ID `%s`\nfor activity ID `%s`", funds, user.DiscordTag, userId, *walletId, activity)
 	discordChannelLogger := logging.NewDiscordLogger(s, "notif-coinAwards")
 	go discordChannelLogger.LogInfo(log)
 
