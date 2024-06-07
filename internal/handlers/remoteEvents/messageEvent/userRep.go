@@ -45,7 +45,7 @@ func UserRepReact(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	targetUserId := utils.GetDiscordIdFromMentionFormat(targetUserTag)
 
-	// Don't allow users to =- rep themselves
+	// Don't allow users to +- rep themselves
 	if targetUserId == m.Author.ID {
 		s.MessageReactionAdd(m.ChannelID, m.ID, "❌")
 		s.MessageReactionAdd(m.ChannelID, m.ID, "👺")
