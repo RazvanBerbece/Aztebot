@@ -1,8 +1,6 @@
 package repositories
 
 import (
-	"fmt"
-
 	databaseconn "github.com/RazvanBerbece/Aztebot/internal/data/connection"
 )
 
@@ -49,7 +47,6 @@ func (r WalletsRepository) GetWalletIdForUser(userId string) (*string, error) {
 
 	var id string
 	err := row.Scan(&id)
-	fmt.Println(id)
 
 	if err != nil {
 		return nil, err
