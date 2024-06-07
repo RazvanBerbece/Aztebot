@@ -29,7 +29,7 @@ jobs:
 
           : # Process changelog between current tag and the previous one 
           changelog=$(git log --pretty=format:"- %s%n%b" ${{ inputs.previousRelease }}...${{ inputs.newRelease }})
-          changelog_uri="https://github.com/AzteBot-Developments/AzteMarket/compare/${{ inputs.previousRelease }}...${{ inputs.newRelease }}"
+          changelog_uri="https://github.com/RazvanBerbece/Aztebot/compare/${{ inputs.previousRelease }}...${{ inputs.newRelease }}"
 
           timestamp='`'"$head_commit_ts"'`'
           head_commit_msg="$(git log -1 --pretty=format:"%s")"
