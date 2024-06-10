@@ -31,6 +31,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	s.UpdateGameStatus(0, "/help")
 
 	// Run gochannel event handlers
+	go channelHandlers.HandleCoinAwardEvents(s, discordDebugChannelLogger)
 	go channelHandlers.HandleNotificationEvents(s)
 	go channelHandlers.HandleExperienceGrantEvents(s, discordDebugChannelLogger)
 	go channelHandlers.HandleDynamicChannelCreationEvents(s)

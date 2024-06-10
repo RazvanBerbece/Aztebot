@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/data/models/domain"
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
+	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
 	"github.com/RazvanBerbece/Aztebot/internal/services/member"
@@ -97,8 +99,16 @@ func UserRepReact(s *discordgo.Session, m *discordgo.MessageCreate) {
 			globalState.LastGivenUserReps[authorUserId] = reps
 
 			// Award coins for rep target and rep author
-			go member.AwardFunds(s, targetUserId, 5.0, "REP-RECV")
-			go member.AwardFunds(s, authorUserId, 1.0, "REP-GIVE")
+			globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+				UserId:   targetUserId,
+				Funds:    5.0,
+				Activity: "REP-RECV",
+			}
+			globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+				UserId:   authorUserId,
+				Funds:    1.0,
+				Activity: "REP-GIVE",
+			}
 		} else if repModeInput == "-rep" {
 			err := globalRepositories.UserRepRepository.AddNewEntry(targetUserId)
 			if err != nil {
@@ -146,8 +156,16 @@ func UserRepReact(s *discordgo.Session, m *discordgo.MessageCreate) {
 			globalState.LastGivenUserReps[authorUserId] = reps
 
 			// Award coins for rep target and rep author
-			go member.AwardFunds(s, targetUserId, 5.0, "REP-RECV")
-			go member.AwardFunds(s, authorUserId, 1.0, "REP-GIVE")
+			globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+				UserId:   targetUserId,
+				Funds:    5.0,
+				Activity: "REP-RECV",
+			}
+			globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+				UserId:   authorUserId,
+				Funds:    1.0,
+				Activity: "REP-GIVE",
+			}
 		} else if repModeInput == "-rep" {
 			err := globalRepositories.UserRepRepository.RemoveRep(targetUserId)
 			if err != nil {
