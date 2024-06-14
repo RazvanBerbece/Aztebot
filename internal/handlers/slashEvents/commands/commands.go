@@ -442,6 +442,64 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 			},
 		},
 	},
+	{
+		Name:        "set-global-coin-rate",
+		Description: "Sets the global coin gain rate for a specific activity.",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "activity",
+				Description: "Select the activity to set the coin gain rate for",
+				Required:    true,
+				Choices: []*discordgo.ApplicationCommandOptionChoice{
+					{
+						Name:  "Message Sends",
+						Value: "msg_send",
+					},
+					{
+						Name:  "Reactions Received",
+						Value: "react_recv",
+					},
+					{
+						Name:  "Slash Commands Used",
+						Value: "slash_use",
+					},
+					{
+						Name:  "Time Spent in Voice Channels",
+						Value: "spent_vc",
+					},
+					{
+						Name:  "Time Spent Listening to Music",
+						Value: "spent_music",
+					},
+				},
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "multiplier",
+				Description: "Select the gain rate multiplier for the specified activity",
+				Required:    true,
+				Choices: []*discordgo.ApplicationCommandOptionChoice{
+					{
+						Name:  "Default",
+						Value: "def",
+					},
+					{
+						Name:  "1.5x",
+						Value: "1.5",
+					},
+					{
+						Name:  "2x",
+						Value: "2.0",
+					},
+					{
+						Name:  "3x",
+						Value: "3.0",
+					},
+				},
+			},
+		},
+	},
 }
 
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -474,4 +532,5 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"jail-view":             jailSlashHandlers.HandleSlashJailView,
 	"jailed-user":           jailSlashHandlers.HandleSlashJailedUser,
 	"add-coins":             coinSlashHandlers.HandleSlashAddCoins,
+	"set-global-coin-rate":  coinSlashHandlers.HandleSlashSetGlobalCoinRateForActivity,
 }
