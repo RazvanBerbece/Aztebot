@@ -13,3 +13,8 @@ func GetRandomIntegerInRange(min int, max int) int {
 func GetRandomFromArray(array []string) string {
 	return array[rand.Intn(len(array))]
 }
+
+// len(weights) = len(array); each i_th element is associated
+func GetRandomFromArrayWithWeights(array []string, weights []float64) string {
+	return array[rand.Intn(len(array))]
+}
