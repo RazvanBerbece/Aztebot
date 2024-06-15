@@ -111,10 +111,10 @@ func SendGlobalRateChangeNotification(channelId string, rateName string, activit
 	// Build global XP rate change embed
 	embed := embed.
 		NewEmbed().
-		SetTitle(fmt.Sprintf("🤖📣	Global `%s` Gain Rate Change Announcement", rateName)).
+		SetAuthor("AzteBot Global Broadcaster").
+		SetTitle(fmt.Sprintf("🤖📣	Gain Rate Boost Announcement - `%s`", rateName)).
 		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
-		SetColor(000000).
-		SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg")
+		SetColor(000000)
 
 	if multiplierName == "Default OTA Value" {
 		embed.AddField("", fmt.Sprintf("Activities involving `%s` are now worth the default amount of `%s`.", activityName, rateName), false)
