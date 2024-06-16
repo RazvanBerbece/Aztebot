@@ -10,6 +10,29 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+func KickMember(s *discordgo.Session, guildId string, userId string) error {
+	// Delete member from server
+	err := s.GuildMemberDelete(guildId, userId)
+	if err != nil {
+		fmt.Println("Error kicking member from guild:", err)
+		return err
+	}
+	// Delete member-related entries from the databases
+	err = globalsRepo.UserStatsRepository.DeleteUserStats(userId)
+	if err != nil {
+		fmt.Printf("Error deleting member %s stats from DB: %v", userId, err)
+	}
+	err = globalsRepo.UsersRepository.DeleteUser(userId)
+	if err != nil {
+		fmt.Printf("Error deleting user %s from DB: %v", userId, err)
+	}
+	err = globalsRepo.WarnsRepository.DeleteAllWarningsForUser(userId)
+	if err != nil {
+		fmt.Printf("Error deleting user %s warnings from DB: %v", userId, err)
+	}
+	return nil
+}
+
 func DemoteMember(s *discordgo.Session, guildId string, userId string) error {
 
 	userToUpdate, err := globalsRepo.UsersRepository.GetUser(userId)
@@ -59,7 +82,7 @@ func DemoteMember(s *discordgo.Session, guildId string, userId string) error {
 				// Staff roles
 				if role.Id-1 == 2 {
 					// Demotion from Moderator leads to being kicked out of the guild
-					err = s.GuildMemberDelete(guildId, userId)
+					err = KickMember(s, guildId, userId)
 					if err != nil {
 						fmt.Println("Error kicking member for demoting from Moderator:", err)
 						return err

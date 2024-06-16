@@ -127,15 +127,11 @@ func GiveWarnToUserWithId(s *discordgo.Session, i *discordgo.InteractionCreate, 
 			fmt.Printf("An error ocurred while sending kick message content DM to user: %v\n", err)
 		}
 		// kick from guild, timeout
-		err = s.GuildMemberDelete(globals.DiscordMainGuildId, userId)
+		err = member.KickMember(s, globals.DiscordMainGuildId, userId)
 		if err != nil {
-			fmt.Println("Error kicking member for 4th warning:", err)
+			fmt.Println("Error kicking member for receiving 4th warning:", err)
 			return err
 		}
-		// cleanup member entitites from all tables
-		globalsRepo.UserStatsRepository.DeleteUserStats(userId)
-		globalsRepo.UsersRepository.DeleteUser(userId)
-		globalsRepo.WarnsRepository.DeleteAllWarningsForUser(userId)
 	}
 
 	err := globalsRepo.WarnsRepository.SaveWarn(userId, reason, timestamp)
