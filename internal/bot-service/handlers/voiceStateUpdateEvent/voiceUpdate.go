@@ -42,6 +42,11 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 		return
 	}
 
+	if member.User.Bot {
+		// Ignore bot voice state updates
+		return
+	}
+
 	userId := member.User.ID
 
 	if vs.SelfStream && vs.ChannelID != "" {
@@ -151,6 +156,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 			delete(globals.MusicSessions, userId)
 			delete(globals.VoiceSessions, userId)
 			delete(globals.StreamSessions, userId)
+			delete(globals.DeafSessions, userId)
 		}
 	}
 
