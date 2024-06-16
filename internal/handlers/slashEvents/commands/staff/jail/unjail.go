@@ -13,6 +13,20 @@ import (
 
 func HandleSlashUnjail(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
+	commandOwnerUserId := i.Member.User.ID
+
+	// This is a staff command however restrict specifically anyone lower than "Moderator" from using it
+	ownerStaffRole, err := member.GetMemberStaffRole(commandOwnerUserId, globalConfiguration.StaffRoles)
+	if err != nil {
+		errMsg := fmt.Sprintf("Couldn't check for command owner permissions: %v", err)
+		utils.SendCommandErrorEmbedResponse(s, i.Interaction, errMsg)
+		return
+	}
+	if ownerStaffRole == nil || ownerStaffRole.DisplayName == "Trial Moderator" {
+		utils.SendCommandErrorEmbedResponse(s, i.Interaction, "Command owner doesn't have the right permissions to use this command.")
+		return
+	}
+
 	targetUserId := utils.GetDiscordIdFromMentionFormat(i.ApplicationCommandData().Options[0].StringValue())
 
 	if !utils.IsValidDiscordUserId(targetUserId) {
@@ -28,7 +42,6 @@ func HandleSlashUnjail(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		},
 	})
 
-	var err error
 	var user *dataModels.User
 	if channel, channelExists := globalConfiguration.NotificationChannels["notif-jail"]; channelExists {
 		_, user, err = member.UnjailMember(s, globalConfiguration.DiscordMainGuildId, targetUserId, globalConfiguration.JailedRoleName, channel.ChannelId)

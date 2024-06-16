@@ -15,7 +15,7 @@ func HandleSlashJail(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	commandOwnerUserId := i.Member.User.ID
 
-	// This is a staff command however restrict specifically anyone lower than "Administrator" from using it
+	// This is a staff command however restrict specifically anyone lower than "Moderator" from using it
 	ownerStaffRole, err := member.GetMemberStaffRole(commandOwnerUserId, globalConfiguration.StaffRoles)
 	if err != nil {
 		errMsg := fmt.Sprintf("Couldn't check for command owner permissions: %v", err)
