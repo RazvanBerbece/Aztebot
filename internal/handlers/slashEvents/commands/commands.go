@@ -4,10 +4,11 @@ import (
 	gamesSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/games"
 	profileSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/profile"
 	serverSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/server"
+	arcadeLadderSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/arcadeLadder"
 	jailSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/jail"
 	timeoutSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/timeout"
 	warningSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/warning"
-	xpRateSettingSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/xp"
+	xpSystemSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/xp"
 	supportSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/support"
 	slashUtils "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/utils"
 	"github.com/bwmarrin/discordgo"
@@ -19,7 +20,7 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		Description: "Basic ping slash interaction for the AzteBot.",
 	},
 	{
-		Name:        "my_roles",
+		Name:        "my-roles",
 		Description: "Get a list of your assigned roles.",
 	},
 	{
@@ -81,7 +82,7 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		},
 	},
 	{
-		Name:        "warn_remove_oldest",
+		Name:        "warn-remove-oldest",
 		Description: "Removes a user's oldest warning.",
 		Options: []*discordgo.ApplicationCommandOption{
 			{
@@ -171,7 +172,7 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		},
 	},
 	{
-		Name:        "timeout_remove_active",
+		Name:        "timeout-remove-active",
 		Description: "Removes a user's current active timeout (and skip archiving it).",
 		Options: []*discordgo.ApplicationCommandOption{
 			{
@@ -183,7 +184,7 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		},
 	},
 	{
-		Name:        "timeout_appeal",
+		Name:        "timeout-appeal",
 		Description: "Appeal your current active timeout (if you have one)",
 	},
 	{
@@ -203,7 +204,7 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		Description: "Displays the global OTA leaderboard",
 	},
 	{
-		Name:        "set_global_xp_rate",
+		Name:        "set-global-xp-rate",
 		Description: "Sets the global XP gain rate for a specific activity.",
 		Options: []*discordgo.ApplicationCommandOption{
 			{
@@ -340,11 +341,75 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		Name:        "monthly-leaderboard",
 		Description: "Displays a high level view of the monthly leaderboard for the current month.",
 	},
+	{
+		Name:        "arcade-ladder",
+		Description: "Displays a high level view of the server's arcade ladder.",
+	},
+	{
+		Name:        "arcade-winner",
+		Description: "Assigns an arcade win to the given user. Also announces their win on the designated channel.",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "user",
+				Description: "The user to assign an arcade win to",
+				Required:    true,
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "arcade-name",
+				Description: "The name of the arcade competition that the user won (e.g: Valorant)",
+				Required:    true,
+			},
+		},
+	},
+	{
+		Name:        "set-stats",
+		Description: "Elevated privilege command to set a user's stats in the OTA records.",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "user",
+				Description: "The user to set the stats for",
+				Required:    true,
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "messages-sent",
+				Description: "How many messages sent to set for the user",
+				Required:    true,
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "slash-cmd-used",
+				Description: "How many slash commands used to set for the user",
+				Required:    true,
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "reactions-received",
+				Description: "How many reactions received to set for the user",
+				Required:    true,
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "time-vc",
+				Description: "How many *seconds* spent in total in voice channels to set for the user",
+				Required:    true,
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "time-music",
+				Description: "How many *seconds* spent in total in music channels to set for the user",
+				Required:    true,
+			},
+		},
+	},
 }
 
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
 	"ping":                  slashUtils.HandleSlashPingAztebot,
-	"my_roles":              profileSlashHandlers.HandleSlashMyRoles,
+	"my-roles":              profileSlashHandlers.HandleSlashMyRoles,
 	"roles":                 profileSlashHandlers.HandleSlashYouRoles,
 	"me":                    profileSlashHandlers.HandleSlashMe,
 	"you":                   profileSlashHandlers.HandleSlashYou,
@@ -354,15 +419,18 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"top5user":              serverSlashHandlers.HandleSlashTop5Users,
 	"top":                   serverSlashHandlers.HandleSlashTop,
 	"monthly-leaderboard":   serverSlashHandlers.HandleSlashMonthlyLeaderboard,
+	"arcade-ladder":         serverSlashHandlers.HandleSlashArcadeLadder,
+	"arcade-winner":         arcadeLadderSlashHandlers.HandleSlashArcadeWinner,
 	"confess":               supportSlashHandlers.HandleSlashConfess,
+	"set-global-xp-rate":    xpSystemSlashHandlers.HandleSlashSetGlobalXpRateForActivity,
+	"set-stats":             xpSystemSlashHandlers.HandleSlashSetStats,
 	"warn":                  warningSlashHandlers.HandleSlashWarn,
-	"warn_remove_oldest":    warningSlashHandlers.HandleSlashWarnRemoveOldest,
+	"warn-remove-oldest":    warningSlashHandlers.HandleSlashWarnRemoveOldest,
 	"warns":                 warningSlashHandlers.HandleSlashWarns,
 	"timeout":               timeoutSlashHandlers.HandleSlashTimeout,
 	"timeouts":              timeoutSlashHandlers.HandleSlashTimeouts,
-	"timeout_remove_active": timeoutSlashHandlers.HandleSlashTimeoutRemoveActive,
-	"timeout_appeal":        timeoutSlashHandlers.HandleSlashTimeoutAppeal,
-	"set_global_xp_rate":    xpRateSettingSlashHandlers.HandleSlashSetGlobalXpRateForActivity,
+	"timeout-remove-active": timeoutSlashHandlers.HandleSlashTimeoutRemoveActive,
+	"timeout-appeal":        timeoutSlashHandlers.HandleSlashTimeoutAppeal,
 	"jail":                  jailSlashHandlers.HandleSlashJail,
 	"unjail":                jailSlashHandlers.HandleSlashUnjail,
 	"jail-view":             jailSlashHandlers.HandleSlashJailView,
