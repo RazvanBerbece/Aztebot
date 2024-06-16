@@ -10,8 +10,8 @@ import (
 
 func ClearOldUserRepDelays() {
 
-	var numSec int = 5            // 60 * 5           // run every 5 minutes
-	threshold := time.Second * 15 // time.Second * 60 * 5 // entries which are older than 5 minutes
+	var numSec int = 60 * 5           // run every 5 minutes
+	threshold := time.Second * 60 * 5 // entries which are older than 5 minutes
 
 	fmt.Println("[CRON] Starting Task ClearOldUserRepDelays() at", time.Now(), "running every", numSec, "seconds")
 
