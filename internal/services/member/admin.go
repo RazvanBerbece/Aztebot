@@ -3,7 +3,7 @@ package member
 import (
 	"fmt"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
+	dax "github.com/RazvanBerbece/Aztebot/internal/data/models/dax/aztebot"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
@@ -101,7 +101,7 @@ func DemoteMember(s *discordgo.Session, guildId string, userId string, demoteTyp
 	var updatedCurrentRoleIds string = ""
 	var roleIdsPriorDemote []int
 	var roleIdsPostDemote []int
-	var roleBeforeDemotion dataModels.Role
+	var roleBeforeDemotion dax.Role
 	for _, role := range userRoles {
 		// If an Inner Circle role
 		if role.Id > 9 && role.Id < 21 {

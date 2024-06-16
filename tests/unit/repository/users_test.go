@@ -3,7 +3,7 @@ package repository_test
 import (
 	"testing"
 
-	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
+	repositories "github.com/RazvanBerbece/Aztebot/internal/data/repositories/aztebot"
 )
 
 func TestUserExists(t *testing.T) {

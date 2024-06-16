@@ -5,16 +5,16 @@ import (
 	"fmt"
 	"time"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
+	dax "github.com/RazvanBerbece/Aztebot/internal/data/models/dax/aztebot"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/bwmarrin/discordgo"
 )
 
-func GetMemberTimeouts(userId string) (*dataModels.Timeout, []dataModels.ArchivedTimeout, error) {
+func GetMemberTimeouts(userId string) (*dax.Timeout, []dax.ArchivedTimeout, error) {
 
 	// Result variables
-	var activeTimeoutResult *dataModels.Timeout = nil
-	var archivedTimeoutResults []dataModels.ArchivedTimeout = []dataModels.ArchivedTimeout{}
+	var activeTimeoutResult *dax.Timeout = nil
+	var archivedTimeoutResults []dax.ArchivedTimeout = []dax.ArchivedTimeout{}
 
 	// Active timeout
 	activeTimeout, err := globalRepositories.TimeoutsRepository.GetUserTimeout(userId)

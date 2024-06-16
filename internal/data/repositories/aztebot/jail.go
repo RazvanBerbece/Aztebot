@@ -4,23 +4,23 @@ import (
 	"fmt"
 
 	databaseconn "github.com/RazvanBerbece/Aztebot/internal/data/connection"
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
+	dax "github.com/RazvanBerbece/Aztebot/internal/data/models/dax/aztebot"
 )
 
 type JailRepository struct {
-	Conn databaseconn.Database
+	Conn databaseconn.AztebotDbContext
 }
 
 func NewJailRepository() *JailRepository {
 	repo := new(JailRepository)
-	repo.Conn.ConnectDatabaseHandle()
+	repo.Conn.Connect()
 	return repo
 }
 
 func (r JailRepository) UserIsJailed(userId string) int {
 	query := "SELECT COUNT(*) FROM Jail WHERE userId = ?"
 	var count int
-	err := r.Conn.Db.QueryRow(query, userId).Scan(&count)
+	err := r.Conn.SqlDb.QueryRow(query, userId).Scan(&count)
 	if err != nil {
 		fmt.Printf("An error ocurred while checking for jail entry: %v\n", err)
 		return -1
@@ -30,7 +30,7 @@ func (r JailRepository) UserIsJailed(userId string) int {
 
 func (r JailRepository) AddUserToJail(userId string, reason string, task string, timestamp int64, roleIdsBeforeJail string) error {
 
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 	INSERT INTO 
 		Jail(
 			userId, 
@@ -57,7 +57,7 @@ func (r JailRepository) RemoveUserFromJail(userId string) error {
 
 	query := "DELETE FROM Jail WHERE userId = ?"
 
-	_, err := r.Conn.Db.Exec(query, userId)
+	_, err := r.Conn.SqlDb.Exec(query, userId)
 	if err != nil {
 		return fmt.Errorf("error deleting jail entry for user: %w", err)
 	}
@@ -65,15 +65,15 @@ func (r JailRepository) RemoveUserFromJail(userId string) error {
 	return nil
 }
 
-func (r JailRepository) GetJailedUser(userId string) (*dataModels.JailedUser, error) {
+func (r JailRepository) GetJailedUser(userId string) (*dax.JailedUser, error) {
 
 	// Get assigned role IDs for given user from the DB
 	query := "SELECT * FROM Jail WHERE userId = ?"
-	row := r.Conn.Db.QueryRow(query, userId)
+	row := r.Conn.SqlDb.QueryRow(query, userId)
 
 	// Scan the role IDs and process them into query arguments to use
 	// in the Roles table
-	var jailedUser dataModels.JailedUser
+	var jailedUser dax.JailedUser
 	err := row.Scan(&jailedUser.UserId,
 		&jailedUser.Reason,
 		&jailedUser.TaskToComplete,
@@ -89,11 +89,11 @@ func (r JailRepository) GetJailedUser(userId string) (*dataModels.JailedUser, er
 
 }
 
-func (r JailRepository) GetJail() ([]dataModels.JailedUser, error) {
+func (r JailRepository) GetJail() ([]dax.JailedUser, error) {
 
-	var jailed []dataModels.JailedUser
+	var jailed []dax.JailedUser
 
-	rows, err := r.Conn.Db.Query("SELECT * FROM Jail ORDER BY jailedAt ASC")
+	rows, err := r.Conn.SqlDb.Query("SELECT * FROM Jail ORDER BY jailedAt ASC")
 	if err != nil {
 		return nil, fmt.Errorf("GetJail: %v", err)
 	}
@@ -101,7 +101,7 @@ func (r JailRepository) GetJail() ([]dataModels.JailedUser, error) {
 
 	// Loop through rows, using Scan to assign column data to struct fields.
 	for rows.Next() {
-		var jailedUser dataModels.JailedUser
+		var jailedUser dax.JailedUser
 		if err := rows.Scan(&jailedUser.UserId, &jailedUser.Reason, &jailedUser.TaskToComplete, &jailedUser.JailedAt, &jailedUser.RoleIdsBeforeJail); err != nil {
 			return nil, fmt.Errorf("GetJail: %v", err)
 		}

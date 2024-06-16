@@ -1,19 +1,19 @@
 package rolesService
 
 import (
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
+	dax "github.com/RazvanBerbece/Aztebot/internal/data/models/dax/aztebot"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 )
 
 // Returns the highest staff and order roles from an array of roles, or nil if not applicable
-func GetHighestRoles(roles []dataModels.Role) (*dataModels.Role, *dataModels.Role) {
+func GetHighestRoles(roles []dax.Role) (*dax.Role, *dax.Role) {
 
 	var highestStaffIdx = -1
 	var highestOrderIdx = -1
 
-	var highestStaffRole *dataModels.Role
-	var highestOrderRole *dataModels.Role
+	var highestStaffRole *dax.Role
+	var highestOrderRole *dax.Role
 
 	for idx, role := range roles {
 		if utils.StringInSlice(role.DisplayName, globalConfiguration.StaffRoles) && idx > highestStaffIdx {

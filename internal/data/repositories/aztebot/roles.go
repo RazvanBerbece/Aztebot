@@ -4,25 +4,25 @@ import (
 	"fmt"
 
 	databaseconn "github.com/RazvanBerbece/Aztebot/internal/data/connection"
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
+	dax "github.com/RazvanBerbece/Aztebot/internal/data/models/dax/aztebot"
 )
 
 type RolesRepository struct {
-	Conn databaseconn.Database
+	Conn databaseconn.AztebotDbContext
 }
 
 func NewRolesRepository() *RolesRepository {
 	repo := new(RolesRepository)
-	repo.Conn.ConnectDatabaseHandle()
+	repo.Conn.Connect()
 	return repo
 }
 
-func (r RolesRepository) GetRole(roleDisplayName string) (*dataModels.Role, error) {
+func (r RolesRepository) GetRole(roleDisplayName string) (*dax.Role, error) {
 
 	query := "SELECT * FROM Roles WHERE displayName = ?"
-	row := r.Conn.Db.QueryRow(query, roleDisplayName)
+	row := r.Conn.SqlDb.QueryRow(query, roleDisplayName)
 
-	var role dataModels.Role
+	var role dax.Role
 	err := row.Scan(
 		&role.Id,
 		&role.RoleName,
@@ -38,12 +38,12 @@ func (r RolesRepository) GetRole(roleDisplayName string) (*dataModels.Role, erro
 	return &role, nil
 }
 
-func (r RolesRepository) GetRoleById(roleId int) (*dataModels.Role, error) {
+func (r RolesRepository) GetRoleById(roleId int) (*dax.Role, error) {
 
 	query := "SELECT * FROM Roles WHERE id = ?"
-	row := r.Conn.Db.QueryRow(query, roleId)
+	row := r.Conn.SqlDb.QueryRow(query, roleId)
 
-	var role dataModels.Role
+	var role dax.Role
 	err := row.Scan(
 		&role.Id,
 		&role.RoleName,
@@ -59,15 +59,15 @@ func (r RolesRepository) GetRoleById(roleId int) (*dataModels.Role, error) {
 	return &role, nil
 }
 
-func (r RolesRepository) RoleByIdExists(roleId int) (*dataModels.Role, error) {
+func (r RolesRepository) RoleByIdExists(roleId int) (*dax.Role, error) {
 
 	// Get assigned role IDs for given user from the DB
 	query := "SELECT * FROM Roles WHERE id = ?"
-	row := r.Conn.Db.QueryRow(query, roleId)
+	row := r.Conn.SqlDb.QueryRow(query, roleId)
 
 	// Scan the role IDs and process them into query arguments to use
 	// in the Roles table
-	var role dataModels.Role
+	var role dax.Role
 	err := row.Scan(
 		&role.Id,
 		&role.RoleName,
@@ -86,7 +86,7 @@ func (r RolesRepository) RoleByIdExists(roleId int) (*dataModels.Role, error) {
 func (r RolesRepository) RoleByDisplayNameExists(roleDisplayName string) int {
 	query := "SELECT COUNT(*) FROM Roles WHERE displayName = ?"
 	var count int
-	err := r.Conn.Db.QueryRow(query, roleDisplayName).Scan(&count)
+	err := r.Conn.SqlDb.QueryRow(query, roleDisplayName).Scan(&count)
 	if err != nil {
 		fmt.Printf("An error ocurred while checking for role in OTA DB: %v\n", err)
 		return -1

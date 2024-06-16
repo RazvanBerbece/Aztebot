@@ -1,4 +1,4 @@
-package dataModels
+package dax
 
 type UserRep struct {
 	UserId string

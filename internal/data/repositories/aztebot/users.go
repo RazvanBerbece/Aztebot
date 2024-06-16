@@ -6,23 +6,23 @@ import (
 	"strings"
 
 	databaseconn "github.com/RazvanBerbece/Aztebot/internal/data/connection"
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
+	dax "github.com/RazvanBerbece/Aztebot/internal/data/models/dax/aztebot"
 )
 
 type UsersRepository struct {
-	Conn databaseconn.Database
+	Conn databaseconn.AztebotDbContext
 }
 
 func NewUsersRepository() *UsersRepository {
 	repo := new(UsersRepository)
-	repo.Conn.ConnectDatabaseHandle()
+	repo.Conn.Connect()
 	return repo
 }
 
 func (r UsersRepository) GetAllDiscordUids() ([]string, error) {
 
 	var userIds []string
-	rowsUsers, err := r.Conn.Db.Query("SELECT userId FROM Users")
+	rowsUsers, err := r.Conn.SqlDb.Query("SELECT userId FROM Users")
 	if err != nil {
 		return nil, fmt.Errorf("GetAllUids: %v", err)
 	}
@@ -45,11 +45,11 @@ func (r UsersRepository) GetAllDiscordUids() ([]string, error) {
 	return userIds, nil
 }
 
-func (r UsersRepository) GetAllUsers() ([]dataModels.User, error) {
+func (r UsersRepository) GetAllUsers() ([]dax.User, error) {
 
-	var users []dataModels.User
+	var users []dax.User
 
-	rowsUsers, err := r.Conn.Db.Query("SELECT * FROM Users")
+	rowsUsers, err := r.Conn.SqlDb.Query("SELECT * FROM Users")
 	if err != nil {
 		return nil, fmt.Errorf("GetAllUsers: %v", err)
 	}
@@ -57,7 +57,7 @@ func (r UsersRepository) GetAllUsers() ([]dataModels.User, error) {
 	defer rowsUsers.Close()
 
 	for rowsUsers.Next() {
-		var user dataModels.User
+		var user dax.User
 		if err := rowsUsers.Scan(&user.Id,
 			&user.DiscordTag,
 			&user.UserId,
@@ -82,7 +82,7 @@ func (r UsersRepository) GetAllUsers() ([]dataModels.User, error) {
 func (r UsersRepository) UserExists(userId string) int {
 	query := "SELECT COUNT(*) FROM Users WHERE userId = ?"
 	var count int
-	err := r.Conn.Db.QueryRow(query, userId).Scan(&count)
+	err := r.Conn.SqlDb.QueryRow(query, userId).Scan(&count)
 	if err != nil {
 		fmt.Printf("An error ocurred while checking for user in OTA DB: %v\n", err)
 		return -1
@@ -90,12 +90,12 @@ func (r UsersRepository) UserExists(userId string) int {
 	return count
 }
 
-func (r UsersRepository) GetUser(userId string) (*dataModels.User, error) {
+func (r UsersRepository) GetUser(userId string) (*dax.User, error) {
 
 	query := "SELECT * FROM Users WHERE userId = ?"
-	row := r.Conn.Db.QueryRow(query, userId)
+	row := r.Conn.SqlDb.QueryRow(query, userId)
 
-	var user dataModels.User
+	var user dax.User
 	err := row.Scan(&user.Id,
 		&user.DiscordTag,
 		&user.UserId,
@@ -118,7 +118,7 @@ func (r UsersRepository) DeleteUser(userId string) error {
 
 	query := "DELETE FROM Users WHERE userId = ?"
 
-	_, err := r.Conn.Db.Exec(query, userId)
+	_, err := r.Conn.SqlDb.Exec(query, userId)
 	if err != nil {
 		return fmt.Errorf("error deleting user: %w", err)
 	}
@@ -126,9 +126,9 @@ func (r UsersRepository) DeleteUser(userId string) error {
 	return nil
 }
 
-func (r UsersRepository) SaveInitialUserDetails(tag string, userId string, timestamp *int64) (*dataModels.User, error) {
+func (r UsersRepository) SaveInitialUserDetails(tag string, userId string, timestamp *int64) (*dax.User, error) {
 
-	user := &dataModels.User{
+	user := &dax.User{
 		DiscordTag:        tag,
 		UserId:            userId,
 		CurrentRoleIds:    "",
@@ -140,7 +140,7 @@ func (r UsersRepository) SaveInitialUserDetails(tag string, userId string, times
 		Gender:            -1,
 	}
 
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		INSERT INTO 
 			Users(
 				discordTag, 
@@ -168,9 +168,9 @@ func (r UsersRepository) SaveInitialUserDetails(tag string, userId string, times
 
 }
 
-func (r UsersRepository) UpdateUser(user dataModels.User) (*dataModels.User, error) {
+func (r UsersRepository) UpdateUser(user dax.User) (*dax.User, error) {
 
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE Users SET 
 			discordTag = ?, 
 			currentRoleIds = ?, 
@@ -196,7 +196,7 @@ func (r UsersRepository) UpdateUser(user dataModels.User) (*dataModels.User, err
 
 func (r UsersRepository) AddUserExpriencePoints(userId string, experiencePoints float64) error {
 
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE Users SET 
 			currentExperience = currentExperience + ?
 		WHERE userId = ?`)
@@ -215,7 +215,7 @@ func (r UsersRepository) AddUserExpriencePoints(userId string, experiencePoints 
 
 func (r UsersRepository) SetLevel(userId string, level int) error {
 
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE Users SET 
 			currentLevel = ?
 		WHERE userId = ?`)
@@ -234,7 +234,7 @@ func (r UsersRepository) SetLevel(userId string, level int) error {
 
 func (r UsersRepository) RemoveUserExpriencePoints(userId string, experiencePoints float64) error {
 
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE Users SET 
 			currentExperience = currentExperience - ?
 		WHERE userId = ?`)
@@ -253,7 +253,7 @@ func (r UsersRepository) RemoveUserExpriencePoints(userId string, experiencePoin
 
 func (r UsersRepository) RemoveUserRoles(userId string) error {
 
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE Users SET 
 			currentRoleIds = ","
 		WHERE userId = ?`)
@@ -283,7 +283,7 @@ func (r UsersRepository) AppendUserRoleWithId(userId string, roleId int) error {
 	}
 	roleIdsString += fmt.Sprintf("%d,", roleId)
 
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE Users SET 
 			currentRoleIds = ?
 		WHERE userId = ?`)
@@ -314,7 +314,7 @@ func (r UsersRepository) RemoveUserRoleWithId(userId string, roleId int) error {
 		}
 	}
 
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE Users SET 
 			currentRoleIds = ?
 		WHERE userId = ?`)
@@ -345,7 +345,7 @@ func (r UsersRepository) RemoveUserRoleWithName(userId string, roleDisplayName s
 		}
 	}
 
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE Users SET 
 			currentRoleIds = ?
 		WHERE userId = ?`)
@@ -364,7 +364,7 @@ func (r UsersRepository) RemoveUserRoleWithName(userId string, roleDisplayName s
 
 func (r UsersRepository) SetUserRoles(userId string, roleIdsString string) error {
 
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE Users SET 
 			currentRoleIds = ?
 		WHERE userId = ?`)
@@ -381,10 +381,10 @@ func (r UsersRepository) SetUserRoles(userId string, roleIdsString string) error
 	return nil
 }
 
-func (r UsersRepository) GetRolesForUser(userId string) ([]dataModels.Role, error) {
+func (r UsersRepository) GetRolesForUser(userId string) ([]dax.Role, error) {
 
 	// Get assigned role IDs for given user from the DB
-	rows, err := r.Conn.Db.Query("SELECT currentRoleIds FROM Users WHERE userId = ?", userId)
+	rows, err := r.Conn.SqlDb.Query("SELECT currentRoleIds FROM Users WHERE userId = ?", userId)
 	if err != nil {
 		return nil, fmt.Errorf("GetRolesForUser %s - User: %v", userId, err)
 	}
@@ -401,7 +401,7 @@ func (r UsersRepository) GetRolesForUser(userId string) ([]dataModels.Role, erro
 		}
 		if roleIdsString == "" {
 			// no roles assigned for user
-			return []dataModels.Role{}, nil
+			return []dax.Role{}, nil
 		}
 		placeholders, ids = GetSqlPlaceholderAndValueRoleCommand(idArray(roleIdsString))
 	}
@@ -422,7 +422,7 @@ func (r UsersRepository) GetRolesForUser(userId string) ([]dataModels.Role, erro
 	return roles, nil
 }
 
-func (r UsersRepository) GetRolesByIds(placeholders string, ids []int) ([]dataModels.Role, error) {
+func (r UsersRepository) GetRolesByIds(placeholders string, ids []int) ([]dax.Role, error) {
 
 	// Convert roleIDIntegers to a slice of interface{} to use as variadic args in Db.Query()
 	var rolesAsListOfAny []interface{}
@@ -431,15 +431,15 @@ func (r UsersRepository) GetRolesByIds(placeholders string, ids []int) ([]dataMo
 	}
 
 	// Retrieve the roles in ascending order of importance (higher id means higher importance)
-	var roles []dataModels.Role
+	var roles []dax.Role
 	query := fmt.Sprintf("SELECT * FROM Roles WHERE id IN (%s) ORDER BY id ASC", placeholders)
-	rowsRoles, err := r.Conn.Db.Query(query, rolesAsListOfAny...)
+	rowsRoles, err := r.Conn.SqlDb.Query(query, rolesAsListOfAny...)
 	if err != nil {
 		return nil, fmt.Errorf("GetRolesByIds <%d>: %v", ids, err)
 	}
 	defer rowsRoles.Close()
 	for rowsRoles.Next() {
-		var role dataModels.Role
+		var role dax.Role
 		if err := rowsRoles.Scan(&role.Id, &role.RoleName, &role.DisplayName, &role.Emoji, &role.Info); err != nil {
 			return nil, fmt.Errorf("GetRolesByIds: %v", err)
 		}

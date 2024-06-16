@@ -1,4 +1,4 @@
-package dataModels
+package dax
 
 type Timeout struct {
 	Id                int64

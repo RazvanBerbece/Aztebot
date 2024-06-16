@@ -5,24 +5,24 @@ import (
 	"time"
 
 	databaseconn "github.com/RazvanBerbece/Aztebot/internal/data/connection"
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
+	dax "github.com/RazvanBerbece/Aztebot/internal/data/models/dax/aztebot"
 	"github.com/RazvanBerbece/Aztebot/internal/data/models/domain"
 )
 
 type UsersStatsRepository struct {
-	Conn databaseconn.Database
+	Conn databaseconn.AztebotDbContext
 }
 
 func NewUsersStatsRepository() *UsersStatsRepository {
 	repo := new(UsersStatsRepository)
-	repo.Conn.ConnectDatabaseHandle()
+	repo.Conn.Connect()
 	return repo
 }
 
 func (r UsersStatsRepository) UserStatsExist(userId string) int {
 	query := "SELECT COUNT(*) FROM UserStats WHERE userId = ?"
 	var count int
-	err := r.Conn.Db.QueryRow(query, userId).Scan(&count)
+	err := r.Conn.SqlDb.QueryRow(query, userId).Scan(&count)
 	if err != nil {
 		fmt.Printf("An error ocurred while checking for user stats in OTA DB: %v\n", err)
 		return -1
@@ -32,7 +32,7 @@ func (r UsersStatsRepository) UserStatsExist(userId string) int {
 
 func (r UsersStatsRepository) SaveInitialUserStats(userId string) error {
 
-	userStats := &dataModels.UserStats{
+	userStats := &dax.UserStats{
 		UserId:                    userId,
 		NumberMessagesSent:        0,
 		NumberSlashCommandsUsed:   0,
@@ -45,7 +45,7 @@ func (r UsersStatsRepository) SaveInitialUserStats(userId string) error {
 		TimeSpentListeningToMusic: 0,
 	}
 
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		INSERT INTO 
 			UserStats(
 				userId, 
@@ -74,15 +74,15 @@ func (r UsersStatsRepository) SaveInitialUserStats(userId string) error {
 
 }
 
-func (r UsersStatsRepository) GetStatsForUser(userId string) (*dataModels.UserStats, error) {
+func (r UsersStatsRepository) GetStatsForUser(userId string) (*dax.UserStats, error) {
 
 	// Get assigned role IDs for given user from the DB
 	query := "SELECT * FROM UserStats WHERE userId = ?"
-	row := r.Conn.Db.QueryRow(query, userId)
+	row := r.Conn.SqlDb.QueryRow(query, userId)
 
 	// Scan the role IDs and process them into query arguments to use
 	// in the Roles table
-	var userStats dataModels.UserStats
+	var userStats dax.UserStats
 	err := row.Scan(&userStats.Id,
 		&userStats.UserId,
 		&userStats.NumberMessagesSent,
@@ -108,7 +108,7 @@ func (r UsersStatsRepository) DeleteUserStats(userId string) error {
 
 	query := "DELETE FROM UserStats WHERE userId = ?"
 
-	_, err := r.Conn.Db.Exec(query, userId)
+	_, err := r.Conn.SqlDb.Exec(query, userId)
 	if err != nil {
 		return fmt.Errorf("error deleting user stats: %w", err)
 	}
@@ -117,7 +117,7 @@ func (r UsersStatsRepository) DeleteUserStats(userId string) error {
 }
 
 func (r UsersStatsRepository) IncrementMessagesSentForUser(userId string) error {
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE UserStats SET 
 			messagesSent = messagesSent + 1
 		WHERE userId = ?`)
@@ -137,7 +137,7 @@ func (r UsersStatsRepository) IncrementMessagesSentForUser(userId string) error 
 }
 
 func (r UsersStatsRepository) DecrementMessagesSentForUser(userId string) error {
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE UserStats SET 
 			messagesSent = messagesSent - 1
 		WHERE userId = ?`)
@@ -157,7 +157,7 @@ func (r UsersStatsRepository) DecrementMessagesSentForUser(userId string) error 
 }
 
 func (r UsersStatsRepository) IncrementSlashCommandsUsedForUser(userId string) error {
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE UserStats SET 
 			slashCommandsUsed = slashCommandsUsed + 1
 		WHERE userId = ?`)
@@ -177,7 +177,7 @@ func (r UsersStatsRepository) IncrementSlashCommandsUsedForUser(userId string) e
 }
 
 func (r UsersStatsRepository) IncrementReactionsReceivedForUser(userId string) error {
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE UserStats SET 
 			reactionsReceived = reactionsReceived + 1
 		WHERE userId = ?`)
@@ -197,7 +197,7 @@ func (r UsersStatsRepository) IncrementReactionsReceivedForUser(userId string) e
 }
 
 func (r UsersStatsRepository) DecrementReactionsReceivedForUser(userId string) error {
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE UserStats SET 
 			reactionsReceived = reactionsReceived - 1
 		WHERE userId = ?`)
@@ -217,7 +217,7 @@ func (r UsersStatsRepository) DecrementReactionsReceivedForUser(userId string) e
 }
 
 func (r UsersStatsRepository) IncrementActiveDayStreakForUser(userId string) error {
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE UserStats SET 
 			activeDayStreak = activeDayStreak + 1
 		WHERE userId = ?`)
@@ -237,7 +237,7 @@ func (r UsersStatsRepository) IncrementActiveDayStreakForUser(userId string) err
 }
 
 func (r UsersStatsRepository) ResetActiveDayStreakForUser(userId string) error {
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE UserStats SET 
 			activeDayStreak = 0
 		WHERE userId = ?`)
@@ -262,7 +262,7 @@ func (r UsersStatsRepository) ResetActiveDayStreakForUser(userId string) error {
 }
 
 func (r UsersStatsRepository) UpdateLastActiveTimestamp(userId string, timestamp int64) error {
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE UserStats SET 
 			lastActivityTimestamp = ?
 		WHERE userId = ?`)
@@ -282,7 +282,7 @@ func (r UsersStatsRepository) UpdateLastActiveTimestamp(userId string, timestamp
 }
 
 func (r UsersStatsRepository) IncrementActivitiesTodayForUser(userId string) error {
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE UserStats SET 
 			numberActivitiesToday = numberActivitiesToday + 1
 		WHERE userId = ?`)
@@ -302,7 +302,7 @@ func (r UsersStatsRepository) IncrementActivitiesTodayForUser(userId string) err
 }
 
 func (r UsersStatsRepository) ResetActivitiesTodayForUser(userId string) error {
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE UserStats SET 
 			numberActivitiesToday = 0
 		WHERE userId = ?`)
@@ -327,7 +327,7 @@ func (r UsersStatsRepository) ResetActivitiesTodayForUser(userId string) error {
 }
 
 func (r UsersStatsRepository) AddToTimeSpentInVoiceChannels(userId string, sTimeLength int) error {
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE UserStats SET 
 			timeSpentInVoiceChannels = timeSpentInVoiceChannels + ?
 		WHERE userId = ?`)
@@ -347,7 +347,7 @@ func (r UsersStatsRepository) AddToTimeSpentInVoiceChannels(userId string, sTime
 }
 
 func (r UsersStatsRepository) AddToTimeSpentInEvents(userId string, sTimeLength int) error {
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE UserStats SET 
 			timeSpentInEvents = timeSpentInEvents + ?
 		WHERE userId = ?`)
@@ -367,7 +367,7 @@ func (r UsersStatsRepository) AddToTimeSpentInEvents(userId string, sTimeLength 
 }
 
 func (r UsersStatsRepository) AddToTimeSpentListeningMusic(userId string, sTimeLength int) error {
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE UserStats SET 
 			timeSpentListeningMusic = timeSpentListeningMusic + ?
 		WHERE userId = ?`)
@@ -398,7 +398,7 @@ func (r UsersStatsRepository) GetTopUsersByMessageSent(count int) ([]domain.TopU
 		ORDER BY UserStats.messagesSent DESC
 		LIMIT ?`
 
-	rows, err := r.Conn.Db.Query(query, count)
+	rows, err := r.Conn.SqlDb.Query(query, count)
 	if err != nil {
 		return nil, err
 	}
@@ -435,7 +435,7 @@ func (r UsersStatsRepository) GetTopUsersByTimeSpentInVC(count int) ([]domain.To
 		ORDER BY UserStats.timeSpentInVoiceChannels DESC
 		LIMIT ?`
 
-	rows, err := r.Conn.Db.Query(query, count)
+	rows, err := r.Conn.SqlDb.Query(query, count)
 	if err != nil {
 		return nil, err
 	}
@@ -472,7 +472,7 @@ func (r UsersStatsRepository) GetTopUsersByTimeSpentListeningMusic(count int) ([
 		ORDER BY UserStats.timeSpentListeningMusic DESC
 		LIMIT ?`
 
-	rows, err := r.Conn.Db.Query(query, count)
+	rows, err := r.Conn.SqlDb.Query(query, count)
 	if err != nil {
 		return nil, err
 	}
@@ -508,7 +508,7 @@ func (r UsersStatsRepository) GetTopUsersByActiveDayStreak(count int) ([]domain.
 		ORDER BY UserStats.activeDayStreak DESC
 		LIMIT ?`
 
-	rows, err := r.Conn.Db.Query(query, count)
+	rows, err := r.Conn.SqlDb.Query(query, count)
 	if err != nil {
 		return nil, err
 	}
@@ -545,7 +545,7 @@ func (r UsersStatsRepository) GetTopUsersByReceivedReactions(count int) ([]domai
 		ORDER BY UserStats.reactionsReceived DESC
 		LIMIT ?`
 
-	rows, err := r.Conn.Db.Query(query, count)
+	rows, err := r.Conn.SqlDb.Query(query, count)
 	if err != nil {
 		return nil, err
 	}
@@ -571,7 +571,7 @@ func (r UsersStatsRepository) GetTopUsersByReceivedReactions(count int) ([]domai
 }
 
 func (r UsersStatsRepository) DecreaseTimeSpentListeningMusic(userId string, sTimeLength int) error {
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE UserStats SET 
 			timeSpentListeningMusic = timeSpentListeningMusic - ?
 		WHERE userId = ?`)
@@ -591,7 +591,7 @@ func (r UsersStatsRepository) DecreaseTimeSpentListeningMusic(userId string, sTi
 }
 
 func (r UsersStatsRepository) DecreaseTimeSpentInVoiceChannels(userId string, sTimeLength int) error {
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE UserStats SET 
 			timeSpentInVoiceChannels = timeSpentInVoiceChannels - ?
 		WHERE userId = ?`)
@@ -618,7 +618,7 @@ func (r UsersStatsRepository) GetUserXpRank(userId string) (*int, error) {
 		JOIN Users AS t2 ON t1.currentExperience >= t2.currentExperience
 		WHERE t2.userId = ?;`
 
-	rows, err := r.Conn.Db.Query(query, userId)
+	rows, err := r.Conn.SqlDb.Query(query, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -675,7 +675,7 @@ func (r UsersStatsRepository) GetUserLeaderboardRank(userId string, leaderboardN
 		fmt.Println("Leaderboard not implemented: ", leaderboardName)
 	}
 
-	rows, err := r.Conn.Db.Query(query, userId)
+	rows, err := r.Conn.SqlDb.Query(query, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -709,7 +709,7 @@ func (r UsersStatsRepository) GetTopUsersByXp(count int) ([]domain.TopUserXP, er
 		ORDER BY Users.currentExperience DESC
 		LIMIT ?`
 
-	rows, err := r.Conn.Db.Query(query, count)
+	rows, err := r.Conn.SqlDb.Query(query, count)
 	if err != nil {
 		return nil, err
 	}
@@ -736,7 +736,7 @@ func (r UsersStatsRepository) GetTopUsersByXp(count int) ([]domain.TopUserXP, er
 
 func (r UsersStatsRepository) SetStats(userId string, msgSent int, slashUsed int, reactReceived int, secondsVc float64, secondsMusic float64) error {
 
-	stmt, err := r.Conn.Db.Prepare(`
+	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE UserStats SET
 			messagesSent = ?,
 			slashCommandsUsed = ?,

@@ -1,27 +1,27 @@
 package utils
 
-import "github.com/RazvanBerbece/Aztebot/internal/data/repositories"
+import repositories "github.com/RazvanBerbece/Aztebot/internal/data/repositories/aztebot"
 
 func CleanupRepositories(rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository, warnsRepository *repositories.WarnsRepository, timeoutsRepository *repositories.TimeoutsRepository) {
 
 	if rolesRepository != nil {
-		rolesRepository.Conn.Db.Close()
+		rolesRepository.Conn.SqlDb.Close()
 	}
 
 	if usersRepository != nil {
-		usersRepository.Conn.Db.Close()
+		usersRepository.Conn.SqlDb.Close()
 	}
 
 	if userStatsRepository != nil {
-		userStatsRepository.Conn.Db.Close()
+		userStatsRepository.Conn.SqlDb.Close()
 	}
 
 	if warnsRepository != nil {
-		warnsRepository.Conn.Db.Close()
+		warnsRepository.Conn.SqlDb.Close()
 	}
 
 	if timeoutsRepository != nil {
-		timeoutsRepository.Conn.Db.Close()
+		timeoutsRepository.Conn.SqlDb.Close()
 	}
 
 }

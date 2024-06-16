@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
+	repositories "github.com/RazvanBerbece/Aztebot/internal/data/repositories/aztebot"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	"github.com/bwmarrin/discordgo"
 )

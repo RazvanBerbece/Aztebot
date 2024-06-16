@@ -1,6 +1,6 @@
 package globalRepositories
 
-import "github.com/RazvanBerbece/Aztebot/internal/data/repositories"
+import repositories "github.com/RazvanBerbece/Aztebot/internal/data/repositories/aztebot"
 
 // =============== RUNTIME VARIABLES (BOT APPLICATIONS) ===============
 

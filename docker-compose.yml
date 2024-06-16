@@ -1,20 +1,33 @@
 services:
-  mysql-db:
+  aztebot-db:
     image: mysql:8.0
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: 6oFqJERp8X0V9RGN0lfhu80lqAx940
+      MYSQL_USER: discordbot1
+      MYSQL_DATABASE: aztebotBotDb
+      MYSQL_PASSWORD: b21fCTAkaxI1a20utLhkYsMIB1QING
     ports:
       - "3306:3306"
+
+  aztemarket-db:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 6oFqJERp8X0V9RGN0lfhu80lqAx940
+      MYSQL_USER: discordbot2
+      MYSQL_DATABASE: azteMarketDb
+      MYSQL_PASSWORD: b21fCTAkaxI1a20utLhkYsMIB1QING
+    ports:
+      - "3307:3306"
   
   bot-service:
     container_name: bot-service
     depends_on:
-      - mysql-db
+      - aztebot-db
+      - aztemarket-db
     env_file:
       ./.env
     build:

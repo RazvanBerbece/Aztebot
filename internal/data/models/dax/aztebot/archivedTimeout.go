@@ -1,4 +1,4 @@
-package dataModels
+package dax
 
 type ArchivedTimeout struct {
 	Id              int64

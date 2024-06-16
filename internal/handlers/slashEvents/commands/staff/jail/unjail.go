@@ -3,7 +3,7 @@ package jailSlashHandlers
 import (
 	"fmt"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
+	dax "github.com/RazvanBerbece/Aztebot/internal/data/models/dax/aztebot"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	"github.com/RazvanBerbece/Aztebot/internal/services/member"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
@@ -42,7 +42,7 @@ func HandleSlashUnjail(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		},
 	})
 
-	var user *dataModels.User
+	var user *dax.User
 	if channel, channelExists := globalConfiguration.NotificationChannels["notif-jail"]; channelExists {
 		_, user, err = member.UnjailMember(s, globalConfiguration.DiscordMainGuildId, targetUserId, globalConfiguration.JailedRoleName, channel.ChannelId)
 		if err != nil {

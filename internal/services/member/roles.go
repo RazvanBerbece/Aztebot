@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"log"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
+	dax "github.com/RazvanBerbece/Aztebot/internal/data/models/dax/aztebot"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
 
 // Gets the first staff role of a given member.
-func GetMemberStaffRole(userId string, staffRoles []string) (*dataModels.Role, error) {
+func GetMemberStaffRole(userId string, staffRoles []string) (*dax.Role, error) {
 
 	roles, err := globalRepositories.UsersRepository.GetRolesForUser(userId)
 	if err != nil {
@@ -31,7 +31,7 @@ func GetMemberStaffRole(userId string, staffRoles []string) (*dataModels.Role, e
 }
 
 // Gets the order roles of a given member.
-func GetMemberOrderRoles(userId string, defaultOrderRoleNames []string) ([]*dataModels.Role, error) {
+func GetMemberOrderRoles(userId string, defaultOrderRoleNames []string) ([]*dax.Role, error) {
 
 	roles, err := globalRepositories.UsersRepository.GetRolesForUser(userId)
 	if err != nil {
@@ -39,7 +39,7 @@ func GetMemberOrderRoles(userId string, defaultOrderRoleNames []string) ([]*data
 		return nil, err
 	}
 
-	rolesResult := []*dataModels.Role{}
+	rolesResult := []*dax.Role{}
 	for _, role := range roles {
 		if utils.StringInSlice(role.DisplayName, defaultOrderRoleNames) {
 			rolesResult = append(rolesResult, &role)
@@ -79,7 +79,7 @@ func RemoveAllMemberRoles(userId string) error {
 // Returns a string which contains a comma-separated list of role IDs (to be saved in the User entity in the DB),
 // an array of integers representing the role IDs as seen in the DB,
 // and and error, if applicable.
-func GetMemberRolesFromDiscordAsLocalIdList(s *discordgo.Session, guildId string, user dataModels.User, member discordgo.Member) (string, []int, error) {
+func GetMemberRolesFromDiscordAsLocalIdList(s *discordgo.Session, guildId string, user dax.User, member discordgo.Member) (string, []int, error) {
 
 	var currentRoleIds string // string representing a list of role IDs (this is to be stored in the DB)
 	var roleIds []int         // integer list of the role IDs (like above, but an array of int IDs)
