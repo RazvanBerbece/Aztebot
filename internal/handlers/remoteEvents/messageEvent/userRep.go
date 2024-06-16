@@ -68,6 +68,14 @@ func UserRepReact(s *discordgo.Session, m *discordgo.MessageCreate) {
 		fmt.Println("An error ocurred while checking for user rep entry in the DB")
 		return
 	case 0:
+
+		// ensure that this is a user in fact
+		user, err := globalRepositories.UsersRepository.GetUser(targetUserId)
+		if err != nil || user == nil {
+			// probably not a user, so ignore
+			return
+		}
+
 		if repModeInput == "+rep" {
 			err := globalRepositories.UserRepRepository.AddNewEntry(targetUserId)
 			if err != nil {
