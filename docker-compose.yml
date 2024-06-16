@@ -21,11 +21,6 @@ services:
       dockerfile: ./cmd/bot-service/Dockerfile
     volumes: 
       - "./internal/bot-service/logs:/app/logs"
-  
-  azteradio-service:
-    container_name: azteradio-service
-    build:
-      dockerfile: ./cmd/aztemusic-service-jar/azteradio-service/Dockerfile
 
   aztemusic-service-1:
     container_name: aztemusic-service-1
