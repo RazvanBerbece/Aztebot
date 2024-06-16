@@ -849,3 +849,23 @@ func UnjailMember(s *discordgo.Session, guildId string, userId string, jailRoleN
 	return jailedUser, user, nil
 
 }
+
+func MemberHasActiveVoiceSession(uid string) bool {
+
+	status := 0
+
+	if _, ok := globals.VoiceSessions[uid]; ok {
+		status += 1
+	}
+
+	if _, ok := globals.MusicSessions[uid]; ok {
+		status += 1
+	}
+
+	if _, ok := globals.StreamSessions[uid]; ok {
+		status += 1
+	}
+
+	return status == 3
+
+}

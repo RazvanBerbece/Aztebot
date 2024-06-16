@@ -28,3 +28,6 @@ logs/
 .data/
 keys/
 prodEnvString.txt
+
+# Exceptions from ignore
+!.example.env
