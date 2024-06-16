@@ -36,8 +36,7 @@ func sendHelpGuideToUser(userId string) string {
 		SetColor(000000)
 
 	// Build guide message from all available and registered commands
-	for _, cmd := range globalState.AztebotRegisteredCommands {
-
+	for _, cmd := range globalState.AztebotSlashCommands {
 		title := fmt.Sprintf("`/%s`", cmd.Name)
 		if len(cmd.Options) > 0 {
 			for _, param := range cmd.Options {
