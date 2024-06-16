@@ -26,6 +26,13 @@ func HandleSlashMe(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		})
 	}
 
+	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Embeds: utils.SimpleEmbed("🤖   Slash Command Confirmation", "Gathering your `/me` data..."),
+		},
+	})
+
 	embed := displayEmbedForUser(s, i.Interaction.Member.User.ID)
 	if embed == nil {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
@@ -35,12 +42,14 @@ func HandleSlashMe(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			},
 		})
 	}
-	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Embeds: embed,
-		},
-	})
+
+	// Final response
+	editContent := ""
+	editWebhook := discordgo.WebhookEdit{
+		Content: &editContent,
+		Embeds:  &embed,
+	}
+	s.InteractionResponseEdit(i.Interaction, &editWebhook)
 }
 
 func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.MessageEmbed {
