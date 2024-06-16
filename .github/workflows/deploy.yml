@@ -74,9 +74,14 @@ jobs:
           cluster_name: ${{ env.CLUSTER_NAME }}
           location: ${{ env.GKE_ZONE }}
       
+      - name: Export deployment variables
+        run: |
+          export GCE_PROJECT=${{ env.PROJECT_ID }}
+          export GCE_PROJECT_DOCKER_ARTIFACT_REGISTRY=${{ env.DOCKER_ARTIFACT_REPOSITORY }}
+      
       - name: Deploy New Image to DKE
         run: |
-          kubectl apply -f deployment.yml
+          envsubst < deployment.yaml | kubectl apply -f -
 
       - name: Show created Pods
         run: |
