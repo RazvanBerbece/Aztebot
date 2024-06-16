@@ -26,8 +26,9 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 
 	userId := member.User.ID
 
-	if vs.SelfStream {
+	if vs.SelfStream && vs.ChannelID != "" {
 		// User STARTED STREAMING
+		fmt.Println("STREAM")
 		now := time.Now()
 		globals.StreamSessions[userId] = &now
 
@@ -40,8 +41,23 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 		if err != nil {
 			fmt.Printf("An error ocurred while updating user (%s) last timestamp: %v", userId, err)
 		}
+	} else if vs.SelfStream && vs.ChannelID == "" {
+		// The Discord API does something weird and sends SelfStream as true
+		// when a user leaves a VC directly without stopping streaming first
+		fmt.Println("LEAVE & STOP STREAM")
+		// Add the time spent connected (delta between join timestamp and disconnect timestamp)
+		if joinTime, ok := globals.VoiceSessions[userId]; ok {
+			duration := time.Since(joinTime)
+			err := globalsRepo.UserStatsRepository.AddToTimeSpentInVoiceChannels(userId, int(duration.Seconds()))
+			if err != nil {
+				fmt.Printf("An error ocurred while adding time spent to voice channels for user with id %s: %v", userId, err)
+			}
+			delete(globals.VoiceSessions, userId)
+			delete(globals.StreamSessions, userId)
+		}
 	} else {
 		if vs.ChannelID != "" && globals.StreamSessions[userId] == nil {
+			fmt.Println("JOIN VC")
 			// User JOINED a VC but NOT STREAMING
 			globals.VoiceSessions[userId] = time.Now()
 
@@ -55,10 +71,12 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 				fmt.Printf("An error ocurred while udpating user (%s) last timestamp: %v", userId, err)
 			}
 		} else if vs.ChannelID != "" && globals.StreamSessions[userId] != nil {
-			// User STOPPED STREAMING but STILL IN VC
+			fmt.Println("STOP STREAM")
 			delete(globals.StreamSessions, userId)
 		} else if vs.ChannelID == "" && globals.StreamSessions[userId] == nil {
-			// User left a voice channel
+			// User LEFT THE VOICE CHANNEL
+			// Add both times spent connected and streaming, if they exist
+			fmt.Println("LEFT")
 			if joinTime, ok := globals.VoiceSessions[userId]; ok {
 				duration := time.Since(joinTime)
 				err := globalsRepo.UserStatsRepository.AddToTimeSpentInVoiceChannels(userId, int(duration.Seconds()))
@@ -66,6 +84,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 					fmt.Printf("An error ocurred while adding time spent to voice channels for user with id %s: %v", userId, err)
 				}
 				delete(globals.VoiceSessions, userId)
+				delete(globals.StreamSessions, userId)
 			}
 		}
 	}
