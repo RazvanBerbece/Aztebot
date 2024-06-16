@@ -19,14 +19,11 @@ RUN go install github.com/pressly/goose/v3/cmd/goose@latest
 COPY . ./
 COPY ./.env ./.env
 
-# Export environment variables - TODO: FIX THIS
-CMD ". ./.env"
-
 # Build project
-RUN CGO_ENABLED=0 GOOS=linux go build -o build/main ./cmd/bot-service/main.go 
+RUN CGO_ENABLED=0 GOOS=linux go build -o build/bot/main ./cmd/bot-service/main.go 
 
 # Other configs
 VOLUME /app/logs
 
-# Apply migrations against the peer database and then run the application
-CMD sh -c "make run-services"
+# Run the Discord bot service application
+CMD sh -c "make run-aztebot-bot-service"
