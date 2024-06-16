@@ -55,7 +55,7 @@ jobs:
 
       - name: Generate next release number
         id: tag_version
-        uses: mathieudutour/github-tag-action@v6.1
+        uses: mathieudutour/github-tag-action@v6.2
         with:
           github_token: ${{ secrets.GH_TOKEN }}
           dry_run: true
@@ -71,7 +71,7 @@ jobs:
       
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
-        uses: 'google-github-actions/auth@v1'
+        uses: 'google-github-actions/auth@v2'
         with:
           token_format: 'access_token'
           create_credentials_file: true
@@ -79,7 +79,7 @@ jobs:
           service_account: ${{ secrets.GCP_GITHUB_SERVICE_ACCOUNT }}
           access_token_lifetime: '120s'
       
-      - uses: 'docker/login-action@v1'
+      - uses: 'docker/login-action@v3'
         name: 'Docker login'
         with:
           registry: '${{ env.GKE_REGION }}-docker.pkg.dev'
@@ -95,7 +95,7 @@ jobs:
           docker push "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTEBOT_IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}"
       
       - name: Connect to GKE
-        uses: google-github-actions/get-gke-credentials@v2.0.0
+        uses: google-github-actions/get-gke-credentials@v2.2.0
         with:
           cluster_name: ${{ env.CLUSTER_NAME }}
           location: ${{ env.GKE_ZONE }}
