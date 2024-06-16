@@ -3,7 +3,6 @@ package readyEvent
 import (
 	"fmt"
 	"log"
-	"os"
 	"sync"
 	"time"
 
@@ -236,15 +235,10 @@ func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
 		} else {
 			// Send associated default message to given text channel
 			var embedText string
-			path, pathErr := os.Getwd()
-			if pathErr != nil {
-				log.Println(pathErr)
-			}
-			fmt.Println(path)
 			switch details {
 			case "default":
 				embedText = utils.GetTextFromFile("internal/bot-service/handlers/readyEvent/assets/defaultContent/default.txt")
-			case "music-info":
+			case "info-music":
 				embedText = utils.GetTextFromFile("internal/bot-service/handlers/readyEvent/assets/defaultContent/music-info.txt")
 			}
 			embed := embed.NewEmbed().
