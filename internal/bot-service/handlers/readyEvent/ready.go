@@ -279,14 +279,16 @@ func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 		}
 	}
 
-	guild, err := s.Guild(globals.DiscordMainGuildId)
+	guild, err := s.State.Guild(globals.DiscordMainGuildId)
 	if err != nil {
 		fmt.Println("Error retrieving guild:", err)
 		return
 	}
 
 	// For each active voice state in the guild
-	var sessionsAtStartup int = 0
+	var voiceSessionsAtStartup int = 0
+	var streamSessionsAtStartup int = 0
+	var musicSessionsAtStartup int = 0
 	for _, voiceState := range guild.VoiceStates {
 
 		userId := voiceState.UserID
@@ -298,20 +300,22 @@ func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 			globals.MusicSessions[userId] = map[string]*time.Time{
 				channelId: &now,
 			}
+			musicSessionsAtStartup += 1
 		} else {
 			if voiceState.SelfStream {
 				// If the voice state is purposed for streaming, initiate a streaming session at startup time
 				globals.StreamSessions[userId] = &now
+				streamSessionsAtStartup += 1
 			} else {
 				// If the voice state is purposed for just for listening on a voice channel, initiate a voice session at startup time
 				globals.VoiceSessions[userId] = now
+				voiceSessionsAtStartup += 1
 			}
 		}
-		sessionsAtStartup += 1
-
 	}
 
-	fmt.Printf("Found %d active voice states at bot startup time\n", sessionsAtStartup)
+	totalSessions := voiceSessionsAtStartup + streamSessionsAtStartup + musicSessionsAtStartup
+	fmt.Printf("Found %d active voice states at bot startup time (%d voice, %d streaming, %d music)\n", totalSessions, voiceSessionsAtStartup, streamSessionsAtStartup, musicSessionsAtStartup)
 
 }
 
