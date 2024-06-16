@@ -12,13 +12,13 @@ func main() {
 	bot.ConfigureBase("aztebot")
 	bot.AddHandlers(handlers.GetAztebotHandlersAsList())
 
+	// Cleanup used resources when program stops executing
+	defer bot.Cleanup()
+
 	// Connect to the Discord servers
 	bot.Connect()
 
 	// Close connection
 	bot.CloseConnection()
-
-	// Cleanup used resources
-	bot.Cleanup()
 
 }
