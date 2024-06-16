@@ -83,7 +83,7 @@ func HandleSlashSetGlobalCoinRateForActivity(s *discordgo.Session, i *discordgo.
 
 	// Send notification to target staff channel to announce the global rate change
 	if channel, channelExists := globalConfiguration.NotificationChannels["notif-aztebotUpdatesChannel"]; channelExists {
-		go xpSystemSlashHandlers.SendGlobalRateChangeNotification(channel.ChannelId, "AzteCoins", activityName, multiplierName)
+		go xpSystemSlashHandlers.SendGlobalRateChangeNotification(channel.ChannelId, "🪙 AzteCoins", activityName, multiplierName)
 	}
 
 	// Send response embed

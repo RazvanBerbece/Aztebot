@@ -48,7 +48,7 @@ func HandleSlashAddXp(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		SetColor(000000).
 		SetAuthor("AzteBot", "https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
-		AddField(fmt.Sprintf("Added `%.1f` XP to `%s`.", *xpFloat, user.DiscordTag), "", false)
+		AddField(fmt.Sprintf("Added `💠 %.1f` XP to `%s`.", *xpFloat, user.DiscordTag), "", false)
 
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
