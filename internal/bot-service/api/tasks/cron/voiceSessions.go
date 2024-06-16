@@ -46,7 +46,7 @@ func updateVoiceSessions(s *discordgo.Session, userStatsRepo *repositories.Users
 	for uid, joinTime := range globals.VoiceSessions {
 
 		// Ignore all bot sessions
-		authorIsBot, err := member.MemberIsBot(s, globals.DiscordMainGuildId, uid)
+		authorIsBot, err := member.IsBot(s, globals.DiscordMainGuildId, uid)
 		if err != nil {
 			continue
 		}
@@ -75,7 +75,7 @@ func updateStreamingSessions(s *discordgo.Session, userStatsRepo *repositories.U
 	for uid, joinTime := range globals.StreamSessions {
 
 		// Ignore all bot sessions
-		authorIsBot, err := member.MemberIsBot(s, globals.DiscordMainGuildId, uid)
+		authorIsBot, err := member.IsBot(s, globals.DiscordMainGuildId, uid)
 		if err != nil {
 			continue
 		}
@@ -104,7 +104,7 @@ func updateMusicSessions(s *discordgo.Session, userStatsRepo *repositories.Users
 	for uid := range globals.MusicSessions {
 
 		// Ignore all bot sessions
-		authorIsBot, err := member.MemberIsBot(s, globals.DiscordMainGuildId, uid)
+		authorIsBot, err := member.IsBot(s, globals.DiscordMainGuildId, uid)
 		if err != nil {
 			continue
 		}

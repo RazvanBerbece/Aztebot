@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"sync"
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/member"
@@ -75,23 +74,17 @@ func CleanupMemberAtStartup(s *discordgo.Session, uids []string) error {
 	uidsLength := len(uids)
 
 	// For each tag in the DB, delete user from table
-	var wg sync.WaitGroup
-	wg.Add(uidsLength)
 	for i := 0; i < uidsLength; i++ {
-		go func(i int) {
-			defer wg.Done()
-			uid := uids[i]
-			_, err := s.GuildMember(globals.DiscordMainGuildId, uid)
+		uid := uids[i]
+		_, err := s.GuildMember(globals.DiscordMainGuildId, uid)
+		if err != nil {
+			// if the member does not exist on the main server, delete from the database
+			err = member.DeleteAllMemberData(uid)
 			if err != nil {
-				// if the member does not exist on the main server, delete from the database
-				err = member.DeleteAllMemberData(uid)
-				if err != nil {
-					fmt.Println("Error deleting hanging user data on startup sync: ", err)
-				}
+				fmt.Println("Error deleting hanging user data on startup sync: ", err)
 			}
-		}(i)
+		}
 	}
-	wg.Wait()
 
 	// Cleanup repos
 	go utils.CleanupRepositories(nil, usersRepository, userStatsRepository, nil, nil)
@@ -247,7 +240,7 @@ func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 			userId := voiceState.UserID
 			channelId := voiceState.ChannelID
 
-			userIsBot, err := member.MemberIsBot(s, globals.DiscordMainGuildId, userId)
+			userIsBot, err := member.IsBot(s, globals.DiscordMainGuildId, userId)
 			if err != nil {
 				fmt.Println("Error retrieving user for bot check:", err)
 				return
