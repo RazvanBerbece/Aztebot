@@ -52,7 +52,7 @@ func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []
 		if processedLevel != 0 && processedRoleName != "" && processedLevel > user.CurrentLevel {
 
 			if globalConfiguration.AuditPromotionStateInChannel {
-				logMsg := fmt.Sprintf("Promoting %s to level %d (role: %s)", user.DiscordTag, processedLevel, processedRoleName)
+				logMsg := fmt.Sprintf("Promoting `%s` to level `%d` (role: `%s`)", user.DiscordTag, processedLevel, processedRoleName)
 				discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
 				discordChannelLogger.LogInfo(logMsg)
 			}

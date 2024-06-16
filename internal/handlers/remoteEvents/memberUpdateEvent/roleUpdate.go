@@ -26,14 +26,14 @@ func MemberRoleUpdate(s *discordgo.Session, m *discordgo.GuildMemberUpdate) {
 				fmt.Printf("Error ocurred while retrieving Discord role: %v\n", err)
 			}
 			if idx < len(currentRoles)-1 {
-				currentRolesString += fmt.Sprintf("%s,", role.Name)
+				currentRolesString += fmt.Sprintf("`%s`,", role.Name)
 			} else if idx == len(currentRoles)-1 {
 				currentRolesString += fmt.Sprintf(role.Name)
 			}
 		}
 
 		// Audit update by logging in provided debug channel
-		logMsg := fmt.Sprintf("Handling role update for %s [%s] (updated roles: %s)", m.Member.User.Username, m.Member.User.ID, currentRolesString)
+		logMsg := fmt.Sprintf("Handling role update for `%s` [`%s`] (updated roles: %s)", m.Member.User.Username, m.Member.User.ID, currentRolesString)
 		discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
 		discordChannelLogger.LogInfo(logMsg)
 	}

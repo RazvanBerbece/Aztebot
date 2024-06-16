@@ -19,7 +19,7 @@ func GuildJoin(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
 
 	// Audit member join by logging in provided debug channel
 	if globalConfiguration.AuditMemberJoinsInChannel {
-		logMsg := fmt.Sprintf("%s joined the OTA server", m.Member.User.Username)
+		logMsg := fmt.Sprintf("`%s` joined the OTA server", m.Member.User.Username)
 		discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
 		discordChannelLogger.LogInfo(logMsg)
 	}

@@ -24,6 +24,10 @@ func LoadJailTasks() {
 		"Roll a Double",
 		"Write a Chorus for a Rap Song",
 		"Custom Task from a Staff Member",
+		"Draw a Picture and Post It",
+		"Create a Meme Involving Azteca",
+		"Translate a Sentence to Another Language",
+		"Share an Interesting Fact",
 	}
 }
 
