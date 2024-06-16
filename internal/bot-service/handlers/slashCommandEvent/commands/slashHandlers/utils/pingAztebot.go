@@ -1,4 +1,4 @@
-package slashHandlers
+package slashUtils
 
 import (
 	"github.com/bwmarrin/discordgo"
