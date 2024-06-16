@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/member"
+	rolesService "github.com/RazvanBerbece/Aztebot/internal/bot-service/api/roles"
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/bot-service/data/models"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
@@ -73,14 +74,18 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 		userCreatedTimeString = ""
 	}
 
-	// Process highest role
-	var highestRole *dataModels.Role
+	// Process highest roles
+	var highestOrderRole *dataModels.Role = nil
+	var highestStaffRole *dataModels.Role = nil
+	var orderRoleText string = ""
 	roles, err := globalsRepo.UsersRepository.GetRolesForUser(userId)
 	if err != nil {
 		log.Printf("Cannot retrieve roles for user with id %s: %v", userId, err)
-		highestRole = nil
+		highestOrderRole = nil
+		highestStaffRole = nil
 	} else {
-		highestRole = &roles[len(roles)-1] // role IDs for users are stored in DB in ascending order by rank, so the last one is the highest
+		highestStaffRole, highestOrderRole = rolesService.GetHighestRoles(roles)
+		orderRoleText = fmt.Sprintf("%s | ", highestOrderRole.DisplayName)
 	}
 
 	// Setup user stats if the user doesn't have an entity in UserStats
@@ -128,12 +133,12 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 
 	embed := embed.NewEmbed().
 		SetTitle(fmt.Sprintf("🤖   `%s`'s Profile Card", user.DiscordTag)).
-		SetDescription(fmt.Sprintf("`%s CIRCLE%s`", user.CurrentCircle, orderText)).
+		SetDescription(fmt.Sprintf("`%s%s CIRCLE%s`", orderRoleText, user.CurrentCircle, orderText)).
 		SetThumbnail(fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.png", userId, apiUser.Avatar)).
 		SetColor(000000).
 		AddLineBreakField()
 
-	if userCreatedTimeString != "" && highestRole != nil {
+	if userCreatedTimeString != "" && highestOrderRole != nil {
 
 		// Process ranks in leaderboards
 		msgRankString := ""
@@ -163,11 +168,10 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 		}
 
 		// Add extra decorations to the embed (special users, staff members, etc.)
-		decorateEmbed(embed, roles, userId)
+		decorateEmbed(embed, highestStaffRole, userId)
 
 		embed.
 			AddField(fmt.Sprintf("🩸 Aztec since:  `%s`", userCreatedTimeString), "", false).
-			AddField(fmt.Sprintf("⭐ Highest obtained inner circle role:  `%s`", highestRole.DisplayName), "", false).
 			AddField(fmt.Sprintf("🔄 Active day streak:  `%d`%s", stats.NumberActiveDayStreak, streakRankString), "", false).
 			AddLineBreakField().
 			AddField(fmt.Sprintf("✉️ Total messages sent:  `%d`%s", stats.NumberMessagesSent, msgRankString), "", false).
@@ -184,7 +188,7 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 	return []*discordgo.MessageEmbed{embed.MessageEmbed}
 }
 
-func decorateEmbed(embed *embed.Embed, roles []dataModels.Role, userId string) {
+func decorateEmbed(embed *embed.Embed, staffRole *dataModels.Role, userId string) {
 
 	// Special users segment
 	if userId == "526512064794066945" {
@@ -193,16 +197,12 @@ func decorateEmbed(embed *embed.Embed, roles []dataModels.Role, userId string) {
 	}
 
 	// Staff text segment (is user a member of staff?) in embed description
-	var isStaffMember bool = false
-	for _, role := range roles {
-		if role.Id == 3 || role.Id == 5 || role.Id == 6 || role.Id == 7 || role.Id == 18 {
-			// User is a staff member if they belong to any of the roles above
-			isStaffMember = true
+	if member.IsStaffMember(userId) {
+		var staffFieldName string = "💎 OTA Staff Member"
+		if staffRole != nil {
+			staffFieldName += fmt.Sprintf(" (`%s`)", staffRole.DisplayName)
 		}
-	}
-
-	if isStaffMember {
-		embed.AddField("💎 OTA Staff Member", "", false)
+		embed.AddField(staffFieldName, "", false)
 	}
 
 }
