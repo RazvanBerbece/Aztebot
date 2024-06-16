@@ -18,6 +18,23 @@ import (
 // Called once the Discord servers confirm a succesful connection.
 func Ready(s *discordgo.Session, event *discordgo.Ready) {
 
+	// Available voice channels for the dev and prod servers
+	var voiceChannels map[string]string
+	if globals.Environment == "staging" {
+		// Dev text channels
+		voiceChannels = map[string]string{
+			"1173790229258326106": "radio",
+		}
+	} else {
+		// Production text channels
+		voiceChannels = map[string]string{
+			"1176204022399631381": "radio",
+			"1118202946455351388": "music-1",
+			"1118202975026937948": "music-2",
+			"1118202999504904212": "music-3",
+		}
+	}
+
 	logging.LogHandlerCall("Ready", "")
 
 	// Retrieve list of DB users at startup time (for convenience and some optimisation further down the line)
@@ -40,8 +57,8 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	// Initial informative messages on certain channels
 	go SendInformationEmbedsToTextChannels(s)
 
-	// Check for users on voice channels to start their VC sessions
-	// TODO
+	// Check for users on voice channels and start their VC sessions
+	go RegisterUsersInVoiceChannelsAtStartup(s, voiceChannels)
 
 	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, XP gaining?, etc.)
 	initialDelay, activityTicker := getDelayAndTickerForActivityStreakCron(24, 0, 0) // H, m, s
@@ -259,6 +276,10 @@ func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
 		}
 	}
 
+}
+
+func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session, voiceChannels map[string]string) {
+	// TODO
 }
 
 // Returns a delay and a ticket to use for the initial delay and then subsequent executions of the activity streak update cron.
