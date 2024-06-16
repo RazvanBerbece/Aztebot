@@ -47,6 +47,7 @@ func UserRepReact(s *discordgo.Session, m *discordgo.MessageCreate) {
 		durationSinceRep := time.Since(timestamp)
 		if int(durationSinceRep.Minutes()) < mRepDelay {
 			// ignore it
+			s.MessageReactionAdd(m.ChannelID, m.ID, "❌")
 			return
 		}
 	}
