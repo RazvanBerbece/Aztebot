@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"log"
 	"strings"
-	"sync"
 	"time"
 
-	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/cron"
-	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
+	cronFeature "github.com/RazvanBerbece/Aztebot/internal/bot-service/api/cron/feature"
+	cronUser "github.com/RazvanBerbece/Aztebot/internal/bot-service/api/cron/user"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
@@ -34,10 +33,10 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	// Other setups
 
 	// Initial sync of members on server with the database
-	go SyncUsersAtStartup(s)
+	go cronUser.SyncUsersAtStartup(s)
 
 	// Initial cleanup of members from database against the Discord server
-	go CleanupMemberAtStartup(s, uids)
+	go cronUser.CleanupMemberAtStartup(s, uids)
 
 	// Initial informative messages on certain channels
 	go SendInformationEmbedsToTextChannels(s)
@@ -49,218 +48,8 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	go UpdateVoiceSessionDurations(s)
 
 	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, XP gaining?, etc.)
-	initialActivityStreakDelay, activityStreakTicker := cron.GetDelayAndTickerForActivityStreakCron(24, 0, 0) // H, m, s
-	go func() {
-
-		fmt.Println("Scheduled Task UpdateActivityStreaks() in <", initialActivityStreakDelay.Hours(), "> hours")
-		time.Sleep(initialActivityStreakDelay)
-
-		// The first run should happen at start-up, not after 24 hours
-		UpdateActivityStreaks(globalsRepo.UsersRepository, globalsRepo.UserStatsRepository)
-
-		for range activityStreakTicker.C {
-			// Inject new connections
-			usersRepository := repositories.NewUsersRepository()
-			userStatsRepository := repositories.NewUsersStatsRepository()
-
-			// Process
-			UpdateActivityStreaks(usersRepository, userStatsRepository)
-
-			// Cleanup DB connections after cron run
-			cleanupRepositories(nil, usersRepository, userStatsRepository, nil)
-		}
-	}()
-
-	initialWarnRemovalDelay, warnRemovalTicker := cron.GetDelayAndTickerForWarnRemovalCron(2) // every n=2 months
-	go func() {
-		// The first run should happen at start-up, not after 24 hours
-		RemoveExpiredWarns(globalsRepo.WarnsRepository)
-
-		fmt.Println("Scheduled Task RemoveExpiredWarns() in <", initialWarnRemovalDelay.Hours()/24, "> days")
-		time.Sleep(initialWarnRemovalDelay)
-
-		// The first run should happen at start-up, not after 24 hours
-		RemoveExpiredWarns(globalsRepo.WarnsRepository)
-
-		for range warnRemovalTicker.C {
-			// Inject new connections
-			warnsRepository := repositories.NewWarnsRepository()
-
-			// Process
-			RemoveExpiredWarns(warnsRepository)
-
-			// Cleanup DB connections after cron run
-			cleanupRepositories(nil, nil, nil, warnsRepository)
-		}
-	}()
-
-}
-
-func SyncUsersAtStartup(s *discordgo.Session) error {
-
-	fmt.Println("Starting Task SyncUsersAtStartup() at", time.Now())
-
-	// Inject new connections
-	rolesRepository := repositories.NewRolesRepository()
-	usersRepository := repositories.NewUsersRepository()
-	userStatsRepository := repositories.NewUsersStatsRepository()
-
-	// Retrieve all members in the guild
-	members, err := s.GuildMembers(globals.DiscordMainGuildId, "", 1000)
-	if err != nil {
-		fmt.Println("Failed Task SyncUsersAtStartup() at", time.Now(), "with error", err)
-		return err
-	}
-
-	// Process the current batch of members
-	processMembers(s, members, rolesRepository, usersRepository, userStatsRepository)
-
-	// Paginate
-	for len(members) == 1000 {
-		// Set the 'After' parameter to the ID of the last member in the current batch
-		lastMemberID := members[len(members)-1].User.ID
-		members, err = s.GuildMembers(globals.DiscordMainGuildId, lastMemberID, 1000)
-		if err != nil {
-			fmt.Println("Failed Task SyncUsersAtStartup() at", time.Now(), "with error", err)
-			return err
-		}
-
-		// Process the next batch of members
-		processMembers(s, members, rolesRepository, usersRepository, userStatsRepository)
-	}
-
-	// Cleanup
-	cleanupRepositories(rolesRepository, usersRepository, userStatsRepository, nil)
-
-	fmt.Println("Finished Task SyncUsersAtStartup() at", time.Now())
-
-	return nil
-
-}
-
-func CleanupMemberAtStartup(s *discordgo.Session, uids []string) error {
-
-	fmt.Println("Starting Task CleanupMemberAtStartup() at", time.Now())
-
-	// Inject new connections
-	usersRepository := repositories.NewUsersRepository()
-	userStatsRepository := repositories.NewUsersStatsRepository()
-
-	uidsLength := len(uids)
-
-	// For each tag in the DB, delete user from table
-	var wg sync.WaitGroup
-	wg.Add(uidsLength)
-	for i := 0; i < uidsLength; i++ {
-		go func(i int) {
-			defer wg.Done()
-			uid := uids[i]
-			_, err := s.GuildMember(globals.DiscordMainGuildId, uid)
-			if err != nil {
-				// if the member does not exist on the main server, delete from the database
-				// delete user stats
-				err := userStatsRepository.DeleteUserStats(uid)
-				if err != nil {
-					fmt.Println("Failed Task CleanupMemberAtStartup() at", time.Now(), "with error", err)
-					return
-				}
-				// delete user
-				errUsers := usersRepository.DeleteUser(uid)
-				if errUsers != nil {
-					fmt.Println("Failed Task CleanupMemberAtStartup() at", time.Now(), "with error", errUsers)
-					return
-				}
-			}
-		}(i)
-	}
-	wg.Wait()
-
-	// Cleanup
-	cleanupRepositories(nil, usersRepository, userStatsRepository, nil)
-
-	fmt.Println("Finished Task CleanupMemberAtStartup() at", time.Now())
-
-	return nil
-
-}
-
-func RemoveExpiredWarns(warnsRepository *repositories.WarnsRepository) {
-
-	fmt.Println("Starting Task RemoveExpiredWarns() at", time.Now())
-
-	allWarns, err := warnsRepository.GetAllWarns()
-	if err != nil {
-		fmt.Println("Failed Task RemoveExpiredWarns() at", time.Now(), "with error", err)
-	}
-
-	// For all existing warns
-	for _, warn := range allWarns {
-		warnCreationTime := time.Unix(warn.CreationTimestamp, 0)
-		twoMonthsAgo := time.Hour * 24 * 61
-		// If the warn is older than 2 months
-		if time.Since(warnCreationTime) > twoMonthsAgo {
-			// Remove it
-			err := warnsRepository.DeleteWarningForUser(warn.Id, warn.UserId)
-			if err != nil {
-				fmt.Println("Failed Task RemoveExpiredWarns() at", time.Now(), "with error", err)
-			}
-		}
-	}
-
-	fmt.Println("Finished Task RemoveExpiredWarns() at", time.Now())
-
-}
-
-func UpdateActivityStreaks(usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository) {
-
-	fmt.Println("Starting Task UpdateActivityStreaks() at", time.Now())
-
-	uids, err := usersRepository.GetAllDiscordUids()
-	if err != nil {
-		fmt.Println("Failed Task UpdateActivityStreaks() at", time.Now(), "with error", err)
-	}
-
-	// For all users in the database
-	fmt.Println("Checkpoint Task UpdateActivityStreaks() at", time.Now(), "-> Updating", len(uids), "streaks")
-	for _, uid := range uids {
-		stats, err := userStatsRepository.GetStatsForUser(uid)
-		if err != nil {
-			fmt.Println("Failed Task UpdateActivityStreaks() at", time.Now(), "with error", err)
-		}
-
-		// lastActiveSince smaller than 24 (which means did an action in the last 24 hours)
-		timestampTime := time.Unix(stats.LastActiveTimestamp, 0)
-		lastActiveSince := time.Since(timestampTime)
-
-		// Activity scores greater than this are favourable
-		var activityThreshold int
-		if globals.FavourableActivitiesThresholdErr != nil {
-			activityThreshold = 10
-		} else {
-			activityThreshold = globals.FavourableActivitiesThreshold
-		}
-
-		// If user has favourable activity score and favourable timestamp, increase day streak
-		if lastActiveSince.Hours() < 24 && stats.NumberActivitiesToday > activityThreshold {
-			err := userStatsRepository.IncrementActiveDayStreakForUser(uid)
-			if err != nil {
-				fmt.Println("Failed Task UpdateActivityStreaks() at", time.Now(), "with error", err)
-			}
-		} else {
-			err := userStatsRepository.ResetActiveDayStreakForUser(uid)
-			if err != nil {
-				fmt.Println("Failed Task UpdateActivityStreaks() at", time.Now(), "with error", err)
-			}
-		}
-
-		// Reset the activity count for the next day
-		err = userStatsRepository.ResetActivitiesTodayForUser(uid)
-		if err != nil {
-			fmt.Println("Failed Task UpdateActivityStreaks() at", time.Now(), "with error", err)
-		}
-	}
-
-	fmt.Println("Finished Task UpdateActivityStreaks() at", time.Now())
+	cronFeature.ProcessUpdateActivityStreaks(24, 00, 00) // the hh:mm:ss timestamp in a day to run the cron at
+	cronFeature.ProcessRemoveExpiredWarns(2)             // run every n=2 months
 
 }
 
@@ -468,40 +257,6 @@ func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 		fmt.Printf("Found %d active voice states at bot startup time (%d voice, %d streaming, %d music)\n", totalSessions, voiceSessionsAtStartup, streamSessionsAtStartup, musicSessionsAtStartup)
 	}
 
-}
-
-func cleanupRepositories(rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository, warnsRepository *repositories.WarnsRepository) {
-
-	if rolesRepository != nil {
-		rolesRepository.Conn.Db.Close()
-	}
-
-	if usersRepository != nil {
-		usersRepository.Conn.Db.Close()
-	}
-
-	if userStatsRepository != nil {
-		userStatsRepository.Conn.Db.Close()
-	}
-
-	if warnsRepository != nil {
-		warnsRepository.Conn.Db.Close()
-	}
-
-}
-
-func processMembers(s *discordgo.Session, members []*discordgo.Member, rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository) {
-	for _, member := range members {
-		// If it's a bot, skip
-		if member.User.Bot {
-			continue
-		}
-		// For each member, sync their details (either add to DB or update)
-		err := utils.SyncUserPersistent(s, globals.DiscordMainGuildId, member.User.ID, member, rolesRepository, usersRepository, userStatsRepository)
-		if err != nil && err.Error() != "no update was executed" {
-			fmt.Printf("Error syncing member %s: %v\n", member.User.Username, err)
-		}
-	}
 }
 
 func updateVoiceSessions() {
