@@ -7,4 +7,7 @@ type Role struct {
 	Colour      int
 	Info        string
 	Perms       string
+	Owner	    string
+	Cfgs        string
+	Attrib      int
 }
