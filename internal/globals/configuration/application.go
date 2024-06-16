@@ -5,6 +5,7 @@ var AuditMemberJoinsInChannel = true
 var AuditMemberDeletesInChannel = true
 var AuditRoleUpdatesInChannel = true
 var AuditPromotionStateInChannel = true
+var AuditPromotionMismatchesInChannel = true
 
 // EXPERIENCE RATES
 var DefaultExperienceReward_MessageSent float64 = 1.0

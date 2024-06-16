@@ -270,6 +270,18 @@ func ResolveProgressionMismatchForMember(s *discordgo.Session, userGuildId strin
 	// Solve mismatches where the member has a rank on the server but shouldn't
 	// according to the progression rules (type 1, 2, 3, 4)
 	if processedLevel == 0 && processedRoleName == "" && len(currentOrderRoles) > 0 {
+
+		if globalConfiguration.AuditPromotionMismatchesInChannel {
+			if channel, channelExists := globalConfiguration.NotificationChannels["notif-debug"]; channelExists {
+				content := fmt.Sprintf("Mismatch (type 1) discovered for %s", userId)
+				globalMessaging.NotificationsChannel <- events.NotificationEvent{
+					TargetChannelId: channel.ChannelId,
+					Type:            "DEFAULT",
+					TextData:        &content,
+				}
+			}
+		}
+
 		// mismatch, need to reset
 		err := globalRepositories.UsersRepository.SetLevel(userId, 0)
 		if err != nil {

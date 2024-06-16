@@ -35,7 +35,7 @@ func MemberRoleUpdate(s *discordgo.Session, m *discordgo.GuildMemberUpdate) {
 
 		// Audit update by logging in provided debug channel
 		if channel, channelExists := globalConfiguration.NotificationChannels["notif-debug"]; channelExists {
-			content := fmt.Sprintf("Handling role update for %s (updated roles: %s)", m.Member.User.Username, currentRolesString)
+			content := fmt.Sprintf("Handling role update for %s [%s] (updated roles: %s)", m.Member.User.Username, m.Member.User.ID, currentRolesString)
 			globalMessaging.NotificationsChannel <- events.NotificationEvent{
 				TargetChannelId: channel.ChannelId,
 				Type:            "DEFAULT",
