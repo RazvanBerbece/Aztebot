@@ -85,7 +85,7 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 	}
 
 	// Send notification to target staff channel to announce the global rate change
-	if channel, channelExists := globalConfiguration.NotificationChannels["notif-aztebot"]; channelExists {
+	if channel, channelExists := globalConfiguration.NotificationChannels["notif-aztebotUpdatesChannel"]; channelExists {
 		go sendXpRateChangeNotification(channel.ChannelId, activityName, multiplierName)
 	}
 

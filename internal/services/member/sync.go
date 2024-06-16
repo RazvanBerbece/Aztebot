@@ -67,7 +67,7 @@ func SyncMember(s *discordgo.Session, guildId string, userId string, member *dis
 				user.CreatedAt = &unixNow
 
 				// Newly verified user, so announce in global (if notification channel exists)
-				if channel, channelExists := globalConfiguration.NotificationChannels["notif-global"]; channelExists {
+				if channel, channelExists := globalConfiguration.NotificationChannels["notif-globalGeneralChat"]; channelExists {
 					fields := []discordgo.MessageEmbedField{
 						{
 							Name:   "",
@@ -178,7 +178,7 @@ func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, m
 				user.CreatedAt = &unixNow
 
 				// Newly verified user, so announce in global (if notification channel exists)
-				if channel, channelExists := globalConfiguration.NotificationChannels["notif-global"]; channelExists {
+				if channel, channelExists := globalConfiguration.NotificationChannels["notif-globalGeneralChat"]; channelExists {
 					fields := []discordgo.MessageEmbedField{
 						{
 							Name:   "",

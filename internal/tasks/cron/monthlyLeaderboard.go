@@ -80,7 +80,7 @@ func ExtractMonthlyLeaderboardWinners(s *discordgo.Session, monthlyLeaderboardRe
 	}
 
 	// Send winner notification to designated channel
-	if channel, channelExists := globalConfiguration.NotificationChannels["notif-monthlyWinners"]; channelExists {
+	if channel, channelExists := globalConfiguration.NotificationChannels["notif-globalAnnouncements"]; channelExists {
 		go sendMonthlyLeaderboardWinnerNotification(s, channel.ChannelId, kingEntry, queenEntry, nonbinaryEntry, otherEntry)
 	}
 
