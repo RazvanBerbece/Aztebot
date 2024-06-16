@@ -1,10 +1,16 @@
 **Legende**
 În rubrica de ”Legende” veți regăsi toate rolulile existente din această comunitate. 
 Am ales să creăm două grupări de membrii, acestea fiind `Outer Circle` și `Inner Circle`.
-Orice membru nou va fi automat introdus în `Outer Circle` (Implicit: `@Aztec`), iar în timp, în funcție de aportul pe care acesta îl aduce asupra comunității (vechime, apropierea față de membrii, implicarea în comunitate), poate fi introdus în `Inner Circle`, unde va avea acces la membrii de grad mai înalt și la canale secrete, la care nu au acces membrii din categoria de `Outer Circle`. Ca un membru din `Outer Circle` să fie inițiat în `Inner Circle`, va avea nevoie de minim două (2) recomandări de la oricare alți membrii din `Inner Circle`.\n
+
+Orice membru nou va fi automat introdus în `Outer Circle` (Implicit: `@Aztec`), iar în timp, în funcție de aportul pe care acesta îl aduce asupra comunității (vechime, apropierea față de membrii, implicarea în comunitate), 
+poate fi introdus în `Inner Circle`, unde va avea acces la membrii de grad mai înalt și la canale secrete, la care nu au acces membrii din categoria de `Outer Circle`. 
+
+Ca un membru din `Outer Circle` să fie inițiat în `Inner Circle`, va avea nevoie de minim două (2) recomandări de la oricare alți membrii din `Inner Circle`.
+
 **Știai că:** Cel mai înalt grad care poate fi dobândit în comunitatea noastră, este gradul `@⚔️ Ipsissimus` (acesta fiind cel mai privilegiat grad din comunitatea noastră, va avea nevoie de integrarea în grad de către `@👁‍🗨 Arhitect`).
 
 :white_small_square: **OUTER CIRCLE**
+
 • `@👁‍🗨 Arhitect` - Fondatorii comunității.
 • `@Dominus` - Persoana desemnata cu sprijin pentru @`👁‍🗨 Arhitect`(i) in management.
 • `@Consul` - Persoana ce se ocupă cu îndrumarea staff-ului.
@@ -17,18 +23,22 @@ Orice membru nou va fi automat introdus în `Outer Circle` (Implicit: `@Aztec`),
 • `@Aztec` - Membru oficial al acestei comunități.
 ㅤ
 :white_small_square: **INNER CIRCLE**
+
 **FIRST ORDER**
+
 • `@🔗 Zelator`
 • `@📖 Theoricus`
 • `@🎩 Practicus`
 • `@📿 Philosophus`
 
 **SECOND ORDER**
+
 • `@🔮 Adeptus Minor`
 • `@〽️ Adeptus Major`
 • `@🧿 Adeptus Exemptus`
 
 **THIRD ORDER**
+
 • `@☀️ Magister Templi`
 • `@🧙🏼 Magus`
 • `@⚔️ Ipsissimus`

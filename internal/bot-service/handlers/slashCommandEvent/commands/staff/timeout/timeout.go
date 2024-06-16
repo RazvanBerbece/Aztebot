@@ -136,7 +136,7 @@ func sendTimeoutNotification(s *discordgo.Session, channelId string, targetUserI
 			Inline: false,
 		},
 		{
-			Name:   "Timestamp",
+			Name:   "Created At",
 			Value:  timestamp,
 			Inline: false,
 		},
