@@ -99,9 +99,9 @@ func ProcessTopEmbed(topCount int, s *discordgo.Session, i *discordgo.Interactio
 			sTimeSpentInVc := int64(stats.TimeSpentInVoiceChannels)
 			daysVC, hoursVC, minutesVC, secondsVC := utils.HumanReadableTimeLength(float64(sTimeSpentInVc))
 			if daysVC != 0 {
-				timeSpentInVcs = fmt.Sprintf("%dd, %dh:%dm:%ds", daysVC, hoursVC, minutesVC, secondsVC)
+				timeSpentInVcs = fmt.Sprintf("%dd, %dh", daysVC, hoursVC)
 			} else if daysVC == 0 && hoursVC != 0 {
-				timeSpentInVcs = fmt.Sprintf("%dh:%dm:%ds", hoursVC, minutesVC, secondsVC)
+				timeSpentInVcs = fmt.Sprintf("%dh:%dm", hoursVC, minutesVC)
 			} else if daysVC == 0 && hoursVC == 0 {
 				timeSpentInVcs = fmt.Sprintf("%dm:%ds", minutesVC, secondsVC)
 			}
