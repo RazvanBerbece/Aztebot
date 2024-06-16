@@ -23,7 +23,6 @@ go.work
 # Other
 build/
 *.env
-logs/
 .DS_Store
 
 # Exceptions from ignore
