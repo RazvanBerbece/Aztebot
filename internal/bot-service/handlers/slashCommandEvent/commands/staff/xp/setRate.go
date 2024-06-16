@@ -105,31 +105,18 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 
 func sendXpRateChangeNotification(s *discordgo.Session, channelId string, activityName string, multiplierName string) {
 
-	fields := []discordgo.MessageEmbedField{
-		{
-			Name:   "Activity",
-			Value:  activityName,
-			Inline: false,
-		},
-		{
-			Name:   "Rate Multiplier",
-			Value:  multiplierName,
-			Inline: false,
-		},
-		{
-			Name:   "\u200B",
-			Value:  "",
-			Inline: false,
-		},
-		{
-			Name:   "",
-			Value:  "|@everyone|",
-			Inline: false,
-		},
-	}
+	// Build global XP rate change embed
+	embed := embed.
+		NewEmbed().
+		SetTitle(fmt.Sprintf("🤖📣 Global XP Rate Change for `%s`", activityName)).
+		SetColor(000000).
+		SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
+		AddField("Activity", fmt.Sprintf("`%s`", activityName), false).
+		AddField("Rate Multiplier", fmt.Sprintf("`%s`", multiplierName), false).
+		AddLineBreakField().
+		AtTagEveryone()
 
-	notificationTitle := fmt.Sprintf("Global XP Rate Change for `%s`", activityName)
-	notifications.SendNotificationToTextChannel(s, channelId, notificationTitle, fields, true)
+	notifications.SendEmbedToTextChannel(s, channelId, *embed)
 
 }
 

@@ -135,7 +135,7 @@ func sendMonthlyLeaderboardWinnerNotification(s *discordgo.Session, channelId st
 	// Build winners embed
 	embed := embed.
 		NewEmbed().
-		SetTitle(fmt.Sprintf("📣📣 Monthly Leaderboard Winners Announcement, `%s` 📣📣", leaderboardMonthString)).
+		SetTitle(fmt.Sprintf("🤖📣 Monthly Leaderboard Winners Announcement, `%s` 📣📣", leaderboardMonthString)).
 		SetColor(000000).
 		SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		AddLineBreakField()
@@ -163,7 +163,7 @@ func sendMonthlyLeaderboardWinnerNotification(s *discordgo.Session, channelId st
 	// Tag everyone to propagate announcement
 	embed.
 		AddLineBreakField().
-		AddField("", "|@everyone|", false)
+		AtTagEveryone()
 
 	notifications.SendEmbedToTextChannel(s, channelId, *embed)
 

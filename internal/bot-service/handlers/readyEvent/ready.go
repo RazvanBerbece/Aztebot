@@ -52,10 +52,10 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	go channelHandlers.HandleExperienceGrantsMessages(false)
 
 	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, XP gaining?, etc.)
-	cron.ProcessUpdateActivityStreaks(24, 0, 0)               // the hh:mm:ss timestamp in a day to run the cron at
-	cron.ProcessRemoveExpiredWarns(2)                         // run every n=2 months
-	cron.ClearExpiredTimeouts(s)                              // clear timeouts with freq from env var
-	cron.ProcessRemoveArchivedTimeouts(1)                     // run every n=1 month
-	cron.ProcessMonthlyLeaderboard(s, 23, 0, 30, false, true) // run on last day (current day for false flag) at given time
+	cron.ProcessUpdateActivityStreaks(24, 0, 0)                // the hh:mm:ss timestamp in a day to run the cron at
+	cron.ProcessRemoveExpiredWarns(2)                          // run every n=2 months
+	cron.ClearExpiredTimeouts(s)                               // clear timeouts with freq from env var
+	cron.ProcessRemoveArchivedTimeouts(1)                      // run every n=1 month
+	cron.ProcessMonthlyLeaderboard(s, 23, 23, 15, false, true) // run on last day (current day for false flag) at given time
 
 }
