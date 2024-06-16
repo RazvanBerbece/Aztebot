@@ -56,6 +56,11 @@ func ProcessProgressionForMember(userId string, guildId string) error {
 	var messagesSent = stats.NumberMessagesSent
 	var timeSpentInVoice = stats.TimeSpentInVoiceChannels
 
+	if user.CreatedAt == nil {
+		// don't progress unverified members
+		return nil
+	}
+
 	// Send event to process supposed promotion for user with updated stats
 	globalMessaging.PromotionRequestsChannel <- events.PromotionRequestEvent{
 		GuildId:       guildId,
