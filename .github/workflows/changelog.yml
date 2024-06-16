@@ -1,0 +1,70 @@
+name: Release Latest Changelog
+
+on:
+  workflow_call:
+    inputs:
+      newRelease:
+        type: string
+        required: true
+      previousRelease:
+        type: string
+        required: true
+
+jobs:
+
+  publish:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: '0'
+
+      - name: Publish latest release details to Discord Webhook
+        run: |
+          : # Retrieve details about most current change
+          head_commit_ts=$(git log -1 --format=%cd)
+          tag="${{ inputs.newRelease }}"
+
+          : # Process changelog between current tag and the previous one 
+          changelog=$(git log --pretty=format:"- %s%n%b" ${{ inputs.previousRelease }}...${{ inputs.newRelease }})
+          changelog_uri="https://github.com/AzteBot-Developments/AzteMarket/compare/${{ inputs.previousRelease }}...${{ inputs.newRelease }}"
+
+          timestamp='`'"$head_commit_ts"'`'
+          head_commit_msg="$(git log -1 --pretty=format:"%s")"
+          current_tag='`'"$tag"'`'
+
+          JSON_STRING=$( jq -n \
+                  --arg ct "AzteMarket $current_tag was released!" \
+                  --arg cm "$head_commit_msg" \
+                  --arg ts "$timestamp" \
+                  --arg changelog "$changelog" \
+                  --arg changelog_uri "$changelog_uri" \
+                  '{
+                        "content": "",
+                        "embeds": [
+                            {
+                            "title": $ct,
+                            "description": $cm,
+                            "color": 2123412,
+                            "fields": [
+                                {
+                                    "name": "Changes",
+                                    "value": $changelog
+                                },
+                                {
+                                    "name": "Source",
+                                    "value": $changelog_uri
+                                },
+                                {
+                                    "name": "Timestamp",
+                                    "value": $ts
+                                }
+                            ]
+                            }
+                        ]
+                    }' 
+            )
+
+          curl -H "Content-Type: application/json" -d "$JSON_STRING" ${{ secrets.DISCORD_WEBHOOK_CHANGELOG }}
