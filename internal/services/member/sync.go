@@ -11,6 +11,7 @@ import (
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
+	"github.com/RazvanBerbece/Aztebot/internal/services/logging"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
@@ -272,14 +273,9 @@ func ResolveProgressionMismatchForMember(s *discordgo.Session, userGuildId strin
 	if processedLevel == 0 && processedRoleName == "" && len(currentOrderRoles) > 0 {
 
 		if globalConfiguration.AuditPromotionMismatchesInChannel {
-			if channel, channelExists := globalConfiguration.NotificationChannels["notif-debug"]; channelExists {
-				content := fmt.Sprintf("Mismatch (type 1) discovered for %s", userId)
-				globalMessaging.NotificationsChannel <- events.NotificationEvent{
-					TargetChannelId: channel.ChannelId,
-					Type:            "DEFAULT",
-					TextData:        &content,
-				}
-			}
+			logMsg := fmt.Sprintf("Mismatch (type 1) discovered for %s", userId)
+			discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
+			discordChannelLogger.LogInfo(logMsg)
 		}
 
 		// mismatch, need to reset
@@ -310,14 +306,9 @@ func ResolveProgressionMismatchForMember(s *discordgo.Session, userGuildId strin
 		if currentOrderRoles[0].DisplayName != processedRoleName {
 
 			if globalConfiguration.AuditPromotionMismatchesInChannel {
-				if channel, channelExists := globalConfiguration.NotificationChannels["notif-debug"]; channelExists {
-					content := fmt.Sprintf("Mismatch (type 2) discovered for %s", userId)
-					globalMessaging.NotificationsChannel <- events.NotificationEvent{
-						TargetChannelId: channel.ChannelId,
-						Type:            "DEFAULT",
-						TextData:        &content,
-					}
-				}
+				logMsg := fmt.Sprintf("Mismatch (type 2) discovered for %s", userId)
+				discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
+				discordChannelLogger.LogInfo(logMsg)
 			}
 
 			// Solve mismatches where the member has a rank on the server but their
@@ -358,14 +349,9 @@ func ResolveProgressionMismatchForMember(s *discordgo.Session, userGuildId strin
 	} else if processedLevel > 0 && processedRoleName != "" && len(currentOrderRoles) > 1 {
 
 		if globalConfiguration.AuditPromotionMismatchesInChannel {
-			if channel, channelExists := globalConfiguration.NotificationChannels["notif-debug"]; channelExists {
-				content := fmt.Sprintf("Mismatch (type 3) discovered for %s", userId)
-				globalMessaging.NotificationsChannel <- events.NotificationEvent{
-					TargetChannelId: channel.ChannelId,
-					Type:            "DEFAULT",
-					TextData:        &content,
-				}
-			}
+			logMsg := fmt.Sprintf("Mismatch (type 3) discovered for %s", userId)
+			discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
+			discordChannelLogger.LogInfo(logMsg)
 		}
 
 		// Solve mismatches where the member has multiple ranks on the server but their
@@ -409,14 +395,9 @@ func ResolveProgressionMismatchForMember(s *discordgo.Session, userGuildId strin
 	} else if processedLevel > 0 && processedRoleName != "" && len(currentOrderRoles) == 0 {
 
 		if globalConfiguration.AuditPromotionMismatchesInChannel {
-			if channel, channelExists := globalConfiguration.NotificationChannels["notif-debug"]; channelExists {
-				content := fmt.Sprintf("Mismatch (type 4) discovered for %s", userId)
-				globalMessaging.NotificationsChannel <- events.NotificationEvent{
-					TargetChannelId: channel.ChannelId,
-					Type:            "DEFAULT",
-					TextData:        &content,
-				}
-			}
+			logMsg := fmt.Sprintf("Mismatch (type 4) discovered for %s", userId)
+			discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
+			discordChannelLogger.LogInfo(logMsg)
 		}
 
 		// Solve mismatches where the member has no rank on the server but their

@@ -3,9 +3,8 @@ package memberUpdateEvent
 import (
 	"fmt"
 
-	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
-	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
+	"github.com/RazvanBerbece/Aztebot/internal/services/logging"
 	"github.com/RazvanBerbece/Aztebot/internal/services/member"
 	"github.com/bwmarrin/discordgo"
 )
@@ -34,14 +33,9 @@ func MemberRoleUpdate(s *discordgo.Session, m *discordgo.GuildMemberUpdate) {
 		}
 
 		// Audit update by logging in provided debug channel
-		if channel, channelExists := globalConfiguration.NotificationChannels["notif-debug"]; channelExists {
-			content := fmt.Sprintf("Handling role update for %s [%s] (updated roles: %s)", m.Member.User.Username, m.Member.User.ID, currentRolesString)
-			globalMessaging.NotificationsChannel <- events.NotificationEvent{
-				TargetChannelId: channel.ChannelId,
-				Type:            "DEFAULT",
-				TextData:        &content,
-			}
-		}
+		logMsg := fmt.Sprintf("Handling role update for %s [%s] (updated roles: %s)", m.Member.User.Username, m.Member.User.ID, currentRolesString)
+		discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
+		discordChannelLogger.LogInfo(logMsg)
 	}
 
 	// Sync user in DB with the current Discord member state
