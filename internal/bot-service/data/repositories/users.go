@@ -23,6 +23,9 @@ func NewUsersRepository() *UsersRepository {
 }
 
 func (r UsersRepository) GetUser(userId string) (*dataModels.User, error) {
+
+	r.conn.ConnectDatabaseHandle()
+
 	// Get assigned role IDs for given user from the DB
 	query := "SELECT * FROM Users WHERE userId = ?"
 	row := r.conn.Db.QueryRow(query, userId)
@@ -51,6 +54,8 @@ func (r UsersRepository) GetUser(userId string) (*dataModels.User, error) {
 }
 
 func (r UsersRepository) SaveInitialUserDetails(tag string, userId string) (*dataModels.User, error) {
+
+	r.conn.ConnectDatabaseHandle()
 
 	user := &dataModels.User{
 		DiscordTag:        tag,
@@ -93,6 +98,9 @@ func (r UsersRepository) SaveInitialUserDetails(tag string, userId string) (*dat
 }
 
 func (r UsersRepository) UpdateUser(user dataModels.User) (*dataModels.User, error) {
+
+	r.conn.ConnectDatabaseHandle()
+
 	stmt, err := r.conn.Db.Prepare(`
 		UPDATE Users SET 
 			discordTag = ?, 
@@ -119,6 +127,8 @@ func (r UsersRepository) UpdateUser(user dataModels.User) (*dataModels.User, err
 }
 
 func (r UsersRepository) GetRolesForUser(userId string) ([]dataModels.Role, error) {
+
+	r.conn.ConnectDatabaseHandle()
 
 	// Get assigned role IDs for given user from the DB
 	rows, err := r.conn.Db.Query("SELECT currentRoleIds FROM Users WHERE userId = ?", userId)
@@ -158,6 +168,8 @@ func (r UsersRepository) GetRolesForUser(userId string) ([]dataModels.Role, erro
 }
 
 func (r UsersRepository) GetRolesByIds(placeholders string, ids []int) ([]dataModels.Role, error) {
+
+	r.conn.ConnectDatabaseHandle()
 
 	// Convert roleIDIntegers to a slice of interface{} to use as variadic args in Db.Query()
 	var rolesAsListOfAny []interface{}
