@@ -197,9 +197,7 @@ func AddRolesToDiscordUser(s *discordgo.Session, guildId string, userId string, 
 
 	// Process ORDER role post-update (based on the current role state)
 	_, currentOrder := utils.GetCircleAndOrderForGivenRoles(roleIds)
-	fmt.Println("Role IDs", roleIds)
 	if currentOrder != nil {
-		fmt.Println("Processed Order", *currentOrder)
 		var discordOrderRoleIdToAdd *string
 		if *currentOrder == 3 {
 			discordOrderRoleIdToAdd = GetDiscordRoleIdForRoleWithName(s, guildId, "---- Third Order ----")
