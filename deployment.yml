@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
       - name: aztebot-app
-        image: europe-west2-docker.pkg.dev/$GCE_PROJECT/$GCE_PROJECT_DOCKER_ARTIFACT_REGISTRY/aztebot-service:latest
+        image: europe-west2-docker.pkg.dev/${GCE_PROJECT}/${GCE_PROJECT_DOCKER_ARTIFACT_REGISTRY}/aztebot-service:latest
         livenessProbe: 
           httpGet:
             path: /health
