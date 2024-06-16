@@ -101,6 +101,25 @@ func (r UserRepRepository) RemoveRep(userId string) error {
 	return nil
 }
 
+func (r UserRepRepository) ResetRep(userId string) error {
+
+	stmt, err := r.Conn.SqlDb.Prepare(`
+		UPDATE UserRep SET 
+			rep = 0
+		WHERE userId = ?`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(1, userId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r UserRepRepository) GetRepForUser(userId string) (*dax.UserRep, error) {
 
 	// Get assigned role IDs for given user from the DB
