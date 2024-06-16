@@ -28,8 +28,8 @@ Continuous integration will be implemented through a workflow script which sets 
 Continuous deployment will be implemented through a workflow script which builds all the project artifacts and pushes them to Google Cloud on pushes to the main branch. The workflow file for CD can be seen in [deploy.yml](.github/workflows/deploy.yml).
 
 Notes:
-1. The production environment secret is base64 encoded using `openssl base64 -A -in input_env -out output_env`
-2. The production DB conection string is base64 encoded using `echo -n "CONN_STRING" | openssl base64`
+1. The production environment secret is base64 encoded using `openssl base64 -A -in .prod.env -out .env.out`
+2. The production DB connection string is base64 encoded using `echo -n "CONN_STRING" | openssl base64`
 
 # Contribution Guide
 ## Folder Structure
