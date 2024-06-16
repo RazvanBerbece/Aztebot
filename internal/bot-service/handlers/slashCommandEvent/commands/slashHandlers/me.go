@@ -47,8 +47,8 @@ func displayEmbedForUser(userId string) []*discordgo.MessageEmbed {
 		SetColor(000000).
 		// Add field for highest role obtained
 		// Add field for date created / verified
-		AddField(fmt.Sprintf("Aztec since `%s`", userCreatedTimeString), "", false).
-		AddField(fmt.Sprintf("Highest obtained role: `%s %s`", highestRole.Emoji, highestRole.DisplayName), "", false)
+		AddField(fmt.Sprintf("Aztec since:  `%s`", userCreatedTimeString), "", false).
+		AddField(fmt.Sprintf("Highest obtained role:  `%s %s`", highestRole.Emoji, highestRole.DisplayName), "", false)
 
 	return []*discordgo.MessageEmbed{embed.MessageEmbed}
 }

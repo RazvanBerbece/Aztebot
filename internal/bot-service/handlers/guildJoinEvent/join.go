@@ -11,6 +11,10 @@ func GuildJoin(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
 	logging.LogHandlerCall("GuildJoin", "")
 
 	// Register user details and initial roles into DB
-	// TODO
+	// usersRepository := repositories.NewUsersRepository()
+	// user, err := usersRepository.GetUser(userId)
+	// if err != nil {
+	// 	log.Fatalf("Cannot retrieve user with id %s: %v", userId, err)
+	// }
 
 }

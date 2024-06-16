@@ -23,7 +23,7 @@ func roleDisplayEmbedForUser(userName string, userId string) []*discordgo.Messag
 	usersRepository := repositories.NewUsersRepository()
 	roles, err := usersRepository.GetRolesForUser(userId)
 	if err != nil {
-		log.Fatalf("Cannot display role names for user with id %s: %v", userId, err)
+		log.Fatalf("Cannot display roles for user with id %s: %v", userId, err)
 	}
 
 	embed := embed.NewEmbed().
