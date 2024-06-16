@@ -68,6 +68,13 @@ func JailMember(s *discordgo.Session, guildId string, userId string, reason stri
 		return nil, nil, err
 	}
 
+	// Disconnect member from connected VC
+	err = DisconnectFromVoiceChannel(s, guildId, userId)
+	if err != nil {
+		fmt.Printf("Failed to JailMember %s (Disconnect from VC): %v\n", userId, err)
+		return nil, nil, err
+	}
+
 	// Give designated Jailed Discord role to member
 	err = AddDiscordRoleToMember(s, guildId, userId, jailRoleName)
 	if err != nil {
