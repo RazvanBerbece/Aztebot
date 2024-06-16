@@ -1,19 +1,16 @@
 **Legende**
 În rubrica de ”Legende” veți regăsi toate rolulile existente din această comunitate. 
-Am ales să creăm două grupări de membrii, acestea fiind `Outer Circle` și `Inner Circle`.
+Am ales să creăm două grupări de membrii, acestea fiind `Outer Circle` și `Inner Circle`.\br
 
-Orice membru nou va fi automat introdus în `Outer Circle` (Implicit: `@Aztec`), iar în timp, în funcție de aportul pe care acesta îl aduce asupra comunității (vechime, apropierea față de membrii, implicarea în comunitate), 
-poate fi introdus în `Inner Circle`, unde va avea acces la membrii de grad mai înalt și la canale secrete, la care nu au acces membrii din categoria de `Outer Circle`. 
+**Deep Dive**
+Orice membru nou va fi automat introdus în `Outer Circle` (Implicit: `@Aztec`), iar în timp, în funcție de aportul pe care acesta îl aduce asupra comunității (vechime, apropierea față de membrii, implicarea în comunitate), poate fi introdus în `Inner Circle`, unde va avea acces la membrii de grad mai înalt și la canale secrete, la care nu au acces membrii din categoria de `Outer Circle`.\br
+Ca un membru din `Outer Circle` să fie inițiat în `Inner Circle`, va avea nevoie de minim două (2) recomandări de la oricare alți membrii din `Inner Circle`.\br
+**Știai că:** Cel mai înalt grad care poate fi dobândit în comunitatea noastră, este gradul `@⚔️ Ipsissimus` (acesta fiind cel mai privilegiat grad din comunitatea noastră, va avea nevoie de integrarea în grad de către `@👁‍🗨 Arhitect`).\br
 
-Ca un membru din `Outer Circle` să fie inițiat în `Inner Circle`, va avea nevoie de minim două (2) recomandări de la oricare alți membrii din `Inner Circle`.
-
-**Știai că:** Cel mai înalt grad care poate fi dobândit în comunitatea noastră, este gradul `@⚔️ Ipsissimus` (acesta fiind cel mai privilegiat grad din comunitatea noastră, va avea nevoie de integrarea în grad de către `@👁‍🗨 Arhitect`).
-
-:white_small_square: **OUTER CIRCLE**
-
+\n:white_small_square: **OUTER CIRCLE**
 • `@👁‍🗨 Arhitect` - Fondatorii comunității.
-• `@Dominus` - Persoana desemnata cu sprijin pentru @`👁‍🗨 Arhitect`(i) in management.
-• `@Consul` - Persoana ce se ocupă cu îndrumarea staff-ului.
+• `@Dominus` - Persoană desemnată cu sprijin pentru @`👁‍🗨 Arhitect` in management.
+• `@Consul` - Persoană ce se ocupă cu îndrumarea staff-ului.
 • `@Senior Administrator` - Administratorii seniori ai comunității.
 • `@Administrator` - Administratorii comunității.
 • `@Moderator` - Moderatorii comunității.
@@ -22,23 +19,19 @@ Ca un membru din `Outer Circle` să fie inițiat în `Inner Circle`, va avea nev
 • `@Server Booster` - Cei care au boostat serverul. (Vă mulțumim frumos)
 • `@Aztec` - Membru oficial al acestei comunități.
 ㅤ
-:white_small_square: **INNER CIRCLE**
-
+\n:white_small_square: **INNER CIRCLE**
 **FIRST ORDER**
-
 • `@🔗 Zelator`
 • `@📖 Theoricus`
 • `@🎩 Practicus`
 • `@📿 Philosophus`
 
 **SECOND ORDER**
-
 • `@🔮 Adeptus Minor`
 • `@〽️ Adeptus Major`
 • `@🧿 Adeptus Exemptus`
 
 **THIRD ORDER**
-
 • `@☀️ Magister Templi`
 • `@🧙🏼 Magus`
 • `@⚔️ Ipsissimus`
