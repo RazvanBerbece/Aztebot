@@ -9,7 +9,7 @@ func main() {
 
 	// Configure the bot base with the key, handlers and intents
 	bot := discordBotBaseModule.DiscordBotBase{}
-	bot.ConfigureBase("aztebot")
+	bot.ConfigureBase()
 	bot.AddHandlers(handlers.GetAztebotHandlersAsList())
 
 	// Cleanup used resources when program stops executing

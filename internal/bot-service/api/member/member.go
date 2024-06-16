@@ -79,7 +79,7 @@ func DemoteMember(s *discordgo.Session, guildId string, userId string, demoteTyp
 		return err
 	}
 
-	// DEMOTE STRATEGY (NOTH INNER CIRCLE ORDERS AND STAFF ROLE DEMOTIONS)
+	// DEMOTE STRATEGY (BOTH INNER CIRCLE ORDERS AND STAFF ROLE DEMOTIONS)
 	userRoles, errUsrRole := globalsRepo.UsersRepository.GetRolesForUser(userId)
 	if errUsrRole != nil {
 		fmt.Printf("Error ocurred while trying to demote member with ID %s: %v", userId, errUsrRole)

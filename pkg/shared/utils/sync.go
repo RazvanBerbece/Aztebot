@@ -43,6 +43,17 @@ func SyncUserPersistent(s *discordgo.Session, guildId string, userId string, mem
 			log.Fatalf("Error ocurred retrieving user from the DB: %v\n", err)
 			return err
 		}
+		// Check whether use has user stats entity
+		_, err = globalsRepo.UserStatsRepository.GetStatsForUser(userId)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				// add one if it doesn't
+				err = globalsRepo.UserStatsRepository.SaveInitialUserStats(userId)
+				if err != nil {
+					log.Printf("Failed to store initial user stats at startup: %v", err)
+				}
+			}
+		}
 	}
 
 	// At this point, user already exists because it was inserted at sync time,

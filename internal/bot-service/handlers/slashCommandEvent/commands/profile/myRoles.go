@@ -1,4 +1,4 @@
-package profile
+package profileSlashHandlers
 
 import (
 	"fmt"
@@ -15,10 +15,10 @@ func HandleSlashMyRoles(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	embed, err := RoleDisplayEmbedForUser(i.Interaction.Member.User.Username, i.Interaction.Member.User.ID)
 	if err != nil {
 		errMsg := fmt.Sprintf("An error ocurred while trying to fetch and display your roles: %v", err)
-		utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
+		utils.SendCommandErrorEmbedResponse(s, i.Interaction, errMsg)
 	}
 	if embed == nil {
-		utils.SendErrorEmbedResponse(s, i.Interaction, "An error ocurred while trying to fetch and display your roles.")
+		utils.SendCommandErrorEmbedResponse(s, i.Interaction, "An error ocurred while trying to fetch and display your roles.")
 	}
 
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{

@@ -20,13 +20,11 @@ import (
 type DiscordBotBase struct {
 	botSession  *discordgo.Session
 	isConnected bool
-	appName     string
 }
 
-func (b *DiscordBotBase) ConfigureBase(appName string) {
+func (b *DiscordBotBase) ConfigureBase() {
 
 	// Create session based on the required app
-	b.appName = appName
 	b.isConnected = false
 
 	session, err := discordgo.New("Bot " + globals.DiscordAztebotToken)
