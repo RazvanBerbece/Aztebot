@@ -30,6 +30,7 @@ func HandleSlashWarns(s *discordgo.Session, i *discordgo.InteractionCreate) {
 				Content: fmt.Sprintf("An error ocurred while retrieving user with ID %s provided in the slash command.", targetUserId),
 			},
 		})
+		return
 	}
 
 	// Retrieve all warnings for user with given UID
@@ -42,6 +43,7 @@ func HandleSlashWarns(s *discordgo.Session, i *discordgo.InteractionCreate) {
 				Content: fmt.Sprintf("An error ocurred while retrieving user warnings for user with ID %s provided in the slash command.", targetUserId),
 			},
 		})
+		return
 	}
 
 	embed := embed.NewEmbed().

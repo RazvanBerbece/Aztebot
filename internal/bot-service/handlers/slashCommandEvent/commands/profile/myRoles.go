@@ -16,9 +16,11 @@ func HandleSlashMyRoles(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	if err != nil {
 		errMsg := fmt.Sprintf("An error ocurred while trying to fetch and display your roles: %v", err)
 		utils.SendCommandErrorEmbedResponse(s, i.Interaction, errMsg)
+		return
 	}
 	if embed == nil {
 		utils.SendCommandErrorEmbedResponse(s, i.Interaction, "An error ocurred while trying to fetch and display your roles.")
+		return
 	}
 
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{

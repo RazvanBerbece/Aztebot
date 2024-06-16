@@ -25,6 +25,7 @@ func HandleSlashTimeoutAppeal(s *discordgo.Session, i *discordgo.InteractionCrea
 	if err != nil {
 		errMsg := fmt.Sprintf("An error ocurred while retrieving user with ID %s: %v", userId, err)
 		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
+		return
 	}
 
 	// Timeout appeal logic

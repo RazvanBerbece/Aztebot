@@ -43,6 +43,7 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	if err != nil {
 		errMsg := fmt.Sprintf("An error ocurred while retrieving user with ID %s provided in the slash command.", targetUserId)
 		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
+		return
 	}
 
 	sTimeLength, convErr := utils.StringToFloat64(sTimeLengthString)
@@ -82,6 +83,7 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		fmt.Printf("An error ocurred while sending timeout embed response: %v", err)
 		errMsg := fmt.Sprintf("An error ocurred while sending the timeout DM to the target user %s", targetUserId)
 		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
+		return
 	}
 
 	// Format timeout duration
