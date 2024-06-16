@@ -22,7 +22,7 @@ func HandleSlashMe(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	// Attempt a sync
 	err := ProcessUserUpdate(userId, s, i)
 	if err != nil {
-		utils.SendErrorReportEmbed(s, i.Interaction, fmt.Sprintf("An error ocurred while trying to sync your profile card: `%s`", err))
+		utils.ErrorEmbedResponseEdit(s, i.Interaction, fmt.Sprintf("An error ocurred while trying to sync your profile card: `%s`", err))
 	}
 
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
@@ -34,7 +34,7 @@ func HandleSlashMe(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	embed := displayEmbedForUser(s, userId)
 	if embed == nil {
-		utils.SendErrorReportEmbed(s, i.Interaction, "An error ocurred while trying to fetch your profile card.")
+		utils.ErrorEmbedResponseEdit(s, i.Interaction, "An error ocurred while trying to fetch your profile card.")
 	}
 
 	// Final response

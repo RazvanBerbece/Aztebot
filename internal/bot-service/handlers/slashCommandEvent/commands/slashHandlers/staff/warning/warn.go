@@ -32,7 +32,7 @@ func HandleSlashWarn(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		if err != nil {
 			fmt.Printf("An error ocurred while giving warning to user: %v\n", err)
 			errMsg := fmt.Sprintf("An error ocurred while giving warning to user with ID `%s`.", targetUserId)
-			utils.SendErrorReportEmbed(s, i.Interaction, errMsg)
+			utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
 			return
 		}
 	}()
@@ -41,7 +41,7 @@ func HandleSlashWarn(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	if err != nil {
 		fmt.Printf("An error ocurred while sending warning embed response: %v", err)
 		errMsg := fmt.Sprintf("An error ocurred while retrieving user with ID `%s` provided in the slash command.", targetUserId)
-		utils.SendErrorReportEmbed(s, i.Interaction, errMsg)
+		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
 	}
 
 	// Format CreatedAt

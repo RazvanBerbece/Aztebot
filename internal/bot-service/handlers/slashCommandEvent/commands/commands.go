@@ -71,7 +71,7 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 	},
 	{
 		Name:        "warns",
-		Description: "View a list of a members's warnings",
+		Description: "View a a member's warnings",
 		Options: []*discordgo.ApplicationCommandOption{
 			{
 				Type:        discordgo.ApplicationCommandOptionString,

@@ -13,8 +13,8 @@ services:
     ports:
       - "3306:3306"
   
-  bot-service:
-    container_name: bot-service
+  integration-test-bot-service:
+    container_name: SUT-bot-service
     depends_on:
       - mysql-db
     env_file:
@@ -23,6 +23,8 @@ services:
       dockerfile: ./cmd/bot-service/Dockerfile
     volumes: 
       - "./logs:/app/logs"
+    command: >
+      sleep 60 && go test ./...
 
 networks:
   default:

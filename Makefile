@@ -11,6 +11,9 @@ up:
 down:
 	docker compose down -v
 
+ci:
+	docker-compose -f docker-compose.ci.yml up -d --remove-orphans --build
+
 update-env:
 	openssl base64 -A -in .prod.env -out base64.prod.env.out
 
