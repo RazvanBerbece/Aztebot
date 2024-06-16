@@ -4,7 +4,8 @@ The ambitious and robust Discord bot which powers the OTA (Ordinul Templierilor 
 ## Composing services
 ### Core
 - `bot-service` (Handles Discord interactions like new messages, slash commands, join events, reaction adding or removing, etc.)
-- `azteradio-service` (Handles Voice Channel features like playing music from various streaming services, listens for music player slash commands, etc.)
+- `aztemusic-service` (Handles Voice Channel features like playing music from various streaming services, listens for music player slash commands, etc.)
+- `azteradio-service` (Handles the 24/7 Radio channel feature)
 ### Dependencies
 - `mysql-db` (Containerised MySQL instance for local development)
 

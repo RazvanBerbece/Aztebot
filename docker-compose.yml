@@ -21,23 +21,35 @@ services:
       dockerfile: ./cmd/bot-service/Dockerfile
     volumes: 
       - "./internal/bot-service/logs:/app/logs"
-
-  # azteradio-service:
-  #   container_name: azteradio-service
-  #   env_file:
-  #     ./.env
-  #   build:
-  #     dockerfile: ./cmd/azteradio-service/Dockerfile
-  #   volumes: 
-  #     - "./internal/azteradio-service/logs:/app/logs"
-  #     - "./downloads:/app/downloads"
   
-  azteradio-service-java:
-    container_name: azteradio-service-java
+  azteradio-service:
+    container_name: azteradio-service
     env_file:
       ./.env
     build:
-      dockerfile: ./cmd/azteradio-service-java/Dockerfile
+      dockerfile: ./cmd/azteradio-service/Dockerfile
+
+  aztemusic-service-1:
+    container_name: aztemusic-service-1
+    env_file:
+      ./.env
+    build:
+      dockerfile: ./cmd/aztemusic-service/1/Dockerfile
+
+  aztemusic-service-2:
+    container_name: aztemusic-service-2
+    env_file:
+      ./.env
+    build:
+      dockerfile: ./cmd/aztemusic-service/2/Dockerfile
+
+  aztemusic-service-3:
+    container_name: aztemusic-service-3
+    env_file:
+      ./.env
+    build:
+      dockerfile: ./cmd/aztemusic-service/3/Dockerfile
+
 
 networks:
   default:

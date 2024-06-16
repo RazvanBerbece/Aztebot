@@ -16,17 +16,14 @@ var Environment = os.Getenv("ENVIRONMENT") // staging / production
 var DiscordAztebotToken = os.Getenv("DISCORD_AZTEBOT_TOKEN")
 var DiscordAztebotAppId = os.Getenv("DISCORD_AZTEBOT_APP_ID")
 
-var DiscordAzteradioToken = os.Getenv("DISCORD_AZTERADIO_TOKEN")
-var DiscordAzteradioAppId = os.Getenv("DISCORD_AZTERADIO_APP_ID")
-
 var DiscordGuildId = os.Getenv("DISCORD_GUILD_ID")
 var DiscordRadioChannelId = os.Getenv("DISCORD_RADIO_CHANNEL_ID")
 
 var MySqlRootConnectionString = os.Getenv("DB_ROOT_CONNSTRING") // in MySQL format (i.e. `root_username:root_password@<unix/tcp>(host:port)/db_name`)
 
 // =============== RUNTIME VARIABLES (BOT APPLICATIONS) ===============
-var AzteradioApp appState.AzteradioApp
+var AztemusicApps []appState.AzteradioApp
 
 // =============== RUNTIME VARIABLES (SLASH COMMANDS) ===============
 var AztebotRegisteredCommands []*discordgo.ApplicationCommand
-var AzteradioRegisteredCommands []*discordgo.ApplicationCommand
+var AztemusicRegisteredCommands []*discordgo.ApplicationCommand
