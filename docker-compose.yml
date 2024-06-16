@@ -21,26 +21,31 @@ services:
       dockerfile: ./cmd/bot-service/Dockerfile
     volumes: 
       - "./internal/bot-service/logs:/app/logs"
-  
-  azteradio-service:
-    container_name: azteradio-service
-    build:
-      dockerfile: ./cmd/aztemusic-service-jar/azteradio-service/Dockerfile
 
-  aztemusic-service-1:
-    container_name: aztemusic-service-1
+  aztemusic-service-1-go:
+    container_name: aztemusic-service-1-go
     build:
-      dockerfile: ./cmd/aztemusic-service-jar/aztemusic-service-1/Dockerfile
-
-  aztemusic-service-2:
-    container_name: aztemusic-service-2
-    build:
-      dockerfile: ./cmd/aztemusic-service-jar/aztemusic-service-2/Dockerfile
+      dockerfile: ./cmd/aztemusic-service-go/aztemusic-service-go-1/Dockerfile
   
-  aztemusic-service-3:
-    container_name: aztemusic-service-3
-    build:
-      dockerfile: ./cmd/aztemusic-service-jar/aztemusic-service-3/Dockerfile
+  # azteradio-service:
+  #   container_name: azteradio-service
+  #   build:
+  #     dockerfile: ./cmd/aztemusic-service-jar/azteradio-service/Dockerfile
+
+  # aztemusic-service-1:
+  #   container_name: aztemusic-service-1
+  #   build:
+  #     dockerfile: ./cmd/aztemusic-service-jar/aztemusic-service-1/Dockerfile
+
+  # aztemusic-service-2:
+  #   container_name: aztemusic-service-2
+  #   build:
+  #     dockerfile: ./cmd/aztemusic-service-jar/aztemusic-service-2/Dockerfile
+  
+  # aztemusic-service-3:
+  #   container_name: aztemusic-service-3
+  #   build:
+  #     dockerfile: ./cmd/aztemusic-service-jar/aztemusic-service-3/Dockerfile
 
 
 networks:
