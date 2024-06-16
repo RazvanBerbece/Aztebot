@@ -9,6 +9,7 @@ import (
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
+	"github.com/RazvanBerbece/Aztebot/internal/services/member"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -64,6 +65,8 @@ func updateVoiceSessions(userStatsRepo *repositories.UsersStatsRepository) {
 			Points: globalConfiguration.ExperienceReward_InVc * secondsSpent,
 			Type:   "VOICE_ACTIVITY",
 		}
+
+		go member.AwardFunds(uid, globalConfiguration.CoinReward_InVc*secondsSpent)
 	}
 }
 
@@ -87,6 +90,8 @@ func updateStreamingSessions(userStatsRepo *repositories.UsersStatsRepository) {
 			Points: globalConfiguration.ExperienceReward_InVc * secondsSpent,
 			Type:   "VOICE_ACTIVITY",
 		}
+
+		go member.AwardFunds(uid, globalConfiguration.CoinReward_InVc*secondsSpent)
 	}
 }
 
@@ -117,6 +122,8 @@ func updateMusicSessions(userStatsRepo *repositories.UsersStatsRepository) {
 					Points: globalConfiguration.ExperienceReward_InMusic * secondsSpent,
 					Type:   "MUSIC_ACTIVITY",
 				}
+
+				go member.AwardFunds(uid, globalConfiguration.CoinReward_InMusic*secondsSpent)
 			}
 		}
 	}

@@ -47,4 +47,7 @@ func Any(s *discordgo.Session, m *discordgo.MessageCreate) {
 		Type:   "MSG_ACTIVITY",
 	}
 
+	// Award coins for activity
+	go member.AwardFunds(messageCreatorUserId, 1*globalConfiguration.CoinReward_MessageSent)
+
 }
