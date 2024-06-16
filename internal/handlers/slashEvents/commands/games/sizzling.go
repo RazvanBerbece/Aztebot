@@ -6,7 +6,6 @@ import (
 	"io"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/services/member"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
@@ -17,6 +16,8 @@ import (
 
 var SizzlingSoundFilepath = "internal/handlers/slashEvents/commands/games/assets/audio/sizzling.dca"
 var SizzlingSoundDataBuffer = make([][]byte, 0)
+
+var CurrentlyPlayingAudio = false
 
 func HandleSlashNewSizzlingSlot(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
@@ -36,31 +37,35 @@ func HandleSlashNewSizzlingSlot(s *discordgo.Session, i *discordgo.InteractionCr
 	})
 
 	// Sizzling...
+	animationCount := 10
 	voiceChannelID, _ := member.GetUserVoiceChannel(s, i.GuildID, i.Member.User.ID)
 	if voiceChannelID != "" {
-		// PLAY SIZZLING SOUND
-		go playSound(s, i.GuildID, voiceChannelID)
+		// play sizzling sound if author is in a voice channel
+		if !CurrentlyPlayingAudio {
+			go playSound(s, i.GuildID, voiceChannelID)
+		}
+		go AnimateSlotEmbed(s, *i.Interaction, animationCount)
+	} else {
+		go AnimateSlotEmbed(s, *i.Interaction, animationCount)
 	}
 
-	animationCount := 11
+}
+
+func AnimateSlotEmbed(s *discordgo.Session, i discordgo.Interaction, animationCount int) {
+
+	var frame []*discordgo.MessageEmbed
 	for range animationCount {
-		final := SlotEmbed(i.Interaction.Member.User.Username)
+		frame = SlotEmbed(i.Member.User.Username)
 		editContent := ""
 		editWebhook := discordgo.WebhookEdit{
 			Content: &editContent,
-			Embeds:  &final,
+			Embeds:  &frame,
 		}
-		s.InteractionResponseEdit(i.Interaction, &editWebhook)
+		s.InteractionResponseEdit(&i, &editWebhook)
 	}
 
-	// Final state & processing
-	final := SlotEmbed(i.Interaction.Member.User.Username)
-	editContent := ""
-	editWebhook := discordgo.WebhookEdit{
-		Content: &editContent,
-		Embeds:  &final,
-	}
-	s.InteractionResponseEdit(i.Interaction, &editWebhook)
+	// process final results (wins, etc) in frame above
+	// TODO
 
 }
 
@@ -147,11 +152,10 @@ func playSound(s *discordgo.Session, guildID, channelID string) (err error) {
 		return err
 	}
 
-	// Sleep for a specified amount of time before playing the sound
-	time.Sleep(250 * time.Millisecond)
-
 	// Start speaking.
 	vc.Speaking(true)
+
+	CurrentlyPlayingAudio = true
 
 	// Send the buffer data.
 	for _, buff := range SizzlingSoundDataBuffer {
@@ -161,11 +165,10 @@ func playSound(s *discordgo.Session, guildID, channelID string) (err error) {
 	// Stop speaking
 	vc.Speaking(false)
 
-	// Sleep for a specificed amount of time before ending.
-	time.Sleep(250 * time.Millisecond)
-
 	// Disconnect from the provided voice channel.
 	vc.Disconnect()
+
+	CurrentlyPlayingAudio = true
 
 	return nil
 }
