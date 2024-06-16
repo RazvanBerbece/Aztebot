@@ -84,7 +84,7 @@ func SyncUserPersistent(s *discordgo.Session, guildId string, userId string, mem
 		user.CurrentRoleIds = currentRoleIds
 
 		// Circle and Order (for Inner members)
-		currentCircle, currentOrder := GetCircleAndOrder(roleIds)
+		currentCircle, currentOrder := GetCircleAndOrderForGivenRoles(roleIds)
 		user.CurrentCircle = currentCircle
 		user.CurrentInnerOrder = currentOrder
 
@@ -156,7 +156,7 @@ func SyncUser(s *discordgo.Session, guildId string, userId string, member *disco
 		user.CurrentRoleIds = currentRoleIds
 
 		// Circle and Order (for Inner members)
-		currentCircle, currentOrder := GetCircleAndOrder(roleIds)
+		currentCircle, currentOrder := GetCircleAndOrderForGivenRoles(roleIds)
 		user.CurrentCircle = currentCircle
 		user.CurrentInnerOrder = currentOrder
 
@@ -209,36 +209,4 @@ func GetUserRolesFromDiscord(s *discordgo.Session, guildId string, user dataMode
 
 	return currentRoleIds, roleIds, nil
 
-}
-
-func GetCircleAndOrder(roleIds []int) (string, *int) {
-
-	var circle string
-	var order *int
-
-	var hasInnerCircleId bool = false
-	var maxInnerOrderId int = -1
-	for _, roleId := range roleIds {
-		circle, order := GetCircleAndOrderFromRoleId(roleId)
-		if circle == 1 {
-			hasInnerCircleId = true
-			if order > maxInnerOrderId {
-				maxInnerOrderId = order
-			}
-		}
-	}
-
-	if hasInnerCircleId {
-		circle = "INNER"
-	} else {
-		circle = "OUTER"
-	}
-
-	if maxInnerOrderId == -1 {
-		order = nil
-	} else {
-		order = &maxInnerOrderId
-	}
-
-	return circle, order
 }

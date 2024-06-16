@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/member"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/dm"
@@ -83,7 +84,11 @@ func GiveWarnToUserWithId(s *discordgo.Session, i *discordgo.InteractionCreate, 
 		}
 	case 1:
 		// 1 downgrade for role
-		// TODO: Downgrade logic
+		errDemote := member.DemoteMember(s, globals.DiscordMainGuildId, userId)
+		if errDemote != nil {
+			fmt.Printf("An error ocurred while demoting user: %v\n", errDemote)
+			return errDemote
+		}
 		// Send demotion message
 		demotionMessageContent := "⚠️ This is a message to inform you that you have been demoted from your Circle role as you received your second warning."
 		err := sendWarnDmToUser(s, i, userId, demotionMessageContent)
@@ -93,7 +98,11 @@ func GiveWarnToUserWithId(s *discordgo.Session, i *discordgo.InteractionCreate, 
 		}
 	case 2:
 		// 1 downgrade for role
-		// TODO: Downgrade logic
+		errDemote := member.DemoteMember(s, globals.DiscordMainGuildId, userId)
+		if errDemote != nil {
+			fmt.Printf("An error ocurred while demoting user: %v\n", errDemote)
+			return errDemote
+		}
 		// Send demotion message
 		demotionMessageContent := "⚠️ This is a message to inform you that you have been demoted from your Circle role as you received your third warning."
 		err := sendWarnDmToUser(s, i, userId, demotionMessageContent)
