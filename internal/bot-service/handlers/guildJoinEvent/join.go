@@ -3,8 +3,8 @@ package joinEvent
 import (
 	"fmt"
 
-	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
-	"github.com/RazvanBerbece/Aztebot/pkg/shared/globals"
+	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
+	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/logging"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -27,8 +27,7 @@ func GuildJoin(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
 	}
 
 	// Create entity for user stats in the DB
-	userStatsRepo := repositories.NewUsersStatsRepository()
-	err = userStatsRepo.SaveInitialUserStats(m.Member.User.ID)
+	err = globalsRepo.UserStatsRepository.SaveInitialUserStats(m.Member.User.ID)
 	if err != nil {
 		fmt.Printf("Error storing new member stats %s to DB: %v", m.Member.User.Username, err)
 	}

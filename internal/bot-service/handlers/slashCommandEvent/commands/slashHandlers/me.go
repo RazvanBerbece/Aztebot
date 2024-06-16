@@ -7,7 +7,7 @@ import (
 	"time"
 
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/bot-service/data/models"
-	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
+	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/bwmarrin/discordgo"
 )
@@ -44,10 +44,7 @@ func HandleSlashMe(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.MessageEmbed {
 
-	usersRepository := repositories.NewUsersRepository()
-	userStatsRepo := repositories.NewUsersStatsRepository()
-
-	user, err := usersRepository.GetUser(userId)
+	user, err := globalsRepo.UsersRepository.GetUser(userId)
 	if err != nil {
 		log.Printf("Cannot retrieve user with id %s: %v", userId, err)
 		return nil
@@ -59,7 +56,7 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 
 	// Process highest role
 	var highestRole dataModels.Role
-	roles, err := usersRepository.GetRolesForUser(userId)
+	roles, err := globalsRepo.UsersRepository.GetRolesForUser(userId)
 	if err != nil {
 		log.Printf("Cannot retrieve roles for user with id %s: %v", userId, err)
 		return nil
@@ -67,10 +64,10 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 	highestRole = roles[len(roles)-1] // role IDs for users are stored in DB in ascending order by rank, so the last one is the highest
 
 	// Setup user stats if the user doesn't have an entity in UserStats
-	_, errStats := userStatsRepo.GetStatsForUser(userId)
+	_, errStats := globalsRepo.UserStatsRepository.GetStatsForUser(userId)
 	if errStats != nil {
 		if errStats == sql.ErrNoRows {
-			errStatsInit := userStatsRepo.SaveInitialUserStats(userId)
+			errStatsInit := globalsRepo.UserStatsRepository.SaveInitialUserStats(userId)
 			if errStatsInit != nil {
 				log.Fatalf("Cannot store initial user %s stats: %v", user.DiscordTag, errStatsInit)
 				return nil
@@ -79,7 +76,7 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 	}
 
 	// Get user stats
-	stats, err := userStatsRepo.GetStatsForUser(userId)
+	stats, err := globalsRepo.UserStatsRepository.GetStatsForUser(userId)
 	if err != nil {
 		log.Printf("Cannot retrieve user %s stats from DB: %v", userId, err)
 		return nil

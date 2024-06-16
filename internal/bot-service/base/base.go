@@ -7,9 +7,10 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
+
 	aztebotSlashCommands "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent"
 
-	"github.com/RazvanBerbece/Aztebot/pkg/shared/globals"
 	"github.com/bwmarrin/discordgo"
 )
 

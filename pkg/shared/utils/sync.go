@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
+	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -127,14 +128,11 @@ func SyncUserPersistent(s *discordgo.Session, guildId string, userId string, mem
 // as they appear on the Discord guild. This function creates new DB connections.
 func SyncUser(s *discordgo.Session, guildId string, userId string, member *discordgo.Member) error {
 
-	rolesRepository := repositories.NewRolesRepository()
-	usersRepository := repositories.NewUsersRepository()
-
-	user, err := usersRepository.GetUser(userId)
+	user, err := globalsRepo.UsersRepository.GetUser(userId)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			fmt.Printf("Adding new user %s to DB\n", member.User.Username)
-			user, err = usersRepository.SaveInitialUserDetails(member.User.Username, userId)
+			user, err = globalsRepo.UsersRepository.SaveInitialUserDetails(member.User.Username, userId)
 			if err != nil {
 				log.Fatalf("Cannot store user %s with id %s: %v", member.User.Username, userId, err)
 				return err
@@ -155,7 +153,7 @@ func SyncUser(s *discordgo.Session, guildId string, userId string, member *disco
 				log.Println("Error getting role from Discord servers:", err)
 				return err
 			}
-			roleDax, err := rolesRepository.GetRole(userRoleObj.Name)
+			roleDax, err := globalsRepo.RolesRepository.GetRole(userRoleObj.Name)
 			if err != nil {
 				if err == sql.ErrNoRows {
 					// This will probably be a role which is assigned to the three orders or something, so we can ignore
@@ -203,7 +201,7 @@ func SyncUser(s *discordgo.Session, guildId string, userId string, member *disco
 			user.CurrentInnerOrder = &maxInnerOrderId
 		}
 
-		updatedUser, updateErr := usersRepository.UpdateUser(*user)
+		updatedUser, updateErr := globalsRepo.UsersRepository.UpdateUser(*user)
 		if updateErr != nil {
 			log.Println("Error updating user in DB:", err)
 			return err
