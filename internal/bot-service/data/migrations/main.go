@@ -1,9 +1,11 @@
 package main
 
 import (
+	"database/sql"
 	"embed"
+	"log"
 
-	databasePackage "github.com/LxrdVixxeN/Aztebot/internal/bot-service/data/connection"
+	"github.com/LxrdVixxeN/Aztebot/internal/bot-service/globals"
 	"github.com/pressly/goose/v3"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -14,8 +16,15 @@ var embedMigrations embed.FS
 
 func main() {
 
-	var database databasePackage.Database
-	database.ConnectDatabaseHandle()
+	db, err := sql.Open("mysql", globals.MySqlRootPublicTcpConnectionString)
+	if err != nil {
+		log.Fatal("Connection to database cannot be established :", err)
+	}
+
+	pingErr := db.Ping()
+	if pingErr != nil {
+		log.Fatal("Database cannot be reached :", pingErr)
+	}
 
 	goose.SetBaseFS(embedMigrations)
 
@@ -23,7 +32,7 @@ func main() {
 		panic(err)
 	}
 
-	if err := goose.Up(database.Db, "history"); err != nil {
+	if err := goose.Up(db, "history"); err != nil {
 		panic(err)
 	}
 }
