@@ -308,6 +308,18 @@ func ResolveProgressionMismatchForMember(s *discordgo.Session, userGuildId strin
 		fmt.Printf("Mismatch (type 1) for %s resolved.\n", user.DiscordTag)
 	} else if processedLevel > 0 && processedRoleName != "" && len(currentOrderRoles) == 1 {
 		if currentOrderRoles[0].DisplayName != processedRoleName {
+
+			if globalConfiguration.AuditPromotionMismatchesInChannel {
+				if channel, channelExists := globalConfiguration.NotificationChannels["notif-debug"]; channelExists {
+					content := fmt.Sprintf("Mismatch (type 2) discovered for %s", userId)
+					globalMessaging.NotificationsChannel <- events.NotificationEvent{
+						TargetChannelId: channel.ChannelId,
+						Type:            "DEFAULT",
+						TextData:        &content,
+					}
+				}
+			}
+
 			// Solve mismatches where the member has a rank on the server but their
 			// actual non-zero rank is different (type 2)
 			err := globalRepositories.UsersRepository.SetLevel(userId, processedLevel)
@@ -344,6 +356,18 @@ func ResolveProgressionMismatchForMember(s *discordgo.Session, userGuildId strin
 			fmt.Printf("Mismatch (type 2) for %s resolved.\n", user.DiscordTag)
 		}
 	} else if processedLevel > 0 && processedRoleName != "" && len(currentOrderRoles) > 1 {
+
+		if globalConfiguration.AuditPromotionMismatchesInChannel {
+			if channel, channelExists := globalConfiguration.NotificationChannels["notif-debug"]; channelExists {
+				content := fmt.Sprintf("Mismatch (type 3) discovered for %s", userId)
+				globalMessaging.NotificationsChannel <- events.NotificationEvent{
+					TargetChannelId: channel.ChannelId,
+					Type:            "DEFAULT",
+					TextData:        &content,
+				}
+			}
+		}
+
 		// Solve mismatches where the member has multiple ranks on the server but their
 		// actual non-zero rank is different (type 3)
 		for _, role := range currentOrderRoles {
@@ -383,6 +407,18 @@ func ResolveProgressionMismatchForMember(s *discordgo.Session, userGuildId strin
 
 		fmt.Printf("Mismatch (type 3) for %s resolved.\n", user.DiscordTag)
 	} else if processedLevel > 0 && processedRoleName != "" && len(currentOrderRoles) == 0 {
+
+		if globalConfiguration.AuditPromotionMismatchesInChannel {
+			if channel, channelExists := globalConfiguration.NotificationChannels["notif-debug"]; channelExists {
+				content := fmt.Sprintf("Mismatch (type 4) discovered for %s", userId)
+				globalMessaging.NotificationsChannel <- events.NotificationEvent{
+					TargetChannelId: channel.ChannelId,
+					Type:            "DEFAULT",
+					TextData:        &content,
+				}
+			}
+		}
+
 		// Solve mismatches where the member has no rank on the server but their
 		// actual rank is different and non-zero (type 4)
 		err := globalRepositories.UsersRepository.SetLevel(userId, processedLevel)

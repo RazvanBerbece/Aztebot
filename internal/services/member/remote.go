@@ -410,6 +410,7 @@ func RefreshDiscordOrderRoleForMember(s *discordgo.Session, guildId string, user
 				fmt.Println("Error removing order role from Discord member:\n", err)
 				return err
 			}
+			break
 		}
 	}
 
