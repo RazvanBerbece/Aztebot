@@ -101,9 +101,11 @@ func ProcessTopMessagesPartialEmbed(topCount int, s *discordgo.Session, i *disco
 	if len(topMessagesSent) == 0 {
 		embed.AddField("", "No members in this category", false)
 	} else {
+		topContentText := ""
 		for idx, topUser := range topMessagesSent {
-			embed.AddField("", fmt.Sprintf("**%d.** **%s**    (sent `%d` ✉️)", idx+1, topUser.DiscordTag, topUser.MessagesSent), false)
+			topContentText += fmt.Sprintf("**%d.** **%s**    (sent `%d` ✉️)\n", idx+1, topUser.DiscordTag, topUser.MessagesSent)
 		}
+		embed.AddField("", topContentText, false)
 	}
 }
 
@@ -118,10 +120,12 @@ func ProcessTopVCSpentPartialEmbed(topCount int, s *discordgo.Session, i *discor
 	if len(topTimeInVCs) == 0 {
 		embed.AddField("", "No members in this category", false)
 	} else {
+		topContentText := ""
 		for idx, topUser := range topTimeInVCs {
 			days, hours, minutes, seconds := utils.HumanReadableTimeLength(float64(topUser.TimeSpentInVCs))
-			embed.AddField("", fmt.Sprintf("**%d.** **%s** (spent `%dd, %dh:%dm:%ds` in voice channels 🎙️)", idx+1, topUser.DiscordTag, days, hours, minutes, seconds), false)
+			topContentText += fmt.Sprintf("**%d.** **%s** (spent `%dd, %dh:%dm:%ds` in voice channels 🎙️)", idx+1, topUser.DiscordTag, days, hours, minutes, seconds)
 		}
+		embed.AddField("", topContentText, false)
 	}
 }
 
@@ -136,9 +140,11 @@ func ProcessTopActiveDayStreakPartialEmbed(topCount int, s *discordgo.Session, i
 	if len(topStreaks) == 0 {
 		embed.AddField("", "No members in this category", false)
 	} else {
-		for idx, user := range topStreaks {
-			embed.AddField("", fmt.Sprintf("**%d.** **%s** (active for `%d` days in a row 🔄)", idx+1, user.DiscordTag, user.Streak), false)
+		topContentText := ""
+		for idx, topUser := range topStreaks {
+			topContentText += fmt.Sprintf("**%d.** **%s** (active for `%d` days in a row 🔄)", idx+1, topUser.DiscordTag, topUser.Streak)
 		}
+		embed.AddField("", topContentText, false)
 	}
 }
 
@@ -153,8 +159,10 @@ func ProcessTopReactionsReceivedPartialEmbed(topCount int, s *discordgo.Session,
 	if len(topReactions) == 0 {
 		embed.AddField("", "No members in this category", false)
 	} else {
-		for idx, user := range topReactions {
-			embed.AddField("", fmt.Sprintf("**%d.** **%s** (received a total of `%d` reactions 💯)", idx+1, user.DiscordTag, user.ReactionsReceived), false)
+		topContentText := ""
+		for idx, topUser := range topReactions {
+			topContentText += fmt.Sprintf("**%d.** **%s** (received a total of `%d` reactions 💯)", idx+1, topUser.DiscordTag, topUser.ReactionsReceived)
 		}
+		embed.AddField("", topContentText, false)
 	}
 }
