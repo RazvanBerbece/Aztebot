@@ -1,7 +1,7 @@
 package testData
 
 import (
-	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
+	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
 )
 
 func RemoveUser(r repositories.TimeoutsRepository, userId string) {
