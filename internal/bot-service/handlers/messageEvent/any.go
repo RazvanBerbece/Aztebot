@@ -19,6 +19,9 @@ func Any(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if err != nil {
 		fmt.Printf("An error ocurred while checking against bot application: %v\n", err)
 	}
+	if authorIsBot == nil {
+		return
+	}
 	if *authorIsBot {
 		return
 	}

@@ -29,6 +29,9 @@ func ReactionRemove(s *discordgo.Session, r *discordgo.MessageReactionRemove) {
 	if err != nil {
 		fmt.Printf("An error ocurred while checking against bot application: %v\n", err)
 	}
+	if authorIsBot == nil {
+		return
+	}
 	if *authorIsBot {
 		return
 	}
