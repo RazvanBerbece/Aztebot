@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	memberApi "github.com/RazvanBerbece/Aztebot/internal/bot-service/api/member"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
@@ -61,11 +62,21 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 		// The Discord API does something weird and sends SelfStream as true
 		// when a user leaves a VC directly without stopping streaming first
 		if joinTime, ok := globals.VoiceSessions[userId]; ok {
+
 			duration := time.Since(joinTime)
-			err := globalsRepo.UserStatsRepository.AddToTimeSpentInVoiceChannels(userId, int(duration.Seconds()))
+			secondsSpent := duration.Seconds()
+
+			err := globalsRepo.UserStatsRepository.AddToTimeSpentInVoiceChannels(userId, int(secondsSpent))
 			if err != nil {
 				fmt.Printf("An error ocurred while adding time spent to voice channels for user with id %s: %v", userId, err)
 			}
+
+			// Grant experience points for time spent streaming
+			currentXp, err := memberApi.GrantMemberExperience(userId, "IN_VC_REWARD", &secondsSpent)
+			if err != nil {
+				fmt.Printf("An error ocurred while granting streaming activity rewards (%d) to user (%s): %v", currentXp, userId, err)
+			}
+
 			delete(globals.VoiceSessions, userId)
 			delete(globals.StreamSessions, userId)
 			delete(globals.MusicSessions, userId)
@@ -89,7 +100,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 
 			err = globalsRepo.UserStatsRepository.UpdateLastActiveTimestamp(userId, time.Now().Unix())
 			if err != nil {
-				fmt.Printf("An error ocurred while udpating user (%s) last timestamp: %v", userId, err)
+				fmt.Printf("An error ocurred while updating user (%s) last timestamp: %v", userId, err)
 			}
 		} else if vs.ChannelID != "" && globals.StreamSessions[userId] != nil {
 			delete(globals.StreamSessions, userId)
@@ -99,19 +110,38 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 			if userHadMusicSession {
 				// User was on a music channel
 				for _, joinTime := range musicSession {
+
 					duration := time.Since(*joinTime)
-					err := globalsRepo.UserStatsRepository.AddToTimeSpentListeningMusic(userId, int(duration.Seconds()))
+					secondsSpent := duration.Seconds()
+
+					err := globalsRepo.UserStatsRepository.AddToTimeSpentListeningMusic(userId, int(secondsSpent))
 					if err != nil {
 						fmt.Printf("An error ocurred while adding time spent listening music for user with id %s: %v", userId, err)
 					}
+
+					// Grant experience points for time spent streaming
+					currentXp, err := memberApi.GrantMemberExperience(userId, "IN_MUSIC_REWARD", &secondsSpent)
+					if err != nil {
+						fmt.Printf("An error ocurred while granting music listening rewards (%d) to user (%s): %v", currentXp, userId, err)
+					}
+
 				}
 			} else {
 				// User was on any other VC
 				if joinTime, ok := globals.VoiceSessions[userId]; ok {
+
 					duration := time.Since(joinTime)
+					secondsSpent := duration.Seconds()
+
 					err := globalsRepo.UserStatsRepository.AddToTimeSpentInVoiceChannels(userId, int(duration.Seconds()))
 					if err != nil {
 						fmt.Printf("An error ocurred while adding time spent to voice channels for user with id %s: %v", userId, err)
+					}
+
+					// Grant experience points for time spent streaming
+					currentXp, err := memberApi.GrantMemberExperience(userId, "IN_VC_REWARD", &secondsSpent)
+					if err != nil {
+						fmt.Printf("An error ocurred while granting voice channel activity rewards (%d) to user (%s): %v", currentXp, userId, err)
 					}
 				}
 			}
