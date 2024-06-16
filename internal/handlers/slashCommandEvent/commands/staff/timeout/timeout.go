@@ -70,14 +70,9 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		return
 	}
 
-	// Format timeout creation time
-	var timeoutCreatedAt time.Time
-	var timeoutCreatedAtString string
-	timeoutCreatedAt = time.Unix(timestamp, 0).UTC()
-	timeoutCreatedAtString = timeoutCreatedAt.Format("Mon, 02 Jan 2006 15:04:05 MST")
-
 	// Build a DM to send to the target user detailing the timeout
-	timeoutDm := fmt.Sprintf("You received a timeout for reason: `%s`\nat `%s`", reason, timeoutCreatedAtString)
+	creationTimestampString := utils.FormatUnixAsString(timestamp, "Mon, 02 Jan 2006 15:04:05 MST")
+	timeoutDm := fmt.Sprintf("You received a timeout for reason: `%s`\nat `%s`", reason, creationTimestampString)
 	err = member.SendDirectMessageToMember(s, targetUserId, timeoutDm)
 	if err != nil {
 		fmt.Printf("An error ocurred while sending timeout embed response: %v", err)
@@ -92,7 +87,7 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	// Send notification to target channel to announce the timeout
 	if channel, channelExists := globals.NotificationChannels["notif-timeout"]; channelExists {
-		go sendTimeoutNotification(s, channel.ChannelId, targetUserId, reason, timeoutCreatedAtString, timeoutLengthString, commandOwnerUserId)
+		go sendTimeoutNotification(s, channel.ChannelId, targetUserId, reason, creationTimestampString, timeoutLengthString, commandOwnerUserId)
 	}
 
 	embed := embed.NewEmbed().
@@ -101,7 +96,7 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		SetColor(000000).
 		AddField("Reason", reason, false).
 		AddField("Duration", timeoutLengthString, false).
-		AddField("Timestamp", timeoutCreatedAtString, false)
+		AddField("Timestamp", creationTimestampString, false)
 
 	// Final response
 	editContent := ""

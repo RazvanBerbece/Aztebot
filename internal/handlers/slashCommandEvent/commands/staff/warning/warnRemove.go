@@ -3,7 +3,6 @@ package warningSlashHandlers
 import (
 	"database/sql"
 	"fmt"
-	"time"
 
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
@@ -51,10 +50,7 @@ func HandleSlashWarnRemoveOldest(s *discordgo.Session, i *discordgo.InteractionC
 	}
 
 	// Format CreatedAt
-	var warnCreatedAt time.Time
-	var warnCreatedAtString string
-	warnCreatedAt = time.Unix(warn.CreationTimestamp, 0).UTC()
-	warnCreatedAtString = warnCreatedAt.Format("Mon, 02 Jan 2006 15:04:05 MST")
+	warnCreatedAtString := utils.FormatUnixAsString(warn.CreationTimestamp, "Mon, 02 Jan 2006 15:04:05 MST")
 
 	embed := embed.NewEmbed().
 		SetTitle(fmt.Sprintf("🤖🔨   Warning removed from `%s`", user.Username)).

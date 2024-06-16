@@ -41,11 +41,7 @@ func HandleSlashTimeouts(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		SetColor(000000)
 
 	if activeTimeout != nil {
-		// Format timeout creation time
-		var timeoutCreatedAt time.Time
-		var timeoutCreatedAtString string
-		timeoutCreatedAt = time.Unix(activeTimeout.CreationTimestamp, 0).UTC()
-		timeoutCreatedAtString = timeoutCreatedAt.Format("Mon, 02 Jan 2006 15:04:05 MST")
+		timeoutCreatedAtString := utils.FormatUnixAsString(activeTimeout.CreationTimestamp, "Mon, 02 Jan 2006 15:04:05 MST")
 
 		// Format timeout expiry time
 		timeoutCreationTime := time.Unix(activeTimeout.CreationTimestamp, 0)
