@@ -16,7 +16,7 @@ update-env:
 
 update-music-conf:
 	openssl base64 -A -in cmd/azteradio-service/config.prod.yml -out cmd/azteradio-service/base64.prod.yml.out
-
+	openssl base64 -A -in cmd/aztemusic-service/1/config.prod.yml -out cmd/aztemusic-service/1/base64.prod.yml.out
 
 # APP STARTUP SHELL APPS
 run-aztebot-bot-service:

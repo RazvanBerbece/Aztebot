@@ -12,3 +12,5 @@ Dockerfile
 *.log
 cmd/azteradio-service/base64.prod.yml.out
 cmd/azteradio-service/config.prod.yml
+cmd/aztemusic-service/1/base64.prod.yml.out
+cmd/aztemusic-service/1/config.prod.yml
