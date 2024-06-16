@@ -51,10 +51,6 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		},
 	},
 	{
-		Name:        "sync",
-		Description: "Syncs the user profile data (roles, etc.) with the OTA servers.",
-	},
-	{
 		Name:        "help",
 		Description: "Get a help guide for the available AzteBot slash commands.",
 	},
@@ -352,7 +348,6 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"roles":                 profileSlashHandlers.HandleSlashYouRoles,
 	"me":                    profileSlashHandlers.HandleSlashMe,
 	"you":                   profileSlashHandlers.HandleSlashYou,
-	"sync":                  profileSlashHandlers.HandleSlashSync,
 	"set-gender":            profileSlashHandlers.HandleSlashSetGender,
 	"dice":                  gamesSlashHandlers.HandleSlashDice,
 	"help":                  serverSlashHandlers.HandleSlashAztebotHelp,
