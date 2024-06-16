@@ -32,7 +32,7 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 				utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
 				return
 			}
-			globalConfiguration.ExperienceReward_MessageSent = *multiplier
+			globalConfiguration.ExperienceReward_MessageSent = globalConfiguration.DefaultExperienceReward_MessageSent * *multiplier
 		}
 	case "react_recv":
 		if multiplierStringInput == "def" {
@@ -44,7 +44,7 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 				utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
 				return
 			}
-			globalConfiguration.ExperienceReward_ReactionReceived = *multiplier
+			globalConfiguration.ExperienceReward_ReactionReceived = globalConfiguration.DefaultExperienceReward_ReactionReceived * *multiplier
 		}
 	case "slash_use":
 		if multiplierStringInput == "def" {
@@ -56,7 +56,7 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 				utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
 				return
 			}
-			globalConfiguration.ExperienceReward_SlashCommandUsed = *multiplier
+			globalConfiguration.ExperienceReward_SlashCommandUsed = globalConfiguration.DefaultExperienceReward_SlashCommandUsed * *multiplier
 		}
 	case "spent_vc":
 		if multiplierStringInput == "def" {
@@ -68,7 +68,7 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 				utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
 				return
 			}
-			globalConfiguration.ExperienceReward_InVc = *multiplier
+			globalConfiguration.ExperienceReward_InVc = globalConfiguration.DefaultExperienceReward_InVc * *multiplier
 		}
 	case "spent_music":
 		if multiplierStringInput == "def" {
@@ -80,7 +80,7 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 				utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
 				return
 			}
-			globalConfiguration.ExperienceReward_InMusic = *multiplier
+			globalConfiguration.ExperienceReward_InMusic = globalConfiguration.DefaultExperienceReward_InMusic * *multiplier
 		}
 	}
 
