@@ -63,10 +63,12 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 
 func UpdateUsersInCron(s *discordgo.Session, rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository) error {
 
+	fmt.Println("Starting Task UpdateUsersInCron() at", time.Now())
+
 	// Retrieve all members in the guild
 	members, err := s.GuildMembers(globals.DiscordMainGuildId, "", 1000)
 	if err != nil {
-		fmt.Println("Error retrieving members:", err)
+		fmt.Println("Failed Task UpdateUsersInCron() at", time.Now(), "with error", err)
 		return err
 	}
 
@@ -79,7 +81,7 @@ func UpdateUsersInCron(s *discordgo.Session, rolesRepository *repositories.Roles
 		lastMemberID := members[len(members)-1].User.ID
 		members, err = s.GuildMembers(globals.DiscordMainGuildId, lastMemberID, 1000)
 		if err != nil {
-			fmt.Println("Error retrieving members:", err)
+			fmt.Println("Failed Task UpdateUsersInCron() at", time.Now(), "with error", err)
 			return err
 		}
 
@@ -95,10 +97,12 @@ func UpdateUsersInCron(s *discordgo.Session, rolesRepository *repositories.Roles
 
 func CleanupUsersInCron(s *discordgo.Session, usersRepository *repositories.UsersRepository) error {
 
+	fmt.Println("Starting Task CleanupUsersInCron() at", time.Now())
+
 	// Retrieve all members from the DB
 	uids, err := usersRepository.GetAllDiscordUids()
 	if err != nil {
-		fmt.Println("Error retrieving user IDs from DB:", err)
+		fmt.Println("Failed Task CleanupUsersInCron() at", time.Now(), "with error", err)
 		return err
 	}
 
@@ -111,14 +115,16 @@ func CleanupUsersInCron(s *discordgo.Session, usersRepository *repositories.User
 				// delete from the database
 				err := usersRepository.DeleteUser(uid)
 				if err != nil {
-					fmt.Printf("Error deleting left user with UID %s from DB: %v", uid, err)
+					fmt.Println("Failed Task CleanupUsersInCron() at", time.Now(), "with error", err)
 					return err
 				}
 			} else {
-				fmt.Println("Error retrieving member:", err)
+				fmt.Println("Failed Task CleanupUsersInCron() at", time.Now(), "with error", err)
 				return err
 			}
 		}
+		// Sleep for a bit to not exceed request frequency limits for the Discord API
+		time.Sleep(250 * time.Millisecond)
 	}
 
 	fmt.Println("Ran Task CleanupUsersInCron() at", time.Now())
