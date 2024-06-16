@@ -28,7 +28,7 @@ func ReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 	// Ignore all messages created by bots
 	authorIsBot, err := member.MemberIsBot(s, globals.DiscordMainGuildId, messageOwnerUid)
 	if err != nil {
-		fmt.Printf("An error ocurred while checking against bot application: %v\n", err)
+		return
 	}
 	if authorIsBot == nil {
 		return
