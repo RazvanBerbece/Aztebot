@@ -15,8 +15,7 @@ update-env:
 	openssl base64 -A -in .prod.env -out .base64.prod.env.out
 
 update-music-conf:
-	openssl base64 -A -in cmd/azteradio-service-rawon/.config.prod.env -out cmd/azteradio-service-rawon/.base64.prod.env.out
-	openssl base64 -A -in cmd/aztemusic-service-rawon/1/.config.prod.env -out cmd/aztemusic-service-rawon/1/.base64.prod.env.out
+	openssl base64 -A -in cmd/azteradio-service/config.prod.yml -out cmd/azteradio-service/base64.prod.yml.out
 
 
 # APP STARTUP SHELL APPS

@@ -31,5 +31,6 @@ keys/
 prodEnvString.txt
 downloads/
 config.txt
-.prod.jar-config.txt
 .prod.config.txt
+cmd/azteradio-service/config.prod.yml
+cmd/azteradio-service/config.yml
