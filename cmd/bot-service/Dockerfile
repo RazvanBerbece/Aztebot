@@ -7,8 +7,8 @@ WORKDIR /app
 
 # Required environment variables setup
 ARG db_conn_string
-ENV DB_ROOT_CONNSTRING=$db_conn_string
-ENV GOOSE_DBSTRING=$db_conn_string
+ENV DB_ROOT_CONNSTRING="$db_conn_string"
+ENV GOOSE_DBSTRING="$db_conn_string"
 ENV GOOSE_DRIVER=mysql
 
 # Install project dependencies
