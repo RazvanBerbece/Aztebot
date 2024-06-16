@@ -1,8 +1,6 @@
 package repositories
 
 import (
-	"fmt"
-
 	databaseconn "github.com/RazvanBerbece/Aztebot/internal/bot-service/data/connection"
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/bot-service/data/models"
 )
@@ -38,7 +36,7 @@ func (r RolesRepository) GetRole(displayName string) (*dataModels.Role, error) {
 	)
 
 	if err != nil {
-		return nil, fmt.Errorf("GetRole %s: %v", displayName, err)
+		return nil, err
 	}
 
 	return &role, nil

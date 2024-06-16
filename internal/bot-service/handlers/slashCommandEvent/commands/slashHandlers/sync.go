@@ -63,17 +63,22 @@ func ProcessUserUpdate(userId string, s *discordgo.Session, event *discordgo.Int
 			roleDax, err := rolesRepository.GetRole(userRoleObj.Name)
 			if err != nil {
 				log.Println("Error getting role from DB:", err)
-				return err
+				if err == sql.ErrNoRows {
+					continue
+				} else {
+					return err
+				}
+			} else {
+				// `Aztec` verification
+				if roleDax.Id == 1 {
+					unixNow := time.Now().Unix()
+					user.CreatedAt = &unixNow
+				}
+				// Role IDs
+				currentRoleIds += fmt.Sprintf("%d,", roleDax.Id)
+				// Circle
+				roleIds = append(roleIds, roleDax.Id)
 			}
-			// `Aztec` verification
-			if roleDax.Id == 1 {
-				unixNow := time.Now().Unix()
-				user.CreatedAt = &unixNow
-			}
-			// Role IDs
-			currentRoleIds += fmt.Sprintf("%d,", roleDax.Id)
-			// Circle
-			roleIds = append(roleIds, roleDax.Id)
 		}
 
 		user.CurrentRoleIds = currentRoleIds
