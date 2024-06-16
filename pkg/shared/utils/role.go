@@ -40,11 +40,11 @@ func GetCircleAndOrderForGivenRoles(roleIds []int) (string, *int) {
 func GetOrderAsString(orderId int) string {
 	switch orderId {
 	case 1:
-		return "---- FIRST ORDER ----"
+		return "---- First Order ----"
 	case 2:
-		return "---- SECOND ORDER ----"
+		return "---- Second Order ----"
 	case 3:
-		return "---- THIRD ORDER ----"
+		return "---- Third Order ----"
 	default:
 		return "not supported"
 	}
