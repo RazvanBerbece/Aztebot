@@ -262,7 +262,7 @@ func GetApprovalActionRowForEmbed(affirmativeCustomId string, negativeCustomId s
 
 	// Create accept and decline buttons
 	acceptButton := discordgo.Button{
-		Emoji: discordgo.ComponentEmoji{
+		Emoji: &discordgo.ComponentEmoji{
 			Name: "👍🏽",
 		},
 		Label:    "Accept",
@@ -272,7 +272,7 @@ func GetApprovalActionRowForEmbed(affirmativeCustomId string, negativeCustomId s
 	}
 
 	declineButton := discordgo.Button{
-		Emoji: discordgo.ComponentEmoji{
+		Emoji: &discordgo.ComponentEmoji{
 			Name: "👎🏽",
 		},
 		Label:    "Decline",
