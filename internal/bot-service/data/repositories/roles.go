@@ -39,5 +39,7 @@ func (r RolesRepository) GetRole(displayName string) (*dataModels.Role, error) {
 		return nil, err
 	}
 
+	defer r.conn.Db.Close()
+
 	return &role, nil
 }
