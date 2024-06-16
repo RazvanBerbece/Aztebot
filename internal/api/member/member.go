@@ -445,6 +445,15 @@ func SendDirectMessageToMember(s *discordgo.Session, userId string, msg string) 
 	return nil
 }
 
+func SendDirectEmbedToMember(s *discordgo.Session, userId string, embed embed.Embed) error {
+	errDm := dm.DmEmbedUser(s, userId, *embed.MessageEmbed)
+	if errDm != nil {
+		fmt.Printf("Error sending embed DM to member with UID %s: %v\n", userId, errDm)
+		return errDm
+	}
+	return nil
+}
+
 func GetMemberTimeouts(userId string) (*dataModels.Timeout, []dataModels.ArchivedTimeout, error) {
 
 	// Result variables
@@ -708,18 +717,73 @@ func JailMember(s *discordgo.Session, guildId string, userId string, reason stri
 	}
 
 	// Send notification about jailing on designated channel
-	embed := embed.NewEmbed().
+	notificationEmbed := embed.NewEmbed().
 		SetTitle("👮🏽‍♀️⛓️    A New Prisoner Has Arrived").
 		AddField("Known As", user.DiscordTag, false).
 		AddField("Convicted Because", reason, false).
 		AddField("Tasked With", taskToFree, false).
 		AddField("Convincted At", currentTimestamp.String(), false)
 
-	go notifications.SendEmbedToTextChannel(s, notificationChannelId, *embed)
+	go notifications.SendEmbedToTextChannel(s, notificationChannelId, *notificationEmbed)
 
 	// Send Jail DM to jailed user
-	// TODO
+	dmEmbed := embed.NewEmbed().
+		SetTitle("👮🏽‍♀️⛓️    You have been jailed.").
+		AddField("", fmt.Sprintf("You have been jailed at timestamp `%s` because: `%s`.\n\nYour rights have been stripped but you can still communicate via the designated Jail channel. In order to be released from Jail, you'll need to complete the task you have been randomly assgined when you were jailed. The staff supervisors will guide you through the process and the implications.", currentTimestamp.String(), reason), false)
+
+	go SendDirectEmbedToMember(s, userId, *dmEmbed)
 
 	return jailedRecord, user, nil
+
+}
+
+func UnjailMember(s *discordgo.Session, guildId string, userId string, jailRoleName string, notificationChannelId string) (*dataModels.JailedUser, *dataModels.User, error) {
+
+	var err error
+
+	jailedUser, err := globalsRepo.JailRepository.GetJailedUser(userId)
+	if err != nil {
+		fmt.Printf("Failed to UnjailMember (Retrieve Jailed Member Entry) %s: %v", userId, err)
+		return nil, nil, err
+	}
+
+	// Remove User from Jail in the DB
+	err = globalsRepo.JailRepository.RemoveUserFromJail(userId)
+	if err != nil {
+		fmt.Printf("Failed to UnjailMember (Remove user from OTA Jail) %s: %v", userId, err)
+		return nil, nil, err
+	}
+
+	// Remove designated Discord role from member to return access
+	err = RemoveDiscordRoleFromMember(s, guildId, userId, jailRoleName)
+	if err != nil {
+		fmt.Printf("Failed to UnjailMember (Remove Jailed Role From Discord) %s: %v", userId, err)
+		return nil, nil, err
+	}
+
+	user, err := globalsRepo.UsersRepository.GetUser(userId)
+	if err != nil {
+		fmt.Printf("Failed to UnjailMember (Retrieve OTA Member) %s: %v", userId, err)
+		return nil, nil, err
+	}
+
+	// Send notification about unjailing on designated channel
+	notificationEmbed := embed.NewEmbed().
+		SetTitle("👮🏽‍♀️⛓️    A Prisoner Has Been Released !").
+		AddField("Known As", user.DiscordTag, false).
+		AddField("Conviction Because", jailedUser.Reason, false).
+		AddField("Completed Release Task", jailedUser.TaskToComplete, false).
+		AddField("Convincted At", utils.FormatUnixAsString(jailedUser.JailedAt, "Mon, 02 Jan 2006 15:04:05 MST"), false)
+
+	go notifications.SendEmbedToTextChannel(s, notificationChannelId, *notificationEmbed)
+
+	// Send Unjail DM to jailed user
+	dmEmbed := embed.NewEmbed().
+		SetTitle("👮🏽‍♀️⛓️    You have been unjailed.").
+		AddField("", "You have been unjailed for completing your release task! Well done.", false)
+
+	go SendDirectEmbedToMember(s, userId, *dmEmbed)
+
+	return jailedUser, user, nil
 
 }

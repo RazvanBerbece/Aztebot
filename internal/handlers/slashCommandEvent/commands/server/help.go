@@ -62,7 +62,7 @@ func sendHelpGuideToUser(s *discordgo.Session, i *discordgo.InteractionCreate, u
 		}
 	}
 
-	errDm := dm.SendEmbedToUser(s, i, userId, embed.MessageEmbed)
+	errDm := dm.SendEmbedForOriginalMsgToUser(s, i, userId, embed.MessageEmbed)
 	if errDm != nil {
 		fmt.Println("Error sending DM: ", errDm)
 		return "An error occured while DMing you the help guide."
