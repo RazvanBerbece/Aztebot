@@ -24,9 +24,10 @@ func GetDiceRollEmbed(userDisplayName string) []*discordgo.MessageEmbed {
 		SetTitle(fmt.Sprintf("🤖   `%s`'s Dice Roll", userDisplayName)).
 		SetColor(000000)
 
-	diceRoll := utils.GetRandomIntegerInRange(1, 6)
+	diceRoll1 := utils.GetRandomIntegerInRange(1, 6)
+	diceRoll2 := utils.GetRandomIntegerInRange(1, 6)
 
-	embed.AddField(fmt.Sprintf("You rolled a `%d` 🎲", diceRoll), "", false)
+	embed.AddField(fmt.Sprintf("You rolled a `%d`-`%d` 🎲", diceRoll1, diceRoll2), "", false)
 
 	return []*discordgo.MessageEmbed{embed.MessageEmbed}
 }
