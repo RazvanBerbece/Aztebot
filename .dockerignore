@@ -10,7 +10,5 @@ local.dbconfig.yml
 .env.out
 Dockerfile
 *.log
-cmd/aztemusic-service-rawon/1/.base64.prod.env
-cmd/aztemusic-service-rawon/1/.config.prod.env
-cmd/azteradio-service-rawon/.base64.prod.env
-cmd/azteradio-service-rawon/.config.prod.env
+cmd/azteradio-service/base64.prod.yml.out
+cmd/azteradio-service/config.prod.yml

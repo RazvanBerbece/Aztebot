@@ -26,7 +26,7 @@ build/
 logs/
 .DS_Store
 .data/
-misc/
+!cmd/azteradio-service/src/commands/Misc
 keys/
 prodEnvString.txt
 downloads/
