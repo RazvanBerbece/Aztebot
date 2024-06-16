@@ -70,7 +70,9 @@ func GetProfileEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Me
 		highestStaffRole = nil
 	} else {
 		highestStaffRole, highestOrderRole = rolesService.GetHighestRoles(roles)
-		orderRoleText = fmt.Sprintf("%s | ", highestOrderRole.DisplayName)
+		if highestOrderRole != nil {
+			orderRoleText = fmt.Sprintf("%s | ", highestOrderRole.DisplayName)
+		}
 	}
 
 	stats, errStats := globalRepositories.UserStatsRepository.GetStatsForUser(userId)
