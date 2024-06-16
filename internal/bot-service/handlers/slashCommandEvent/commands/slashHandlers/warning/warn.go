@@ -136,6 +136,10 @@ func GiveWarnToUserWithId(s *discordgo.Session, i *discordgo.InteractionCreate, 
 			fmt.Println("Error kicking member for 4th warning:", err)
 			return err
 		}
+		// cleanup member entitites from all tables
+		globalsRepo.UserStatsRepository.DeleteUserStats(userId)
+		globalsRepo.UsersRepository.DeleteUser(userId)
+		globalsRepo.WarnsRepository.DeleteAllWarningsForUser(userId)
 	}
 
 	err := globalsRepo.WarnsRepository.SaveWarn(userId, reason, timestamp)
