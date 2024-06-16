@@ -3,7 +3,10 @@ package massPingSlashHandlers
 import (
 	"fmt"
 
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/internal/services/member"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
@@ -28,18 +31,40 @@ func HandleSlashMassDm(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	msg := i.ApplicationCommandData().Options[0].StringValue()
 
-	// Send response embed
-	embed := embed.NewEmbed().
+	// Send command response embed
+	cmdFeedbackEmbed := embed.NewEmbed().
+		SetColor(000000).
+		SetAuthor("AzteBot Mass DM", "https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
+		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
+		SetDescription("Registered mass DM command").
+		AddField("Message", msg, false)
+
+	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Embeds: []*discordgo.MessageEmbed{cmdFeedbackEmbed.MessageEmbed},
+		},
+	})
+
+	// Send DMs to all members found in the DB rather than Discord
+	uids, err := globalRepositories.UsersRepository.GetAllDiscordUids()
+	if err != nil {
+		utils.SendCommandErrorEmbedResponse(s, i.Interaction, err.Error())
+		return
+	}
+
+	dmEmbed := embed.NewEmbed().
 		SetColor(000000).
 		SetAuthor("AzteBot Mass DM", "https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
 		SetDescription(msg)
 
-	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Embeds: []*discordgo.MessageEmbed{embed.MessageEmbed},
-		},
-	})
+	for _, uid := range uids {
+		globalMessaging.DirectMessagesChannel <- events.DirectMessageEvent{
+			UserId: uid,
+			Embed:  dmEmbed,
+		}
+
+	}
 
 }
