@@ -11,6 +11,7 @@ import (
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	actionEvent "github.com/RazvanBerbece/Aztebot/internal/handlers/remoteEvents/actionEvents"
 	"github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands"
+	"github.com/RazvanBerbece/Aztebot/internal/services/logging"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
@@ -22,7 +23,7 @@ func AddRegisteredSlashEventHandlers(s *discordgo.Session) {
 
 		if i.Type == discordgo.InteractionMessageComponent {
 			// This configures button press event handlers for the bot
-			// i.e pressing 'Accept' on a button on a generated embed and emitting the event
+			// i.e pressing 'Accept' on a button on a generated embed and emitting the event, embed pagination, etc.
 			actionEvent.HandleMessageComponentInteraction(s, i)
 			return
 		}
@@ -50,6 +51,7 @@ func AddRegisteredSlashEventHandlers(s *discordgo.Session) {
 				}
 
 				if !hasAllowedRole {
+
 					// If the user doesn't have the allowed role, send a response
 					s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 						Type: discordgo.InteractionResponseChannelMessageWithSource,
@@ -57,6 +59,11 @@ func AddRegisteredSlashEventHandlers(s *discordgo.Session) {
 							Content: "You do not have the required role to use this command.",
 						},
 					})
+
+					logMsg := fmt.Sprintf("User `%s` failed to run command `%s` (`HIGHER STAFF`) due to lack of permissions", i.Member.User.Username, appData.Name)
+					discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
+					go discordChannelLogger.LogWarn(logMsg)
+
 					return
 				}
 			}
@@ -83,6 +90,7 @@ func AddRegisteredSlashEventHandlers(s *discordgo.Session) {
 				}
 
 				if !hasAllowedRole {
+
 					// If the user doesn't have the allowed role, send a response
 					s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 						Type: discordgo.InteractionResponseChannelMessageWithSource,
@@ -90,6 +98,11 @@ func AddRegisteredSlashEventHandlers(s *discordgo.Session) {
 							Content: "You do not have the required role to use this command.",
 						},
 					})
+
+					logMsg := fmt.Sprintf("User `%s` failed to run command `%s` (`STAFF`) due to lack of permissions", i.Member.User.Username, appData.Name)
+					discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
+					go discordChannelLogger.LogWarn(logMsg)
+
 					return
 				}
 			}

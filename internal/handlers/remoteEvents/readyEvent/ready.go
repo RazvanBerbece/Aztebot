@@ -28,7 +28,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 
 	// Run gochannel event handlers
 	go channelHandlers.HandleNotificationEvents(s)
-	go channelHandlers.HandleExperienceGrantEvents()
+	go channelHandlers.HandleExperienceGrantEvents(s)
 	go channelHandlers.HandleDynamicChannelCreationEvents(s)
 	go channelHandlers.HandleMemberMessageDeletionEvents(s)
 	go channelHandlers.HandleDirectMessageEvents(s)
