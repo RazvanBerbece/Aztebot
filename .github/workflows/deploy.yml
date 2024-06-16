@@ -1,17 +1,17 @@
 # This workflow is ran only on pushes to main. It builds the project artifact and deploys it to Google Cloud Compute Engine.
 # It also generates releases and tags the commits.
 
-name: deploy-aztebot
+name: deploy
 
 on:
   push:
     paths-ignore:
       - '.github/**'
-      - '!.github/workflows/prod.yml'
       - 'docs/**'
       - 'README.md'
       - '.gitignore'
       - '.gitmodules'
+      - 'Makefile'
     branches: [ 'main' ]
 
   workflow_dispatch:
