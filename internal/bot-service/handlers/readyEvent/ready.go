@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/globals"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/logging"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
@@ -31,15 +32,17 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	}
 	ticker := time.NewTicker(time.Second * time.Duration(interval))
 	go func() {
+		rolesRepository := repositories.NewRolesRepository()
+		usersRepository := repositories.NewUsersRepository()
 		for range ticker.C {
 			// Run your periodic task here
-			UpdateUsersInCron(s)
+			UpdateUsersInCron(s, rolesRepository, usersRepository)
 		}
 	}()
 
 }
 
-func UpdateUsersInCron(s *discordgo.Session) error {
+func UpdateUsersInCron(s *discordgo.Session, rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository) error {
 
 	// Retrieve all members in the guild
 	members, err := s.GuildMembers(globals.DiscordMainGuildId, "", 1000)
@@ -49,7 +52,7 @@ func UpdateUsersInCron(s *discordgo.Session) error {
 	}
 
 	// Process the current batch of members
-	processMembers(s, members)
+	processMembers(s, members, rolesRepository, usersRepository)
 
 	// Paginate
 	for len(members) == 1000 {
@@ -62,14 +65,14 @@ func UpdateUsersInCron(s *discordgo.Session) error {
 		}
 
 		// Process the next batch of members
-		processMembers(s, members)
+		processMembers(s, members, rolesRepository, usersRepository)
 	}
 
 	return nil
 
 }
 
-func processMembers(s *discordgo.Session, members []*discordgo.Member) {
+func processMembers(s *discordgo.Session, members []*discordgo.Member, rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository) {
 	// Your logic to process members goes here
 	for _, member := range members {
 		// If it's a bot, skip
@@ -77,7 +80,7 @@ func processMembers(s *discordgo.Session, members []*discordgo.Member) {
 			continue
 		}
 		// For each member, sync their details (either add to DB or update)
-		err := utils.SyncUser(s, globals.DiscordMainGuildId, member.User.ID, member)
+		err := utils.SyncUser(s, globals.DiscordMainGuildId, member.User.ID, member, rolesRepository, usersRepository)
 		if err != nil {
 			fmt.Printf("Error syncinc member %s: %v", member.User.Username, err)
 		}
