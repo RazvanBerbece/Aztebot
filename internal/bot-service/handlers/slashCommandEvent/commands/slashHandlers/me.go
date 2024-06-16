@@ -116,7 +116,8 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 		SetTitle(fmt.Sprintf("🤖   `%s`'s Profile Card", user.DiscordTag)).
 		SetDescription(fmt.Sprintf("`%s CIRCLE`", user.CurrentCircle)).
 		SetThumbnail(fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.png", userId, apiUser.Avatar)).
-		SetColor(000000)
+		SetColor(000000).
+		AddLineBreakField()
 
 	if userCreatedTimeString != "" && highestRole != nil {
 

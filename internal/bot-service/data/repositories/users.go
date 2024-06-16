@@ -49,14 +49,14 @@ func (r UsersRepository) GetAllDiscordUids() ([]string, error) {
 	return userIds, nil
 }
 
-func (r UsersRepository) UserExists(userId string) (bool, error) {
+func (r UsersRepository) UserExists(userId string) int {
 	query := "SELECT COUNT(*) FROM Users WHERE userId = ?"
 	var count int
 	err := r.Conn.Db.QueryRow(query, userId).Scan(&count)
 	if err != nil {
-		return false, err
+		return -1
 	}
-	return count > 0, nil
+	return count
 }
 
 func (r UsersRepository) GetUser(userId string) (*dataModels.User, error) {
