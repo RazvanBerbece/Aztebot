@@ -55,7 +55,7 @@ func JailMember(s *discordgo.Session, guildId string, userId string, reason stri
 	}
 
 	// Remove all roles from Discord user to restrict access
-	err = RemoveAllDiscordRolesFromMember(s, guildId, userId)
+	err = ClearAllDiscordRolesFromMember(s, guildId, userId)
 	if err != nil {
 		fmt.Printf("Failed to JailMember %s (Remove Discord Roles): %v\n", userId, err)
 		return nil, nil, err

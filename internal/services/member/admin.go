@@ -185,7 +185,7 @@ func DemoteMember(s *discordgo.Session, guildId string, userId string, demoteTyp
 
 	// Update Member in the Discord guild
 	// Remove all roles
-	err = RemoveAllDiscordRolesFromMember(s, globalConfiguration.DiscordMainGuildId, userId)
+	err = ClearDiscordRolesFromMember(s, globalConfiguration.DiscordMainGuildId, userId)
 	if err != nil {
 		// Revert
 		fmt.Printf("An error ocurred while removing all roles for member: %v\n", err)
