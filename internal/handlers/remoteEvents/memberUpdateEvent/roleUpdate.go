@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/RazvanBerbece/Aztebot/internal/services/member"
-	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -14,8 +13,6 @@ func MemberRoleUpdate(s *discordgo.Session, m *discordgo.GuildMemberUpdate) {
 	if m.Member.User.Bot {
 		return
 	}
-
-	utils.LogHandlerCall("MemberRoleUpdate", "")
 
 	// Sync user in DB with the current Discord member state
 	err := member.SyncMember(s, m.GuildID, m.Member.User.ID, m.Member)

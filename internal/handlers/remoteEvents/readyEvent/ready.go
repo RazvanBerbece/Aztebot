@@ -8,14 +8,11 @@ import (
 	channelHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/channelEvents"
 	cron "github.com/RazvanBerbece/Aztebot/internal/tasks/cron"
 	"github.com/RazvanBerbece/Aztebot/internal/tasks/startup"
-	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
 
 // Called once the Discord servers confirm a succesful connection.
 func Ready(s *discordgo.Session, event *discordgo.Ready) {
-
-	utils.LogHandlerCall("Ready", "")
 
 	// Load static data once Discord API runtime features are confirmed
 	LoadStaticData()
