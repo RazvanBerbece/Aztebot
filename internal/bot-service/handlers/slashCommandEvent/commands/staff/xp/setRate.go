@@ -20,8 +20,6 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 	// so we resort to this for the meantime to get a nicely looking activity and multiplier name
 	activityName, multiplierName := getArgumentDisplayNames(activity, multiplierStringInput)
 
-	commandOwnerUserId := i.Member.User.ID
-
 	switch activity {
 	case "msg_send":
 		if multiplierStringInput == "def" {
@@ -87,7 +85,7 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 
 	// Send notification to target staff channel to announce the global rate change
 	if channel, channelExists := globals.NotificationChannels["notif-aztebot"]; channelExists {
-		go sendXpRateChangeNotification(s, *i, channel.ChannelId, commandOwnerUserId, activityName, multiplierName)
+		go sendXpRateChangeNotification(s, channel.ChannelId, activityName, multiplierName)
 	}
 
 	// Send response embed
@@ -105,20 +103,9 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 
 }
 
-func sendXpRateChangeNotification(s *discordgo.Session, i discordgo.InteractionCreate, channelId string, commandOwnerUserId string, activityName string, multiplierName string) {
-
-	// Get command owner discord name
-	cmdOwner, err := s.User(commandOwnerUserId)
-	if err != nil {
-		fmt.Printf("An error ocurred while retrieving command owner with ID: %v", err)
-	}
+func sendXpRateChangeNotification(s *discordgo.Session, channelId string, activityName string, multiplierName string) {
 
 	fields := []discordgo.MessageEmbedField{
-		{
-			Name:   "By Staff Member",
-			Value:  cmdOwner.Username,
-			Inline: false,
-		},
 		{
 			Name:   "Activity",
 			Value:  activityName,
@@ -127,6 +114,16 @@ func sendXpRateChangeNotification(s *discordgo.Session, i discordgo.InteractionC
 		{
 			Name:   "Rate Multiplier",
 			Value:  multiplierName,
+			Inline: false,
+		},
+		{
+			Name:   "\u200B",
+			Value:  "",
+			Inline: false,
+		},
+		{
+			Name:   "",
+			Value:  "|@everyone|",
 			Inline: false,
 		},
 	}
