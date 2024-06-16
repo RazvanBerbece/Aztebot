@@ -57,6 +57,36 @@ func (r WarnsRepository) GetOldestWarnForUser(userId string) (*dataModels.Warn, 
 
 }
 
+func (r WarnsRepository) GetAllWarns() ([]dataModels.Warn, error) {
+
+	var warns []dataModels.Warn
+
+	rows, err := r.Conn.Db.Query("SELECT * FROM Warns ORDER BY creationTimestamp ASC")
+	if err != nil {
+		return nil, fmt.Errorf("GetAllWarns: %v", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var warn dataModels.Warn
+		if err := rows.Scan(&warn.Id, &warn.UserId, &warn.Reason, &warn.CreationTimestamp); err != nil {
+			return nil, fmt.Errorf("GetAllWarns: %v", err)
+		}
+		warns = append(warns, warn)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("GetAllWarns: %v", err)
+	}
+
+	// Check for zero rows
+	if len(warns) == 0 {
+		return []dataModels.Warn{}, nil
+	}
+
+	return warns, nil
+
+}
+
 func (r WarnsRepository) SaveWarn(userId string, reason string, timestamp int64) error {
 
 	warn := &dataModels.Warn{
@@ -149,4 +179,16 @@ func (r WarnsRepository) GetWarningsForUser(userId string) ([]dataModels.Warn, e
 	}
 
 	return warns, nil
+}
+
+func (r WarnsRepository) DeleteWarningForUser(id int64, userId string) error {
+
+	query := "DELETE FROM Warns WHERE userId = ? AND id = ?"
+
+	_, err := r.Conn.Db.Exec(query, userId, id)
+	if err != nil {
+		return fmt.Errorf("error deleting user warning: %w", err)
+	}
+
+	return nil
 }

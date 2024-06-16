@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/cron"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
@@ -48,16 +49,16 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	go UpdateVoiceSessionDurations(s)
 
 	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, XP gaining?, etc.)
-	initialDelay, activityTicker := getDelayAndTickerForActivityStreakCron(24, 0, 0) // H, m, s
+	initialActivityStreakDelay, activityStreakTicker := cron.GetDelayAndTickerForActivityStreakCron(24, 0, 0) // H, m, s
 	go func() {
 
-		fmt.Println("Scheduled Task UpdateActivityStreaks() in <", initialDelay.Hours(), "> hours")
-		time.Sleep(initialDelay)
+		fmt.Println("Scheduled Task UpdateActivityStreaks() in <", initialActivityStreakDelay.Hours(), "> hours")
+		time.Sleep(initialActivityStreakDelay)
 
 		// The first run should happen at start-up, not after 24 hours
 		UpdateActivityStreaks(globalsRepo.UsersRepository, globalsRepo.UserStatsRepository)
 
-		for range activityTicker.C {
+		for range activityStreakTicker.C {
 			// Inject new connections
 			usersRepository := repositories.NewUsersRepository()
 			userStatsRepository := repositories.NewUsersStatsRepository()
@@ -66,7 +67,30 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 			UpdateActivityStreaks(usersRepository, userStatsRepository)
 
 			// Cleanup DB connections after cron run
-			cleanupRepositories(nil, usersRepository, userStatsRepository)
+			cleanupRepositories(nil, usersRepository, userStatsRepository, nil)
+		}
+	}()
+
+	initialWarnRemovalDelay, warnRemovalTicker := cron.GetDelayAndTickerForWarnRemovalCron(2) // every n=2 months
+	go func() {
+		// The first run should happen at start-up, not after 24 hours
+		RemoveExpiredWarns(globalsRepo.WarnsRepository)
+
+		fmt.Println("Scheduled Task RemoveExpiredWarns() in <", initialWarnRemovalDelay.Hours()/24, "> days")
+		time.Sleep(initialWarnRemovalDelay)
+
+		// The first run should happen at start-up, not after 24 hours
+		RemoveExpiredWarns(globalsRepo.WarnsRepository)
+
+		for range warnRemovalTicker.C {
+			// Inject new connections
+			warnsRepository := repositories.NewWarnsRepository()
+
+			// Process
+			RemoveExpiredWarns(warnsRepository)
+
+			// Cleanup DB connections after cron run
+			cleanupRepositories(nil, nil, nil, warnsRepository)
 		}
 	}()
 
@@ -106,7 +130,7 @@ func SyncUsersAtStartup(s *discordgo.Session) error {
 	}
 
 	// Cleanup
-	cleanupRepositories(rolesRepository, usersRepository, userStatsRepository)
+	cleanupRepositories(rolesRepository, usersRepository, userStatsRepository, nil)
 
 	fmt.Println("Finished Task SyncUsersAtStartup() at", time.Now())
 
@@ -152,11 +176,38 @@ func CleanupMemberAtStartup(s *discordgo.Session, uids []string) error {
 	wg.Wait()
 
 	// Cleanup
-	cleanupRepositories(nil, usersRepository, userStatsRepository)
+	cleanupRepositories(nil, usersRepository, userStatsRepository, nil)
 
 	fmt.Println("Finished Task CleanupMemberAtStartup() at", time.Now())
 
 	return nil
+
+}
+
+func RemoveExpiredWarns(warnsRepository *repositories.WarnsRepository) {
+
+	fmt.Println("Starting Task RemoveExpiredWarns() at", time.Now())
+
+	allWarns, err := warnsRepository.GetAllWarns()
+	if err != nil {
+		fmt.Println("Failed Task RemoveExpiredWarns() at", time.Now(), "with error", err)
+	}
+
+	// For all existing warns
+	for _, warn := range allWarns {
+		warnCreationTime := time.Unix(warn.CreationTimestamp, 0)
+		twoMonthsAgo := time.Hour * 24 * 61
+		// If the warn is older than 2 months
+		if time.Since(warnCreationTime) > twoMonthsAgo {
+			// Remove it
+			err := warnsRepository.DeleteWarningForUser(warn.Id, warn.UserId)
+			if err != nil {
+				fmt.Println("Failed Task RemoveExpiredWarns() at", time.Now(), "with error", err)
+			}
+		}
+	}
+
+	fmt.Println("Finished Task RemoveExpiredWarns() at", time.Now())
 
 }
 
@@ -419,26 +470,7 @@ func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 
 }
 
-// Returns a delay and a ticket to use for the initial delay and then subsequent executions of the activity streak update cron.
-func getDelayAndTickerForActivityStreakCron(hour int, minute int, second int) (time.Duration, *time.Ticker) {
-
-	// Run ativity streak logic at given timestamp
-	targetHour := hour
-	targetMinute := minute
-	targetSecond := second
-
-	// Calculate the duration until the next target hour
-	now := time.Now()
-	nextRun := time.Date(now.Year(), now.Month(), now.Day(), targetHour, targetMinute, targetSecond, 0, now.Location())
-	if now.After(nextRun) {
-		nextRun = nextRun.Add(24 * time.Hour) // Move to the next day if the target hour has passed today
-	}
-
-	return nextRun.Sub(now), time.NewTicker(time.Hour * 24)
-
-}
-
-func cleanupRepositories(rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository) {
+func cleanupRepositories(rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository, warnsRepository *repositories.WarnsRepository) {
 
 	if rolesRepository != nil {
 		rolesRepository.Conn.Db.Close()
@@ -450,6 +482,10 @@ func cleanupRepositories(rolesRepository *repositories.RolesRepository, usersRep
 
 	if userStatsRepository != nil {
 		userStatsRepository.Conn.Db.Close()
+	}
+
+	if warnsRepository != nil {
+		warnsRepository.Conn.Db.Close()
 	}
 
 }
