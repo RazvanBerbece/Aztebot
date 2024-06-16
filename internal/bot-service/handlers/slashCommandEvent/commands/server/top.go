@@ -14,8 +14,8 @@ import (
 
 func HandleSlashTop(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
-	durationSinceLastRanksCommand := time.Since(globals.LastUsedTopTimestamp)
-	if int(durationSinceLastRanksCommand.Minutes()) < 5 {
+	durationSinceLastTopCommand := time.Since(globals.LastUsedTopTimestamp)
+	if int(durationSinceLastTopCommand.Minutes()) < 5 {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
@@ -47,7 +47,7 @@ func HandleSlashTop(s *discordgo.Session, i *discordgo.InteractionCreate) {
 func TopCommandResultsEmbed(s *discordgo.Session, i *discordgo.InteractionCreate) []*discordgo.MessageEmbed {
 
 	// Leaderboard parameterisation
-	topCount := 15
+	topCount := 12
 
 	embed := embed.NewEmbed().
 		SetTitle("🏆   OTA Server Global Leaderboard").
@@ -57,7 +57,7 @@ func TopCommandResultsEmbed(s *discordgo.Session, i *discordgo.InteractionCreate
 	// Top by messages sent
 	ProcessTopEmbed(topCount, s, i.Interaction, embed)
 
-	globals.LastUsedRanksTimestamp = time.Now()
+	globals.LastUsedTopTimestamp = time.Now()
 
 	return []*discordgo.MessageEmbed{embed.MessageEmbed}
 }
@@ -94,8 +94,32 @@ func ProcessTopEmbed(topCount int, s *discordgo.Session, i *discordgo.Interactio
 				continue
 			}
 
+			// Process the time spent in VCs in a nice format
+			var timeSpentInVcs string = ""
+			sTimeSpentInVc := int64(stats.TimeSpentInVoiceChannels)
+			daysVC, hoursVC, minutesVC, secondsVC := utils.HumanReadableTimeLength(float64(sTimeSpentInVc))
+			if daysVC != 0 {
+				timeSpentInVcs = fmt.Sprintf("%dd, %dh:%dm:%ds", daysVC, hoursVC, minutesVC, secondsVC)
+			} else if daysVC == 0 && hoursVC != 0 {
+				timeSpentInVcs = fmt.Sprintf("%dh:%dm:%ds", hoursVC, minutesVC, secondsVC)
+			} else if daysVC == 0 && hoursVC == 0 {
+				timeSpentInVcs = fmt.Sprintf("%dm:%ds", minutesVC, secondsVC)
+			}
+
+			// Process the time spent listening to music a nice format
+			var timeSpentListeningMusic string = ""
+			sTimeSpentListeningMusic := int64(stats.TimeSpentListeningToMusic)
+			daysMusic, hoursMusic, minutesMusic, secondsMusic := utils.HumanReadableTimeLength(float64(sTimeSpentListeningMusic))
+			if daysMusic != 0 {
+				timeSpentListeningMusic = fmt.Sprintf("%dd, %dh:%dm:%ds", daysMusic, hoursMusic, minutesMusic, secondsMusic)
+			} else if daysMusic == 0 && hoursMusic != 0 {
+				timeSpentListeningMusic = fmt.Sprintf("%dh:%dm:%ds", hoursMusic, minutesMusic, secondsMusic)
+			} else if daysMusic == 0 && hoursMusic == 0 {
+				timeSpentListeningMusic = fmt.Sprintf("%dm:%ds", minutesMusic, secondsMusic)
+			}
+
 			rankingRowName := fmt.Sprintf("**%d.** %s**%s**", idx+1, rankMedal, topUser.DiscordTag)
-			rankingRowValue := fmt.Sprintf("Total: `%d` XP 💠 | `%d` ✉️ | `%d` 💯 | `%d` 🎙️ | `%d` 🎵\n", int(topUser.XpGained), stats.NumberMessagesSent, stats.NumberReactionsReceived, stats.TimeSpentInVoiceChannels, stats.TimeSpentListeningToMusic)
+			rankingRowValue := fmt.Sprintf("Total: `%d` XP 💠 | `%d` ✉️ | `%d` 💯 | `%s` 🎙️ | `%s` 🎵\n", int(topUser.XpGained), stats.NumberMessagesSent, stats.NumberReactionsReceived, timeSpentInVcs, timeSpentListeningMusic)
 			embed.AddField(rankingRowName, rankingRowValue, false)
 		}
 		embed.AddField("", topContentText, false)
