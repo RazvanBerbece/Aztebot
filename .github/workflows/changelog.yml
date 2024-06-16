@@ -36,7 +36,7 @@ jobs:
           current_tag='`'"$tag"'`'
 
           JSON_STRING=$( jq -n \
-                  --arg ct "AzteMarket $current_tag was released!" \
+                  --arg ct "AzteBot $current_tag was released!" \
                   --arg cm "$head_commit_msg" \
                   --arg ts "$timestamp" \
                   --arg changelog "$changelog" \
