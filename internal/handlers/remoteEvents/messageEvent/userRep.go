@@ -116,7 +116,7 @@ func UserRepReact(s *discordgo.Session, m *discordgo.MessageCreate) {
 			fmt.Println("Failed to reply to user rep event")
 			return
 		}
-		s.ChannelMessageSendReply(m.ChannelID, fmt.Sprintf("<@%s>: `%d` Rep", targetUserId, rep), m.MessageReference)
+		s.ChannelMessageSendReply(m.ChannelID, fmt.Sprintf("<@%s>: `%d` Rep", targetUserId, rep), m.Reference())
 	case 1:
 		if repModeInput == "+rep" {
 			err := globalRepositories.UserRepRepository.AddRep(targetUserId)
@@ -156,7 +156,10 @@ func UserRepReact(s *discordgo.Session, m *discordgo.MessageCreate) {
 			fmt.Println("Failed to reply to user rep event")
 			return
 		}
-		s.ChannelMessageSendReply(m.ChannelID, fmt.Sprintf("<@%s>: `%d` Rep", targetUserId, rep), m.MessageReference)
+		_, err = s.ChannelMessageSendReply(m.ChannelID, fmt.Sprintf("<@%s>: `%d` Rep", targetUserId, rep), m.Reference())
+		if err != nil {
+			fmt.Println(err)
+		}
 	default:
 		fmt.Printf("Multiple rep entries in the DB for %s\n", targetUserId)
 		return
