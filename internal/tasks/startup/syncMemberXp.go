@@ -61,8 +61,10 @@ func SyncExperiencePointsGainsAtStartup(s *discordgo.Session, uids []string) {
 			} else {
 				actualXp = updatedXp
 			}
+		} else {
+			actualXp = updatedXp
 		}
-		user.CurrentExperience = float64(actualXp)
+		user.CurrentExperience = actualXp
 
 		// Update user entity with new XP value
 		_, err = usersRepository.UpdateUser(*user)
