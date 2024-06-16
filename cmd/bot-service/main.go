@@ -1,15 +1,16 @@
 package main
 
 import (
-	discordBotBaseModule "github.com/LxrdVixxeN/Aztebot/internal/bot-service/base"
-	"github.com/LxrdVixxeN/Aztebot/internal/bot-service/handlers"
+	discordBotBaseModule "github.com/RazvanBerbece/Aztebot/internal/bot-service/base"
+	"github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers"
 )
 
 func main() {
 
-	// Configure the bot base with the key, intents and handlers
+	// Configure the bot base with the key, handlers and intents
 	bot := discordBotBaseModule.DiscordBotBase{}
-	bot.Configure(handlers.GetHandlersAsList())
+	bot.ConfigureBase("aztebot")
+	bot.AddHandlers(handlers.GetAztebotHandlersAsList())
 
 	// Connect to the Discord servers
 	bot.Connect()

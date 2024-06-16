@@ -1,7 +1,7 @@
 # This workflow is ran only on pushes to main. It builds the project artifact and deploys it to Google Cloud Compute Engine.
 # It also generates releases and tags the commits.
 
-name: deploy
+name: deploy-aztebot
 
 on:
   push:
@@ -26,7 +26,7 @@ env:
 
 jobs:
 
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     permissions:

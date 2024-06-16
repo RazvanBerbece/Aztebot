@@ -12,13 +12,13 @@ RUN go mod download
 
 # Copy rest of source code files
 COPY . ./
-COPY ./.env ./Environment.env
-
-# Setup environment
-CMD ". ./Environment.env"
+COPY ./.env ./.env
 
 # Build project
-RUN CGO_ENABLED=0 GOOS=linux go build -o build/main ./cmd/azteradio-service/main.go 
+RUN CGO_ENABLED=0 GOOS=linux go build -o build/azteradio/main ./cmd/azteradio-service/main.go 
 
 # Other configs
 VOLUME /app/logs
+
+# Run the Discord bot service application
+CMD sh -c "make run-azteradio-service"

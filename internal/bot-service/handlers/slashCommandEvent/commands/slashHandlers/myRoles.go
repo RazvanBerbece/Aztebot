@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/LxrdVixxeN/Aztebot/internal/bot-service/data/repositories"
+	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
 	"github.com/bwmarrin/discordgo"
 )
 

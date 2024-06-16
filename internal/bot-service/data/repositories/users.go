@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	databaseconn "github.com/LxrdVixxeN/Aztebot/internal/bot-service/data/connection"
-	dataModels "github.com/LxrdVixxeN/Aztebot/internal/bot-service/data/models"
+	databaseconn "github.com/RazvanBerbece/Aztebot/internal/bot-service/data/connection"
+	dataModels "github.com/RazvanBerbece/Aztebot/internal/bot-service/data/models"
 )
 
 type UsersRepositoryInterface interface {
