@@ -420,3 +420,20 @@ func GetMemberTimeouts(userId string) (*dataModels.Timeout, []dataModels.Archive
 	return activeTimeoutResult, archivedTimeoutResults, nil
 
 }
+
+func ClearMemberActiveTimeout(s *discordgo.Session, i *discordgo.Interaction, guildId string, userId string) error {
+
+	err := globalsRepo.TimeoutsRepository.ClearTimeoutForUser(userId)
+	if err != nil {
+		return err
+	}
+
+	err = s.GuildMemberTimeout(guildId, userId, nil)
+	if err != nil {
+		fmt.Println("Error timing out user: ", err)
+		return fmt.Errorf(err.Error())
+	}
+
+	return nil
+
+}
