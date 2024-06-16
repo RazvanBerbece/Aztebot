@@ -1,3 +1,4 @@
+const { ActivityType } = require('discord.js')
 const logger = require("../../utils/logger");
 const config = require("../../config");
 
@@ -25,5 +26,13 @@ module.exports = {
         } else {
             logger.info(`AzteRadio is in ${client.guilds.cache.size} ${client.guilds.cache.size === 1 ? "server" : "servers"}.`);
         }
+
+        client.user.setPresence({ 
+            activities: [{ 
+                name: 'Type /help', 
+                type: ActivityType.Listening
+            }], 
+            status: 'online' 
+        });
     },
 };
