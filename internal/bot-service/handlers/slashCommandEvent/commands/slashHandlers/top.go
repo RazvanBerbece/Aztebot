@@ -75,21 +75,6 @@ func TopCommandResultsEmbed(s *discordgo.Session, i *discordgo.InteractionCreate
 	return []*discordgo.MessageEmbed{embed.MessageEmbed}
 }
 
-func updateInteraction(s *discordgo.Session, i *discordgo.Interaction, embed *embed.Embed) {
-
-	embeds := []*discordgo.MessageEmbed{embed.MessageEmbed}
-
-	// The edit webhook container holds the updated interaction response details (contents, embeds, etc.)
-	editContent := ""
-	editWebhook := discordgo.WebhookEdit{
-		Content: &editContent,
-		Embeds:  &embeds,
-	}
-
-	s.InteractionResponseEdit(i, &editWebhook)
-
-}
-
 func ProcessTopMessagesPartialEmbed(topCount int, s *discordgo.Session, i *discordgo.Interaction, embed *embed.Embed) {
 	topMessagesSent, err := globalsRepo.UserStatsRepository.GetTopUsersByMessageSent(topCount)
 	if err != nil {
@@ -123,7 +108,7 @@ func ProcessTopVCSpentPartialEmbed(topCount int, s *discordgo.Session, i *discor
 		topContentText := ""
 		for idx, topUser := range topTimeInVCs {
 			days, hours, minutes, seconds := utils.HumanReadableTimeLength(float64(topUser.TimeSpentInVCs))
-			topContentText += fmt.Sprintf("**%d.** **%s** (spent `%dd, %dh:%dm:%ds` in voice channels 🎙️)", idx+1, topUser.DiscordTag, days, hours, minutes, seconds)
+			topContentText += fmt.Sprintf("**%d.** **%s** (spent `%dd, %dh:%dm:%ds` in voice channels 🎙️)\n", idx+1, topUser.DiscordTag, days, hours, minutes, seconds)
 		}
 		embed.AddField("", topContentText, false)
 	}
@@ -142,7 +127,7 @@ func ProcessTopActiveDayStreakPartialEmbed(topCount int, s *discordgo.Session, i
 	} else {
 		topContentText := ""
 		for idx, topUser := range topStreaks {
-			topContentText += fmt.Sprintf("**%d.** **%s** (active for `%d` days in a row 🔄)", idx+1, topUser.DiscordTag, topUser.Streak)
+			topContentText += fmt.Sprintf("**%d.** **%s** (active for `%d` days in a row 🔄)\n", idx+1, topUser.DiscordTag, topUser.Streak)
 		}
 		embed.AddField("", topContentText, false)
 	}
@@ -161,7 +146,7 @@ func ProcessTopReactionsReceivedPartialEmbed(topCount int, s *discordgo.Session,
 	} else {
 		topContentText := ""
 		for idx, topUser := range topReactions {
-			topContentText += fmt.Sprintf("**%d.** **%s** (received a total of `%d` reactions 💯)", idx+1, topUser.DiscordTag, topUser.ReactionsReceived)
+			topContentText += fmt.Sprintf("**%d.** **%s** (received a total of `%d` reactions 💯)\n", idx+1, topUser.DiscordTag, topUser.ReactionsReceived)
 		}
 		embed.AddField("", topContentText, false)
 	}
