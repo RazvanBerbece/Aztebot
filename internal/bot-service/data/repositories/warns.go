@@ -17,33 +17,26 @@ func NewWarnsRepository() *WarnsRepository {
 
 func (r WarnsRepository) SaveWarn(userId string, reason string, timestamp int64) error {
 
-	userStats := &dataModels.Warn{
-		UserId:    userId,
-		Reason:    reason,
-		Timestamp: timestamp,
+	warn := &dataModels.Warn{
+		UserId:            userId,
+		Reason:            reason,
+		CreationTimestamp: timestamp,
 	}
 
 	stmt, err := r.Conn.Db.Prepare(`
 		INSERT INTO 
-			UserStats(
+			Warns(
 				userId, 
-				messagesSent, 
-				slashCommandsUsed, 
-				reactionsReceived, 
-				activeDayStreak,
-				lastActivityTimestamp,
-				numberActivitiesToday,
-				timeSpentInVoiceChannels,
-				timeSpentInEvents,
-				timeSpentListeningMusic
+				reason, 
+				creationTimestamp,
 			)
-		VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`)
+		VALUES(?, ?, ?);`)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(userStats.UserId, userStats.NumberMessagesSent, userStats.NumberSlashCommandsUsed, userStats.NumberReactionsReceived, userStats.NumberActiveDayStreak, userStats.LastActiveTimestamp, userStats.NumberActivitiesToday, userStats.TimeSpentInVoiceChannels, userStats.TimeSpentInEvents, userStats.TimeSpentListeningToMusic)
+	_, err = stmt.Exec(warn.UserId, warn.Reason, warn.CreationTimestamp)
 	if err != nil {
 		return err
 	}
