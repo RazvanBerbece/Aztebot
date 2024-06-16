@@ -778,7 +778,7 @@ func JailMember(s *discordgo.Session, guildId string, userId string, reason stri
 	// Send Jail DM to jailed user
 	dmEmbed := embed.NewEmbed().
 		SetTitle("👮🏽‍♀️⛓️    You have been jailed.").
-		AddField("", fmt.Sprintf("You have been jailed at timestamp `%s` because: `%s`.\n\nYour rights have been stripped but you can still communicate via the designated Jail channel. In order to be released from Jail, you'll need to complete the task you have been randomly assgined when you were jailed. The staff supervisors will guide you through the process and the implications.", currentTimestamp.String(), reason), false)
+		AddField("", fmt.Sprintf("You have been jailed on: `%s`, for the following reason: `%s`.\n\nYour rights have been stripped but you can still communicate via the designated Jail channel. In order to be released from Jail, you'll need to complete the task you have been randomly assgined when you were jailed.\n\nYour assigned task is: `%s`.\n\nThe staff supervisors will guide you through the process and the implications.", currentTimestamp.String(), reason, taskToFree), false)
 
 	go SendDirectEmbedToMember(s, userId, *dmEmbed)
 
