@@ -53,6 +53,7 @@ func processTopCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	go func() {
 		defer wg.Done()
 		ProcessTopMessagesPartialEmbed(topCount, s, i.Interaction, embed)
+		updateInteraction(s, *i.Interaction, *embed)
 	}()
 
 	// Top by time spent in VCs
@@ -60,6 +61,7 @@ func processTopCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	go func() {
 		defer wg.Done()
 		ProcessTopVCSpentPartialEmbed(topCount, s, i.Interaction, embed)
+		updateInteraction(s, *i.Interaction, *embed)
 	}()
 
 	// Top by active day streak
@@ -67,6 +69,7 @@ func processTopCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	go func() {
 		defer wg.Done()
 		ProcessTopActiveDayStreakPartialEmbed(topCount, s, i.Interaction, embed)
+		updateInteraction(s, *i.Interaction, *embed)
 	}()
 
 	// Top by reactions received
@@ -74,10 +77,10 @@ func processTopCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	go func() {
 		defer wg.Done()
 		ProcessTopReactionsReceivedPartialEmbed(topCount, s, i.Interaction, embed)
+		updateInteraction(s, *i.Interaction, *embed)
 	}()
 
 	wg.Wait()
-	updateInteraction(s, *i.Interaction, *embed)
 
 	globals.LastUsedTopTimestamp = time.Now()
 }
