@@ -2,22 +2,21 @@
 .gitignore
 .gitmodules
 .git/
-*.md
 
+.dockerignore
 cmd/Dockerfile
 docker-compose.yml
 docker-compose.ci.yml
-build/
-*.log
-logs/
 
 tests/
 
-.example.env
+build/
+*.log
 
 Makefile
-
 local.dbconfig.yml
+
+.example.env
 
 base64.ci.env.out
 
@@ -25,5 +24,6 @@ base64.ci.env.out
 base64.prod.env.out
 
 .DS_Store
+*.md
 
 Infrastructure/

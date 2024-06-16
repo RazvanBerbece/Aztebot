@@ -20,6 +20,12 @@ services:
     build:
       context: .
       dockerfile: ./tests/Dockerfile
+    volumes:
+    # Mount testing dependencies (app, test code, DB configs, migrations, etc.)
+      - "./tests:/app/tests"
+      - "./local.dbconfig.yml:/app/local.dbconfig.yml"
+      - "./Infrastructure/cloud-sql/migrations/history:/app/Infrastructure/cloud-sql/migrations/history"
+    # Install dependencies, apply migrations on the CI database, and then run the tests while the DB is up
     entrypoint: [ "bash", "-c", "go install github.com/rubenv/sql-migrate/...@latest && sql-migrate up -config=local.dbconfig.yml -env='test' && go test ./..."]      
 
 networks:
