@@ -20,7 +20,7 @@ func GuildRemove(s *discordgo.Session, m *discordgo.GuildMemberRemove) {
 	userId := m.Member.User.ID
 
 	if globalConfiguration.AuditMemberDeletesInChannel {
-		logMsg := fmt.Sprintf("`%s` left the server", userId)
+		logMsg := fmt.Sprintf("`%s` [%s] left the server", m.Member.User.Username, userId)
 		discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
 		go discordChannelLogger.LogInfo(logMsg)
 	}
