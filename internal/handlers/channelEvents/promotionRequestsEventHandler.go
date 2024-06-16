@@ -2,7 +2,6 @@ package channelHandlers
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
@@ -14,7 +13,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []string, audit bool, resolveMismatches bool) {
+func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []string, audit bool, logger logging.Logger) {
 
 	for xpEvent := range globalMessaging.PromotionRequestsChannel {
 
@@ -34,14 +33,6 @@ func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []
 		// Figure out the promoted role to be given
 		processedRoleName, processedLevel := member.GetRoleNameAndLevelFromStats(userXp, userNumberMessagesSent, userTimeSpentInVc)
 
-		if resolveMismatches {
-			err := member.ResolveProgressionMismatchForMember(s, userGuildId, userId, userXp, userNumberMessagesSent, userTimeSpentInVc, defaultOrderRoleNames)
-			if err != nil {
-				log.Println("Error resolving mismatches for member:", err)
-				continue
-			}
-		}
-
 		// Get refreshed role IDs, level and XP after mismatch resolution
 		user, err := globalRepositories.UsersRepository.GetUser(userId)
 		if err != nil {
@@ -53,8 +44,7 @@ func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []
 
 			if globalConfiguration.AuditPromotionStateInChannel {
 				logMsg := fmt.Sprintf("Promoting `%s` to level `%d` (role: `%s`)", user.DiscordTag, processedLevel, processedRoleName)
-				discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
-				discordChannelLogger.LogInfo(logMsg)
+				logger.LogInfo(logMsg)
 			}
 
 			// Give promoted level in DB
