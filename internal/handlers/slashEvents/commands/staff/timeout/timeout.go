@@ -73,13 +73,14 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	// Build a DM to send to the target user detailing the timeout
 	creationTimestampString := utils.FormatUnixAsString(timestamp, "Mon, 02 Jan 2006 15:04:05 MST")
+	timeoutDmTitle := ""
 	timeoutDm := fmt.Sprintf("You received a timeout for reason: `%s`\nat `%s`", reason, creationTimestampString)
-	err = member.SendDirectMessageToMember(s, targetUserId, timeoutDm)
-	if err != nil {
-		fmt.Printf("An error ocurred while sending timeout embed response: %v", err)
-		errMsg := fmt.Sprintf("An error ocurred while sending the timeout DM to the target user %s", targetUserId)
-		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
-		return
+
+	// Publish DM event to announce timeout to target user
+	globalMessaging.DirectMessagesChannel <- events.DirectMessageEvent{
+		UserId: targetUserId,
+		Title:  &timeoutDmTitle,
+		Text:   &timeoutDm,
 	}
 
 	// Format timeout duration
