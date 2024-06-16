@@ -95,7 +95,7 @@ func GiveWarnToUserWithId(s *discordgo.Session, i *discordgo.InteractionCreate, 
 		}
 	case 1:
 		// 1 downgrade for role
-		errDemote := member.DemoteMember(s, globals.DiscordMainGuildId, userId)
+		errDemote := member.DemoteMember(s, globals.DiscordMainGuildId, userId, "STAFF")
 		if errDemote != nil {
 			fmt.Printf("An error ocurred while demoting user: %v\n", errDemote)
 			return errDemote
@@ -108,7 +108,7 @@ func GiveWarnToUserWithId(s *discordgo.Session, i *discordgo.InteractionCreate, 
 		}
 	case 2:
 		// 1 downgrade for role
-		errDemote := member.DemoteMember(s, globals.DiscordMainGuildId, userId)
+		errDemote := member.DemoteMember(s, globals.DiscordMainGuildId, userId, "STAFF")
 		if errDemote != nil {
 			fmt.Printf("An error ocurred while demoting user: %v\n", errDemote)
 			return errDemote
