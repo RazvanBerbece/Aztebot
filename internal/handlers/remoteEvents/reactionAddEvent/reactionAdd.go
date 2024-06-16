@@ -60,6 +60,10 @@ func ReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 	}
 
 	// Award coins for activity
-	go member.AwardFunds(s, messageOwnerUid, 1*globalConfiguration.CoinReward_ReactionReceived, "REACT-RECV")
+	globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+		UserId:   messageOwnerUid,
+		Funds:    1 * globalConfiguration.CoinReward_ReactionReceived,
+		Activity: "REACT-RECV",
+	}
 
 }

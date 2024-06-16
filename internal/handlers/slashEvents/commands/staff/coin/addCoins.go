@@ -3,7 +3,9 @@ package coinSlashHandlers
 import (
 	"fmt"
 
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/internal/services/member"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
@@ -51,10 +53,10 @@ func HandleSlashAddCoins(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		return
 	}
 
-	err = member.AwardFunds(s, targetUserId, *fCoins, "MANUAL-AWARD")
-	if err != nil {
-		utils.SendErrorEmbedResponse(s, i.Interaction, err.Error())
-		return
+	globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+		UserId:   targetUserId,
+		Funds:    *fCoins,
+		Activity: "MANUAL-AWARD",
 	}
 
 	// Send response embed

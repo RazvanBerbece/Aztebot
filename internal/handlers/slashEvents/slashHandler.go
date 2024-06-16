@@ -12,7 +12,6 @@ import (
 	actionEvent "github.com/RazvanBerbece/Aztebot/internal/handlers/remoteEvents/actionEvents"
 	"github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands"
 	"github.com/RazvanBerbece/Aztebot/internal/services/logging"
-	"github.com/RazvanBerbece/Aztebot/internal/services/member"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
@@ -131,7 +130,11 @@ func AddRegisteredSlashEventHandlers(s *discordgo.Session) {
 			Type:   "SLASH_ACTIVITY",
 		}
 
-		go member.AwardFunds(s, ownerUserId, 1*globalConfiguration.CoinReward_SlashCommandUsed, "CMD-SEND")
+		globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+			UserId:   ownerUserId,
+			Funds:    1 * globalConfiguration.CoinReward_SlashCommandUsed,
+			Activity: "CMD-SEND",
+		}
 
 		if handlerFunc, ok := commands.AztebotSlashCommandHandlers[i.ApplicationCommandData().Name]; ok {
 			handlerFunc(s, i)

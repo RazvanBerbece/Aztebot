@@ -9,7 +9,6 @@ import (
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
-	"github.com/RazvanBerbece/Aztebot/internal/services/member"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -33,9 +32,9 @@ func UpdateVoiceSessionDurations(s *discordgo.Session) {
 		for {
 			select {
 			case <-ticker.C:
-				go updateVoiceSessions(s, userStatsRepository)
-				go updateStreamingSessions(s, userStatsRepository)
-				go updateMusicSessions(s, userStatsRepository)
+				go updateVoiceSessions(userStatsRepository)
+				go updateStreamingSessions(userStatsRepository)
+				go updateMusicSessions(userStatsRepository)
 			case <-quit:
 				ticker.Stop()
 				return
@@ -45,7 +44,7 @@ func UpdateVoiceSessionDurations(s *discordgo.Session) {
 
 }
 
-func updateVoiceSessions(s *discordgo.Session, userStatsRepo *repositories.UsersStatsRepository) {
+func updateVoiceSessions(userStatsRepo *repositories.UsersStatsRepository) {
 	for uid, joinTime := range globalState.VoiceSessions {
 
 		duration := time.Since(joinTime)
@@ -60,17 +59,23 @@ func updateVoiceSessions(s *discordgo.Session, userStatsRepo *repositories.Users
 		now := time.Now()
 		globalState.VoiceSessions[uid] = now
 
+		// Grant XP
 		globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 			UserId: uid,
 			Points: globalConfiguration.ExperienceReward_InVc * secondsSpent,
 			Type:   "VOICE_ACTIVITY",
 		}
 
-		go member.AwardFunds(s, uid, globalConfiguration.CoinReward_InVc*secondsSpent, "TIME-VC")
+		// Award coins
+		globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+			UserId:   uid,
+			Funds:    globalConfiguration.CoinReward_InVc * secondsSpent,
+			Activity: "TIME-VC",
+		}
 	}
 }
 
-func updateStreamingSessions(s *discordgo.Session, userStatsRepo *repositories.UsersStatsRepository) {
+func updateStreamingSessions(userStatsRepo *repositories.UsersStatsRepository) {
 	for uid, joinTime := range globalState.StreamSessions {
 
 		duration := time.Since(*joinTime)
@@ -85,17 +90,23 @@ func updateStreamingSessions(s *discordgo.Session, userStatsRepo *repositories.U
 		now := time.Now()
 		globalState.StreamSessions[uid] = &now
 
+		// Grant XP
 		globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 			UserId: uid,
 			Points: globalConfiguration.ExperienceReward_InVc * secondsSpent,
 			Type:   "VOICE_ACTIVITY",
 		}
 
-		go member.AwardFunds(s, uid, globalConfiguration.CoinReward_InVc*secondsSpent, "TIME-VC")
+		// Award coins
+		globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+			UserId:   uid,
+			Funds:    globalConfiguration.CoinReward_InVc * secondsSpent,
+			Activity: "TIME-VC",
+		}
 	}
 }
 
-func updateMusicSessions(s *discordgo.Session, userStatsRepo *repositories.UsersStatsRepository) {
+func updateMusicSessions(userStatsRepo *repositories.UsersStatsRepository) {
 	for uid := range globalState.MusicSessions {
 
 		session, userHadMusicSession := globalState.MusicSessions[uid]
@@ -117,13 +128,19 @@ func updateMusicSessions(s *discordgo.Session, userStatsRepo *repositories.Users
 					channelId: &now,
 				}
 
+				// Grant XP
 				globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 					UserId: uid,
 					Points: globalConfiguration.ExperienceReward_InMusic * secondsSpent,
 					Type:   "MUSIC_ACTIVITY",
 				}
 
-				go member.AwardFunds(s, uid, globalConfiguration.CoinReward_InMusic*secondsSpent, "TIME-MUSIC")
+				// Award coins
+				globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+					UserId:   uid,
+					Funds:    globalConfiguration.CoinReward_InMusic * secondsSpent,
+					Activity: "TIME-MUSIC",
+				}
 			}
 		}
 	}

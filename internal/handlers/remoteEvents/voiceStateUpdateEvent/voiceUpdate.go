@@ -11,7 +11,6 @@ import (
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
-	memberService "github.com/RazvanBerbece/Aztebot/internal/services/member"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
@@ -103,7 +102,11 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 				Type:   "VOICE_ACTIVITY",
 			}
 
-			go memberService.AwardFunds(s, userId, globalConfiguration.CoinReward_InVc*secondsSpent, "TIME-VC")
+			globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+				UserId:   userId,
+				Funds:    globalConfiguration.CoinReward_InVc * secondsSpent,
+				Activity: "TIME-VC",
+			}
 
 			delete(globalState.VoiceSessions, userId)
 			delete(globalState.StreamSessions, userId)
@@ -153,8 +156,11 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 						Type:   "MUSIC_ACTIVITY",
 					}
 
-					go memberService.AwardFunds(s, userId, globalConfiguration.CoinReward_InMusic*secondsSpent, "TIME-MUSIC")
-
+					globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+						UserId:   userId,
+						Funds:    globalConfiguration.CoinReward_InMusic * secondsSpent,
+						Activity: "TIME-MUSIC",
+					}
 				}
 			} else {
 				// User was on any other VC
@@ -174,7 +180,11 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 						Type:   "VOICE_ACTIVITY",
 					}
 
-					go memberService.AwardFunds(s, userId, globalConfiguration.CoinReward_InVc*secondsSpent, "TIME-VC")
+					globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+						UserId:   userId,
+						Funds:    globalConfiguration.CoinReward_InVc * secondsSpent,
+						Activity: "TIME-VC",
+					}
 				}
 			}
 			delete(globalState.MusicSessions, userId)

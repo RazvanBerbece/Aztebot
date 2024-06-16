@@ -9,6 +9,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// By default logs errors and state to Discord.
 func AwardFunds(s *discordgo.Session, userId string, funds float64, activity string) error {
 
 	if funds < 0 || funds > 500000.0 {
