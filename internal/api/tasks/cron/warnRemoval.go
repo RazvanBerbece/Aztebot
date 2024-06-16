@@ -7,7 +7,7 @@ import (
 	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
 )
 
-func ProcessRemoveExpiredWarns(months int) {
+func ProcessRemoveExpiredWarns() {
 
 	// TODO: Move this into env variable and use cron syntax
 	var numSec int = 5.256e+6 // run every 2 months

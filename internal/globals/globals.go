@@ -35,6 +35,8 @@ var FavourableActivitiesThreshold, FavourableActivitiesThresholdErr = strconv.At
 
 var UpdateVoiceStateFrequency, UpdateVoiceStateFrequencyErr = strconv.Atoi(os.Getenv("UPDATE_VOICE_STATE_DURATIONS_FREQUENCY"))
 
+var CleanupDynamicChannelsFrequency, CleanupDynamicChannelsFrequencyErr = strconv.Atoi(os.Getenv("CLEANUP_DYNAMIC_CHANNELS_FREQUENCY"))
+
 var TimeoutClearFrequency, TimeoutClearFrequencyErr = strconv.Atoi(os.Getenv("TIMEOUT_CLEAR_FREQUENCY"))
 
 var NotificationChannelsPairs = strings.Split(os.Getenv("NOTIFICATION_CHANNELS"), ",")
@@ -68,13 +70,14 @@ var LastUsedTop5sTimestamp = time.Now().Add(-60 * time.Minute)
 
 var ConfessionsToApprove = make(map[string]string)
 
+// =============== RUNTIME GLOBAL STATIC DATA ===============
 var JailTasks = []string{}
 
 var AfkChannels map[string]string
 var MusicChannels map[string]string
 var DynamicChannelCreateButtonIds map[string]string
 
-// =============== RUNTIME GLOBAL CHANNELS ===============
+// =============== RUNTIME GLOBAL EVENT CHANNELS ===============
 var ExperienceGrantsChannel = make(chan dataModels.ExperienceGrant)
 var ChannelCreationsChannel = make(chan events.VoiceChannelCreateEvent)
 

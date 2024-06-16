@@ -61,6 +61,7 @@ func LoadStaticDiscordChannels() {
 		// Dev dynamic channel creation button channels
 		globals.DynamicChannelCreateButtonIds = map[string]string{
 			"1217251206624186481": "☕ | Dev Test Room (~Extra~)",
+			"1217914805478887424": "🔒 | Dev Test Private Room (~Extra~)",
 		}
 	} else {
 		// Production dynamic channel creation button channels

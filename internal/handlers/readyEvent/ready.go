@@ -38,7 +38,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	// Initial update of experience gains in the DB
 	go startup.SyncExperiencePointsGainsAtStartup(s)
 
-	// Initial informative messages on certain channels
+	// Initial publishing of informative messages on certain channels
 	go startup.SendInformationEmbedsToTextChannels(s)
 
 	// Check for users on voice channels and start their VC sessions
@@ -52,11 +52,11 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	go channelHandlers.HandleChannelCreationMessages(s)
 
 	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, cleanups, etc.)
-	cron.ProcessUpdateActivityStreaks(24, 0, 0)                                      // the hh:mm:ss timestamp in a day to run the cron at
-	cron.ProcessRemoveExpiredWarns(2)                                                // run every n=2 months
-	cron.ProcessClearExpiredTimeouts(s)                                              // clear timeouts with freq from env var
-	cron.ProcessRemoveArchivedTimeouts(1)                                            // run every n=1 month
-	cron.ProcessMonthlyLeaderboard(s, 23, 55, 00, true, true)                        // run on last day at given time
-	cron.ProcessCleanupUnusedDynamicChannels(s, globals.DiscordMainGuildId, 60*60*5) // run every n=5 hours
+	cron.ProcessUpdateActivityStreaks(24, 0, 0)               // the hh:mm:ss timestamp in a day to run the cron at (i.e 24:00:00)
+	cron.ProcessMonthlyLeaderboard(s, 23, 55, 00, true, true) // run on last day of current month at given time (i.e 23:55:00)
+	cron.ProcessClearExpiredTimeouts(s)
+	cron.ProcessCleanupUnusedDynamicChannels(s, globals.DiscordMainGuildId)
+	cron.ProcessRemoveExpiredWarns()
+	cron.ProcessRemoveArchivedTimeouts()
 
 }
