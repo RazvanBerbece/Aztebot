@@ -34,6 +34,7 @@ var UpdateVoiceStateFrequency, UpdateVoiceStateFrequencyErr = strconv.Atoi(os.Ge
 var VoiceSessions = make(map[string]time.Time)
 var StreamSessions = make(map[string]*time.Time)
 var MusicSessions = make(map[string]map[string]*time.Time)
+var DeafSessions = make(map[string]time.Time)
 var LastUsedTopTimestamp = time.Now().Add(-60 * time.Minute)
 
 // =============== RUNTIME VARIABLES (SLASH COMMANDS) ===============

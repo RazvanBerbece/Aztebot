@@ -43,6 +43,14 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 
 	userId := member.User.ID
 
+	// if vs.Deaf {
+	// 	fmt.Println("DEAFEN")
+	// 	globals.DeafSessions[userId] = time.Now()
+	// } else if vs.BeforeUpdate.Deaf && !vs.Deaf {
+	// 	fmt.Println("UNDEAFEN")
+	// 	delete(globals.DeafSessions, userId)
+	// }
+
 	if vs.SelfStream && vs.ChannelID != "" {
 		// User STARTED STREAMING
 		now := time.Now()
@@ -53,7 +61,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 			fmt.Printf("An error ocurred while incrementing user (%s) activities count: %v", userId, err)
 		}
 
-		err = globalsRepo.UserStatsRepository.UpdateLastActiveTimestamp(userId, time.Now().Unix())
+		err = globalsRepo.UserStatsRepository.UpdateLastActiveTimestamp(userId, now.Unix())
 		if err != nil {
 			fmt.Printf("An error ocurred while updating user (%s) last timestamp: %v", userId, err)
 		}
@@ -120,5 +128,25 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 			delete(globals.StreamSessions, userId)
 		}
 	}
+
+}
+
+func UserHasActiveVoiceSession(uid string) bool {
+
+	status := 0
+
+	if _, ok := globals.VoiceSessions[uid]; ok {
+		status += 1
+	}
+
+	if _, ok := globals.MusicSessions[uid]; ok {
+		status += 1
+	}
+
+	if _, ok := globals.StreamSessions[uid]; ok {
+		status += 1
+	}
+
+	return status == 3
 
 }

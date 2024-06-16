@@ -568,3 +568,43 @@ func (r UsersStatsRepository) GetTopUsersByReceivedReactions(count int) ([]dataM
 	return topUsers, nil
 
 }
+
+func (r UsersStatsRepository) DecreaseTimeSpentListeningMusic(userId string, sTimeLength int) error {
+	stmt, err := r.Conn.Db.Prepare(`
+		UPDATE UserStats SET 
+			timeSpentListeningMusic = timeSpentListeningMusic - ?
+		WHERE userId = ?`)
+	if err != nil {
+		fmt.Printf("Error ocurred while preparing music listening spent time decrease for user %s: %v\n", userId, err)
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(sTimeLength, userId)
+	if err != nil {
+		fmt.Printf("Error ocurred while decreasing music listening spent time stat for user %s: %v\n", userId, err)
+		return err
+	}
+
+	return nil
+}
+
+func (r UsersStatsRepository) DecreaseTimeSpentInVoiceChannels(userId string, sTimeLength int) error {
+	stmt, err := r.Conn.Db.Prepare(`
+		UPDATE UserStats SET 
+			timeSpentInVoiceChannels = timeSpentInVoiceChannels - ?
+		WHERE userId = ?`)
+	if err != nil {
+		fmt.Printf("Error ocurred while preparing voice session spent time decrease for user %s: %v\n", userId, err)
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(sTimeLength, userId)
+	if err != nil {
+		fmt.Printf("Error ocurred while decreasing voice session spent time stat for user %s: %v\n", userId, err)
+		return err
+	}
+
+	return nil
+}
