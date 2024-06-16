@@ -44,7 +44,7 @@ jobs:
         uses: 'google-github-actions/auth@v1'
         with:
           create_credentials_file: true
-          workload_identity_provider: 'projects/${{secrets.PROJECT_NUMBER}}/locations/global/workloadIdentityPools/gh-identity-pool/providers/gh-provider'
+          workload_identity_provider: 'projects/536817072469/locations/global/workloadIdentityPools/gh-identity-pool/providers/gh-provider-aztebot'
           service_account: 'gcp-github-access@${{env.PROJECT_ID}}.iam.gserviceaccount.com'
       
       - name: Test Step
