@@ -76,6 +76,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	initialDelay, activityTicker := getDelayAndTickerForActivityStreakCron(24, 0, 0) // H, m, s
 	go func() {
 
+		fmt.Println("Scheduled Task UpdateActivityStreaks() in <", initialDelay.Hours(), "> hours")
 		time.Sleep(initialDelay)
 
 		// The first run should happen at start-up, not after 24 hours

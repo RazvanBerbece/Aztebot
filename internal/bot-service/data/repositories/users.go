@@ -198,8 +198,9 @@ func (r UsersRepository) GetRolesByIds(placeholders string, ids []int) ([]dataMo
 		rolesAsListOfAny = append(rolesAsListOfAny, id)
 	}
 
+	// Retrieve the roles in ascending order of importance (higher id means higher importance)
 	var roles []dataModels.Role
-	query := fmt.Sprintf("SELECT * FROM Roles WHERE id IN (%s)", placeholders)
+	query := fmt.Sprintf("SELECT * FROM Roles WHERE id IN (%s) ORDER BY id ASC", placeholders)
 	rowsRoles, err := r.Conn.Db.Query(query, rolesAsListOfAny...)
 	if err != nil {
 		return nil, fmt.Errorf("GetRolesByIds <%d>: %v", ids, err)
