@@ -21,7 +21,6 @@ func MemberRoleUpdate(s *discordgo.Session, m *discordgo.GuildMemberUpdate) {
 	if m.BeforeUpdate != nil {
 		// The previous member state can be found in the cache
 		if utils.EqualSlices(m.BeforeUpdate.Roles, m.Roles) {
-			fmt.Println("Not a role update")
 			// no change in roles, return early
 			return
 		}
