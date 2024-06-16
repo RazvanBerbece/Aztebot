@@ -47,18 +47,16 @@ func processTopCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	// Top by messages sent
 	ProcessTopMessagesPartialEmbed(topCount, s, i.Interaction, embed)
-	updateInteraction(s, *i.Interaction, *embed)
 
 	// Top by time spent in VCs
 	ProcessTopVCSpentPartialEmbed(topCount, s, i.Interaction, embed)
-	updateInteraction(s, *i.Interaction, *embed)
 
 	// Top by active day streak
 	ProcessTopActiveDayStreakPartialEmbed(topCount, s, i.Interaction, embed)
-	updateInteraction(s, *i.Interaction, *embed)
 
 	// Top by reactions received
 	ProcessTopReactionsReceivedPartialEmbed(topCount, s, i.Interaction, embed)
+
 	updateInteraction(s, *i.Interaction, *embed)
 
 	globals.LastUsedTopTimestamp = time.Now()
