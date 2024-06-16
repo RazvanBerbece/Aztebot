@@ -66,10 +66,10 @@ func CleanupMemberAtStartup(s *discordgo.Session, uids []string) error {
 
 	// Cleanup duplicate DB entities
 	// TODO: Get rid of this once the synced duplicates are fixed
-	// err := userStatsRepository.DeleteDuplicateEntries()
-	// if err != nil {
-	// 	fmt.Println("Error deleting duplicated user stats data on startup: ", err)
-	// }
+	err := userStatsRepository.DeleteDuplicateEntries()
+	if err != nil {
+		fmt.Println("Error deleting duplicated user stats data on startup: ", err)
+	}
 
 	uidsLength := len(uids)
 
