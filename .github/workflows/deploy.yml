@@ -40,7 +40,7 @@ jobs:
         run: |
           echo ${{ secrets.ENV_BASE64_STRING }} | base64 --decode > .env
 
-          connString=$(echo ${{ secrets.DB_ROOT_CONNSTRING_BASE64 }} | base64 --decode)
+          connString=$(echo "${{ secrets.DB_ROOT_CONNSTRING_BASE64 }}" | base64 --decode)
           echo "DB_ROOT_CONNSTRING=$connString" >> $GITHUB_ENV
 
       - name: Generate next release number
