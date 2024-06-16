@@ -49,8 +49,8 @@ jobs:
       - name: Setup environment
         run: |
           echo ${{ secrets.ENV_BASE64_STRING }} | base64 --decode > .env
-          echo ${{ secrets.AZTERADIO_ENV_BASE64 }} | base64 --decode > cmd/azteradio-service-rawon/.env
-          echo ${{ secrets.AZTEMUSIC_1_ENV_BASE64 }} | base64 --decode > cmd/aztemusic-service-rawon/1/.env
+          echo ${{ secrets.AZTERADIO_ENV_BASE64 }} | base64 --decode > cmd/azteradio-service-rawon/.config.env
+          echo ${{ secrets.AZTEMUSIC_1_ENV_BASE64 }} | base64 --decode > cmd/aztemusic-service-rawon/1/.config.env
 
       - name: Generate SHA output
         id: vars
