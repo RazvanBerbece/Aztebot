@@ -33,14 +33,8 @@ func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []
 		// Figure out the promoted role to be given
 		processedRoleName, processedLevel := member.GetRoleNameAndLevelFromStats(userXp, userNumberMessagesSent, userTimeSpentInVc)
 
-		currentOrderRoles, err := member.GetMemberOrderRoles(userId, defaultOrderRoleNames)
-		if err != nil {
-			fmt.Printf("Error occurred while reading member order role from DB: %v\n", err)
-			continue
-		}
-
 		if resolveMismatches {
-			err = member.ResolveProgressionMismatchForMember(s, userGuildId, userId, userXp, userNumberMessagesSent, userTimeSpentInVc, defaultOrderRoleNames)
+			err := member.ResolveProgressionMismatchForMember(s, userGuildId, userId, userXp, userNumberMessagesSent, userTimeSpentInVc, defaultOrderRoleNames)
 			if err != nil {
 				log.Println("Error resolving mismatches for member:", err)
 				continue
@@ -55,6 +49,8 @@ func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []
 
 		// Promotion is available for current member (and no mismatch was detected)
 		if processedLevel != 0 && processedRoleName != "" && processedLevel > user.CurrentLevel {
+
+			fmt.Printf("Promoting %s to level %d (role: %s)\n", user.DiscordTag, processedLevel, processedRoleName)
 
 			// Give promoted level in DB
 			err := globalRepositories.UsersRepository.SetLevel(userId, processedLevel)
@@ -76,6 +72,11 @@ func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []
 					fmt.Printf("Error occurred while appending role ID to member in DB: %v\n", err)
 				}
 			} else if processedLevel > 1 {
+				currentOrderRoles, err := member.GetMemberOrderRoles(userId, defaultOrderRoleNames)
+				if err != nil {
+					fmt.Printf("Error occurred while reading member order role from DB: %v\n", err)
+					continue
+				}
 				for _, orderRole := range currentOrderRoles {
 					err = globalRepositories.UsersRepository.RemoveUserRoleWithId(userId, orderRole.Id)
 					if err != nil {
