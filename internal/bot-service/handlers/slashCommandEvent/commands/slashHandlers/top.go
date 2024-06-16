@@ -25,17 +25,26 @@ func HandleSlashTop(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		return
 	}
 
-	go processTopCommand(s, i)
-
+	// Initial response
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Embeds: utils.SimpleEmbed("🤖   Slash Command Confirmation", "Processing `/top` command..."),
 		},
 	})
+
+	// Final response
+	results := TopCommandResultsEmbed(s, i)
+	editContent := ""
+	editWebhook := discordgo.WebhookEdit{
+		Content: &editContent,
+		Embeds:  &results,
+	}
+	s.InteractionResponseEdit(i.Interaction, &editWebhook)
+
 }
 
-func processTopCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
+func TopCommandResultsEmbed(s *discordgo.Session, i *discordgo.InteractionCreate) []*discordgo.MessageEmbed {
 
 	// Leaderboard parameterisation
 	topCount := 5
@@ -47,21 +56,23 @@ func processTopCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	// Top by messages sent
 	ProcessTopMessagesPartialEmbed(topCount, s, i.Interaction, embed)
-	updateInteraction(s, i.Interaction, embed)
+	// updateInteraction(s, i.Interaction, embed)
 
 	// Top by time spent in VCs
 	ProcessTopVCSpentPartialEmbed(topCount, s, i.Interaction, embed)
-	updateInteraction(s, i.Interaction, embed)
+	// updateInteraction(s, i.Interaction, embed)
 
 	// Top by active day streak
 	ProcessTopActiveDayStreakPartialEmbed(topCount, s, i.Interaction, embed)
-	updateInteraction(s, i.Interaction, embed)
+	// updateInteraction(s, i.Interaction, embed)
 
 	// Top by reactions received
 	ProcessTopReactionsReceivedPartialEmbed(topCount, s, i.Interaction, embed)
-	updateInteraction(s, i.Interaction, embed)
+	// updateInteraction(s, i.Interaction, embed)
 
 	globals.LastUsedTopTimestamp = time.Now()
+
+	return []*discordgo.MessageEmbed{embed.MessageEmbed}
 }
 
 func updateInteraction(s *discordgo.Session, i *discordgo.Interaction, embed *embed.Embed) {
