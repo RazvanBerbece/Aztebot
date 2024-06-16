@@ -483,7 +483,7 @@ func GrantMemberExperience(userId string, activityType string, multiplierOption 
 
 	isMember := globalsRepo.UsersRepository.UserExists(userId)
 	if isMember < 0 {
-		return nil, fmt.Errorf("member not found in the DB; likely the given member is a bot application")
+		return nil, fmt.Errorf("member to grant XP to was not found in the DB; likely the given member is a bot application")
 	}
 
 	var multiplier float64 = 1.0
@@ -539,7 +539,7 @@ func RemoveMemberExperience(userId string, activityType string) (*float64, error
 
 	isMember := globalsRepo.UsersRepository.UserExists(userId)
 	if isMember < 0 {
-		return nil, fmt.Errorf("member not found in the DB; likely the given member is a bot application")
+		return nil, fmt.Errorf("member to remove XP from was not found in the DB; likely the given member is a bot application")
 	}
 
 	switch activityType {
@@ -583,4 +583,17 @@ func RemoveMemberExperience(userId string, activityType string) (*float64, error
 
 	return &user.CurrentExperience, nil
 
+}
+
+func MemberIsBot(s *discordgo.Session, guildId string, userId string) (*bool, error) {
+
+	member, err := s.State.Member(guildId, userId)
+	if err != nil {
+		fmt.Printf("An error ocurred while checking whether member %s is a bot", userId)
+		return nil, err
+	}
+
+	isBot := member.User.Bot
+
+	return &isBot, nil
 }
