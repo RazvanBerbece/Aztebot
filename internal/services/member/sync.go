@@ -11,7 +11,6 @@ import (
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
-	"github.com/RazvanBerbece/Aztebot/pkg/shared/metrics"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
@@ -102,9 +101,6 @@ func SyncMember(s *discordgo.Session, guildId string, userId string, member *dis
 // Takes in a discord member and syncs the database User with the current member details
 // as they appear on the Discord guild. It uses repositories injected via the argument list to prevent connection attempt floods.
 func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, member *discordgo.Member, rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository, defaultOrderRoleNames []string, syncProgression bool) error {
-
-	// TODO: Remove this line
-	defer metrics.Duration(metrics.Track("SyncMemberPersistent"))
 
 	var user *dataModels.User
 	var userStats *dataModels.UserStats
