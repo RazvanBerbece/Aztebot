@@ -41,7 +41,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	go SendInformationEmbedsToTextChannels(s)
 
 	// Check for users on voice channels and start their VC sessions
-	go RegisterUsersInVoiceChannelsAtStartup(s)
+	go RegisterUsersInVoiceChannelsAtStartup(*s)
 
 	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, XP gaining?, etc.)
 	initialDelay, activityTicker := getDelayAndTickerForActivityStreakCron(24, 0, 0) // H, m, s
@@ -261,7 +261,7 @@ func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
 
 }
 
-func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
+func RegisterUsersInVoiceChannelsAtStartup(s discordgo.Session) {
 
 	time.Sleep(time.Minute * 3)
 
