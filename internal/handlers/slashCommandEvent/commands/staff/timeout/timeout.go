@@ -87,7 +87,7 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	}
 
 	// Format timeout duration
-	var dd, hr, mm, ss = utils.HumanReadableTimeLength(*sTimeLength)
+	var dd, hr, mm, ss = utils.HumanReadableDuration(*sTimeLength)
 	var timeoutLengthString string = fmt.Sprintf("%dd, %dh:%dm:%ds", dd, hr, mm, ss)
 
 	// Send notification to target channel to announce the timeout

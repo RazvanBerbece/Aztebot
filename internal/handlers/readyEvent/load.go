@@ -9,6 +9,19 @@ import (
 
 func LoadStaticData() {
 	LoadNotificationChannels()
+	LoadJailTasks()
+}
+
+// Load the available tasks to get out of Jail in the global list.
+func LoadJailTasks() {
+	globals.JailTasks = []string{
+		"Continue the lyrics",
+		"Write a Poem",
+		"Math Quiz",
+		"AzteQuiz",
+		"Guess the Number",
+		"Roll a Double",
+	}
 }
 
 // Load the available notification channels in the global map.

@@ -129,7 +129,7 @@ func ProcessTopVCSpentPartialEmbed(topCount int, s *discordgo.Session, i *discor
 			default:
 				rankMedal = ""
 			}
-			days, hours, minutes, seconds := utils.HumanReadableTimeLength(float64(topUser.TimeSpentInVCs))
+			days, hours, minutes, seconds := utils.HumanReadableDuration(float64(topUser.TimeSpentInVCs))
 			topContentText += fmt.Sprintf("**%d.** %s**%s** (spent `%dd, %dh:%dm:%ds` in voice channels 🎙️)\n", idx+1, rankMedal, topUser.DiscordTag, days, hours, minutes, seconds)
 		}
 		embed.AddField("", topContentText, false)
@@ -223,7 +223,7 @@ func ProcessTopMusicListeningTimePartialEmbed(topCount int, s *discordgo.Session
 			default:
 				rankMedal = ""
 			}
-			days, hours, minutes, seconds := utils.HumanReadableTimeLength(float64(topUser.TimeSpentListeningMusic))
+			days, hours, minutes, seconds := utils.HumanReadableDuration(float64(topUser.TimeSpentListeningMusic))
 			topContentText += fmt.Sprintf("**%d.** %s**%s** (spent `%dd, %dh:%dm:%ds` listening to music 🎵)\n", idx+1, rankMedal, topUser.DiscordTag, days, hours, minutes, seconds)
 		}
 		embed.AddField("", topContentText, false)

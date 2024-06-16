@@ -4,6 +4,7 @@ import (
 	gamesSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashCommandEvent/commands/games"
 	profileSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashCommandEvent/commands/profile"
 	serverSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashCommandEvent/commands/server"
+	jailSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashCommandEvent/commands/staff/jail"
 	timeoutSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashCommandEvent/commands/staff/timeout"
 	warningSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashCommandEvent/commands/staff/warning"
 	xpRateSettingSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashCommandEvent/commands/staff/xp"
@@ -293,6 +294,36 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 			},
 		},
 	},
+	{
+		Name:        "jail",
+		Description: "Jails the given user, giving them the designated 'jailed' role and removing some of their permissions.",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "user",
+				Description: "The user to jail",
+				Required:    true,
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "reason",
+				Description: "The reason to jail the user for",
+				Required:    true,
+			},
+		},
+	},
+	{
+		Name:        "unjail",
+		Description: "Unjails the given user, removing the designated 'jailed' role and giving them back their permissions.",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "user",
+				Description: "The user to unjail",
+				Required:    true,
+			},
+		},
+	},
 }
 
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -316,4 +347,6 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"timeout_remove_active": timeoutSlashHandlers.HandleSlashTimeoutRemoveActive,
 	"timeout_appeal":        timeoutSlashHandlers.HandleSlashTimeoutAppeal,
 	"set_global_xp_rate":    xpRateSettingSlashHandlers.HandleSlashSetGlobalXpRateForActivity,
+	"jail":                  jailSlashHandlers.HandleSlashJail,
+	"unjail":                jailSlashHandlers.HandleSlashUnjail,
 }

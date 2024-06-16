@@ -6,10 +6,12 @@ import (
 	"log"
 	"time"
 
+	"github.com/RazvanBerbece/Aztebot/internal/api/notifications"
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
 	"github.com/RazvanBerbece/Aztebot/internal/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/dm"
+	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
@@ -240,6 +242,44 @@ func RemoveAllDiscordUserRoles(s *discordgo.Session, guildId string, userId stri
 			fmt.Println("Error removing role:", err)
 			return err
 		}
+	}
+
+	return nil
+
+}
+
+func GiveDiscordRoleToMember(s *discordgo.Session, guildId string, userId string, roleName string) error {
+
+	// Get the ID of the given role by name
+	discordRoleId := GetDiscordRoleIdForRoleWithName(s, guildId, roleName)
+	if discordRoleId == nil {
+		return fmt.Errorf("%s Discord Role not found in Guild", roleName)
+	}
+
+	// Add the role by role ID to the Discord member
+	err := s.GuildMemberRoleAdd(guildId, userId, *discordRoleId)
+	if err != nil {
+		fmt.Println("Error adding giving to Discord member:", err)
+		return err
+	}
+
+	return nil
+
+}
+
+func RemoveDiscordRoleFromMember(s *discordgo.Session, guildId string, userId string, roleName string) error {
+
+	// Get the ID of the given role by name
+	discordRoleId := GetDiscordRoleIdForRoleWithName(s, guildId, roleName)
+	if discordRoleId == nil {
+		return fmt.Errorf("%s Discord Role not found in Guild", roleName)
+	}
+
+	// Remove the role by role ID from the Discord member
+	err := s.GuildMemberRoleRemove(guildId, userId, *discordRoleId)
+	if err != nil {
+		fmt.Println("Error adding giving to Discord member:", err)
+		return err
 	}
 
 	return nil
@@ -627,5 +667,59 @@ func SetGender(userId string, genderValue string) error {
 	}
 
 	return nil
+
+}
+
+func JailMember(s *discordgo.Session, guildId string, userId string, reason string, jailRoleName string, notificationChannelId string) (*dataModels.JailedUser, *dataModels.User, error) {
+
+	var err error
+
+	currentTimestamp := time.Now()
+
+	// Pick a random task to assign to the jailed user
+	taskToFree := utils.GetRandomFromArray(globals.JailTasks)
+
+	// Build a record of the jailed user for the command feedback
+	var jailedRecord *dataModels.JailedUser = &dataModels.JailedUser{
+		UserId:         userId,
+		JailedAt:       currentTimestamp.Unix(),
+		TaskToComplete: taskToFree,
+		Reason:         reason,
+	}
+
+	// Add User to Jail in the DB
+	err = globalsRepo.JailRepository.AddUserToJail(userId, reason, taskToFree, currentTimestamp.Unix())
+	if err != nil {
+		fmt.Printf("Failed to JailMember %s: %v", userId, err)
+		return nil, nil, err
+	}
+
+	// Give designated Discord role to member to restrict access
+	err = GiveDiscordRoleToMember(s, guildId, userId, jailRoleName)
+	if err != nil {
+		fmt.Printf("Failed to JailMember %s: %v", userId, err)
+		return nil, nil, err
+	}
+
+	user, err := globalsRepo.UsersRepository.GetUser(userId)
+	if err != nil {
+		fmt.Printf("Failed to JailMember %s: %v", userId, err)
+		return nil, nil, err
+	}
+
+	// Send notification about jailing on designated channel
+	embed := embed.NewEmbed().
+		SetTitle("👮🏽‍♀️⛓️    A New Prisoner Has Arrived").
+		AddField("Known As", user.DiscordTag, false).
+		AddField("Convicted Because", reason, false).
+		AddField("Tasked With", taskToFree, false).
+		AddField("Convincted At", currentTimestamp.String(), false)
+
+	go notifications.SendEmbedToTextChannel(s, notificationChannelId, *embed)
+
+	// Send Jail DM to jailed user
+	// TODO
+
+	return jailedRecord, user, nil
 
 }
