@@ -203,8 +203,6 @@ func (r UsersRepository) UpdateUser(user dataModels.User) (*dataModels.User, err
 
 func (r UsersRepository) AddUserExpriencePoints(userId string, experiencePoints float64) error {
 
-	fmt.Println(experiencePoints)
-
 	stmt, err := r.Conn.Db.Prepare(`
 		UPDATE Users SET 
 			currentExperience = currentExperience + ?
