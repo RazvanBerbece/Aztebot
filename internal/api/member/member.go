@@ -850,6 +850,7 @@ func UnjailMember(s *discordgo.Session, guildId string, userId string, jailRoleN
 
 }
 
+// Checks against the global maps if a user has an active voice session.
 func MemberHasActiveVoiceSession(uid string) bool {
 
 	status := 0
