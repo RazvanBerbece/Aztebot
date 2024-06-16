@@ -12,6 +12,19 @@ import (
 
 func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 
+	var voiceChannels map[string]string
+	if globals.Environment == "staging" {
+		// Dev text channels
+		voiceChannels = map[string]string{
+			"1173790229258326106": "radio",
+		}
+	} else {
+		// Production text channels
+		voiceChannels = map[string]string{
+			"1176204022399631381": "radio",
+		}
+	}
+
 	guild, err := s.Guild(vs.GuildID)
 	if err != nil {
 		log.Println("Error getting guild: ", err)
@@ -55,7 +68,14 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 	} else {
 		if vs.ChannelID != "" && globals.StreamSessions[userId] == nil {
 			// User JOINED a VC but NOT STREAMING
-			globals.VoiceSessions[userId] = time.Now()
+			if TargetChannelIsForMusicListening(voiceChannels, vs.ChannelID) {
+				now := time.Now()
+				globals.MusicSessions[userId] = map[string]*time.Time{
+					vs.ChannelID: &now,
+				}
+			} else {
+				globals.VoiceSessions[userId] = time.Now()
+			}
 
 			err = globalsRepo.UserStatsRepository.IncrementActivitiesTodayForUser(userId)
 			if err != nil {
@@ -70,16 +90,40 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 			delete(globals.StreamSessions, userId)
 		} else if vs.ChannelID == "" && globals.StreamSessions[userId] == nil {
 			// User LEFT THE VOICE CHANNEL
-			if joinTime, ok := globals.VoiceSessions[userId]; ok {
-				duration := time.Since(joinTime)
-				err := globalsRepo.UserStatsRepository.AddToTimeSpentInVoiceChannels(userId, int(duration.Seconds()))
-				if err != nil {
-					fmt.Printf("An error ocurred while adding time spent to voice channels for user with id %s: %v", userId, err)
+			musicSession, userHadMusicSession := globals.MusicSessions[userId]
+			if userHadMusicSession {
+				// User was on a music channel
+				for _, joinTime := range musicSession {
+					duration := time.Since(*joinTime)
+					err := globalsRepo.UserStatsRepository.AddToTimeSpentListeningMusic(userId, int(duration.Seconds()))
+					if err != nil {
+						fmt.Printf("An error ocurred while adding time spent listening music for user with id %s: %v", userId, err)
+					}
 				}
-				delete(globals.VoiceSessions, userId)
-				delete(globals.StreamSessions, userId)
+			} else {
+				// User was on any other VC
+				if joinTime, ok := globals.VoiceSessions[userId]; ok {
+					duration := time.Since(joinTime)
+					err := globalsRepo.UserStatsRepository.AddToTimeSpentInVoiceChannels(userId, int(duration.Seconds()))
+					if err != nil {
+						fmt.Printf("An error ocurred while adding time spent to voice channels for user with id %s: %v", userId, err)
+					}
+				}
 			}
+			delete(globals.MusicSessions, userId)
+			delete(globals.VoiceSessions, userId)
+			delete(globals.StreamSessions, userId)
 		}
 	}
 
+}
+
+func TargetChannelIsForMusicListening(voiceChannels map[string]string, channelId string) bool {
+	for id := range voiceChannels {
+		if channelId == id {
+			// Target VC is a music-specific channel
+			return true
+		}
+	}
+	return false
 }
