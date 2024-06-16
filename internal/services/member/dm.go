@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
+	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
 	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/dm"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"

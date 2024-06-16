@@ -3,7 +3,7 @@ package jailSlashHandlers
 import (
 	"fmt"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
+	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	"github.com/RazvanBerbece/Aztebot/internal/services/member"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"

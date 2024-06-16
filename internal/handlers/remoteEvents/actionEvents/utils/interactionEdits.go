@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
+	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
 	"github.com/bwmarrin/discordgo"

@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
+	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
