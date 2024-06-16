@@ -3,6 +3,7 @@ package slashHandlers
 import (
 	"fmt"
 	"log"
+	"sync"
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
@@ -45,20 +46,37 @@ func processTopCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		SetColor(000000)
 
+	var wg sync.WaitGroup
+
 	// Top by messages sent
-	ProcessTopMessagesPartialEmbed(topCount, s, i.Interaction, embed)
-	updateInteraction(s, *i.Interaction, *embed)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		ProcessTopMessagesPartialEmbed(topCount, s, i.Interaction, embed)
+	}()
 
 	// Top by time spent in VCs
-	ProcessTopVCSpentPartialEmbed(topCount, s, i.Interaction, embed)
-	updateInteraction(s, *i.Interaction, *embed)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		ProcessTopVCSpentPartialEmbed(topCount, s, i.Interaction, embed)
+	}()
 
 	// Top by active day streak
-	ProcessTopActiveDayStreakPartialEmbed(topCount, s, i.Interaction, embed)
-	updateInteraction(s, *i.Interaction, *embed)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		ProcessTopActiveDayStreakPartialEmbed(topCount, s, i.Interaction, embed)
+	}()
 
 	// Top by reactions received
-	ProcessTopReactionsReceivedPartialEmbed(topCount, s, i.Interaction, embed)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		ProcessTopReactionsReceivedPartialEmbed(topCount, s, i.Interaction, embed)
+	}()
+
+	wg.Wait()
 	updateInteraction(s, *i.Interaction, *embed)
 
 	globals.LastUsedTopTimestamp = time.Now()
