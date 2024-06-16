@@ -30,9 +30,11 @@ keys/
 prodEnvString.txt
 downloads/
 config.txt
+config.prod.txt
 .prod.config.txt
 cmd/azteradio-service/config.prod.yml
 cmd/azteradio-service/config.yml
 cmd/aztemusic-service/1/config.prod.yml
 cmd/aztemusic-service/1/config.yml
 !internal/aztemusic-service/src/commands/Misc
+base64.config.prod.txt

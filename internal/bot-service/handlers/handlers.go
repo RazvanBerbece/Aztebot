@@ -17,14 +17,3 @@ func GetAztebotHandlersAsList() []interface{} {
 		// <---- On New Join ---->
 	}
 }
-
-// Handler functions for the AzteRadio.
-func GetAzteradioHandlersAsList() []interface{} {
-	return []interface{}{
-		// <---- On Ready ---->
-		// <---- On Message Created ---->
-		messageEventHandlers.Ping,
-		// <---- On Reaction Added ---->
-		// <---- On Reaction Removed ---->
-	}
-}

@@ -4,13 +4,11 @@ build/
 .DS_Store
 *.md
 docker-compose.yml
-.prod.env
+*.prod.env.out
+*.prod.env
 prodEnvString.txt
 local.dbconfig.yml
 .env.out
 Dockerfile
 *.log
-cmd/azteradio-service/base64.prod.yml.out
-cmd/azteradio-service/config.prod.yml
-cmd/aztemusic-service/1/base64.prod.yml.out
-cmd/aztemusic-service/1/config.prod.yml
+base64.config.prod.txt
