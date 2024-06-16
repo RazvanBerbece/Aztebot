@@ -20,11 +20,9 @@ services:
     env_file:
       ./.env
     build:
-      dockerfile: ./cmd/bot-service/Dockerfile
+      dockerfile: ./tests/Dockerfile
     volumes: 
       - "./logs:/app/logs"
-    command: >
-      sleep 60 && go test ./...
 
 networks:
   default:
