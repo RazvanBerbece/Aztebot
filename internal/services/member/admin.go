@@ -99,13 +99,13 @@ func DemoteMember(s *discordgo.Session, guildId string, userId string, demoteTyp
 	var roleBeforeDemotion dataModels.Role
 	for _, role := range userRoles {
 		// If an Inner Circle role
-		if role.Id > 7 && role.Id < 18 {
+		if role.Id > 9 && role.Id < 21 {
 			if demoteType == "STAFF" {
 				updatedCurrentRoleIds += fmt.Sprintf("%d,", role.Id)
 				roleIdsPostDemote = append(roleIdsPostDemote, role.Id)
 				roleIdsPriorDemote = append(roleIdsPriorDemote, role.Id)
 			} else {
-				if role.Id == 8 {
+				if role.Id == 10 {
 					// If left end of inner circle
 					roleBeforeDemotion = role
 					roleIdsPriorDemote = append(roleIdsPriorDemote, role.Id)
@@ -121,7 +121,7 @@ func DemoteMember(s *discordgo.Session, guildId string, userId string, demoteTyp
 					roleIdsPriorDemote = append(roleIdsPriorDemote, roleBeforeDemotion.Id)
 				}
 			}
-		} else if role.Id > 1 && role.Id < 8 {
+		} else if role.Id > 1 && role.Id < 10 {
 			if role.Id == 2 || role.Id == 4 {
 				// Server booster role or top contribs - copy across and don't demote from it
 				updatedCurrentRoleIds += fmt.Sprintf("%d,", role.Id)

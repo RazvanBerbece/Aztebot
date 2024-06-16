@@ -60,9 +60,8 @@ func updateVoiceSessions(userStatsRepo *repositories.UsersStatsRepository) {
 		globalState.VoiceSessions[uid] = now
 
 		globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
-			UserId:   uid,
-			Points:   globalConfiguration.ExperienceReward_InMusic * secondsSpent,
-			Activity: "Time Spent in Voice Channels",
+			UserId: uid,
+			Points: globalConfiguration.ExperienceReward_InMusic * secondsSpent,
 		}
 	}
 }
@@ -83,9 +82,8 @@ func updateStreamingSessions(userStatsRepo *repositories.UsersStatsRepository) {
 		globalState.StreamSessions[uid] = &now
 
 		globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
-			UserId:   uid,
-			Points:   globalConfiguration.ExperienceReward_InMusic * secondsSpent,
-			Activity: "Time Spent Streaming",
+			UserId: uid,
+			Points: globalConfiguration.ExperienceReward_InMusic * secondsSpent,
 		}
 	}
 }
@@ -113,9 +111,8 @@ func updateMusicSessions(userStatsRepo *repositories.UsersStatsRepository) {
 				}
 
 				globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
-					UserId:   uid,
-					Points:   globalConfiguration.ExperienceReward_InMusic * secondsSpent,
-					Activity: "Time Spent in Music Channels",
+					UserId: uid,
+					Points: globalConfiguration.ExperienceReward_InMusic * secondsSpent,
 				}
 			}
 		}

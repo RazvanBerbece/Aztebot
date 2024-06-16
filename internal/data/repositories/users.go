@@ -213,6 +213,25 @@ func (r UsersRepository) AddUserExpriencePoints(userId string, experiencePoints 
 	return nil
 }
 
+func (r UsersRepository) SetLevel(userId string, level int) error {
+
+	stmt, err := r.Conn.Db.Prepare(`
+		UPDATE Users SET 
+			currentLevel = ?
+		WHERE userId = ?`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(level, userId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r UsersRepository) RemoveUserExpriencePoints(userId string, experiencePoints float64) error {
 
 	stmt, err := r.Conn.Db.Prepare(`
@@ -244,6 +263,67 @@ func (r UsersRepository) RemoveUserRoles(userId string) error {
 	defer stmt.Close()
 
 	_, err = stmt.Exec(userId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r UsersRepository) AppendUserRoleWithId(userId string, roleId int) error {
+
+	roles, err := r.GetRolesForUser(userId)
+	if err != nil {
+		return err
+	}
+
+	roleIdsString := ""
+	for _, role := range roles {
+		roleIdsString += fmt.Sprintf("%d,", role.Id)
+	}
+	roleIdsString += fmt.Sprintf("%d,", roleId)
+
+	stmt, err := r.Conn.Db.Prepare(`
+		UPDATE Users SET 
+			currentRoleIds = ?
+		WHERE userId = ?`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(roleIdsString, userId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r UsersRepository) RemoveUserRoleWithId(userId string, roleId int) error {
+
+	roles, err := r.GetRolesForUser(userId)
+	if err != nil {
+		return err
+	}
+
+	roleIdsString := ""
+	for _, role := range roles {
+		if role.Id != roleId {
+			roleIdsString += fmt.Sprintf("%d,", role.Id)
+		}
+	}
+
+	stmt, err := r.Conn.Db.Prepare(`
+		UPDATE Users SET 
+			currentRoleIds = ?
+		WHERE userId = ?`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(roleIdsString, userId)
 	if err != nil {
 		return err
 	}

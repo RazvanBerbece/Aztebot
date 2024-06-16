@@ -42,9 +42,8 @@ func Any(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	// Publish experience grant message on the channel
 	globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
-		UserId:   messageCreatorUserId,
-		Points:   globalConfiguration.ExperienceReward_MessageSent,
-		Activity: "Message Sent Reward",
+		UserId: messageCreatorUserId,
+		Points: globalConfiguration.ExperienceReward_MessageSent,
 	}
 
 }

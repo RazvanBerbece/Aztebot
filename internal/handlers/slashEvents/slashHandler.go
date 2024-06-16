@@ -113,9 +113,8 @@ func AddRegisteredSlashEventHandlers(s *discordgo.Session) {
 
 		// Publish experience grant message on the channel
 		globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
-			UserId:   ownerUserId,
-			Points:   globalConfiguration.ExperienceReward_SlashCommandUsed,
-			Activity: "Slash Command Used",
+			UserId: ownerUserId,
+			Points: globalConfiguration.ExperienceReward_SlashCommandUsed,
 		}
 
 		if handlerFunc, ok := commands.AztebotSlashCommandHandlers[i.ApplicationCommandData().Name]; ok {

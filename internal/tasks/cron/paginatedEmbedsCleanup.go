@@ -11,7 +11,7 @@ import (
 
 func ClearOldPaginatedEmbeds(s *discordgo.Session) {
 
-	var numSec int = 60 * 15           // cleanup every 15 minutes
+	var numSec int = 60 * 15           // run every 15 minutes
 	threshold := time.Second * 60 * 10 // paginated embeds which are older than 10 minutes
 
 	fmt.Println("[CRON] Starting Task ClearOldPaginatedEmbeds() at", time.Now(), "running every", numSec, "seconds")
