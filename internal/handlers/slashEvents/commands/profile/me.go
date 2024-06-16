@@ -118,9 +118,9 @@ func GetProfileEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Me
 	}
 	if userRep != nil {
 		if userRep.Rep > 0 {
-			repText = fmt.Sprintf(" | +%d rep", userRep.Rep)
+			repText = fmt.Sprintf("\n+%d rep", userRep.Rep)
 		} else if userRep.Rep < 0 {
-			repText = fmt.Sprintf(" | %d rep", userRep.Rep)
+			repText = fmt.Sprintf("\n%d rep", userRep.Rep)
 		}
 	}
 
