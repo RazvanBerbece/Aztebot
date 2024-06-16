@@ -4,8 +4,9 @@ import (
 	gamesHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/slashHandlers/games"
 	profileHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/slashHandlers/profile"
 	serverHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/slashHandlers/server"
+	timeoutHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/slashHandlers/staff/timeout"
+	warningHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/slashHandlers/staff/warning"
 	utilHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/slashHandlers/utils"
-	warningHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/slashHandlers/warning"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -80,6 +81,30 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 			},
 		},
 	},
+	{
+		Name:        "timeout",
+		Description: "Timeout a user's acitivity (block text and voice channels, but allow `/timeout-appeal`).",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "user-id",
+				Description: "The Discord User ID of the user the timeout is given to",
+				Required:    true,
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "reason",
+				Description: "The reason for which the timeout was given (max. 500 characters)",
+				Required:    true,
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "duration",
+				Description: "The duration of the timeout, in hours (e.g. `/timeout 1234 tbc 24`)",
+				Required:    true,
+			},
+		},
+	},
 }
 
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -93,4 +118,5 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"warn":               warningHandlers.HandleSlashWarn,
 	"warn_remove_oldest": warningHandlers.HandleSlashWarnRemoveOldest,
 	"warns":              warningHandlers.HandleSlashWarns,
+	"timeout":            timeoutHandlers.HandleSlashTimeout,
 }
