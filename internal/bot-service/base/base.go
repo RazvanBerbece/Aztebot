@@ -125,7 +125,7 @@ func getBotIntents() discordgo.Intent {
 func configureAppGlobal(base DiscordBotBase) {
 	switch base.appName {
 	case "aztebot":
-		fmt.Println("Not implemented yet.")
+		fmt.Println("Not implemented yet. (configureAppGlobal - aztebot)")
 	case "azteradio":
 		globals.AzteradioApp.AppName = base.appName
 		globals.AzteradioApp.BaseApp = base

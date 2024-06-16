@@ -6,3 +6,7 @@ build/
 docker-compose.yml
 .prod.env
 prodEnvString.txt
+local.dbconfig.yml
+.env.out
+Dockerfile
+*.log

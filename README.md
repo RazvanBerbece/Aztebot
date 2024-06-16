@@ -11,11 +11,15 @@ In order to run the application, a few prerequisites must be met.
 1. Have the repository cloned locally.
 2. Have Docker installed.
 3. Have a fully-configured `.env` file saved in the root of the repository. (contact [@RazvanBerbece](https://github.com/RazvanBerbece) for the configuration)
+4. Additionally, for full local development capabilities, have the [Aztebot-Infrastructure](https://github.com/RazvanBerbece/Aztebot-Infrastructure) repository cloned locally in a folder which also contains the `Aztebot` repository - i.e. Folder `Project` should contain both the `Aztebot` and the `Aztebot-Infrastructure` repository folders.
 
 ## Running the full service composition
 1. Run a freshly built full service composition (app, DBs, etc.) with the `docker compose up -d --remove-orphans --build` command.
     - This is required so the local development database is configured with all the necessary default data.   
-2. Bring down all the services by running `docker compose down -v`.
+2. Run migrations locally by executing the following commands from the root of this repository
+    - To execute a dryrun and double-check the migrations: `sql-migrate up -config=local.dbconfig.yml -env="staging" -dryrun` 
+    - To apply the migrations `sql-migrate up -config=local.dbconfig.yml -env="staging"`
+3. Bring down all the services by running `docker compose down -v`.
 
 # CI/CD
 This project will employ CI/CD through the use of GitHub Actions and Google Cloud. 

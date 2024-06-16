@@ -1,7 +1,6 @@
 package slashHandlers
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
@@ -23,7 +22,6 @@ func roleDisplayNameListForUser(userId string) string {
 	if err != nil {
 		log.Fatalf("Cannot display role names for user with id %s: %v", userId, err)
 	}
-	fmt.Println("Len(roles)=", len(roles))
 
 	displayString := "Your roles are: "
 	for index, role := range roles {
