@@ -68,10 +68,8 @@ func displayEmbedForUser(userId string) []*discordgo.MessageEmbed {
 		SetDescription(fmt.Sprintf("`%s CIRCLE`", user.CurrentCircle)).
 		SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		SetColor(000000).
-		// Add field for highest role obtained
-		// Add field for date created / verified
 		AddField(fmt.Sprintf("Aztec since:  `%s`", userCreatedTimeString), "", false).
-		AddField(fmt.Sprintf("Highest obtained role:  `%s %s`", highestRole.Emoji, highestRole.DisplayName), "", false)
+		AddField(fmt.Sprintf("Highest obtained role:  `%s`", highestRole.DisplayName), "", false)
 
 	return []*discordgo.MessageEmbed{embed.MessageEmbed}
 }

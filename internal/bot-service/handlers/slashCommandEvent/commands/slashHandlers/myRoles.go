@@ -59,7 +59,7 @@ func roleDisplayEmbedForUser(userName string, userId string) []*discordgo.Messag
 		text := fmt.Sprintf("_%s_", role.Info)
 		if role.Emoji != "" {
 			// Role has an associated emoji
-			title = fmt.Sprintf("`%s %s`", role.Emoji, role.DisplayName)
+			title = fmt.Sprintf("`%s`", role.DisplayName)
 		} else {
 			// Role doesn't have an associated emoji
 			title = fmt.Sprintf("`%s`", role.DisplayName)
