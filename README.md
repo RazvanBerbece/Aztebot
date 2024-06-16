@@ -9,7 +9,7 @@ The powerful Discord bot which powers the OTA (Ordinul Templierilor Azteci) Disc
 
 ### External
 - `aztemusic-service` (Standalone music orchestrator bot application - see development here [AzteMusic](https://github.com/AzteBot-Developments/AzteMusic))
-- `aztemarket-service` (Standalone marketplace bot application - see development here [AzteMusic](https://github.com/AzteBot-Developments/AzteMarket))
+- `aztemarket-service` (Standalone marketplace bot application - see development here [AzteMarket](https://github.com/AzteBot-Developments/AzteMarket))
 
 # How to Run
 ## Prerequisites
