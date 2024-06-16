@@ -589,7 +589,6 @@ func MemberIsBot(s *discordgo.Session, guildId string, userId string) (*bool, er
 
 	member, err := s.State.Member(guildId, userId)
 	if err != nil {
-		fmt.Printf("An error ocurred while checking whether member %s is a bot", userId)
 		return nil, err
 	}
 
