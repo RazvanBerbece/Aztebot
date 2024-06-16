@@ -4,7 +4,7 @@ import "regexp"
 
 func IsValidDiscordUserId(userId string) bool {
 
-	pattern := regexp.MustCompile(`^\d{17,18}$`)
+	pattern := regexp.MustCompile(`^\d{17,20}$`)
 
 	// Check if the userID matches the regular expression pattern.
 	return pattern.MatchString(userId)

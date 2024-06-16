@@ -378,7 +378,7 @@ func GiveTimeoutToMemberWithId(s *discordgo.Session, i *discordgo.InteractionCre
 	err = s.GuildMemberTimeout(guildId, userId, &timeoutExpiryTimestamp)
 	if err != nil {
 		fmt.Println("Error timing out user: ", err)
-		return fmt.Errorf(err.Error())
+		return fmt.Errorf("%v", err)
 	}
 
 	return nil
@@ -431,7 +431,7 @@ func ClearMemberActiveTimeout(s *discordgo.Session, i *discordgo.Interaction, gu
 	err = s.GuildMemberTimeout(guildId, userId, nil)
 	if err != nil {
 		fmt.Println("Error timing out user: ", err)
-		return fmt.Errorf(err.Error())
+		return fmt.Errorf("%v", err)
 	}
 
 	return nil
