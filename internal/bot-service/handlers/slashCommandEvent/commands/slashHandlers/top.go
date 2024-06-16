@@ -157,7 +157,7 @@ func ProcessTopMusicListeningTimePartialEmbed(topCount int, s *discordgo.Session
 	}
 	embed.
 		AddLineBreakField().
-		AddField(fmt.Sprintf("🎵 Top %d By Time Spent Listening Music", topCount), "", false)
+		AddField(fmt.Sprintf("🎵 Top %d By Time Spent Listening To Music", topCount), "", false)
 	if len(topMusicListeners) == 0 {
 		embed.AddField("", "No members in this category", false)
 	} else {

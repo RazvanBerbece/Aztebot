@@ -80,6 +80,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 					vs.ChannelID: &now,
 				}
 			} else {
+				fmt.Println("JOIN VC")
 				globals.VoiceSessions[userId] = time.Now()
 			}
 
@@ -109,6 +110,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 				}
 			} else {
 				// User was on any other VC
+				fmt.Println("LEAVE MUSIC")
 				if joinTime, ok := globals.VoiceSessions[userId]; ok {
 					duration := time.Since(joinTime)
 					err := globalsRepo.UserStatsRepository.AddToTimeSpentInVoiceChannels(userId, int(duration.Seconds()))

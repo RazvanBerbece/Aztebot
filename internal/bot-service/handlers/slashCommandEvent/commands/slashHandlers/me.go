@@ -140,7 +140,7 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 			AddField(fmt.Sprintf("💯 Total reactions received:  `%d`", stats.NumberReactionsReceived), "", false).
 			AddLineBreakField().
 			AddField(fmt.Sprintf("🎙️ Time spent in voice channels:  `%s`", timeSpentInVcs), "", false).
-			AddField(fmt.Sprintf("🎵 Time spent listening music:  `%s`", timeSpentListeningMusic), "", false)
+			AddField(fmt.Sprintf("🎵 Time spent listening to music:  `%s`", timeSpentListeningMusic), "", false)
 
 	} else {
 		embed.AddField("Member hasn't verified yet.", "", false)
