@@ -49,10 +49,15 @@ jobs:
 
       - name: Setup environment
         run: |
+          : # Environment variables for AzteBot
           echo ${{ secrets.ENV_BASE64_STRING }} | base64 --decode > .env
-          echo ${{ secrets.AZTERADIO_ENV_BASE64 }} | base64 --decode > cmd/azteradio-service/config.yml
-          echo ${{ secrets.AZTEMUSIC_1_ENV_BASE64 }} | base64 --decode > cmd/aztemusic-service/1/config.yml
 
+          : # Environment variables for AzteMusic services (in Golang)
+          : # INACTIVE FOR NOW
+          : # echo ${{ secrets.AZTERADIO_ENV_BASE64 }} | base64 --decode > cmd/azteradio-service/config.yml
+          : # echo ${{ secrets.AZTEMUSIC_1_ENV_BASE64 }} | base64 --decode > cmd/aztemusic-service/1/config.yml
+
+          : # Environment variables for AzteMusic services (in Java)
           echo ${{ secrets.JAR_AZTERADIO_CONFIG }} | base64 --decode > cmd/aztemusic-service-jar/azteradio-service/config.txt
           echo ${{ secrets.JAR_AZTEMUSIC_1_CONFIG }} | base64 --decode > cmd/aztemusic-service-jar/aztemusic-service-1/config.txt
           echo ${{ secrets.JAR_AZTEMUSIC_2_CONFIG }} | base64 --decode > cmd/aztemusic-service-jar/aztemusic-service-2/config.txt
@@ -133,7 +138,7 @@ jobs:
       - name: Scale deployments
         run: |
           kubectl scale --replicas=1 deployment/aztebot-service-${{ steps.tag_version.outputs.new_tag }}
-          
+
           kubectl scale --replicas=1 deployment/azteradio-service-${{ steps.tag_version.outputs.new_tag }}
 
           kubectl scale --replicas=1 deployment/aztemusic-service-1-${{ steps.tag_version.outputs.new_tag }}
