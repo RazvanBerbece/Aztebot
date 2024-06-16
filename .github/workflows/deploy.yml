@@ -21,8 +21,9 @@ env:
   DOCKER_ARTIFACT_REPOSITORY: ${{ secrets.GCE_PROJECT_DOCKER_ARTIFACT_REGISTRY }} # TODO: Try and make this follow the instance zone declared in the infrastructure repo ?
   GKE_ZONE: europe-west2-c # TODO: Try and make this follow the instance zone declared in the infrastructure repo ?
   GKE_REGION: europe-west2 # TODO: Try and make this follow the instance zone declared in the infrastructure repo ?
-  IMAGE: aztebot-service
   CLUSTER_NAME: ${{ secrets.GKE_CLUSTER_NAME }}
+  AZTEBOT_IMAGE: aztebot-service
+  AZTERADIO_IMAGE: azteradio-service
 
 jobs:
 
@@ -36,9 +37,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup environment
+      - name: Setup environment (all)
         run: |
           echo ${{ secrets.ENV_BASE64_STRING }} | base64 --decode > .env
+          echo ${{ secrets.JAR_CONF_BASE64 }} | base64 --decode > cmd/azteradio-service-java/config.txt
 
       - name: Generate next release number
         id: tag_version
@@ -68,14 +70,19 @@ jobs:
           username: 'oauth2accesstoken'
           password: '${{ steps.auth.outputs.access_token }}'
 
-      - name: 'Docker build'
+      - name: 'Docker build' (all)
         run: |
           docker build \
-          --tag "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}" -f cmd/bot-service/Dockerfile .
+          --tag "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTEBOT_IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}" -f cmd/bot-service/Dockerfile .
 
-      - name: 'Docker push'
+          docker build \
+          --tag "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTERADIO_IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}" -f cmd/azteradio-service-java/Dockerfile .
+
+      - name: 'Docker push' (all)
         run: |
-          docker push "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}"
+          docker push "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTEBOT_IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}"
+          
+          docker push "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTERADIO_IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}"
       
       - name: Connect to GKE
         uses: google-github-actions/get-gke-credentials@v0
@@ -88,19 +95,25 @@ jobs:
           export GCE_PROJECT="${{ env.PROJECT_ID }}"
           export GCE_PROJECT_DOCKER_ARTIFACT_REGISTRY="${{ env.DOCKER_ARTIFACT_REPOSITORY }}"
       
-      - name: Remove previous deployment
+      - name: Remove previous deployments (all)
         run: |
           kubectl delete deployment --ignore-not-found=true aztebot-bot-service-${{ steps.tag_version.outputs.previous_tag }}
+          
+          kubectl delete deployment --ignore-not-found=true azteradio-service-${{ steps.tag_version.outputs.previous_tag }}
       
-      - name: Create GKE Deployment for new image
+      - name: Create GKE Deployments for new image (all)
         run: |
-          kubectl create deployment aztebot-bot-service-${{ steps.tag_version.outputs.new_tag }} --image="${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}"
+          kubectl create deployment aztebot-bot-service-${{ steps.tag_version.outputs.new_tag }} --image="${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTEBOT_IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}"
+          
+          kubectl create deployment azteradio-service-${{ steps.tag_version.outputs.new_tag }} --image="${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTERADIO_IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}"
 
-      - name: Scale deployment
+      - name: Scale deployments (all)
         run: |
           kubectl scale --replicas=1 deployment/aztebot-bot-service-${{ steps.tag_version.outputs.new_tag }}
+          
+          kubectl scale --replicas=1 deployment/azteradio-service-${{ steps.tag_version.outputs.new_tag }}
 
-      - name: Show created Pods
+      - name: Show created Pods (all)
         run: |
           kubectl get pods
       

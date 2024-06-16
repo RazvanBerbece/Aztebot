@@ -30,3 +30,6 @@ misc/
 keys/
 prodEnvString.txt
 downloads/
+config.txt
+.prod.jar-config.txt
+.prod.config.txt

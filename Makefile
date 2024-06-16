@@ -5,7 +5,7 @@ migrate-up:
 migrate-up-dry:
 	sql-migrate up -config=local.dbconfig.yml -env="staging" -dryrun
 
-run-all:
+up:
 	docker compose up -d --remove-orphans --build
 
 down:
@@ -13,6 +13,9 @@ down:
 
 update-env:
 	openssl base64 -A -in .prod.env -out .env.out
+
+update-jar-conf:
+	openssl base64 -A -in cmd/azteradio-service-java/.prod.config.txt -out .prod.jar-config.txt
 
 
 # APP STARTUP SHELL APPS
