@@ -44,11 +44,9 @@ jobs:
         run: go version
       
       - name: Setup environment
-        id: envSetup
         run: |
           touch .env
           echo "${{ secrets.ENV_FILE }}" >> .env
       
       - name: Run unit tests
-        needs: envSetup
         run: go test ./internal/...
