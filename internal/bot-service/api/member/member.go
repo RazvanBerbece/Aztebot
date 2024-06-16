@@ -480,7 +480,7 @@ func GetMemberExperiencePoints(userId string) (*float64, error) {
 }
 
 // TODO: This could implement a channel pub/sub so that it can ensure experience grants but also fire and forget
-func GrantMemberExperience(userId string, activityType string, multiplierOption *float64) (*float64, error) {
+func GrantMemberExperience(userId string, activityType string, points float64) (*float64, error) {
 
 	isMember := globalsRepo.UsersRepository.UserExists(userId)
 	if isMember < 0 {
@@ -489,27 +489,7 @@ func GrantMemberExperience(userId string, activityType string, multiplierOption 
 		return nil, fmt.Errorf(errMsg)
 	}
 
-	var multiplier float64 = 1.0
-
-	if multiplierOption != nil {
-		multiplier = *multiplierOption
-	}
-
-	var xpToAdd float64
-	switch activityType {
-	case "MSG_REWARD":
-		xpToAdd = globals.ExperienceReward_MessageSent * multiplier
-	case "REACT_REWARD":
-		xpToAdd = globals.ExperienceReward_ReactionReceived * multiplier
-	case "SLASH_REWARD":
-		xpToAdd = globals.ExperienceReward_SlashCommandUsed * multiplier
-	case "IN_VC_REWARD":
-		xpToAdd = globals.ExperienceReward_InVc * multiplier
-	case "IN_MUSIC_REWARD":
-		xpToAdd = globals.ExperienceReward_InMusic * multiplier
-	}
-
-	err := globalsRepo.UsersRepository.AddUserExpriencePoints(userId, xpToAdd)
+	err := globalsRepo.UsersRepository.AddUserExpriencePoints(userId, points)
 	if err != nil {
 		fmt.Printf("An error ocurred while granting XP to user: %v\n", err)
 		return nil, err
