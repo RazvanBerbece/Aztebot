@@ -15,7 +15,15 @@ services:
   
   bot-service:
     container_name: bot-service
+    env_file:
+      ./.env
     build:
       dockerfile: ./cmd/bot-service/Dockerfile
     volumes: 
       - "./internal/bot-service/logs:/app/logs"
+
+networks:
+  default:
+    name: dev_network
+    driver: bridge
+    external: true

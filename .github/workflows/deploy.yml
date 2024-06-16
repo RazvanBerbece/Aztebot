@@ -36,6 +36,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup environment
+        run: |
+          touch .env
+          echo "${{ secrets.ENV_FILE }}" >> .env
+
       - name: Generate next release number
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.1
@@ -46,11 +51,6 @@ jobs:
       - name: Generate SHA output
         id: vars
         run: echo "GITHUB_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
-      - name: Setup environment
-        run: |
-          touch .env
-          echo "${{ secrets.ENV_FILE }}" >> .env
       
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
