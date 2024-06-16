@@ -32,7 +32,7 @@ func HandleSlashMe(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		},
 	})
 
-	embed := displayEmbedForUser(s, userId)
+	embed := GetProfileEmbedForUser(s, userId)
 	if embed == nil {
 		utils.ErrorEmbedResponseEdit(s, i.Interaction, "An error ocurred while trying to fetch your profile card.")
 	}
@@ -46,7 +46,7 @@ func HandleSlashMe(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	s.InteractionResponseEdit(i.Interaction, &editWebhook)
 }
 
-func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.MessageEmbed {
+func GetProfileEmbedForUser(s *discordgo.Session, userId string) []*discordgo.MessageEmbed {
 
 	user, err := globalsRepo.UsersRepository.GetUser(userId)
 	if err != nil {
@@ -158,7 +158,7 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 		}
 
 		// Add extra decorations to the embed (special users, staff members, etc.)
-		decorateEmbed(embed, highestStaffRole, userId)
+		DecorateProfileEmbed(embed, highestStaffRole, userId)
 
 		embed.
 			AddField(fmt.Sprintf("🩸 Aztec since:  `%s`", userCreatedTimeString), "", false).
@@ -178,7 +178,7 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 	return []*discordgo.MessageEmbed{embed.MessageEmbed}
 }
 
-func decorateEmbed(embed *embed.Embed, staffRole *dataModels.Role, userId string) {
+func DecorateProfileEmbed(embed *embed.Embed, staffRole *dataModels.Role, userId string) {
 
 	// Special users segment
 	if userId == "526512064794066945" {
