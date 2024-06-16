@@ -94,33 +94,35 @@ func GiveWarnToUserWithId(s *discordgo.Session, i *discordgo.InteractionCreate, 
 			fmt.Printf("An error ocurred while sending staff rules DM to user: %v\n", err)
 		}
 	case 1:
-		// 1 downgrade for role
-		errDemote := member.DemoteMember(s, globals.DiscordMainGuildId, userId, "STAFF")
+		// 1 downgrade for staff role
+		demoteType := "STAFF"
+		errDemote := member.DemoteMember(s, globals.DiscordMainGuildId, userId, demoteType)
 		if errDemote != nil {
 			fmt.Printf("An error ocurred while demoting user: %v\n", errDemote)
 			return errDemote
 		}
 		// Send demotion message
-		demotionMessageContent := "⚠️ This is a message to inform you that you have been demoted from your Circle role as you received your second warning."
+		demotionMessageContent := fmt.Sprintf("⚠️ This is a message to inform you that you have been demoted from your %s role as you received your second warning.", demoteType)
 		err := sendWarnDmToUser(s, i, userId, demotionMessageContent)
 		if err != nil {
 			fmt.Printf("An error ocurred while sending demotion message content 1 DM to user: %v\n", err)
 		}
 	case 2:
 		// 1 downgrade for role
+		demoteType := "STAFF"
 		errDemote := member.DemoteMember(s, globals.DiscordMainGuildId, userId, "STAFF")
 		if errDemote != nil {
 			fmt.Printf("An error ocurred while demoting user: %v\n", errDemote)
 			return errDemote
 		}
 		// Send demotion message
-		demotionMessageContent := "⚠️ This is a message to inform you that you have been demoted from your Circle role as you received your third warning."
+		demotionMessageContent := fmt.Sprintf("⚠️ This is a message to inform you that you have been demoted from your %s role as you received your third warning.", demoteType)
 		err := sendWarnDmToUser(s, i, userId, demotionMessageContent)
 		if err != nil {
 			fmt.Printf("An error ocurred while sending demotion message content 2 DM to user: %v\n", err)
 		}
 	case 3:
-		// Send demotion message
+		// Send kick message
 		kickMessageContent := "⚠️ This is a message to inform you that you have been kicked from the OTA community as you received your fourth, and final warning."
 		err := sendWarnDmToUser(s, i, userId, kickMessageContent)
 		if err != nil {
