@@ -1,0 +1,1 @@
+This is a default message to be sent when the bot has succesfully started on the server.

@@ -2,12 +2,15 @@ package readyEvent
 
 import (
 	"fmt"
+	"log"
+	"os"
 	"sync"
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
+	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/logging"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -28,6 +31,9 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 
 	// Initial cleanup of members from database against the Discord server
 	go CleanupMemberAtStartup(s)
+
+	// Initial informative messages on certain channels
+	go SendInformationEmbedsToTextChannels(s)
 
 	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, XP gaining?, etc.)
 	initialDelay, activityTicker := getDelayAndTickerForActivityStreakCron(24, 0, 0) // H, m, s
@@ -113,27 +119,6 @@ func CleanupMemberAtStartup(s *discordgo.Session) error {
 
 	// For each tag in the DB, delete user from table
 	uidsLength := len(uids)
-	// SERIAL
-	// for i := 0; i < uidsLength; i++ {
-	// 	uid := uids[i]
-	// 	_, err := s.GuildMember(globals.DiscordMainGuildId, uid)
-	// 	if err != nil {
-	// 		// if the member does not exist on the main server, delete from the database
-	// 		// delete user stats
-	// 		err := userStatsRepository.DeleteUserStats(uid)
-	// 		if err != nil {
-	// 			fmt.Println("Failed Task CleanupMemberAtStartup() at", time.Now(), "with error", err)
-	// 			return err
-	// 		}
-	// 		// delete user
-	// 		errUsers := usersRepository.DeleteUser(uid)
-	// 		if errUsers != nil {
-	// 			fmt.Println("Failed Task CleanupMemberAtStartup() at", time.Now(), "with error", errUsers)
-	// 			return err
-	// 		}
-	// 	}
-	// }
-	// PARALLEL
 	var wg sync.WaitGroup
 	wg.Add(uidsLength)
 	for i := 0; i < uidsLength; i++ {
@@ -219,6 +204,63 @@ func UpdateActivityStreaks(usersRepository *repositories.UsersRepository, userSt
 	}
 
 	fmt.Println("Finished Task UpdateActivityStreaks() at", time.Now())
+
+}
+
+func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
+
+	var textChannels map[string]string
+
+	// TODO: Make the channels and their descriptions use environment variables somehow
+	if globals.Environment == "staging" {
+		// Dev text channels
+		textChannels = map[string]string{
+			"1188135110042734613": "default",
+		}
+	} else {
+		// Production text channels
+		textChannels = map[string]string{
+			"1176277764001767464": "info-music",
+		}
+	}
+
+	for id, details := range textChannels {
+		hasMessage, err := utils.ChannelHasDefaultInformationMessage(s, id)
+		if err != nil {
+			fmt.Printf("Could not check for default message in channel %s (%s): %v", id, details, err)
+			continue
+		}
+		if hasMessage {
+			// Do not send this default message
+			continue
+		} else {
+			// Send associated default message to given text channel
+			var embedText string
+			path, pathErr := os.Getwd()
+			if pathErr != nil {
+				log.Println(pathErr)
+			}
+			fmt.Println(path)
+			switch details {
+			case "default":
+				embedText = utils.GetTextFromFile("internal/bot-service/handlers/readyEvent/assets/defaultContent/default.txt")
+			case "music-info":
+				embedText = utils.GetTextFromFile("internal/bot-service/handlers/readyEvent/assets/defaultContent/music-info.txt")
+			}
+			embed := embed.NewEmbed().
+				SetTitle("🤖").
+				SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
+				SetColor(000000).
+				AddField("", embedText, false).
+				MessageEmbed
+
+			_, err := s.ChannelMessageSendEmbed(id, embed)
+			if err != nil {
+				log.Fatalf("An error occured while sending a default message (%s): %v", details, err)
+				return
+			}
+		}
+	}
 
 }
 
