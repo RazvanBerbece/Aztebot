@@ -12,8 +12,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-var ()
-
 // Called once the Discord servers confirm a succesful connection.
 func Ready(s *discordgo.Session, event *discordgo.Ready) {
 
