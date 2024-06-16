@@ -56,7 +56,7 @@ func roleDisplayEmbedForUser(userName string, userId string) []*discordgo.Messag
 
 	for _, role := range roles {
 		var title string
-		text := fmt.Sprintf("_%s_", role.Info)
+		var text string = role.Info
 		if role.Emoji != "" {
 			// Role has an associated emoji
 			title = fmt.Sprintf("`%s`", role.DisplayName)
@@ -64,8 +64,15 @@ func roleDisplayEmbedForUser(userName string, userId string) []*discordgo.Messag
 			// Role doesn't have an associated emoji
 			title = fmt.Sprintf("`%s`", role.DisplayName)
 		}
-		embed.
-			AddField(title, text, false)
+		// Only add field for role description if there is a description available
+		if text != "" {
+			text = fmt.Sprintf("_%s_", text) // italic
+			embed.
+				AddField(title, text, false)
+		} else {
+			embed.
+				AddField(title, "", false)
+		}
 	}
 
 	return []*discordgo.MessageEmbed{embed.MessageEmbed}

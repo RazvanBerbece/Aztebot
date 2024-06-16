@@ -242,6 +242,9 @@ func idArray(idsString string) []int {
 	stringIds := strings.Split(idsString, ",")
 
 	for _, id := range stringIds {
+		if id == "" {
+			continue
+		}
 		num, err := strconv.Atoi(id)
 		if err != nil {
 			fmt.Printf("Could not parse role ID %s into integer: %v", id, err)

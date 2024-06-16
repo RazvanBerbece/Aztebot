@@ -12,22 +12,43 @@ import (
 
 // Takes in a discord member and syncs the database User with the current member details
 // as they appear on the Discord guild. It uses repositories injected via the argument list to prevent connection attempt floods.
-func SyncUserPersistent(s *discordgo.Session, guildId string, userId string, member *discordgo.Member, rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository) error {
+func SyncUserPersistent(s *discordgo.Session, guildId string, userId string, member *discordgo.Member, rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository) error {
 
 	user, err := usersRepository.GetUser(userId)
 	if err != nil {
-		log.Printf("Cannot retrieve user with id %s: %v", userId, err)
 		if err == sql.ErrNoRows {
-			log.Printf("Storing user with id %s", userId)
+			log.Printf("Storing new user with id %s", userId)
 			user, err = usersRepository.SaveInitialUserDetails(member.User.Username, userId)
 			if err != nil {
 				log.Fatalf("Cannot store user %s with id %s: %v", member.User.Username, userId, err)
 				return err
 			}
+			errStats := userStatsRepository.SaveInitialUserStats(userId)
+			if errStats != nil {
+				log.Fatalf("Cannot store initial user %s stats: %v", member.User.Username, errStats)
+				return errStats
+			}
+		} else {
+			log.Fatalf("Cannot sync persistent users from Discord servers: %v", err)
+			return err
 		}
 	}
 
 	if user != nil {
+
+		// Setup user stats if the user doesn't have an entity in UserStats
+		_, errStats := userStatsRepository.GetStatsForUser(user.UserId)
+		if errStats != nil {
+			if errStats == sql.ErrNoRows {
+				errStatsInit := userStatsRepository.SaveInitialUserStats(userId)
+				if errStatsInit != nil {
+					log.Fatalf("Cannot store initial user %s stats: %v", member.User.Username, errStatsInit)
+					return errStatsInit
+				}
+			}
+		}
+
+		// Sync all other user details between the Discord server and the database (mostly updating the DB with Discord data)
 		// Roles
 		// Get current roles from user (as they appear on the Discord guild)
 		var currentRoleIds string
