@@ -23,7 +23,7 @@ jobs:
       - name: Setup environment
         run: |
           : # Load submodules
-          git submodule update --init --recursive
+          git submodule update --recursive --remote --init
           
           : # Environment variables for CI testing
           echo ${{ secrets.CI_ENV_BASE64_STRING }} | base64 --decode > .env

@@ -57,8 +57,11 @@ jobs:
           github_token: ${{ secrets.GH_TOKEN }}
           dry_run: true
 
-      - name: Setup environment
+      - name: Setup deployment environment
         run: |
+          : # Load submodules (shared scripts, etc.)
+          git submodule update --recursive --remote --init
+
           : # Environment variables for AzteBot
           echo ${{ env.AZTEBOT_CONFIG_ENCODED }} | base64 --decode > .env
 
@@ -117,6 +120,11 @@ jobs:
       - name: Show created Pods
         run: |
           kubectl get pods
+      
+      - name: Cleanup stale Artifact Registry images
+        run: |
+          cd Infrastructure/scripts
+          sh clear_stale_artifact_images.sh 1
       
       - name: Create a new GitHub release
         uses: ncipollo/release-action@v1
