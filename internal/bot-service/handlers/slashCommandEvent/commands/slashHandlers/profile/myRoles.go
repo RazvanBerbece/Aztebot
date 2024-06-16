@@ -6,6 +6,7 @@ import (
 
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
+	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -14,22 +15,12 @@ func HandleSlashMyRoles(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	// Attempt a sync
 	err := ProcessUserUpdate(i.Interaction.Member.User.ID, s, i)
 	if err != nil {
-		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{
-				Content: "An error ocurred while trying to fetch your roles.",
-			},
-		})
+		utils.SendErrorReportEmbed(s, i.Interaction, fmt.Sprintf("An error ocurred while trying to fetch your roles: `%s`", err))
 	}
 
 	embed := roleDisplayEmbedForUser(i.Interaction.Member.User.Username, i.Interaction.Member.User.ID)
 	if embed == nil {
-		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{
-				Content: "An error ocurred while trying to fetch your roles.",
-			},
-		})
+		utils.SendErrorReportEmbed(s, i.Interaction, "An error ocurred while trying to fetch your roles.")
 	}
 
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{

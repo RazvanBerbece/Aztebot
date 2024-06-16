@@ -15,13 +15,13 @@ func ProcessRemoveExpiredWarns(months int) {
 
 	go func() {
 
-		fmt.Println("Scheduled Task RemoveExpiredWarns() in <", initialWarnRemovalDelay.Hours()/24, "> days")
+		RemoveExpiredWarns(globalsRepo.WarnsRepository)
+
+		fmt.Println("Scheduled Cron Task RemoveExpiredWarns() in <", initialWarnRemovalDelay.Hours()/24, "> days")
 		time.Sleep(initialWarnRemovalDelay)
 
 		// Inject new connections
 		warnsRepository := repositories.NewWarnsRepository()
-
-		RemoveExpiredWarns(globalsRepo.WarnsRepository)
 
 		for range warnRemovalTicker.C {
 			// Process
