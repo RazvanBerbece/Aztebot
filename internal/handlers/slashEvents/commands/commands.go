@@ -7,6 +7,7 @@ import (
 	arcadeLadderSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/arcadeLadder"
 	coinSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/coin"
 	jailSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/jail"
+	massPingSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/massPing"
 	repSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/rep"
 	timeoutSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/timeout"
 	warningSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/warning"
@@ -517,6 +518,19 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 			},
 		},
 	},
+	{
+		Name:        "mass-dm-announcement",
+		Description: "Sends a mass DM to all the members in the server.",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "msg",
+				Description: "The messages to send to all the members on the server.",
+				Required:    true,
+				MaxLength:   2048,
+			},
+		},
+	},
 }
 
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -552,4 +566,5 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"add-coins":             coinSlashHandlers.HandleSlashAddCoins,
 	"set-global-coin-rate":  coinSlashHandlers.HandleSlashSetGlobalCoinRateForActivity,
 	"reset-rep":             repSlashHandlers.HandleSlashResetRep,
+	"mass-dm-announcement":  massPingSlashHandlers.HandleSlashMassDm,
 }
