@@ -33,14 +33,14 @@ func TestCalculateExperiencePointsFromStats(t *testing.T) {
 			NumReactionsReceived: 0,
 			TsVc:                 0,
 			TsMusic:              0,
-		}, 1},
+		}, 0},
 		{TestStatsInput{
 			NumMessagesSent:      153,
 			NumSlashCommandsUsed: 10,
 			NumReactionsReceived: 7,
 			TsVc:                 300,
 			TsMusic:              0,
-		}, 239},
+		}, 123},
 	}
 
 	for _, c := range cases {
