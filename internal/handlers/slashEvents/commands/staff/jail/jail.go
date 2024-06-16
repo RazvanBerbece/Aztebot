@@ -22,7 +22,7 @@ func HandleSlashJail(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		utils.SendCommandErrorEmbedResponse(s, i.Interaction, errMsg)
 		return
 	}
-	if ownerStaffRole == nil || ownerStaffRole.DisplayName == "Moderator" {
+	if ownerStaffRole == nil || ownerStaffRole.DisplayName == "Trial Moderator" {
 		utils.SendCommandErrorEmbedResponse(s, i.Interaction, "Command owner doesn't have the right permissions to use this command.")
 		return
 	}
