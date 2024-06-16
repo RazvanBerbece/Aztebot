@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 )
 
 func ProcessUpdateActivityStreaks(h int, m int, s int) {
@@ -24,7 +24,7 @@ func ProcessUpdateActivityStreaks(h int, m int, s int) {
 		userStatsRepository := repositories.NewUsersStatsRepository()
 
 		// The first run should happen at start-up, not after 24 hours
-		UpdateActivityStreaks(globalsRepo.UsersRepository, globalsRepo.UserStatsRepository)
+		UpdateActivityStreaks(globalRepositories.UsersRepository, globalRepositories.UserStatsRepository)
 
 		for range activityStreakTicker.C {
 			// Process
@@ -59,10 +59,10 @@ func UpdateActivityStreaks(usersRepository *repositories.UsersRepository, userSt
 
 		// Activity scores greater than this are favourable
 		var activityThreshold int
-		if globals.FavourableActivitiesThresholdErr != nil {
+		if globalConfiguration.FavourableActivitiesThresholdErr != nil {
 			activityThreshold = 10
 		} else {
-			activityThreshold = globals.FavourableActivitiesThreshold
+			activityThreshold = globalConfiguration.FavourableActivitiesThreshold
 		}
 
 		// If user has favourable activity score and favourable timestamp, increase day streak

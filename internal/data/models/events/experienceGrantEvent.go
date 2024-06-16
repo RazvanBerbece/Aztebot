@@ -1,6 +1,6 @@
-package dataModels
+package events
 
-type ExperienceGrant struct {
+type ExperienceGrantEvent struct {
 	UserId   string
 	Points   float64
 	Activity string

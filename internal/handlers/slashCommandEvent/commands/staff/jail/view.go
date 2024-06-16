@@ -3,7 +3,7 @@ package jailSlashHandlers
 import (
 	"fmt"
 
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -18,7 +18,7 @@ func HandleSlashJailView(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		},
 	})
 
-	jailed, err := globalsRepo.JailRepository.GetJail()
+	jailed, err := globalRepositories.JailRepository.GetJail()
 	if err != nil {
 		utils.ErrorEmbedResponseEdit(s, i.Interaction, err.Error())
 		return
@@ -34,7 +34,7 @@ func HandleSlashJailView(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		AddField("Imprisoned Members List", "", false)
 
 	for idx, jailedUser := range jailed {
-		user, err := globalsRepo.UsersRepository.GetUser(jailedUser.UserId)
+		user, err := globalRepositories.UsersRepository.GetUser(jailedUser.UserId)
 		if err != nil {
 			utils.ErrorEmbedResponseEdit(s, i.Interaction, err.Error())
 			return

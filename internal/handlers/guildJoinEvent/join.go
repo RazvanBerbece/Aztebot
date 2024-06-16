@@ -3,7 +3,7 @@ package joinEvent
 import (
 	"fmt"
 
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
@@ -19,7 +19,7 @@ func GuildJoin(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
 	utils.LogHandlerCall("GuildJoin", "")
 
 	// Store newly-joined user to DB tables (probably only the initial details and awaiting for verification and cron sync)
-	err := utils.SyncUser(s, globals.DiscordMainGuildId, m.Member.User.ID, m.Member)
+	err := utils.SyncUser(s, globalConfiguration.DiscordMainGuildId, m.Member.User.ID, m.Member)
 	if err != nil {
 		fmt.Printf("Error storing new member %s to DB: %v", m.Member.User.Username, err)
 	}

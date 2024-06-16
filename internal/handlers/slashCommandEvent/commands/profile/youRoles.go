@@ -3,7 +3,7 @@ package profileSlashHandlers
 import (
 	"fmt"
 
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
@@ -12,7 +12,7 @@ func HandleSlashYouRoles(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	targetUserId := utils.GetDiscordIdFromMentionFormat(i.ApplicationCommandData().Options[0].StringValue())
 
-	user, err := globalsRepo.UsersRepository.GetUser(targetUserId)
+	user, err := globalRepositories.UsersRepository.GetUser(targetUserId)
 	if err != nil {
 		utils.SendCommandErrorEmbedResponse(s, i.Interaction, "An error ocurred while trying to fetch a user from the database")
 		return

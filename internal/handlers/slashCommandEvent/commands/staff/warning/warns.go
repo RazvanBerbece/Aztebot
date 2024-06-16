@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -34,7 +34,7 @@ func HandleSlashWarns(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	}
 
 	// Retrieve all warnings for user with given UID
-	warns, err := globalsRepo.WarnsRepository.GetWarningsForUser(targetUserId)
+	warns, err := globalRepositories.WarnsRepository.GetWarningsForUser(targetUserId)
 	if err != nil {
 		fmt.Printf("An error ocurred while retrieving user warns: %v", err)
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{

@@ -5,8 +5,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
+	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -14,7 +14,7 @@ import (
 
 func HandleSlashTop5Users(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
-	durationSinceLastTop5sCommand := time.Since(globals.LastUsedTop5sTimestamp)
+	durationSinceLastTop5sCommand := time.Since(globalState.LastUsedTop5sTimestamp)
 	if int(durationSinceLastTop5sCommand.Minutes()) < 5 {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
@@ -69,13 +69,13 @@ func Top5CommandResultsEmbed(s *discordgo.Session, i *discordgo.InteractionCreat
 	// Top by time spent listening to music
 	ProcessTopMusicListeningTimePartialEmbed(topCount, s, i.Interaction, embed)
 
-	globals.LastUsedTop5sTimestamp = time.Now()
+	globalState.LastUsedTop5sTimestamp = time.Now()
 
 	return []*discordgo.MessageEmbed{embed.MessageEmbed}
 }
 
 func ProcessTopMessagesPartialEmbed(topCount int, s *discordgo.Session, i *discordgo.Interaction, embed *embed.Embed) {
-	topMessagesSent, err := globalsRepo.UserStatsRepository.GetTopUsersByMessageSent(topCount)
+	topMessagesSent, err := globalRepositories.UserStatsRepository.GetTopUsersByMessageSent(topCount)
 	if err != nil {
 		log.Printf("Cannot retrieve OTA leaderboard top messages sent from the Discord API: %v", err)
 	}
@@ -105,7 +105,7 @@ func ProcessTopMessagesPartialEmbed(topCount int, s *discordgo.Session, i *disco
 }
 
 func ProcessTopVCSpentPartialEmbed(topCount int, s *discordgo.Session, i *discordgo.Interaction, embed *embed.Embed) {
-	topTimeInVCs, err := globalsRepo.UserStatsRepository.GetTopUsersByTimeSpentInVC(topCount)
+	topTimeInVCs, err := globalRepositories.UserStatsRepository.GetTopUsersByTimeSpentInVC(topCount)
 	if err != nil {
 		log.Printf("Cannot retrieve OTA leaderboard top times spent in VC from the Discord API: %v", err)
 	}
@@ -137,7 +137,7 @@ func ProcessTopVCSpentPartialEmbed(topCount int, s *discordgo.Session, i *discor
 }
 
 func ProcessTopActiveDayStreakPartialEmbed(topCount int, s *discordgo.Session, i *discordgo.Interaction, embed *embed.Embed) {
-	topStreaks, err := globalsRepo.UserStatsRepository.GetTopUsersByActiveDayStreak(topCount)
+	topStreaks, err := globalRepositories.UserStatsRepository.GetTopUsersByActiveDayStreak(topCount)
 	if err != nil {
 		log.Printf("Cannot retrieve OTA leaderboard top streaks from the Discord API: %v", err)
 	}
@@ -168,7 +168,7 @@ func ProcessTopActiveDayStreakPartialEmbed(topCount int, s *discordgo.Session, i
 }
 
 func ProcessTopReactionsReceivedPartialEmbed(topCount int, s *discordgo.Session, i *discordgo.Interaction, embed *embed.Embed) {
-	topReactions, err := globalsRepo.UserStatsRepository.GetTopUsersByReceivedReactions(topCount)
+	topReactions, err := globalRepositories.UserStatsRepository.GetTopUsersByReceivedReactions(topCount)
 	if err != nil {
 		log.Printf("Cannot retrieve OTA leaderboard top reactions received from the Discord API: %v", err)
 	}
@@ -199,7 +199,7 @@ func ProcessTopReactionsReceivedPartialEmbed(topCount int, s *discordgo.Session,
 }
 
 func ProcessTopMusicListeningTimePartialEmbed(topCount int, s *discordgo.Session, i *discordgo.Interaction, embed *embed.Embed) {
-	topMusicListeners, err := globalsRepo.UserStatsRepository.GetTopUsersByTimeSpentListeningMusic(topCount)
+	topMusicListeners, err := globalRepositories.UserStatsRepository.GetTopUsersByTimeSpentListeningMusic(topCount)
 	if err != nil {
 		log.Printf("Cannot retrieve OTA leaderboard top times spent listening music from the Discord API: %v", err)
 	}

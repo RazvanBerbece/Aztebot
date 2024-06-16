@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
@@ -47,11 +47,11 @@ func SyncExperiencePointsGainsAtStartup(s *discordgo.Session) {
 			stats.NumberReactionsReceived,
 			stats.TimeSpentInVoiceChannels,
 			stats.TimeSpentListeningToMusic,
-			globals.ExperienceReward_MessageSent,
-			globals.ExperienceReward_SlashCommandUsed,
-			globals.ExperienceReward_ReactionReceived,
-			globals.ExperienceReward_InVc,
-			globals.ExperienceReward_InMusic)
+			globalConfiguration.ExperienceReward_MessageSent,
+			globalConfiguration.ExperienceReward_SlashCommandUsed,
+			globalConfiguration.ExperienceReward_ReactionReceived,
+			globalConfiguration.ExperienceReward_InVc,
+			globalConfiguration.ExperienceReward_InMusic)
 		user.CurrentExperience = float64(updatedXp)
 
 		// Update user entity with new XP value

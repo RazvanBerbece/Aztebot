@@ -5,18 +5,19 @@ import (
 	"strings"
 	"time"
 
-	"github.com/RazvanBerbece/Aztebot/internal/api/server"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	server_channel "github.com/RazvanBerbece/Aztebot/internal/api/server/channel"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
 	"github.com/bwmarrin/discordgo"
 )
 
 func ProcessCleanupUnusedDynamicChannels(s *discordgo.Session, guildId string) {
 
 	var numSec int
-	if globals.CleanupDynamicChannelsFrequencyErr != nil {
+	if globalConfiguration.CleanupDynamicChannelsFrequencyErr != nil {
 		numSec = 5
 	} else {
-		numSec = globals.CleanupDynamicChannelsFrequency
+		numSec = globalConfiguration.CleanupDynamicChannelsFrequency
 	}
 
 	fmt.Println("[CRON] Starting Cron Ticker CleanupUnusedDynamicChannels() at", time.Now(), "running every", numSec, "seconds")
@@ -52,7 +53,7 @@ func CleanupUnusedDynamicChannels(s *discordgo.Session, guildId string) {
 		// If channel is a dynamic channel - given the `(~Extra~)` substring in the name
 		if channel.Type == discordgo.ChannelTypeGuildVoice && strings.Contains(channel.Name, "(~Extra~)") {
 
-			hasConnectedMembers, err := server.VoiceChannelHasConnectedMembers(s, guildId, channel.ID)
+			hasConnectedMembers, err := server_channel.VoiceChannelHasConnectedMembers(s, guildId, channel.ID)
 			if err != nil {
 				fmt.Printf("An error ocurred while cleaning up hanging dynamic channels: %v\n", err)
 				continue
@@ -66,7 +67,7 @@ func CleanupUnusedDynamicChannels(s *discordgo.Session, guildId string) {
 					fmt.Printf("An error ocurred while cleaning up hanging dynamic channels: %v\n", err)
 					continue
 				}
-				globals.DynamicChannelsCount -= 1
+				globalState.DynamicChannelsCount -= 1
 			}
 		}
 	}

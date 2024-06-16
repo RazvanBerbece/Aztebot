@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/RazvanBerbece/Aztebot/internal/api/member"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -47,7 +47,7 @@ func HandleSlashTimeoutRemoveActive(s *discordgo.Session, i *discordgo.Interacti
 		return
 	}
 
-	err = member.ClearMemberActiveTimeout(s, globals.DiscordMainGuildId, targetUserId)
+	err = member.ClearMemberActiveTimeout(s, globalConfiguration.DiscordMainGuildId, targetUserId)
 	if err != nil {
 		errMsg := fmt.Sprintf("An error ocurred while clearing timeout for user with ID %s: %v", targetUserId, err)
 		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)

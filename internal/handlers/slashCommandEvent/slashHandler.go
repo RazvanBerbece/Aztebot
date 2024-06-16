@@ -5,9 +5,10 @@ import (
 	"log"
 	"time"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	actionEvent "github.com/RazvanBerbece/Aztebot/internal/handlers/actionEvents"
 	"github.com/RazvanBerbece/Aztebot/internal/handlers/slashCommandEvent/commands"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
@@ -30,7 +31,7 @@ func RegisterSlashHandler(s *discordgo.Session) {
 
 		// If a higher-up restricted command is being executed
 		// and allowed roles are configured, only allow a user with one of these roles to execute an app command
-		if utils.StringInSlice(appData.Name, globals.RestrictedCommands) && len(globals.AllowedRoles) > 0 {
+		if utils.StringInSlice(appData.Name, globalConfiguration.RestrictedCommands) && len(globalConfiguration.AllowedRoles) > 0 {
 			if i.Type == discordgo.InteractionApplicationCommand {
 				// Check if the user has the allowed role
 				hasAllowedRole := false
@@ -40,7 +41,7 @@ func RegisterSlashHandler(s *discordgo.Session) {
 						log.Println("Error getting role:", err)
 						return
 					}
-					if utils.StringInSlice(roleObj.Name, globals.AllowedRoles) {
+					if utils.StringInSlice(roleObj.Name, globalConfiguration.AllowedRoles) {
 						hasAllowedRole = true
 					}
 					if hasAllowedRole {
@@ -63,7 +64,7 @@ func RegisterSlashHandler(s *discordgo.Session) {
 
 		// If a staff command
 		// and staff roles are configured, only allow a user with one of these roles to execute an app command
-		if utils.StringInSlice(appData.Name, globals.StaffCommands) && len(globals.StaffRoles) > 0 {
+		if utils.StringInSlice(appData.Name, globalConfiguration.StaffCommands) && len(globalConfiguration.StaffRoles) > 0 {
 			if i.Type == discordgo.InteractionApplicationCommand {
 				// Check if the user has the allowed role
 				hasAllowedRole := false
@@ -73,7 +74,7 @@ func RegisterSlashHandler(s *discordgo.Session) {
 						log.Println("Error getting role:", err)
 						return
 					}
-					if utils.StringInSlice(roleObj.Name, globals.StaffRoles) {
+					if utils.StringInSlice(roleObj.Name, globalConfiguration.StaffRoles) {
 						hasAllowedRole = true
 					}
 					if hasAllowedRole {
@@ -96,24 +97,24 @@ func RegisterSlashHandler(s *discordgo.Session) {
 
 		ownerUserId := i.Member.User.ID
 
-		err := globalsRepo.UserStatsRepository.IncrementSlashCommandsUsedForUser(ownerUserId)
+		err := globalRepositories.UserStatsRepository.IncrementSlashCommandsUsedForUser(ownerUserId)
 		if err != nil {
 			fmt.Printf("Error ocurred while incrementing slash commands for user %s: %v", ownerUserId, err)
 		}
 
-		err = globalsRepo.UserStatsRepository.IncrementActivitiesTodayForUser(ownerUserId)
+		err = globalRepositories.UserStatsRepository.IncrementActivitiesTodayForUser(ownerUserId)
 		if err != nil {
 			fmt.Printf("An error ocurred while incrementing user (%s) activities count: %v", ownerUserId, err)
 		}
-		err = globalsRepo.UserStatsRepository.UpdateLastActiveTimestamp(ownerUserId, time.Now().Unix())
+		err = globalRepositories.UserStatsRepository.UpdateLastActiveTimestamp(ownerUserId, time.Now().Unix())
 		if err != nil {
 			fmt.Printf("An error ocurred while udpating user (%s) last timestamp: %v", ownerUserId, err)
 		}
 
 		// Publish experience grant message on the channel
-		globals.ExperienceGrantsChannel <- dataModels.ExperienceGrant{
+		globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 			UserId:   ownerUserId,
-			Points:   globals.ExperienceReward_SlashCommandUsed,
+			Points:   globalConfiguration.ExperienceReward_SlashCommandUsed,
 			Activity: "Slash Command Used",
 		}
 

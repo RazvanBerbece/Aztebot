@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -33,7 +33,7 @@ func HandleSlashMyRoles(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 func RoleDisplayEmbedForUser(userName string, userId string) ([]*discordgo.MessageEmbed, error) {
 
-	roles, err := globalsRepo.UsersRepository.GetRolesForUser(userId)
+	roles, err := globalRepositories.UsersRepository.GetRolesForUser(userId)
 	if err != nil {
 		log.Printf("Cannot display roles for user with id %s: %v", userId, err)
 		return nil, err

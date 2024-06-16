@@ -8,7 +8,7 @@ import (
 
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
 	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
-	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
+	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/bwmarrin/discordgo"
 )
 
