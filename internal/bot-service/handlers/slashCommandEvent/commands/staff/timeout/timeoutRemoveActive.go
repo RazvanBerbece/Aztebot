@@ -46,7 +46,7 @@ func HandleSlashTimeoutRemoveActive(s *discordgo.Session, i *discordgo.Interacti
 		return
 	}
 
-	err = member.ClearMemberActiveTimeout(s, i.Interaction, globals.DiscordMainGuildId, targetUserId)
+	err = member.ClearMemberActiveTimeout(s, globals.DiscordMainGuildId, targetUserId)
 	if err != nil {
 		errMsg := fmt.Sprintf("An error ocurred while clearing timeout for user with ID %s: %v", targetUserId, err)
 		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)

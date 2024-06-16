@@ -343,7 +343,7 @@ func GetMemberRankInLeaderboards(s *discordgo.Session, userId string) (map[strin
 
 }
 
-func GiveTimeoutToMemberWithId(s *discordgo.Session, i *discordgo.InteractionCreate, guildId string, userId string, reason string, creationTimestamp int64, sTimeoutLength float64) error {
+func GiveTimeoutToMemberWithId(s *discordgo.Session, guildId string, userId string, reason string, creationTimestamp int64, sTimeoutLength float64) error {
 
 	result := globalsRepo.TimeoutsRepository.GetTimeoutsCountForUser(userId)
 	if result > 0 {
@@ -421,7 +421,7 @@ func GetMemberTimeouts(userId string) (*dataModels.Timeout, []dataModels.Archive
 
 }
 
-func ClearMemberActiveTimeout(s *discordgo.Session, i *discordgo.Interaction, guildId string, userId string) error {
+func ClearMemberActiveTimeout(s *discordgo.Session, guildId string, userId string) error {
 
 	err := globalsRepo.TimeoutsRepository.ClearTimeoutForUser(userId)
 	if err != nil {
@@ -438,7 +438,7 @@ func ClearMemberActiveTimeout(s *discordgo.Session, i *discordgo.Interaction, gu
 
 }
 
-func AppealTimeout(s *discordgo.Session, i *discordgo.Interaction, guildId string, userId string) error {
+func AppealTimeout(s *discordgo.Session, guildId string, userId string) error {
 
 	activeTimeout, _, err := GetMemberTimeouts(userId)
 	if err != nil {
@@ -453,5 +453,33 @@ func AppealTimeout(s *discordgo.Session, i *discordgo.Interaction, guildId strin
 	// TODO
 
 	return nil
+
+}
+
+func GetXpForMember(s *discordgo.Session, userId string, statsOption *dataModels.UserStats) (*int, error) {
+
+	var stats *dataModels.UserStats
+
+	if statsOption == nil {
+		// Get member stats if not already available
+		var err error
+		stats, err = globalsRepo.UserStatsRepository.GetStatsForUser(userId)
+		if err != nil {
+			fmt.Printf("An error ocurred while retrieving user stats: %v\n", err)
+			return nil, err
+		}
+	} else {
+		stats = statsOption
+	}
+
+	// Calculate member XP through the XP formula and the stats variables
+	var totalExperience int = utils.CalculateExperiencePointsFromStats(
+		stats.NumberMessagesSent,
+		stats.NumberSlashCommandsUsed,
+		stats.NumberReactionsReceived,
+		stats.TimeSpentInVoiceChannels,
+		stats.TimeSpentListeningToMusic)
+
+	return &totalExperience, nil
 
 }

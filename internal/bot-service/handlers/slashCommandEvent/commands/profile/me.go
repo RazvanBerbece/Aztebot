@@ -150,6 +150,13 @@ func GetProfileEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Me
 			musicRankString = fmt.Sprintf(" (`🏆 #%d`)", musicRank)
 		}
 
+		// Retrieve experience points for user
+		xp, err := member.GetXpForMember(s, userId, stats)
+		if err != nil {
+			log.Printf("Cannot retrieve user %s XP: %v", userId, err)
+			return nil
+		}
+
 		// Add extra decorations to the embed (special users, staff members, etc.)
 		DecorateProfileEmbed(embed, highestStaffRole, userId)
 
@@ -162,7 +169,9 @@ func GetProfileEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Me
 			AddField(fmt.Sprintf("💯 Total reactions received:  `%d`%s", stats.NumberReactionsReceived, reactRankString), "", false).
 			AddLineBreakField().
 			AddField(fmt.Sprintf("🎙️ Time spent in voice channels:  `%s`%s", timeSpentInVcs, vcRankString), "", false).
-			AddField(fmt.Sprintf("🎵 Time spent listening to music:  `%s`%s", timeSpentListeningMusic, musicRankString), "", false)
+			AddField(fmt.Sprintf("🎵 Time spent listening to music:  `%s`%s", timeSpentListeningMusic, musicRankString), "", false).
+			AddLineBreakField().
+			AddField(fmt.Sprintf("💠 Total gained XP:  `%d`", *xp), "", false)
 
 	} else {
 		embed.AddField("Member hasn't verified yet.", "", false)
