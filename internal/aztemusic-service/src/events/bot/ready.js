@@ -19,14 +19,15 @@ module.exports = {
             fetch("https://analytics.techy.lol/melody", options).catch(() => {});
         }
 
-        logger.success("AzteRadio is now ready.");
+        logger.success(`${config.appName} is now ready.`);
 
         if (client.guilds.cache.size === 0) {
-            logger.warn(`AzteRadio is not in any servers. Invite AzteRadio to your server using the following link: https://discord.com/api/oauth2/authorize?client_id=${config.clientId}&permissions=274914887744&scope=bot%20applications.commands`);
+            logger.warn(`${config.appName} is not in any servers. Invite ${config.appName} to your server using the following link: https://discord.com/api/oauth2/authorize?client_id=${config.clientId}&permissions=274914887744&scope=bot%20applications.commands`);
         } else {
-            logger.info(`AzteRadio is in ${client.guilds.cache.size} ${client.guilds.cache.size === 1 ? "server" : "servers"}.`);
+            logger.info(`${config.appName} is in ${client.guilds.cache.size} ${client.guilds.cache.size === 1 ? "server" : "servers"}.`);
         }
 
+        // Set bot status
         client.user.setPresence({ 
             activities: [{ 
                 name: 'Type /help', 
@@ -34,5 +35,8 @@ module.exports = {
             }], 
             status: 'online' 
         });
+
+        // Other actions to perform on ready
+        // TODO: If radio, play the Essentials playlist ?
     },
 };

@@ -53,6 +53,8 @@ module.exports = {
             const res = await player.search(query, {
                 requestedBy: interaction.user,
             });
+            
+            let repeatedTracks
 
             if (!res || !res.tracks || res.tracks.length === 0) {
                 if (queue) queue.delete();
@@ -69,7 +71,20 @@ module.exports = {
             }
 
             try {
-                res.playlist ? queue.addTrack(res.tracks) : queue.addTrack(res.tracks[0]);
+                if (config.appName === "AzteRadio") {
+                    if (res.playlist) {
+                        var playlistRepeatCount = 10
+                        repeatedTracks = Array.from({ length: playlistRepeatCount }, () => res.tracks).flat()
+                        logger.info(`Added ${repeatedTracks.length} tracks to the AzteRadio 24/7 queue`)
+                        queue.addTrack(repeatedTracks)
+                    }
+                    else {
+                        queue.addTrack(res.tracks[0]);
+                    }
+                }
+                else {
+                    res.playlist ? queue.addTrack(res.tracks) : queue.addTrack(res.tracks[0]);
+                }
                 if (!queue.isPlaying()) await queue.node.play(queue.tracks[0]);
             } catch (err) {
                 logger.error("An error occurred whilst attempting to play this media:");
@@ -84,7 +99,12 @@ module.exports = {
             if (!res.playlist) {
                 embed.setDescription(`Loaded **[${res.tracks[0].title}](${res.tracks[0].url})** by **${res.tracks[0].author}** into the server queue.`);
             } else {
-                embed.setDescription(`**${res.tracks.length} tracks** from the ${res.playlist.type} **[${res.playlist.title}](${res.playlist.url})** have been loaded into the server queue.`);
+                if (config.appName === "AzteRadio") {
+                    embed.setDescription(`**${repeatedTracks.length} tracks** from the ${res.playlist.type} **[${res.playlist.title}](${res.playlist.url})** have been loaded into the AzteRadio 24/7 queue.`);
+                }
+                else {
+                    embed.setDescription(`**${res.tracks} tracks** from the ${res.playlist.type} **[${res.playlist.title}](${res.playlist.url})** have been loaded into the ${config.appName} queue.`);
+                }
             }
         } catch (err) {
             logger.error(err);
