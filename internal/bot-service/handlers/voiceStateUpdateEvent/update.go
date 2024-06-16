@@ -67,9 +67,10 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 			}
 			delete(globals.VoiceSessions, userId)
 			delete(globals.StreamSessions, userId)
+			delete(globals.MusicSessions, userId)
 		}
 	} else {
-		if vs.ChannelID != "" && globals.StreamSessions[userId] == nil {
+		if vs.ChannelID != "" && globals.StreamSessions[userId] == nil && globals.MusicSessions[userId] == nil {
 			// User JOINED a VC but NOT STREAMING
 			if TargetChannelIsForMusicListening(voiceChannels, vs.ChannelID) {
 				fmt.Println("JOIN MUSIC")
