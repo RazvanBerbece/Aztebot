@@ -41,6 +41,13 @@ func UserRepReact(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	targetUserId := utils.GetDiscordIdFromMentionFormat(targetUserTag)
 
+	// Don't allow users to =- rep themselves
+	if targetUserId == m.Author.ID {
+		s.MessageReactionAdd(m.ChannelID, m.ID, "❌")
+		s.MessageReactionAdd(m.ChannelID, m.ID, "👺")
+		return
+	}
+
 	// Delay +- reps so the action can't be spammed
 	mRepDelay := 5 // in minutes
 	if timestamp, exists := globalState.LastUserReps[targetUserId]; exists {
