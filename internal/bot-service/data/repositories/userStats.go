@@ -237,8 +237,10 @@ func (r UsersStatsRepository) ResetActiveDayStreakForUser(userId string) error {
 		_, err = stmt.Exec(userId)
 		if err != nil {
 			fmt.Printf("Error ocurred while resetting day streak stat for user %s: %v\nRetrying...", userId, err)
+			time.Sleep(time.Second * 2)
+		} else {
+			break
 		}
-		time.Sleep(time.Second * 2)
 	}
 
 	return nil
@@ -300,8 +302,10 @@ func (r UsersStatsRepository) ResetActivitiesTodayForUser(userId string) error {
 		_, err = stmt.Exec(userId)
 		if err != nil {
 			fmt.Printf("Error ocurred while resetting activities number stat for user %s: %v\nRetrying...", userId, err)
+			time.Sleep(time.Second * 2)
+		} else {
+			break
 		}
-		time.Sleep(time.Second * 2)
 	}
 
 	return nil
