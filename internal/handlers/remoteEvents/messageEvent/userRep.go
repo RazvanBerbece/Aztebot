@@ -95,6 +95,10 @@ func UserRepReact(s *discordgo.Session, m *discordgo.MessageCreate) {
 				Timestamp: time.Now(),
 			})
 			globalState.LastGivenUserReps[authorUserId] = reps
+
+			// Award coins for rep target and rep author
+			go member.AwardFunds(s, targetUserId, 5.0, "REP-RECV")
+			go member.AwardFunds(s, authorUserId, 0.75, "REP-GIVE")
 		} else if repModeInput == "-rep" {
 			err := globalRepositories.UserRepRepository.AddNewEntry(targetUserId)
 			if err != nil {
@@ -140,6 +144,10 @@ func UserRepReact(s *discordgo.Session, m *discordgo.MessageCreate) {
 				Timestamp: time.Now(),
 			})
 			globalState.LastGivenUserReps[authorUserId] = reps
+
+			// Award coins for rep target and rep author
+			go member.AwardFunds(s, targetUserId, 5.0, "REP-RECV")
+			go member.AwardFunds(s, authorUserId, 0.75, "REP-GIVE")
 		} else if repModeInput == "-rep" {
 			err := globalRepositories.UserRepRepository.RemoveRep(targetUserId)
 			if err != nil {
