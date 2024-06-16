@@ -110,29 +110,21 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 		SetThumbnail(fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.png", userId, apiUser.Avatar)).
 		SetColor(000000)
 
-	if userCreatedTimeString != "" {
-		embed.AddField(fmt.Sprintf("🩸 Aztec since:  `%s`", userCreatedTimeString), "", false)
+	if userCreatedTimeString != "" && highestRole != nil {
+		embed.
+			AddField(fmt.Sprintf("🩸 Aztec since:  `%s`", userCreatedTimeString), "", false).
+			AddField(fmt.Sprintf("⭐ Highest obtained role:  `%s`", highestRole.DisplayName), "", false).
+			AddLineBreakField().
+			AddField(fmt.Sprintf("✉️ Total messages sent:  `%d`", stats.NumberMessagesSent), "", false).
+			AddField(fmt.Sprintf("⚙️ Total slash commands used:  `%d`", stats.NumberSlashCommandsUsed), "", false).
+			AddField(fmt.Sprintf("💯 Total reactions received:  `%d`", stats.NumberReactionsReceived), "", false).
+			AddField(fmt.Sprintf("🔄 Active day streak:  `%d`", stats.NumberActiveDayStreak), "", false).
+			AddField(fmt.Sprintf("🎙️ Time spent in voice channels:  `%s`", timeSpentInVcs), "", false).
+			AddLineBreakField().
+			AddField("", "_(Stats collected after 15/12/2023)_", false)
 	} else {
 		embed.AddField("Member hasn't verified yet.", "", false)
 	}
-
-	if highestRole == nil {
-		embed.
-			AddField("Member hasn't verified yet.", "", false)
-	} else {
-		embed.
-			AddField(fmt.Sprintf("⭐ Highest obtained role:  `%s`", highestRole.DisplayName), "", false)
-	}
-
-	embed.
-		AddLineBreakField().
-		AddField(fmt.Sprintf("✉️ Total messages sent:  `%d`", stats.NumberMessagesSent), "", false).
-		AddField(fmt.Sprintf("⚙️ Total slash commands used:  `%d`", stats.NumberSlashCommandsUsed), "", false).
-		AddField(fmt.Sprintf("💯 Total reactions received:  `%d`", stats.NumberReactionsReceived), "", false).
-		AddField(fmt.Sprintf("🔄 Active day streak:  `%d`", stats.NumberActiveDayStreak), "", false).
-		AddField(fmt.Sprintf("🎙️ Time spent in voice channels:  `%s`", timeSpentInVcs), "", false).
-		AddLineBreakField().
-		AddField("", "_(Stats collected after 15/12/2023)_", false)
 
 	return []*discordgo.MessageEmbed{embed.MessageEmbed}
 }
