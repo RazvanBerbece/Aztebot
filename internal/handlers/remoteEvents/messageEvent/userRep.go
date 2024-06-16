@@ -27,6 +27,10 @@ func UserRepReact(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	repModeInput := tokens[0] // +rep, -rep
+	if repModeInput != "+rep" && repModeInput != "-rep" {
+		// invalidly formatted user rep action
+		return
+	}
 
 	// Get user ID from Discord mention tag i.e <@1234>
 	targetUserTag := tokens[1]
@@ -79,6 +83,7 @@ func UserRepReact(s *discordgo.Session, m *discordgo.MessageCreate) {
 			}
 			globalState.LastUserReps[targetUserId] = time.Now()
 		}
+		s.MessageReactionAdd(m.ChannelID, m.ID, "✅")
 	case 1:
 		if repModeInput == "+rep" {
 			err := globalRepositories.UserRepRepository.AddRep(targetUserId)
@@ -95,6 +100,7 @@ func UserRepReact(s *discordgo.Session, m *discordgo.MessageCreate) {
 			}
 			globalState.LastUserReps[targetUserId] = time.Now()
 		}
+		s.MessageReactionAdd(m.ChannelID, m.ID, "✅")
 	default:
 		fmt.Printf("Multiple rep entries in the DB for %s\n", targetUserId)
 		return
