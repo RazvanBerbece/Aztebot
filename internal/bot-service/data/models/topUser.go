@@ -12,6 +12,12 @@ type TopUserVC struct {
 	TimeSpentInVCs int // in seconds
 }
 
+type TopUserMusic struct {
+	DiscordTag              string
+	UserId                  string
+	TimeSpentListeningMusic int // in seconds
+}
+
 type TopUserADS struct {
 	DiscordTag string
 	UserId     string
