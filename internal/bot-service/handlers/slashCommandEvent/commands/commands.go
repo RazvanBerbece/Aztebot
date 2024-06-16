@@ -124,7 +124,7 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 			{
 				Type:        discordgo.ApplicationCommandOptionString,
 				Name:        "user-id",
-				Description: "The Discord User ID of the user the timeout was given to",
+				Description: "The Discord User ID of the user to remove the active timeout from",
 				Required:    true,
 			},
 		},
