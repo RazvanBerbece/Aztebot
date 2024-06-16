@@ -11,7 +11,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	logging.LogHandlerCall("Ready", "")
 
 	// Set initial status for the AzteBot
-	s.UpdateGameStatus(0, "Type /aztebot_help")
+	s.UpdateGameStatus(0, "Type /help")
 
 	// Other setups
 
