@@ -18,17 +18,17 @@ func HandleSlashAztebotHelp(s *discordgo.Session, i *discordgo.InteractionCreate
 
 	userId := i.Interaction.Member.User.ID
 
-	msg := sendHelpGuideToUser(userId)
+	go sendHelpGuideToUser(userId)
 
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
-			Embeds: []*discordgo.MessageEmbed{&msg},
+			Embeds: utils.SimpleEmbed("🤖   Slash Command Result", fmt.Sprintf("You should have received a help guide for the <@%s> in your DMs !", globalConfiguration.DiscordAztebotAppId)),
 		},
 	})
 }
 
-func sendHelpGuideToUser(userId string) discordgo.MessageEmbed {
+func sendHelpGuideToUser(userId string) {
 
 	embedToSend := embed.NewEmbed().
 		SetAuthor("AzteBot", "https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
@@ -78,14 +78,5 @@ func sendHelpGuideToUser(userId string) discordgo.MessageEmbed {
 		Embed:         embedToSend,
 		PaginationRow: &paginationRow,
 	}
-
-	// Return cmd feedback on the Discord channel
-	embed := embed.NewEmbed().
-		SetColor(000000).
-		SetAuthor("AzteBot Guidance", "https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
-		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
-		AddField(fmt.Sprintf("You should have received a help guide for the <@%s> in your DMs !", globalConfiguration.DiscordAztebotAppId), "", false)
-
-	return *embed.MessageEmbed
 
 }
