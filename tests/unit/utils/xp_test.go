@@ -1,6 +1,7 @@
 package utils_test
 
 import (
+	"math"
 	"testing"
 
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
@@ -64,7 +65,7 @@ func TestCalculateExperiencePointsFromStats(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if output := utils.CalculateExperiencePointsFromStats(
+		output := utils.CalculateExperiencePointsFromStats(
 			c.input.NumMessagesSent,
 			c.input.NumSlashCommandsUsed,
 			c.input.NumReactionsReceived,
@@ -75,9 +76,14 @@ func TestCalculateExperiencePointsFromStats(t *testing.T) {
 			c.input.ReactionsWeight,
 			c.input.TsVcWeight,
 			c.input.TsMusicWeight,
-		); output != c.expectedOutput {
-			t.Errorf("incorrect output: expected `%.2f` but got `%.2f`", c.expectedOutput, output)
+		)
+
+		const float64EqualityThreshold = 1e-9
+
+		if math.Abs(c.expectedOutput-output) > float64EqualityThreshold {
+			t.Errorf("difference between expected XP output and actual XP output is too big")
 		}
+
 	}
 
 }
