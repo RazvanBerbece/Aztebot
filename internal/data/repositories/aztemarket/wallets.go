@@ -1,12 +1,15 @@
 package repositories
 
 import (
+	"fmt"
+
 	databaseconn "github.com/RazvanBerbece/Aztebot/internal/data/connection"
 )
 
 type DbWalletsRepository interface {
 	AddFundsToWalletForUser(userId string, funds float64) error
 	GetWalletIdForUser(userId string) (*string, error)
+	DeleteWalletForUser(userId string) error
 }
 
 type WalletsRepository struct {
@@ -53,5 +56,18 @@ func (r WalletsRepository) GetWalletIdForUser(userId string) (*string, error) {
 	}
 
 	return &id, nil
+
+}
+
+func (r WalletsRepository) DeleteWalletForUser(userId string) error {
+
+	query := "DELETE FROM Wallets WHERE userId = ?"
+
+	_, err := r.DbContext.SqlDb.Exec(query, userId)
+	if err != nil {
+		return fmt.Errorf("error deleting wallet entry for user: %w", err)
+	}
+
+	return nil
 
 }
