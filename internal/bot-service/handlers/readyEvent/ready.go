@@ -8,7 +8,6 @@ import (
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/logging"
-	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -23,14 +22,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	// Other setups
 
 	// Cron funcs to sync users and their DB entity
-	var syncInterval int
 	var cleanupInterval int
-	if globals.UserSyncIntervalErr != nil {
-		fmt.Printf("Could not parse UserSyncInterval environment variable: %v\n", globals.UserSyncIntervalErr)
-		syncInterval = 60
-	} else {
-		syncInterval = globals.UserSyncInterval
-	}
 	if globals.UserCleanupIntervalErr != nil {
 		fmt.Printf("Could not parse UserCleanupInterval environment variable: %v\n", globals.UserCleanupIntervalErr)
 		cleanupInterval = 60
@@ -38,25 +30,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 		cleanupInterval = globals.UserCleanupInterval
 	}
 
-	syncTicker := time.NewTicker(time.Second * time.Duration(syncInterval))
 	cleanupTicker := time.NewTicker(time.Second * time.Duration(cleanupInterval))
-
-	// Periodic sync of the members on the server with the DB
-	go func() {
-		for range syncTicker.C {
-			// Define the repositories here for the cron functions (and reuse their connections)
-			// in order to not flood the DB with connection attempts and also have different connections to the core ones
-			rolesRepository := repositories.NewRolesRepository()
-			usersRepository := repositories.NewUsersRepository()
-			userStatsRepository := repositories.NewUsersStatsRepository()
-
-			// Process
-			UpdateUsersInCron(s, rolesRepository, usersRepository, userStatsRepository)
-
-			// Cleanup DB connections after cron run
-			cleanupCronRepositories(rolesRepository, usersRepository, userStatsRepository)
-		}
-	}()
 
 	// Periodic cleanup of users from the DB
 	go func() {
@@ -97,40 +71,6 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 
 }
 
-func UpdateUsersInCron(s *discordgo.Session, rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository) error {
-
-	fmt.Println("Starting Task UpdateUsersInCron() at", time.Now())
-
-	// Retrieve all members in the guild
-	members, err := s.GuildMembers(globals.DiscordMainGuildId, "", 1000)
-	if err != nil {
-		fmt.Println("Failed Task UpdateUsersInCron() at", time.Now(), "with error", err)
-		return err
-	}
-
-	// Process the current batch of members
-	processMembers(s, members, rolesRepository, usersRepository, userStatsRepository)
-
-	// Paginate
-	for len(members) == 1000 {
-		// Set the 'After' parameter to the ID of the last member in the current batch
-		lastMemberID := members[len(members)-1].User.ID
-		members, err = s.GuildMembers(globals.DiscordMainGuildId, lastMemberID, 1000)
-		if err != nil {
-			fmt.Println("Failed Task UpdateUsersInCron() at", time.Now(), "with error", err)
-			return err
-		}
-
-		// Process the next batch of members
-		processMembers(s, members, rolesRepository, usersRepository, userStatsRepository)
-	}
-
-	fmt.Println("Finished Task UpdateUsersInCron() at", time.Now())
-
-	return nil
-
-}
-
 func CleanupUsersInCron(s *discordgo.Session, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository) error {
 
 	fmt.Println("Starting Task CleanupUsersInCron() at", time.Now())
@@ -168,21 +108,6 @@ func CleanupUsersInCron(s *discordgo.Session, usersRepository *repositories.User
 
 	return nil
 
-}
-
-func processMembers(s *discordgo.Session, members []*discordgo.Member, rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository) {
-	// Your logic to process members goes here
-	for _, member := range members {
-		// If it's a bot, skip
-		if member.User.Bot {
-			continue
-		}
-		// For each member, sync their details (either add to DB or update)
-		err := utils.SyncUserPersistent(s, globals.DiscordMainGuildId, member.User.ID, member, rolesRepository, usersRepository, userStatsRepository)
-		if err != nil {
-			fmt.Printf("Error syncinc member %s: %v", member.User.Username, err)
-		}
-	}
 }
 
 func cleanupCronRepositories(rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository) {
