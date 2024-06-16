@@ -52,7 +52,7 @@ func HandleSlashTimeouts(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		expiryTime := timeoutCreationTime.Add(duration)
 		timeoutExpiryTimestampString := expiryTime.Format("Mon, 02 Jan 2006 15:04:05 MST")
 
-		timeoutDesc := fmt.Sprintf("Given at %s for reason `%s` (expiration date `%s`)", timeoutCreatedAtString, activeTimeout.Reason, timeoutExpiryTimestampString)
+		timeoutDesc := fmt.Sprintf("Given at `%s` \nfor reason `%s` \n(expiration date `%s`)", timeoutCreatedAtString, activeTimeout.Reason, timeoutExpiryTimestampString)
 		embed.AddField("Active Timeout", timeoutDesc, false)
 	}
 
