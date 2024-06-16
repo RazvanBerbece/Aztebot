@@ -10,3 +10,4 @@ local.dbconfig.yml
 .env.out
 Dockerfile
 *.log
+downloads/

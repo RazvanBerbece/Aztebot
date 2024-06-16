@@ -19,6 +19,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o build/azteradio/main ./cmd/azteradio-se
 
 # Other configs
 VOLUME /app/logs
+VOLUME /app/downloads
 
 # Run the Discord bot service application
 CMD sh -c "make run-azteradio-service"

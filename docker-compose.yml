@@ -30,6 +30,7 @@ services:
       dockerfile: ./cmd/azteradio-service/Dockerfile
     volumes: 
       - "./internal/azteradio-service/logs:/app/logs"
+      - "./downloads:/app/downloads"
 
 networks:
   default:
