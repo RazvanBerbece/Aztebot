@@ -36,6 +36,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.1
+        with:
+          github_token: ${{ secrets.GH_TOKEN }}
+          dry_run: true
+
       - name: Generate SHA output
         id: vars
         run: echo "GITHUB_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
@@ -83,7 +90,7 @@ jobs:
       
       - name: Create GKE Deployment for new image
         run: |
-          kubectl create deployment aztebot-bot-service --image="${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}"
+          kubectl create deployment aztebot-bot-service-${{ steps.tag_version.outputs.new_tag }} --image="${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}"
 
       - name: Scale deployment
         run: |
@@ -92,3 +99,11 @@ jobs:
       - name: Show created Pods
         run: |
           kubectl get pods
+      
+      - name: Create a GitHub release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
+      
