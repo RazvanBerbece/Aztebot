@@ -6,7 +6,8 @@ type User struct {
 	UserId            string
 	CurrentRoleIds    string
 	CurrentCircle     string
-	CurrentInnerOrder int
+	CurrentInnerOrder *int
 	CurrentLevel      int
-	Currentexperience int
+	CurrentExperience int
+	CreatedAt         *int64
 }

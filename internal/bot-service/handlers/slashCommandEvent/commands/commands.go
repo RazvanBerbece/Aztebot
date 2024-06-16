@@ -7,7 +7,7 @@ import (
 
 var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 	{
-		Name:        "ping_aztebot",
+		Name:        "ping",
 		Description: "Basic ping slash interaction for the AzteBot",
 	},
 	{
@@ -15,20 +15,18 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		Description: "Get a list of your assigned roles",
 	},
 	{
-		Name:        "aztebot_help",
+		Name:        "me",
+		Description: "Get a summary of your profile details which are linked to the OTA guild",
+	},
+	{
+		Name:        "help",
 		Description: "Get a help guide for the available AzteBot slash commands",
 	},
 }
 
-var AzteradioSlashCommands = []*discordgo.ApplicationCommand{
-	{
-		Name:        "ping_azteradio",
-		Description: "Basic ping slash interaction for the AzteRadio",
-	},
-}
-
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
-	"ping_aztebot": slashHandlers.HandleSlashPingAztebot,
-	"my_roles":     slashHandlers.HandleSlashMyRoles,
-	"aztebot_help": slashHandlers.HandleSlashAztebotHelp,
+	"ping":     slashHandlers.HandleSlashPingAztebot,
+	"my_roles": slashHandlers.HandleSlashMyRoles,
+	"me":       slashHandlers.HandleSlashMe,
+	"help":     slashHandlers.HandleSlashAztebotHelp,
 }

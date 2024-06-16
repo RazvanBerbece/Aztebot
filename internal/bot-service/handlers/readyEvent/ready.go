@@ -14,6 +14,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	s.UpdateGameStatus(0, "Type /aztebot_help")
 
 	// Other setups
-	// TODO
+
+	// Register user details and initial roles into DB
 
 }
