@@ -94,9 +94,8 @@ func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []
 		// and now the bot has to resolve these mismatches.
 		// Eventually, this code can and should be be removed.
 		if currentOrderRole != nil {
-			if currentOrderRole.DisplayName != promotedRoleName {
-				// mismatch between deserved role and actual role, so refresh
-
+			// mismatch between deserved role and actual role, so refresh
+			if currentOrderRole.DisplayName != promotedRoleName && promotedRoleName != "" {
 				// Give promoted level in DB
 				err := globalRepositories.UsersRepository.SetLevel(userId, promotedLevel)
 				if err != nil {
