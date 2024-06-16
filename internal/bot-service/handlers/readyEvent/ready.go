@@ -87,6 +87,7 @@ func CleanupUsersInCron(s *discordgo.Session, usersRepository *repositories.User
 		_, err := s.GuildMember(globals.DiscordMainGuildId, uid)
 		if err != nil {
 			// if the member does not exist on the main server, delete from the database
+			fmt.Printf("Deleting user with ID %s\n", uid)
 			// delete user stats
 			err := userStatsRepository.DeleteUserStats(uid)
 			if err != nil {
@@ -100,8 +101,9 @@ func CleanupUsersInCron(s *discordgo.Session, usersRepository *repositories.User
 				return errUsers
 			}
 		}
+		fmt.Println("User", uid, "still a member of the server")
 		// Sleep for a bit to not exceed request frequency limits for the Discord API
-		time.Sleep(250 * time.Millisecond)
+		// time.Sleep(250 * time.Millisecond)
 	}
 
 	fmt.Println("Finished Task CleanupUsersInCron() at", time.Now())
