@@ -6,12 +6,12 @@ import (
 )
 
 type RolesRepository struct {
-	conn databaseconn.Database
+	Conn databaseconn.Database
 }
 
 func NewRolesRepository() *RolesRepository {
 	repo := new(RolesRepository)
-	repo.conn.ConnectDatabaseHandle()
+	repo.Conn.ConnectDatabaseHandle()
 	return repo
 }
 
@@ -19,7 +19,7 @@ func (r RolesRepository) GetRole(roleDisplayName string) (*dataModels.Role, erro
 
 	// Get assigned role IDs for given user from the DB
 	query := "SELECT * FROM Roles WHERE displayName = ?"
-	row := r.conn.Db.QueryRow(query, roleDisplayName)
+	row := r.Conn.Db.QueryRow(query, roleDisplayName)
 
 	// Scan the role IDs and process them into query arguments to use
 	// in the Roles table
