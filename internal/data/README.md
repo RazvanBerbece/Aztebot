@@ -25,8 +25,3 @@ JOIN Users ON UserStats.userId = Users.userId
 ORDER BY
     UserStats.reactionsReceived DESC
 ```
-
-### To cleanup duplicate stats entities in `UserStats`
-```
-DELETE e1 FROM UserStats e1, UserStats e2 WHERE e1.id < e2.id AND e1.userId = e2.userId;
-```
