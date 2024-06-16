@@ -40,16 +40,6 @@ func UpdateVoiceSessionDurations(s *discordgo.Session) {
 
 func updateVoiceSessions() {
 	for uid, joinTime := range globals.VoiceSessions {
-
-		// if _, isDeafened := globals.DeafSessions[uid]; isDeafened {
-		// 	fmt.Println("SKIP VS")
-		// 	// Skip adding time for deafened users
-		// 	// But reset the join time
-		// 	now := time.Now()
-		// 	globals.VoiceSessions[uid] = now
-		// 	continue
-		// }
-
 		duration := time.Since(joinTime)
 		err := globalsRepo.UserStatsRepository.AddToTimeSpentInVoiceChannels(uid, int(duration.Seconds()))
 		if err != nil {
@@ -64,16 +54,6 @@ func updateVoiceSessions() {
 
 func updateStreamingSessions() {
 	for uid, joinTime := range globals.StreamSessions {
-
-		// if _, isDeafened := globals.DeafSessions[uid]; isDeafened {
-		// 	// Skip adding time for deafened users
-		// 	// But reset the join time
-		// 	fmt.Println("SKIP STREAM")
-		// 	now := time.Now()
-		// 	globals.StreamSessions[uid] = &now
-		// 	continue
-		// }
-
 		duration := time.Since(*joinTime)
 		err := globalsRepo.UserStatsRepository.AddToTimeSpentInVoiceChannels(uid, int(duration.Seconds()))
 		if err != nil {
@@ -92,18 +72,6 @@ func updateMusicSessions() {
 		if userHadMusicSession {
 			// User was on a music channel
 			for channelId, joinTime := range session {
-
-				// if _, isDeafened := globals.DeafSessions[uid]; isDeafened {
-				// 	fmt.Println("SKIP MUSIC")
-				// 	// Skip adding time for deafened users
-				// 	// But reset the join time
-				// 	now := time.Now()
-				// 	globals.MusicSessions[uid] = map[string]*time.Time{
-				// 		channelId: &now,
-				// 	}
-				// 	continue
-				// }
-
 				duration := time.Since(*joinTime)
 				err := globalsRepo.UserStatsRepository.AddToTimeSpentListeningMusic(uid, int(duration.Seconds()))
 				if err != nil {

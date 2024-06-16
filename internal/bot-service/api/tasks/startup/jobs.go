@@ -255,16 +255,6 @@ func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 			userId := voiceState.UserID
 			channelId := voiceState.ChannelID
 
-			// if voiceState.Deaf {
-			// 	fmt.Println("REGISTER UNDEAF")
-			// 	// Do not count deafened users as active states at startup
-			// 	// and don't assign sessions in the global maps
-			// 	deafSessionsAtStartup += 1
-			// 	now = time.Now()
-			// 	globals.DeafSessions[userId] = now
-			// 	continue
-			// }
-
 			user, err := s.User(userId)
 			if err != nil {
 				fmt.Println("Error retrieving user:", err)
