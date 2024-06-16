@@ -21,32 +21,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 
 	// Other setups
 
-	// Cron funcs to sync users and their DB entity
-	var cleanupInterval int
-	if globals.UserCleanupIntervalErr != nil {
-		fmt.Printf("Could not parse UserCleanupInterval environment variable: %v\n", globals.UserCleanupIntervalErr)
-		cleanupInterval = 60
-	} else {
-		cleanupInterval = globals.UserCleanupInterval
-	}
-
-	cleanupTicker := time.NewTicker(time.Second * time.Duration(cleanupInterval))
-
-	// Periodic cleanup of users from the DB
-	go func() {
-		for range cleanupTicker.C {
-			// Inject new connections
-			usersRepository := repositories.NewUsersRepository()
-			userStatsRepository := repositories.NewUsersStatsRepository()
-
-			// Process
-			CleanupUsersInCron(s, usersRepository, userStatsRepository)
-
-			// Cleanup DB connections after cron run
-			cleanupCronRepositories(nil, usersRepository, userStatsRepository)
-		}
-	}()
-
+	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, XP gaining, etc.)
 	initialDelay, activityTicker := getDelayAndTickerForActivityStreakCron(24, 0, 0) // H, m, s
 	go func() {
 
@@ -68,63 +43,6 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 			cleanupCronRepositories(nil, usersRepository, userStatsRepository)
 		}
 	}()
-
-}
-
-func CleanupUsersInCron(s *discordgo.Session, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository) error {
-
-	fmt.Println("Starting Task CleanupUsersInCron() at", time.Now())
-
-	// Retrieve all members from the DB
-	uids, err := usersRepository.GetAllDiscordUids()
-	if err != nil {
-		fmt.Println("Failed Task CleanupUsersInCron() at", time.Now(), "with error", err)
-		return err
-	}
-
-	// For each tag in the DB, delete user from table
-	for _, uid := range uids {
-		_, err := s.GuildMember(globals.DiscordMainGuildId, uid)
-		if err != nil {
-			// if the member does not exist on the main server, delete from the database
-			fmt.Printf("Deleting user with ID %s\n", uid)
-			// delete user stats
-			err := userStatsRepository.DeleteUserStats(uid)
-			if err != nil {
-				fmt.Println("Failed Task CleanupUsersInCron() at", time.Now(), "with error", err)
-				return err
-			}
-			// delete user
-			errUsers := usersRepository.DeleteUser(uid)
-			if errUsers != nil {
-				fmt.Println("Failed Task CleanupUsersInCron() at", time.Now(), "with error", errUsers)
-				return errUsers
-			}
-		}
-		fmt.Println("User", uid, "still a member of the server")
-		// Sleep for a bit to not exceed request frequency limits for the Discord API
-		// time.Sleep(250 * time.Millisecond)
-	}
-
-	fmt.Println("Finished Task CleanupUsersInCron() at", time.Now())
-
-	return nil
-
-}
-
-func cleanupCronRepositories(rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository) {
-
-	if rolesRepository != nil {
-		rolesRepository.Conn.Db.Close()
-	}
-
-	if usersRepository != nil {
-		usersRepository.Conn.Db.Close()
-	}
-
-	if userStatsRepository != nil {
-		userStatsRepository.Conn.Db.Close()
-	}
 
 }
 
@@ -182,7 +100,7 @@ func UpdateActivityStreaks(usersRepository *repositories.UsersRepository, userSt
 // Returns a delay and a ticket to use for the initial delay and then subsequent executions of the activity streak update cron.
 func getDelayAndTickerForActivityStreakCron(hour int, minute int, second int) (time.Duration, *time.Ticker) {
 
-	// Activity Streak Logic
+	// Run ativity streak logic at given timestamp
 	targetHour := hour
 	targetMinute := minute
 	targetSecond := second
@@ -195,5 +113,21 @@ func getDelayAndTickerForActivityStreakCron(hour int, minute int, second int) (t
 	}
 
 	return nextRun.Sub(now), time.NewTicker(time.Hour * 24)
+
+}
+
+func cleanupCronRepositories(rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository) {
+
+	if rolesRepository != nil {
+		rolesRepository.Conn.Db.Close()
+	}
+
+	if usersRepository != nil {
+		usersRepository.Conn.Db.Close()
+	}
+
+	if userStatsRepository != nil {
+		userStatsRepository.Conn.Db.Close()
+	}
 
 }

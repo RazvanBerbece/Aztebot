@@ -26,8 +26,6 @@ var MySqlRootConnectionString = os.Getenv("DB_ROOT_CONNSTRING") // in MySQL form
 var RestrictedCommands = strings.Split(os.Getenv("RESTRICTED_COMMANDS"), ",")
 var AllowedRoles = strings.Split(os.Getenv("ALLOWED_ROLES"), ",")
 
-var UserCleanupInterval, UserCleanupIntervalErr = strconv.Atoi(os.Getenv("USER_CLEANUP_INTERVAL")) // in seconds
-
 var FavourableActivitiesThreshold, FavourableActivitiesThresholdErr = strconv.Atoi(os.Getenv("FAVOURABLE_ACTIVITIES_THRESHOLD"))
 
 // =============== RUNTIME VARIABLES (BOT APPLICATIONS) ===============
