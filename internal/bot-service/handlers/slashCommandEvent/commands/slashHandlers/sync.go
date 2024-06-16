@@ -72,7 +72,7 @@ func ProcessUserUpdate(userId string, s *discordgo.Session, event *discordgo.Int
 				}
 			} else {
 				// `Aztec` verification
-				if roleDax.Id == 1 {
+				if roleDax.Id == 1 && user.CreatedAt == nil {
 					unixNow := time.Now().Unix()
 					user.CreatedAt = &unixNow
 				}
