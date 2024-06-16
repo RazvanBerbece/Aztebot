@@ -122,13 +122,9 @@ func ProcessTopEmbed(topCount int, s *discordgo.Session, i *discordgo.Interactio
 			}
 
 			rankingRowName := fmt.Sprintf("**%d.** %s**_%s_**", idx+1, rankMedal, topUser.DiscordTag)
-			rankingRowValue := fmt.Sprintf("Total: `%d` XP 💠 | `%d` ✉️ | `%d` 💯 | `%s` 🎙️ | `%s` 🎵 | `%d` 🔄\n", int(topUser.XpGained), stats.NumberMessagesSent, stats.NumberReactionsReceived, timeSpentInVcs, timeSpentListeningMusic, stats.NumberActiveDayStreak)
+			rankingRowValue := fmt.Sprintf("Total: `%d` XP 💠 | `%d` ✉️ | `%d` 💯 | `%s` 🎙️ | `%s` 🎵\n", int(topUser.XpGained), stats.NumberMessagesSent, stats.NumberReactionsReceived, timeSpentInVcs, timeSpentListeningMusic)
 
 			embed.AddField(rankingRowName, rankingRowValue, false)
-
-			if idx != len(topXpGains)-1 {
-				embed.AddLineBreakField()
-			}
 		}
 	}
 }

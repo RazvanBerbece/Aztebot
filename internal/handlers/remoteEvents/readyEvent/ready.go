@@ -53,6 +53,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	go channelHandlers.HandleDynamicChannelCreationEvents(s)
 	go channelHandlers.HandleMemberMessageDeletionEvents(s)
 	go channelHandlers.HandleDirectMessageEvents(s)
+	go channelHandlers.HandleComplexResponseEvents(s, globalConfiguration.EmbedPageSize)
 
 	// CRON FEATS
 	cron.ProcessUpdateActivityStreaks(24, 0, 0)               // the hh:mm:ss timestamp in a day to run the cron at (i.e 24:00:00)
