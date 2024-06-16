@@ -108,7 +108,7 @@ func (r UsersRepository) GetUser(userId string) (*dataModels.User, error) {
 		&user.Gender)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("an error ocurred while retrieving user with UID %s", userId)
 	}
 
 	return &user, nil
