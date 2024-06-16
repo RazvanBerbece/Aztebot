@@ -484,7 +484,9 @@ func GrantMemberExperience(userId string, activityType string, multiplierOption 
 
 	isMember := globalsRepo.UsersRepository.UserExists(userId)
 	if isMember < 0 {
-		return nil, fmt.Errorf("member to grant XP to was not found in the DB; likely the given member is a bot application")
+		var errMsg string = "member to grant XP to was not found in the DB; likely the given member is a bot application"
+		fmt.Println(errMsg)
+		return nil, fmt.Errorf(errMsg)
 	}
 
 	var multiplier float64 = 1.0
@@ -546,6 +548,8 @@ func RemoveMemberExperience(userId string, activityType string) (*float64, error
 
 	isMember := globalsRepo.UsersRepository.UserExists(userId)
 	if isMember < 0 {
+		var errMsg string = "member to remove XP from was not found in the DB; likely the given member is a bot application"
+		fmt.Println(errMsg)
 		return nil, fmt.Errorf("member to remove XP from was not found in the DB; likely the given member is a bot application")
 	}
 
