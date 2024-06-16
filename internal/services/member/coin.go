@@ -1,6 +1,7 @@
 package member
 
 import (
+	"database/sql"
 	"fmt"
 
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
@@ -25,6 +26,10 @@ func AwardFunds(s *discordgo.Session, userId string, funds float64) error {
 	// Audit update by logging in provided ledger
 	walletId, err := globalRepositories.WalletsRepository.GetWalletIdForUser(userId)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			// user doesn't have a wallet currently. don't log to ensure that logs stay relatively noise free
+			return nil
+		}
 		log := fmt.Sprintf("An error ocurred while retrieving wallet ID for user `%s`: %v\n", userId, err)
 		discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
 		go discordChannelLogger.LogError(log)
