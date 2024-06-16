@@ -5,7 +5,8 @@ import (
 )
 
 type DbWalletsRepository interface {
-	AwardFunds(userId string, funds float64)
+	AwardFunds(userId string, funds float64) error
+	GetWalletIdForUser(userId string) (*string, error)
 }
 
 type WalletsRepository struct {
@@ -37,4 +38,20 @@ func (r WalletsRepository) AddFundsToWalletForUser(userId string, funds float64)
 	}
 
 	return nil
+}
+
+func (r WalletsRepository) GetWalletIdForUser(userId string) (*string, error) {
+
+	query := "SELECT id FROM Wallets WHERE userId = ?"
+	row := r.DbContext.SqlDb.QueryRow(query, userId)
+
+	var id string
+	err := row.Scan(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &id, nil
+
 }

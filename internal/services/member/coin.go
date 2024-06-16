@@ -23,7 +23,14 @@ func AwardFunds(s *discordgo.Session, userId string, funds float64) error {
 	}
 
 	// Audit update by logging in provided ledger
-	logMsg := fmt.Sprintf("Awarded `%.2f` AzteCoins to `%s`", funds, userId)
+	walletId, err := globalRepositories.WalletsRepository.GetWalletIdForUser(userId)
+	if err != nil {
+		log := fmt.Sprintf("An error ocurred while retrieving wallet ID for user `%s`: %v\n", userId, err)
+		discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
+		go discordChannelLogger.LogError(log)
+		return err
+	}
+	logMsg := fmt.Sprintf("Awarded `%.2f` AzteCoins to wallet `%s`", funds, *walletId)
 	discordChannelLogger := logging.NewDiscordLogger(s, "notif-coinTransactions")
 	go discordChannelLogger.LogInfo(logMsg)
 
