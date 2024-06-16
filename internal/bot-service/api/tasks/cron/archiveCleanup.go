@@ -17,7 +17,7 @@ func ProcessRemoveArchivedTimeouts(months int) {
 
 		CleanupArchivedTimeouts(globalsRepo.TimeoutsRepository)
 
-		fmt.Println("Scheduled Task ProcessRemoveArchivedTimeouts() in <", initialWarnRemovalDelay.Hours()/24, "> days")
+		fmt.Println("[SCHEDULED CRON] Scheduled Task ProcessRemoveArchivedTimeouts() in <", initialWarnRemovalDelay.Hours()/24, "> days")
 		time.Sleep(initialWarnRemovalDelay)
 
 		// Inject new connections
@@ -35,11 +35,11 @@ func ProcessRemoveArchivedTimeouts(months int) {
 
 func CleanupArchivedTimeouts(timeoutsRepository *repositories.TimeoutsRepository) {
 
-	fmt.Println("Starting Task CleanupArchivedTimeouts() at", time.Now())
+	fmt.Println("[CRON] Starting Task CleanupArchivedTimeouts() at", time.Now())
 
 	archivedTimeouts, err := timeoutsRepository.GetAllArchivedTimeouts()
 	if err != nil {
-		fmt.Println("Failed Task CleanupArchivedTimeouts() at", time.Now(), "with error", err)
+		fmt.Println("[CRON] Failed Task CleanupArchivedTimeouts() at", time.Now(), "with error", err)
 	}
 
 	// For all archived timeouts
@@ -51,11 +51,11 @@ func CleanupArchivedTimeouts(timeoutsRepository *repositories.TimeoutsRepository
 			// Remove it
 			err := timeoutsRepository.ClearArchivedTimeout(timeout.Id)
 			if err != nil {
-				fmt.Println("Failed Task CleanupArchivedTimeouts() at", time.Now(), "with error", err)
+				fmt.Println("[CRON] Failed Task CleanupArchivedTimeouts() at", time.Now(), "with error", err)
 			}
 		}
 	}
 
-	fmt.Println("Finished Task CleanupArchivedTimeouts() at", time.Now())
+	fmt.Println("[CRON] Finished Task CleanupArchivedTimeouts() at", time.Now())
 
 }

@@ -17,7 +17,7 @@ import (
 
 func SyncUsersAtStartup(s *discordgo.Session) error {
 
-	fmt.Println("Starting Task SyncUsersAtStartup() at", time.Now())
+	fmt.Println("[STARTUP] Starting Task SyncUsersAtStartup() at", time.Now())
 
 	// Inject new connections
 	rolesRepository := repositories.NewRolesRepository()
@@ -27,7 +27,7 @@ func SyncUsersAtStartup(s *discordgo.Session) error {
 	// Retrieve all members in the guild
 	members, err := s.GuildMembers(globals.DiscordMainGuildId, "", 1000)
 	if err != nil {
-		fmt.Println("Failed Task SyncUsersAtStartup() at", time.Now(), "with error", err)
+		fmt.Println("[STARTUP] Failed Task SyncUsersAtStartup() at", time.Now(), "with error", err)
 		return err
 	}
 
@@ -40,7 +40,7 @@ func SyncUsersAtStartup(s *discordgo.Session) error {
 		lastMemberID := members[len(members)-1].User.ID
 		members, err = s.GuildMembers(globals.DiscordMainGuildId, lastMemberID, 1000)
 		if err != nil {
-			fmt.Println("Failed Task SyncUsersAtStartup() at", time.Now(), "with error", err)
+			fmt.Println("[STARTUP] Failed Task SyncUsersAtStartup() at", time.Now(), "with error", err)
 			return err
 		}
 
@@ -51,7 +51,7 @@ func SyncUsersAtStartup(s *discordgo.Session) error {
 	// Cleanup
 	utils.CleanupRepositories(rolesRepository, usersRepository, userStatsRepository, nil, nil)
 
-	fmt.Println("Finished Task SyncUsersAtStartup() at", time.Now())
+	fmt.Println("[STARTUP] Finished Task SyncUsersAtStartup() at", time.Now())
 
 	return nil
 
@@ -59,7 +59,7 @@ func SyncUsersAtStartup(s *discordgo.Session) error {
 
 func CleanupMemberAtStartup(s *discordgo.Session, uids []string) error {
 
-	fmt.Println("Starting Task CleanupMemberAtStartup() at", time.Now())
+	fmt.Println("[STARTUP] Starting Task CleanupMemberAtStartup() at", time.Now())
 
 	// Inject new connections
 	usersRepository := repositories.NewUsersRepository()
@@ -89,7 +89,7 @@ func CleanupMemberAtStartup(s *discordgo.Session, uids []string) error {
 	// Cleanup
 	utils.CleanupRepositories(nil, usersRepository, userStatsRepository, nil, nil)
 
-	fmt.Println("Finished Task CleanupMemberAtStartup() at", time.Now())
+	fmt.Println("[STARTUP] Finished Task CleanupMemberAtStartup() at", time.Now())
 
 	return nil
 
@@ -198,7 +198,7 @@ func mutateLongEmbedFromStaticData(embedText string, embed *embed.Embed) {
 
 func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 
-	fmt.Println("Trying to RegisterUsersInVoiceChannelsAtStartup() at", time.Now())
+	fmt.Println("[STARTUP] Trying to RegisterUsersInVoiceChannelsAtStartup() at", time.Now())
 
 	now := time.Now()
 
@@ -300,7 +300,7 @@ func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 
 	if loadedUsersFromVCs || loadingTimeIsUp {
 		totalSessions := voiceSessionsAtStartup + streamSessionsAtStartup + musicSessionsAtStartup
-		fmt.Printf("Found %d active voice states at bot startup time (%d voice, %d streaming, %d music, %d deafened)\n", totalSessions, voiceSessionsAtStartup, streamSessionsAtStartup, musicSessionsAtStartup, deafSessionsAtStartup)
+		fmt.Printf("[STARTUP] Found %d active voice states at bot startup time (%d voice, %d streaming, %d music, %d deafened)\n", totalSessions, voiceSessionsAtStartup, streamSessionsAtStartup, musicSessionsAtStartup, deafSessionsAtStartup)
 	}
 
 }
