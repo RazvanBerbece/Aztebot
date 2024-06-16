@@ -41,12 +41,12 @@ func HandleSlashNewSizzlingSlot(s *discordgo.Session, i *discordgo.InteractionCr
 	voiceChannelID, _ := member.GetUserVoiceChannel(s, i.GuildID, i.Member.User.ID)
 	if voiceChannelID != "" {
 		// play sizzling sound if author is in a voice channel
+		go AnimateSlotEmbed(s, *i.Interaction, animationCount)
 		if !CurrentlyPlayingAudio {
-			go playSound(s, i.GuildID, voiceChannelID)
+			playSound(s, i.GuildID, voiceChannelID)
 		}
-		AnimateSlotEmbed(s, *i.Interaction, animationCount)
 	} else {
-		AnimateSlotEmbed(s, *i.Interaction, animationCount)
+		go AnimateSlotEmbed(s, *i.Interaction, animationCount)
 	}
 
 }
@@ -165,10 +165,10 @@ func playSound(s *discordgo.Session, guildID, channelID string) (err error) {
 	// Stop speaking
 	vc.Speaking(false)
 
+	CurrentlyPlayingAudio = false
+
 	// Disconnect from the provided voice channel.
 	vc.Disconnect()
-
-	CurrentlyPlayingAudio = false
 
 	return nil
 }
