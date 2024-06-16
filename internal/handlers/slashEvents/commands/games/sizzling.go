@@ -37,7 +37,7 @@ func HandleSlashNewSizzlingSlot(s *discordgo.Session, i *discordgo.InteractionCr
 	})
 
 	// Sizzling...
-	animationCount := 10
+	animationCount := 11
 	voiceChannelID, _ := member.GetUserVoiceChannel(s, i.GuildID, i.Member.User.ID)
 	if voiceChannelID != "" {
 		// play sizzling sound if author is in a voice channel
