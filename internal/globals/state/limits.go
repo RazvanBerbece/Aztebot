@@ -10,3 +10,5 @@ var DynamicChannelsCount int = 0
 
 var MaxTotalDynamicChannelsCount int = 10
 var MaxDynamicChannelPerCategoryCount int = 5
+
+var LastUserReps = make(map[string]time.Time)

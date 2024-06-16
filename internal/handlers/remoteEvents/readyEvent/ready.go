@@ -65,5 +65,6 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 
 	// CRON RUNTIME STATE CLEANUPS
 	cron.ClearOldPaginatedEmbeds(s)
+	cron.ClearOldUserRepDelays()
 
 }
