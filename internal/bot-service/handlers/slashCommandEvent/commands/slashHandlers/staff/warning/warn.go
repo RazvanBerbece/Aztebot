@@ -31,12 +31,8 @@ func HandleSlashWarn(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		err := GiveWarnToUserWithId(s, i, targetUserId, reason, timestamp)
 		if err != nil {
 			fmt.Printf("An error ocurred while giving warning to user: %v\n", err)
-			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-				Type: discordgo.InteractionResponseChannelMessageWithSource,
-				Data: &discordgo.InteractionResponseData{
-					Content: fmt.Sprintf("An error ocurred while giving warning to user with ID %s.", targetUserId),
-				},
-			})
+			errMsg := fmt.Sprintf("An error ocurred while giving warning to user with ID %s.", targetUserId)
+			utils.SendErrorReportEmbed(s, i.Interaction, errMsg)
 			return
 		}
 	}()
@@ -44,12 +40,8 @@ func HandleSlashWarn(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	user, err := s.User(targetUserId)
 	if err != nil {
 		fmt.Printf("An error ocurred while sending warning embed response: %v", err)
-		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{
-				Content: fmt.Sprintf("An error ocurred while retrieving user with ID %s provided in the slash command.", targetUserId),
-			},
-		})
+		errMsg := fmt.Sprintf("An error ocurred while retrieving user with ID %s provided in the slash command.", targetUserId)
+		utils.SendErrorReportEmbed(s, i.Interaction, errMsg)
 	}
 
 	// Format CreatedAt

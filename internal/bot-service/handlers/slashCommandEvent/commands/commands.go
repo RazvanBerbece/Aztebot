@@ -100,7 +100,7 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 			{
 				Type:        discordgo.ApplicationCommandOptionString,
 				Name:        "duration",
-				Description: "The duration of the timeout, in hours (e.g. `/timeout 1234 tbc 24`)",
+				Description: "The duration of the timeout in seconds (300, 600, 1800, 3600, 86400, 259200)",
 				Required:    true,
 			},
 		},
