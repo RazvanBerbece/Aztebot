@@ -22,8 +22,7 @@ services:
     build:
       context: .
       dockerfile: ./tests/Dockerfile
-    volumes: 
-      - "./logs:/app/logs"
+    entrypoint: [ "bash", "-c", "go install github.com/rubenv/sql-migrate/...@latest && sql-migrate up -config=local.dbconfig.yml -env='test' && go test ./..."]      
 
 networks:
   default:

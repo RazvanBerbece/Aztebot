@@ -1,6 +1,7 @@
 package testData
 
 import (
+	"fmt"
 	"time"
 
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/bot-service/data/models"
@@ -65,6 +66,8 @@ func AddTimeoutForUser(r repositories.TimeoutsRepository, t *dataModels.Timeout)
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Println(id)
 
 	return &id, nil
 

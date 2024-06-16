@@ -4,7 +4,6 @@
 
 Dockerfile
 docker-compose.yml
-local.dbconfig.yml
 build/
 *.log
 logs/
