@@ -2,6 +2,7 @@ package globalConfiguration
 
 // LOGGING
 var AuditMemberJoinsInChannel = true
+var AuditMemberVerificationsInChannel = true
 var AuditMemberDeletesInChannel = true
 var AuditRoleUpdatesInChannel = true
 var AuditPromotionStateInChannel = true
