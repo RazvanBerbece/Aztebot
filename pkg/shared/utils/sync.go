@@ -94,7 +94,7 @@ func SyncUser(s *discordgo.Session, guildId string, userId string, member *disco
 
 		updatedUser, updateErr := usersRepository.UpdateUser(*user)
 		if updateErr != nil {
-			log.Println("Error udpating user in DB:", err)
+			log.Println("Error updating user in DB:", err)
 			return err
 		}
 		fmt.Printf("User synced with CurrentRoleIds: %s\n", updatedUser.CurrentRoleIds)
