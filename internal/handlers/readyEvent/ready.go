@@ -3,11 +3,9 @@ package readyEvent
 import (
 	"fmt"
 
-	"github.com/RazvanBerbece/Aztebot/internal/api/server"
 	"github.com/RazvanBerbece/Aztebot/internal/api/tasks/channelHandlers"
 	cron "github.com/RazvanBerbece/Aztebot/internal/api/tasks/cron"
 	"github.com/RazvanBerbece/Aztebot/internal/api/tasks/startup"
-	"github.com/RazvanBerbece/Aztebot/internal/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/globals/repo"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -29,12 +27,6 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 
 	// Set initial status for the AzteBot
 	s.UpdateGameStatus(0, "/help")
-
-	// Other setups
-	// Override certain permissions
-	if channel, channelExists := globals.NotificationChannels["notif-jail"]; channelExists {
-		go server.SetGlobalRestrictionsForRole(s, globals.DiscordMainGuildId, globals.JailedRoleName, &channel.ChannelId)
-	}
 
 	// Initial sync of members on server with the database
 	go startup.SyncUsersAtStartup(s)

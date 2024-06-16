@@ -1,5 +1,10 @@
 package utils
 
+import (
+	"strconv"
+	"strings"
+)
+
 func GetCircleAndOrderForGivenRoles(roleIds []int) (string, *int) {
 
 	var circle string
@@ -57,4 +62,23 @@ func RoleIsStaffRole(roleId int) bool {
 		roleId == 7 ||
 		roleId == 8 ||
 		roleId == 19
+}
+
+func GetRoleIdsFromRoleString(roleIdsString string) []int {
+
+	var roleIds []int = []int{}
+	roleIdsTokens := strings.Split(roleIdsString, ",")
+
+	for _, roleIdToken := range roleIdsTokens {
+		if len(roleIdToken) > 0 {
+			i, err := strconv.Atoi(roleIdToken)
+			if err != nil {
+				return nil
+			}
+			roleIds = append(roleIds, int(i))
+		}
+	}
+
+	return roleIds
+
 }
