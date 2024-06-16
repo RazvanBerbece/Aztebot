@@ -228,7 +228,7 @@ func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, m
 				}
 
 				if globalConfiguration.AuditMemberVerificationsInChannel {
-					logMsg := fmt.Sprintf("`%s` has completed their verification while bot was offline", user.DiscordTag)
+					logMsg := fmt.Sprintf("`%s` has completed their verification while the AzteBot was offline or restarting", user.DiscordTag)
 					discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
 					go discordChannelLogger.LogInfo(logMsg)
 				}
