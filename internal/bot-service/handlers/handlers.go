@@ -8,6 +8,7 @@ import (
 	reactionAddEventHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/reactionAddEvent"
 	reactionRemoveEventHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/reactionRemoveEvent"
 	readyEventHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/readyEvent"
+	"github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/voiceStateUpdateEvent"
 )
 
 // Handler functions for the AzteBot.
@@ -27,5 +28,7 @@ func GetAztebotHandlersAsList() []interface{} {
 		joinEvent.GuildJoin,
 		// <---- On Member Leaving Guild ---->
 		guildRemoveEvent.GuildRemove,
+		// <---- On Voice State Update ---->
+		voiceStateUpdateEvent.VoiceStateUpdate,
 	}
 }
