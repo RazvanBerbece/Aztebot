@@ -54,9 +54,18 @@ func (b *DiscordBotBase) AddHandlers(handlers []interface{}) {
 	b.setBotIntents()
 
 	// Register slash commands based on app type
-	err := aztebotSlashCommands.RegisterAztebotSlashCommands(b.botSession)
-	if err != nil {
-		log.Fatal("Error registering slash commands for AzteBot: ", err)
+	if globals.DiscordMainGuildId != "" {
+		// Register slash commands only for main guild
+		err := aztebotSlashCommands.RegisterAztebotSlashCommands(b.botSession, true)
+		if err != nil {
+			log.Fatal("Error registering slash commands for AzteBot: ", err)
+		}
+	} else {
+		// Register slash commands for all guilds
+		err := aztebotSlashCommands.RegisterAztebotSlashCommands(b.botSession, false)
+		if err != nil {
+			log.Fatal("Error registering slash commands for AzteBot: ", err)
+		}
 	}
 
 }
@@ -73,9 +82,9 @@ func (b *DiscordBotBase) Connect() {
 	b.isConnected = true
 
 	// wait here until CTRL-C or anther term signal is received
-	fmt.Println("Discord bot session is now running. Press CTRL-C to exit.")
+	fmt.Println("Discord bot session is now running.")
 	sc := make(chan os.Signal, 1)
-	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	<-sc
 
 }

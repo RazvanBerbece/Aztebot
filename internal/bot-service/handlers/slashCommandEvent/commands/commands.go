@@ -1,12 +1,12 @@
 package commands
 
 import (
-	gamesHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/slashHandlers/games"
-	profileHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/slashHandlers/profile"
-	serverHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/slashHandlers/server"
-	timeoutHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/slashHandlers/staff/timeout"
-	warningHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/slashHandlers/staff/warning"
-	utilHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/slashHandlers/utils"
+	gamesHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/games"
+	profileHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/profile"
+	serverHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/server"
+	timeoutHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/staff/timeout"
+	warningHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/staff/warning"
+	utilHandlers "github.com/RazvanBerbece/Aztebot/internal/bot-service/handlers/slashCommandEvent/commands/utils"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -18,6 +18,18 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 	{
 		Name:        "my_roles",
 		Description: "Get a list of your assigned roles",
+	},
+	{
+		Name:        "roles",
+		Description: "See a user's role card",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "user-id",
+				Description: "The Discord User ID of the user to see the role card for",
+				Required:    true,
+			},
+		},
 	},
 	{
 		Name:        "me",
@@ -176,6 +188,7 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
 	"ping":                  utilHandlers.HandleSlashPingAztebot,
 	"my_roles":              profileHandlers.HandleSlashMyRoles,
+	"roles":                 profileHandlers.HandleSlashYouRoles,
 	"me":                    profileHandlers.HandleSlashMe,
 	"you":                   profileHandlers.HandleSlashYou,
 	"help":                  serverHandlers.HandleSlashAztebotHelp,

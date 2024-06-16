@@ -77,7 +77,6 @@ func GetProfileEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Me
 		orderRoleText = fmt.Sprintf("%s | ", highestOrderRole.DisplayName)
 	}
 
-	// Setup user stats if the user doesn't have an entity in UserStats
 	stats, errStats := globalsRepo.UserStatsRepository.GetStatsForUser(userId)
 	if errStats != nil {
 		log.Fatalf("Cannot retrieve user %s stats: %v", user.DiscordTag, errStats)

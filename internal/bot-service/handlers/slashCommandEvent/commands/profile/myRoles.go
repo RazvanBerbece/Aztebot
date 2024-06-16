@@ -12,30 +12,29 @@ import (
 
 func HandleSlashMyRoles(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
-	// Attempt a sync
-	err := ProcessUserUpdate(i.Interaction.Member.User.ID, s, i)
+	embed, err := RoleDisplayEmbedForUser(i.Interaction.Member.User.Username, i.Interaction.Member.User.ID)
 	if err != nil {
-		utils.ErrorEmbedResponseEdit(s, i.Interaction, fmt.Sprintf("An error ocurred while trying to fetch your roles: `%s`", err))
+		errMsg := fmt.Sprintf("An error ocurred while trying to fetch and display your roles: %v", err)
+		utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
 	}
-
-	embed := roleDisplayEmbedForUser(i.Interaction.Member.User.Username, i.Interaction.Member.User.ID)
 	if embed == nil {
-		utils.ErrorEmbedResponseEdit(s, i.Interaction, "An error ocurred while trying to fetch your roles.")
+		utils.SendErrorEmbedResponse(s, i.Interaction, "An error ocurred while trying to fetch and display your roles.")
 	}
 
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
-			Embeds: roleDisplayEmbedForUser(i.Interaction.Member.User.Username, i.Interaction.Member.User.ID),
+			Embeds: embed,
 		},
 	})
 }
 
-func roleDisplayEmbedForUser(userName string, userId string) []*discordgo.MessageEmbed {
+func RoleDisplayEmbedForUser(userName string, userId string) ([]*discordgo.MessageEmbed, error) {
 
 	roles, err := globalsRepo.UsersRepository.GetRolesForUser(userId)
 	if err != nil {
 		log.Printf("Cannot display roles for user with id %s: %v", userId, err)
+		return nil, err
 	}
 
 	embed := embed.NewEmbed().
@@ -64,5 +63,5 @@ func roleDisplayEmbedForUser(userName string, userId string) []*discordgo.Messag
 		}
 	}
 
-	return []*discordgo.MessageEmbed{embed.MessageEmbed}
+	return []*discordgo.MessageEmbed{embed.MessageEmbed}, nil
 }

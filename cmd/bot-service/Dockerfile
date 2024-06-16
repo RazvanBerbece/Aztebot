@@ -6,7 +6,7 @@ FROM golang:latest
 WORKDIR /app
 
 # Install project dependencies
-RUN apt-get update && apt-get install -y iputils-ping && apt install -y make
+RUN apt-get update && apt-get install -y iputils-ping
 COPY go.mod go.sum ./
 RUN go mod download
 
@@ -21,4 +21,4 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o build/bot/main ./cmd/bot-service/main.g
 VOLUME /app/logs
 
 # Run the Discord bot service application
-CMD sh -c "make run-aztebot-bot-service"
+CMD sh -c "./build/bot/main"
