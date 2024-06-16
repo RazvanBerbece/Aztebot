@@ -16,8 +16,10 @@ import (
 
 func HandleSlashMe(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
+	userId := i.Interaction.Member.User.ID
+
 	// Attempt a sync
-	err := ProcessUserUpdate(i.Interaction.Member.User.ID, s, i)
+	err := ProcessUserUpdate(userId, s, i)
 	if err != nil {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
@@ -34,7 +36,7 @@ func HandleSlashMe(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		},
 	})
 
-	embed := displayEmbedForUser(s, i.Interaction.Member.User.ID)
+	embed := displayEmbedForUser(s, userId)
 	if embed == nil {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
@@ -90,15 +92,6 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 				log.Fatalf("Cannot store initial user %s stats: %v", user.DiscordTag, errStatsInit)
 				return nil
 			}
-		}
-	}
-
-	// Staff text segment (is user a member of staff?) in embed description
-	var isStaffMember bool = false
-	for _, role := range roles {
-		if role.Id == 3 || role.Id == 5 || role.Id == 6 || role.Id == 7 || role.Id == 18 {
-			// User is a staff member if they belong to any of the roles above
-			isStaffMember = true
 		}
 	}
 
@@ -169,18 +162,12 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 			musicRankString = fmt.Sprintf(" (`🏆 #%d`)", musicRank)
 		}
 
-		if user.UserId == "526512064794066945" {
-			// The one and only, Edi
-			embed.AddField("👑 Azteca", "", false)
-		}
-
-		if isStaffMember {
-			embed.AddField("💎 OTA Staff Member", "", false)
-		}
+		// Add extra decorations to the embed (special users, staff members, etc.)
+		decorateEmbed(embed, roles, userId)
 
 		embed.
 			AddField(fmt.Sprintf("🩸 Aztec since:  `%s`", userCreatedTimeString), "", false).
-			AddField(fmt.Sprintf("⭐ Highest obtained role:  `%s`", highestRole.DisplayName), "", false).
+			AddField(fmt.Sprintf("⭐ Highest obtained inner circle role:  `%s`", highestRole.DisplayName), "", false).
 			AddField(fmt.Sprintf("🔄 Active day streak:  `%d`%s", stats.NumberActiveDayStreak, streakRankString), "", false).
 			AddLineBreakField().
 			AddField(fmt.Sprintf("✉️ Total messages sent:  `%d`%s", stats.NumberMessagesSent, msgRankString), "", false).
@@ -195,4 +182,27 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 	}
 
 	return []*discordgo.MessageEmbed{embed.MessageEmbed}
+}
+
+func decorateEmbed(embed *embed.Embed, roles []dataModels.Role, userId string) {
+
+	// Special users segment
+	if userId == "526512064794066945" {
+		// The one and only, Edi
+		embed.AddField("👑 Azteca", "", false)
+	}
+
+	// Staff text segment (is user a member of staff?) in embed description
+	var isStaffMember bool = false
+	for _, role := range roles {
+		if role.Id == 3 || role.Id == 5 || role.Id == 6 || role.Id == 7 || role.Id == 18 {
+			// User is a staff member if they belong to any of the roles above
+			isStaffMember = true
+		}
+	}
+
+	if isStaffMember {
+		embed.AddField("💎 OTA Staff Member", "", false)
+	}
+
 }
