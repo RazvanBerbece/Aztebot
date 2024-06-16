@@ -10,6 +10,28 @@ import (
 )
 
 func HandleSlashMyRoles(s *discordgo.Session, i *discordgo.InteractionCreate) {
+
+	// Attempt a sync
+	err := ProcessUserUpdate(i.Interaction.Member.User.ID, s, i)
+	if err != nil {
+		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: "An error ocurred while trying to fetch your profile card.",
+			},
+		})
+	}
+
+	embed := roleDisplayEmbedForUser(i.Interaction.Member.User.Username, i.Interaction.Member.User.ID)
+	if embed == nil {
+		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: "An error ocurred while trying to fetch your roles.",
+			},
+		})
+	}
+
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
@@ -23,7 +45,8 @@ func roleDisplayEmbedForUser(userName string, userId string) []*discordgo.Messag
 	usersRepository := repositories.NewUsersRepository()
 	roles, err := usersRepository.GetRolesForUser(userId)
 	if err != nil {
-		log.Fatalf("Cannot display roles for user with id %s: %v", userId, err)
+		log.Printf("Cannot display roles for user with id %s: %v", userId, err)
+		return nil
 	}
 
 	embed := embed.NewEmbed().

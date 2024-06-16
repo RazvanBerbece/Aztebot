@@ -38,10 +38,11 @@ func (r UsersRepository) GetUser(userId string) (*dataModels.User, error) {
 		&user.CurrentInnerOrder,
 		&user.CurrentLevel,
 		&user.CurrentExperience,
-		&user.CreatedAt)
+		&user.CreatedAt,
+	)
 
 	if err != nil {
-		return nil, fmt.Errorf("GetUser %s: %v", userId, err)
+		return nil, err
 	}
 
 	return &user, nil
@@ -62,14 +63,17 @@ func (r UsersRepository) SaveInitialUserDetails(tag string, userId string) (*dat
 
 	stmt, err := r.conn.Db.Prepare(`
 		INSERT INTO 
-			Users(discordTag, 
+			Users(
+				discordTag, 
 				userId, 
 				currentRoleIds, 
 				currentCircle, 
 				currentInnerOrder, 
 				currentLevel, 
 				currentExperience, 
-				createdAt) VALUES(?, ?, ?, ?, ?, ?, ?, ?)")`)
+				createdAt
+			)
+		VALUES(?, ?, ?, ?, ?, ?, ?, ?);`)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +88,29 @@ func (r UsersRepository) SaveInitialUserDetails(tag string, userId string) (*dat
 
 }
 
-func (r UsersRepository) UpdateUser() {}
+func (r UsersRepository) UpdateUser(user dataModels.User) (*dataModels.User, error) {
+	stmt, err := r.conn.Db.Prepare(`
+		UPDATE Users SET 
+			discordTag = ?, 
+			currentRoleIds = ?, 
+			currentCircle = ?, 
+			currentInnerOrder = ?, 
+			currentLevel = ?, 
+			currentExperience = ?, 
+			createdAt = ? 
+		WHERE userId = ?`)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(user.DiscordTag, user.CurrentRoleIds, user.CurrentCircle, user.CurrentInnerOrder, user.CurrentLevel, user.CurrentExperience, user.CreatedAt, user.UserId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
 
 func (r UsersRepository) GetRolesForUser(userId string) ([]dataModels.Role, error) {
 

@@ -12,10 +12,31 @@ import (
 )
 
 func HandleSlashMe(s *discordgo.Session, i *discordgo.InteractionCreate) {
+
+	// Attempt a sync
+	err := ProcessUserUpdate(i.Interaction.Member.User.ID, s, i)
+	if err != nil {
+		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: "An error ocurred while trying to fetch your profile card.",
+			},
+		})
+	}
+
+	embed := displayEmbedForUser(i.Interaction.Member.User.ID)
+	if embed == nil {
+		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: "An error ocurred while trying to fetch your profile card.",
+			},
+		})
+	}
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
-			Embeds: displayEmbedForUser(i.Interaction.Member.User.ID),
+			Embeds: embed,
 		},
 	})
 }
@@ -25,7 +46,8 @@ func displayEmbedForUser(userId string) []*discordgo.MessageEmbed {
 	usersRepository := repositories.NewUsersRepository()
 	user, err := usersRepository.GetUser(userId)
 	if err != nil {
-		log.Fatalf("Cannot retrieve user with id %s: %v", userId, err)
+		log.Printf("Cannot retrieve user with id %s: %v", userId, err)
+		return nil
 	}
 
 	// Format CreatedAt
@@ -36,7 +58,8 @@ func displayEmbedForUser(userId string) []*discordgo.MessageEmbed {
 	var highestRole dataModels.Role
 	roles, err := usersRepository.GetRolesForUser(userId)
 	if err != nil {
-		log.Fatalf("Cannot retrieve roles for user with id %s: %v", userId, err)
+		log.Printf("Cannot retrieve roles for user with id %s: %v", userId, err)
+		return nil
 	}
 	highestRole = roles[len(roles)-1] // role IDs for users are stored in DB in ascending order by rank, so the last one is the highest
 
