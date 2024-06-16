@@ -26,6 +26,10 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		Name:        "help",
 		Description: "Get a help guide for the available AzteBot slash commands",
 	},
+	{
+		Name:        "top",
+		Description: "See the OTA leaderboard tops by activity category",
+	},
 }
 
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -34,4 +38,5 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"me":       slashHandlers.HandleSlashMe,
 	"help":     slashHandlers.HandleSlashAztebotHelp,
 	"sync":     slashHandlers.HandleSlashSync,
+	"top":      slashHandlers.HandleSlashTop,
 }

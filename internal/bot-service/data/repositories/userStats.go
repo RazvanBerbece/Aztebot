@@ -360,3 +360,75 @@ func (r UsersStatsRepository) AddToTimeSpentInEvents(userId string, sTimeLength 
 
 	return nil
 }
+
+func (r UsersStatsRepository) GetTopUsersByMessageSent(count int) ([]dataModels.TopUserMS, error) {
+
+	// This could use something similar to a strategy pattern
+	// and only pass the column we want to filter on as a parameter to a more generic function
+
+	query := `SELECT Users.discordTag, UserStats.userId, UserStats.messagesSent
+		FROM UserStats
+		JOIN Users ON UserStats.userId = Users.userId
+		ORDER BY UserStats.messagesSent DESC
+		LIMIT ?`
+
+	rows, err := r.Conn.Db.Query(query, count)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var topUsers []dataModels.TopUserMS
+
+	for rows.Next() {
+		var user dataModels.TopUserMS
+		err := rows.Scan(&user.DiscordTag, &user.UserId, &user.MessagesSent)
+		if err != nil {
+			return nil, err
+		}
+		topUsers = append(topUsers, user)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return topUsers, nil
+
+}
+
+func (r UsersStatsRepository) GetTopUsersByTimeSpentInVC(count int) ([]dataModels.TopUserVC, error) {
+
+	// This could use something similar to a strategy pattern
+	// and only pass the column we want to filter on as a parameter to a more generic function
+
+	query := `SELECT Users.discordTag, UserStats.userId, UserStats.timeSpentInVoiceChannels
+		FROM UserStats
+		JOIN Users ON UserStats.userId = Users.userId
+		ORDER BY UserStats.timeSpentInVoiceChannels DESC
+		LIMIT ?`
+
+	rows, err := r.Conn.Db.Query(query, count)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var topUsers []dataModels.TopUserVC
+
+	for rows.Next() {
+		var user dataModels.TopUserVC
+		err := rows.Scan(&user.DiscordTag, &user.UserId, &user.TimeSpentInVCs)
+		if err != nil {
+			return nil, err
+		}
+		topUsers = append(topUsers, user)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return topUsers, nil
+
+}
