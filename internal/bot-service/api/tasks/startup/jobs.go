@@ -49,7 +49,7 @@ func SyncUsersAtStartup(s *discordgo.Session) error {
 	}
 
 	// Cleanup
-	utils.CleanupRepositories(rolesRepository, usersRepository, userStatsRepository, nil, nil)
+	go utils.CleanupRepositories(rolesRepository, usersRepository, userStatsRepository, nil, nil)
 
 	fmt.Println("[STARTUP] Finished Task SyncUsersAtStartup() at", time.Now())
 
@@ -66,6 +66,7 @@ func CleanupMemberAtStartup(s *discordgo.Session, uids []string) error {
 	userStatsRepository := repositories.NewUsersStatsRepository()
 
 	// Cleanup duplicate DB entities
+	// TODO: Get rid of this once the synced duplicates are fixed
 	err := userStatsRepository.DeleteDuplicateEntries()
 	if err != nil {
 		fmt.Println("Error deleting duplicated user stats data on startup: ", err)
@@ -93,7 +94,7 @@ func CleanupMemberAtStartup(s *discordgo.Session, uids []string) error {
 	wg.Wait()
 
 	// Cleanup repos
-	utils.CleanupRepositories(nil, usersRepository, userStatsRepository, nil, nil)
+	go utils.CleanupRepositories(nil, usersRepository, userStatsRepository, nil, nil)
 
 	fmt.Println("[STARTUP] Finished Task CleanupMemberAtStartup() at", time.Now())
 
@@ -246,12 +247,12 @@ func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 			userId := voiceState.UserID
 			channelId := voiceState.ChannelID
 
-			user, err := s.User(userId)
+			userIsBot, err := member.MemberIsBot(s, globals.DiscordMainGuildId, userId)
 			if err != nil {
-				fmt.Println("Error retrieving user:", err)
+				fmt.Println("Error retrieving user for bot check:", err)
 				return
 			}
-			if user.Bot {
+			if *userIsBot {
 				continue
 			}
 
@@ -358,7 +359,7 @@ func SyncExperiencePointsGainsAtStartup(s *discordgo.Session) {
 	}
 
 	// Cleanup repos
-	utils.CleanupRepositories(nil, usersRepository, userStatsRepository, nil, nil)
+	go utils.CleanupRepositories(nil, usersRepository, userStatsRepository, nil, nil)
 
 	fmt.Println("[STARTUP] Finished Task SyncExperiencePointsGainsAtStartup() at", time.Now())
 
