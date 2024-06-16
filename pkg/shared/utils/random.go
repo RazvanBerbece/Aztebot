@@ -5,7 +5,7 @@ import (
 )
 
 func GetRandomIntegerInRange(min int, max int) int {
-	return rand.Intn(max-min) + min
+	return rand.Intn(max-min+1) + min
 }
 
 func GetRandomFromArray(array []string) string {
