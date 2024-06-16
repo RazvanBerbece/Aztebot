@@ -18,8 +18,10 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	reason := i.ApplicationCommandData().Options[1].StringValue()
 	sTimeLengthString := i.ApplicationCommandData().Options[2].StringValue()
 
+	commandOwnerUserId := i.Member.User.ID
+
 	// Ensure that the member using this command is a staff member
-	if !member.IsStaffMember(i.Member.User.ID) {
+	if !member.IsStaffMember(commandOwnerUserId) {
 		utils.SendErrorEmbedResponse(s, i.Interaction, "You do not have the required permissions to use this command.")
 		return
 	}
@@ -92,7 +94,7 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	// Send notification to target channel to announce the timeout
 	if channel, channelExists := globals.NotificationChannels["notif-timeout"]; channelExists {
-		go sendTimeoutNotification(s, channel.ChannelId, targetUserId, reason, timeoutCreatedAtString, timeoutLengthString)
+		go sendTimeoutNotification(s, channel.ChannelId, targetUserId, reason, timeoutCreatedAtString, timeoutLengthString, commandOwnerUserId)
 	}
 
 	embed := embed.NewEmbed().
@@ -113,22 +115,33 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 }
 
-func sendTimeoutNotification(s *discordgo.Session, channelId string, targetUserId string, reason string, timestamp string, duration string) {
+func sendTimeoutNotification(s *discordgo.Session, channelId string, targetUserId string, reason string, timestamp string, duration string, commandOwnerUserId string) {
+
+	// Get command owner discord name
+	cmdOwner, err := s.User(commandOwnerUserId)
+	if err != nil {
+		fmt.Printf("An error ocurred while retrieving command owner with ID: %v", err)
+	}
 
 	fields := []discordgo.MessageEmbedField{
+		{
+			Name:   "By Staff Member",
+			Value:  cmdOwner.Username,
+			Inline: false,
+		},
 		{
 			Name:   "Reason",
 			Value:  reason,
 			Inline: false,
 		},
 		{
-			Name:   "Timestamp",
-			Value:  timestamp,
+			Name:   "Duration",
+			Value:  duration,
 			Inline: false,
 		},
 		{
-			Name:   "Duration",
-			Value:  duration,
+			Name:   "Timestamp",
+			Value:  timestamp,
 			Inline: false,
 		},
 	}
