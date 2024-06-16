@@ -17,9 +17,10 @@ import (
 
 // Takes in a discord member and syncs the database User with the current member details
 // as they appear on the Discord guild. This function uses the shared global DB connections.
-func SyncMember(s *discordgo.Session, guildId string, userId string, member *discordgo.Member) error {
+func SyncMember(s *discordgo.Session, guildId string, userId string, member *discordgo.Member, defaultOrderRoleNames []string, syncProgression bool) error {
 
 	var user *dataModels.User
+	var userStats *dataModels.UserStats
 
 	userExistsResult := globalRepositories.UsersRepository.UserExists(userId)
 	switch userExistsResult {
@@ -45,6 +46,27 @@ func SyncMember(s *discordgo.Session, guildId string, userId string, member *dis
 		if err != nil {
 			log.Fatalf("Error ocurred retrieving user from the DB: %v\n", err)
 			return err
+		}
+		// Check whether user has user stats entity
+		userStatsExistsResult := globalRepositories.UserStatsRepository.UserStatsExist(userId)
+		switch userStatsExistsResult {
+		case -1:
+			// Error ocurred
+			fmt.Printf("Cannot check whether user %s (%s) exists in the DB during sync\n", member.User.Username, userId)
+		case 0:
+			// Stats don't exist
+			err = globalRepositories.UserStatsRepository.SaveInitialUserStats(userId)
+			if err != nil {
+				log.Printf("Failed to store initial user stats during sync: %v", err)
+				return err
+			}
+		case 1:
+			// Stats exist
+			userStats, err = globalRepositories.UserStatsRepository.GetStatsForUser(userId)
+			if err != nil {
+				log.Fatalf("Error ocurred retrieving user stats from the DB: %v\n", err)
+				return err
+			}
 		}
 	}
 
@@ -84,6 +106,19 @@ func SyncMember(s *discordgo.Session, guildId string, userId string, member *dis
 		currentCircle, currentOrder := utils.GetCircleAndOrderForGivenRoles(roleIds)
 		user.CurrentCircle = currentCircle
 		user.CurrentInnerOrder = currentOrder
+
+		if syncProgression {
+			err = ResolveProgressionMismatchForMember(s, guildId, userId, user.CurrentExperience, userStats.NumberMessagesSent, userStats.TimeSpentInVoiceChannels, defaultOrderRoleNames)
+			if err != nil {
+				log.Println("Error syncing progression for member:", err)
+				return err
+			}
+			err = RefreshDiscordOrderRoleForMember(s, guildId, userId)
+			if err != nil {
+				log.Println("Error refreshing order role for member:", err)
+				return err
+			}
+		}
 
 		// Save changes
 		_, updateErr := globalRepositories.UsersRepository.UpdateUser(*user)
@@ -199,12 +234,12 @@ func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, m
 		if syncProgression {
 			err = ResolveProgressionMismatchForMember(s, guildId, userId, user.CurrentExperience, userStats.NumberMessagesSent, userStats.TimeSpentInVoiceChannels, defaultOrderRoleNames)
 			if err != nil {
-				log.Println("Error syncing progression for member:", updateErr)
+				log.Println("Error syncing progression for member:", err)
 				return err
 			}
 			err = RefreshDiscordOrderRoleForMember(s, guildId, userId)
 			if err != nil {
-				log.Println("Error refreshing order role for member:", updateErr)
+				log.Println("Error refreshing order role for member:", err)
 				return err
 			}
 		}
@@ -236,7 +271,7 @@ func ResolveProgressionMismatchForMember(s *discordgo.Session, userGuildId strin
 	// according to the progression rules (type 1, 2, 3, 4)
 	if processedLevel == 0 && processedRoleName == "" && len(currentOrderRoles) > 0 {
 		// mismatch, need to reset
-		err := globalRepositories.UsersRepository.SetLevel(userId, processedLevel)
+		err := globalRepositories.UsersRepository.SetLevel(userId, 0)
 		if err != nil {
 			fmt.Printf("Error occurred while setting member level in DB: %v\n", err)
 			return err
