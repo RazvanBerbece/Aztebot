@@ -49,7 +49,13 @@ func SendDirectComplexEmbedToMember(s *discordgo.Session, userId string, embed e
 
 	// Only show fields from page 1 in the beginning
 	pages := (len(originalAllFields) + pageSize - 1) / pageSize
-	embed.Fields = embed.Fields[0:pageSize]
+
+	capacity := len(embed.Fields)
+	if capacity < pageSize {
+		embed.Fields = embed.Fields[0:capacity]
+	} else {
+		embed.Fields = embed.Fields[0:pageSize]
+	}
 	embed.Footer = &discordgo.MessageEmbedFooter{
 		Text: fmt.Sprintf("Page %d / %d", 1, pages),
 	}
