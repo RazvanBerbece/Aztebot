@@ -2,15 +2,12 @@ package readyEvent
 
 import (
 	"fmt"
-	"log"
-	"strings"
 	"time"
 
 	cron "github.com/RazvanBerbece/Aztebot/internal/bot-service/api/tasks/cron"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/tasks/startup"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
-	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/logging"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -39,89 +36,17 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	go startup.CleanupMemberAtStartup(s, uids)
 
 	// Initial informative messages on certain channels
-	go SendInformationEmbedsToTextChannels(s)
+	go startup.SendInformationEmbedsToTextChannels(s)
 
 	// Check for users on voice channels and start their VC sessions
 	go RegisterUsersInVoiceChannelsAtStartup(s)
 
-	// Run background task toperiodically update voice session durations in the DB
+	// Run background task to periodically update voice session durations in the DB
 	go UpdateVoiceSessionDurations(s)
 
 	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, XP gaining?, etc.)
 	cron.ProcessUpdateActivityStreaks(24, 0, 0) // the hh:mm:ss timestamp in a day to run the cron at
 	cron.ProcessRemoveExpiredWarns(2)           // run every n=2 months
-
-}
-
-func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
-
-	var textChannels map[string]string
-
-	// TODO: Make the channels and their descriptions use environment variables somehow
-	if globals.Environment == "staging" {
-		// Dev text channels
-		textChannels = map[string]string{
-			"1188135110042734613": "default",
-			"1194451477192773773": "staff-rules",
-			"1198686819928264784": "server-rules",
-		}
-	} else {
-		// Production text channels
-		textChannels = map[string]string{
-			"1176277764001767464": "info-music",
-			"1100486860058398770": "staff-rules",
-			"1100142572141281460": "server-rules",
-		}
-	}
-
-	for id, details := range textChannels {
-		hasMessage, err := utils.ChannelHasDefaultInformationMessage(s, id)
-		if err != nil {
-			fmt.Printf("Could not check for default message in channel %s (%s): %v", id, details, err)
-			continue
-		}
-		if hasMessage {
-			// Do not send this default message as it already exists
-			continue
-		} else {
-			// Send associated default message to given text channel
-			var embedText string
-			var hasOwnEmbed bool
-			var ownEmbed *embed.Embed = embed.NewEmbed()
-			switch details {
-			case "default":
-				embedText = utils.GetTextFromFile("internal/bot-service/handlers/readyEvent/assets/defaultContent/default.txt")
-			case "info-music":
-				embedText = utils.GetTextFromFile("internal/bot-service/handlers/readyEvent/assets/defaultContent/music-info.txt")
-			case "staff-rules":
-				embedText = utils.GetTextFromFile("internal/bot-service/handlers/readyEvent/assets/defaultContent/staff-rules.txt")
-				hasOwnEmbed = true
-				mutateLongEmbedFromStaticData(embedText, ownEmbed)
-			case "server-rules":
-				embedText = utils.GetTextFromFile("internal/bot-service/handlers/readyEvent/assets/defaultContent/server-rules.txt")
-				hasOwnEmbed = true
-				mutateLongEmbedFromStaticData(embedText, ownEmbed)
-			}
-
-			var messageEmbedToPost *discordgo.MessageEmbed
-			if !hasOwnEmbed {
-				messageEmbedToPost = embed.NewEmbed().
-					SetTitle("🤖  Information Message").
-					SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
-					SetColor(000000).
-					AddField("", embedText, false).
-					MessageEmbed
-			} else {
-				messageEmbedToPost = ownEmbed.MessageEmbed
-			}
-
-			_, err := s.ChannelMessageSendEmbed(id, messageEmbedToPost)
-			if err != nil {
-				log.Fatalf("An error occured while sending a default message (%s): %v", details, err)
-				return
-			}
-		}
-	}
 
 }
 
@@ -305,21 +230,6 @@ func updateMusicSessions() {
 					channelId: &now,
 				}
 			}
-		}
-	}
-}
-
-// Note that this is a mutating function on `hasOwnEmbed` and `embed`.
-func mutateLongEmbedFromStaticData(embedText string, embed *embed.Embed) {
-	// Split the content into sections based on double newline characters ("\n\n")
-	sections := strings.Split(embedText, "\n\n")
-	for _, section := range sections {
-		lines := strings.Split(section, "\n")
-		if len(lines) > 0 {
-			// Use the first line as the title and the rest as content
-			title := lines[0]
-			content := strings.Join(lines[1:], "\n")
-			embed.AddField(title, content, false)
 		}
 	}
 }
