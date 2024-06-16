@@ -331,6 +331,37 @@ func (r UsersRepository) RemoveUserRoleWithId(userId string, roleId int) error {
 	return nil
 }
 
+func (r UsersRepository) RemoveUserRoleWithName(userId string, roleDisplayName string) error {
+
+	roles, err := r.GetRolesForUser(userId)
+	if err != nil {
+		return err
+	}
+
+	roleIdsString := ""
+	for _, role := range roles {
+		if role.DisplayName != roleDisplayName {
+			roleIdsString += fmt.Sprintf("%d,", role.Id)
+		}
+	}
+
+	stmt, err := r.Conn.Db.Prepare(`
+		UPDATE Users SET 
+			currentRoleIds = ?
+		WHERE userId = ?`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(roleIdsString, userId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r UsersRepository) SetUserRoles(userId string, roleIdsString string) error {
 
 	stmt, err := r.Conn.Db.Prepare(`
