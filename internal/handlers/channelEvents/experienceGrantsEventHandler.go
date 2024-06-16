@@ -21,7 +21,7 @@ func HandleExperienceGrantEvents(s *discordgo.Session, logger logging.Logger) {
 
 		// Audit experience grant
 		logMsg := fmt.Sprintf("Granted `%f` XP (`%s`) to `%s`", xpEvent.Points, xpEvent.Type, xpEvent.UserId)
-		go logger.LogError(logMsg)
+		go logger.LogInfo(logMsg)
 	}
 
 }
