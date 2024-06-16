@@ -23,5 +23,4 @@ func MemberRoleUpdate(s *discordgo.Session, m *discordgo.GuildMemberUpdate) {
 	if err != nil {
 		fmt.Printf("Error ocurred while syncing new user roles with the DB: %v\n", err)
 	}
-
 }
