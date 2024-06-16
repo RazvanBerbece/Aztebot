@@ -26,7 +26,7 @@ func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []
 
 		// Check current stats against progression table
 		// Figure out the promoted role to be given
-		processedRoleName, processedLevel := member.GetRoleNameAndLevelFromStats(userXp, userNumberMessagesSent, userTimeSpentInVc)
+		processedRoleName, processedLevel := member.GetRoleNameAndLevelFromStats(userId, userXp, userNumberMessagesSent, userTimeSpentInVc)
 
 		currentOrderRoles, err := member.GetMemberOrderRoles(userId, defaultOrderRoleNames)
 		if err != nil {
@@ -34,8 +34,39 @@ func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []
 			continue
 		}
 
+		if processedRoleName == "" && processedLevel == 0 {
+			if len(currentOrderRoles) > 0 {
+				// mismatch, need to reset
+				err := globalRepositories.UsersRepository.SetLevel(userId, processedLevel)
+				if err != nil {
+					fmt.Printf("Error occurred while setting member level in DB: %v\n", err)
+					continue // skip event to allow retry with correct params
+				}
+
+				for _, orderRole := range currentOrderRoles {
+					err = globalRepositories.UsersRepository.RemoveUserRoleWithId(userId, orderRole.Id)
+					if err != nil {
+						fmt.Printf("Error occurred while removing member role from DB: %v\n", err)
+					}
+				}
+
+				user, err := globalRepositories.UsersRepository.GetUser(userId)
+				if err != nil {
+					fmt.Printf("Error occurred while retrieving user and roles from DB: %v\n", err)
+				}
+				err = member.RefreshDiscordRolesWithIdForMember(s, userGuildId, userId, user.CurrentRoleIds)
+				if err != nil {
+					fmt.Printf("Error occurred while refreshing member roles on-Discord: %v\n", err)
+				}
+
+				fmt.Printf("Mismatch for %s resolved.\n", userTag)
+
+				continue
+			}
+		}
+
 		// Promotion is available for current member (and no mismatch was detected)
-		if processedRoleName != "" && processedLevel != 0 && processedLevel != userCurrentLevel {
+		if processedRoleName != "" && processedLevel != 0 && processedLevel > userCurrentLevel {
 
 			// Give promoted level in DB
 			err := globalRepositories.UsersRepository.SetLevel(userId, processedLevel)
