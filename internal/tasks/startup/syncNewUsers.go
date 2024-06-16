@@ -6,13 +6,14 @@ import (
 
 	"github.com/RazvanBerbece/Aztebot/internal/data/repositories"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	memberService "github.com/RazvanBerbece/Aztebot/internal/services/member"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
 
-func SyncUsersAtStartup(s *discordgo.Session) error {
+func SyncMembersAtStartup(s *discordgo.Session) error {
 
-	fmt.Println("[STARTUP] Starting Task SyncUsersAtStartup() at", time.Now())
+	fmt.Println("[STARTUP] Starting Task SyncMembersAtStartup() at", time.Now())
 
 	// Inject new connections
 	rolesRepository := repositories.NewRolesRepository()
@@ -22,7 +23,7 @@ func SyncUsersAtStartup(s *discordgo.Session) error {
 	// Retrieve all members in the guild
 	members, err := s.GuildMembers(globalConfiguration.DiscordMainGuildId, "", 1000)
 	if err != nil {
-		fmt.Println("[STARTUP] Failed Task SyncUsersAtStartup() at", time.Now(), "with error", err)
+		fmt.Println("[STARTUP] Failed Task SyncMembersAtStartup() at", time.Now(), "with error", err)
 		return err
 	}
 
@@ -35,7 +36,7 @@ func SyncUsersAtStartup(s *discordgo.Session) error {
 		lastMemberID := members[len(members)-1].User.ID
 		members, err = s.GuildMembers(globalConfiguration.DiscordMainGuildId, lastMemberID, 1000)
 		if err != nil {
-			fmt.Println("[STARTUP] Failed Task SyncUsersAtStartup() at", time.Now(), "with error", err)
+			fmt.Println("[STARTUP] Failed Task SyncMembersAtStartup() at", time.Now(), "with error", err)
 			return err
 		}
 
@@ -46,7 +47,7 @@ func SyncUsersAtStartup(s *discordgo.Session) error {
 	// Cleanup
 	go utils.CleanupRepositories(rolesRepository, usersRepository, userStatsRepository, nil, nil)
 
-	fmt.Println("[STARTUP] Finished Task SyncUsersAtStartup() at", time.Now())
+	fmt.Println("[STARTUP] Finished Task SyncMembersAtStartup() at", time.Now())
 
 	return nil
 
@@ -59,7 +60,7 @@ func processMembers(s *discordgo.Session, members []*discordgo.Member, rolesRepo
 			continue
 		}
 		// For each member, sync their details (either add to DB or update)
-		err := utils.SyncUserPersistent(s, globalConfiguration.DiscordMainGuildId, member.User.ID, member, rolesRepository, usersRepository, userStatsRepository)
+		err := memberService.SyncMemberPersistent(s, globalConfiguration.DiscordMainGuildId, member.User.ID, member, rolesRepository, usersRepository, userStatsRepository)
 		if err != nil && err.Error() != "no update was executed" {
 			fmt.Printf("Error syncing member %s: %v\n", member.User.Username, err)
 		}

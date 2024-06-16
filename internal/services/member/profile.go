@@ -2,9 +2,27 @@ package member
 
 import (
 	"fmt"
+	"log"
 
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
+	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 )
+
+func IsStaff(userId string, staffRoles []string) bool {
+
+	roles, err := globalRepositories.UsersRepository.GetRolesForUser(userId)
+	if err != nil {
+		log.Printf("Cannot retrieve roles for user with id %s: %v", userId, err)
+	}
+
+	for _, role := range roles {
+		if utils.StringInSlice(role.DisplayName, staffRoles) {
+			return true
+		}
+	}
+
+	return false
+}
 
 func SetGender(userId string, genderValue string) error {
 
