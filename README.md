@@ -21,10 +21,10 @@ In order to run the application, a few prerequisites must be met.
 This project will employ CI/CD through the use of GitHub Actions and Google Cloud. 
 
 ## CI
-Continuous integration will be implemented through a workflow script which sets up a Go environment and then runs the internal logic tests on all pull request and pushes to main. The workflow file for CI can be seen in [test.yml](.github/workflows/test.yml).
+Continuous integration will be implemented through a workflow script which sets up a Go environment and then runs the internal logic tests on all pull request and pushes to main. The workflow file for the AzteBot CI can be seen in [test-aztebot.yml](.github/workflows/test-aztebot.yml).
 
 ## CD
-Continuous deployment will be implemented through a workflow script which builds all the project artifacts and uploads them to Google Cloud Artifact Registry on pushes to the main branch. Additionally, a GKE pod is created with the new container image and executed upstream. The workflow file for CD can be seen in [deploy.yml](.github/workflows/deploy.yml).
+Continuous deployment will be implemented through a workflow script which builds all the project artifacts and uploads them to Google Cloud Artifact Registry on pushes to the main branch. Additionally, a GKE pod is created with the new container image and executed upstream. The workflow file for the AzteBot CD can be seen in [deploy-aztebot.yml](.github/workflows/deploy-aztebot.yml).
 
 Notes:
 - The environment file is base64 encoded using `openssl base64 -A -in .prod.env -out .env.out` and decoded accordingly in the workflows.
