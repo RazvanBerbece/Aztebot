@@ -95,14 +95,13 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 		SetDescription(fmt.Sprintf("`%s CIRCLE`", user.CurrentCircle)).
 		SetThumbnail(fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.png", userId, apiUser.Avatar)).
 		SetColor(000000).
-		AddField(fmt.Sprintf("Aztec since:  `%s`", userCreatedTimeString), "", false).
+		AddField(fmt.Sprintf("🩸 Aztec since:  `%s`", userCreatedTimeString), "", false).
 		AddField(fmt.Sprintf("Highest obtained role:  `%s`", highestRole.DisplayName), "", false).
 		AddLineBreakField().
-		AddField(fmt.Sprintf("Total messages sent:  `%d`", stats.NumberMessagesSent), "", false).
-		AddField(fmt.Sprintf("Total slash commands used:  `%d`", stats.NumberSlashCommandsUsed), "", false).
-		AddField(fmt.Sprintf("Total reactions received:  `%d`", stats.NumberReactionsReceived), "", false).
-		// TODO: Add day streak
-		// AddField(fmt.Sprintf("Active day streak:  `%d`", stats.NumberActiveDayStreak), "", false).
+		AddField(fmt.Sprintf("✉️ Total messages sent:  `%d`", stats.NumberMessagesSent), "", false).
+		AddField(fmt.Sprintf("⚙️ Total slash commands used:  `%d`", stats.NumberSlashCommandsUsed), "", false).
+		AddField(fmt.Sprintf("💯 Total reactions received:  `%d`", stats.NumberReactionsReceived), "", false).
+		AddField(fmt.Sprintf("⭐ Active day streak:  `%d`", stats.NumberActiveDayStreak), "", false).
 		AddLineBreakField().
 		AddField("", "_(Stats collected after 15/12/2023)_", false)
 

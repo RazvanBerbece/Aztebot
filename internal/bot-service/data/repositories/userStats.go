@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"fmt"
+	"time"
 
 	databaseconn "github.com/RazvanBerbece/Aztebot/internal/bot-service/data/connection"
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/bot-service/data/models"
@@ -25,6 +26,8 @@ func (r UsersStatsRepository) SaveInitialUserStats(userId string) error {
 		NumberSlashCommandsUsed: 0,
 		NumberReactionsReceived: 0,
 		NumberActiveDayStreak:   0,
+		LastActiveTimestamp:     0,
+		NumberActivitiesToday:   1,
 	}
 
 	stmt, err := r.Conn.Db.Prepare(`
@@ -34,15 +37,17 @@ func (r UsersStatsRepository) SaveInitialUserStats(userId string) error {
 				messagesSent, 
 				slashCommandsUsed, 
 				reactionsReceived, 
-				activeDayStreak
+				activeDayStreak,
+				lastActivityTimestamp,
+				numberActivitiesToday
 			)
-		VALUES(?, ?, ?, ?, ?);`)
+		VALUES(?, ?, ?, ?, ?, ?, ?);`)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(userStats.UserId, userStats.NumberMessagesSent, userStats.NumberSlashCommandsUsed, userStats.NumberReactionsReceived, userStats.NumberActiveDayStreak)
+	_, err = stmt.Exec(userStats.UserId, userStats.NumberMessagesSent, userStats.NumberSlashCommandsUsed, userStats.NumberReactionsReceived, userStats.NumberActiveDayStreak, userStats.LastActiveTimestamp, userStats.NumberActivitiesToday)
 	if err != nil {
 		return err
 	}
@@ -66,6 +71,8 @@ func (r UsersStatsRepository) GetStatsForUser(userId string) (*dataModels.UserSt
 		&userStats.NumberSlashCommandsUsed,
 		&userStats.NumberReactionsReceived,
 		&userStats.NumberActiveDayStreak,
+		&userStats.LastActiveTimestamp,
+		&userStats.NumberActivitiesToday,
 	)
 
 	if err != nil {
@@ -154,14 +161,14 @@ func (r UsersStatsRepository) IncrementReactionsReceivedForUser(userId string) e
 			reactionsReceived = reactionsReceived + 1
 		WHERE userId = ?`)
 	if err != nil {
-		fmt.Printf("Error ocurred while preparing reactions received stat increment for user %s: %v", userId, err)
+		fmt.Printf("Error ocurred while preparing reactions received stat increment for user %s: %v\n", userId, err)
 		return err
 	}
 	defer stmt.Close()
 
 	_, err = stmt.Exec(userId)
 	if err != nil {
-		fmt.Printf("Error ocurred while incrementing reactions received stat for user %s: %v", userId, err)
+		fmt.Printf("Error ocurred while incrementing reactions received stat for user %s: %v\n", userId, err)
 		return err
 	}
 
@@ -174,14 +181,14 @@ func (r UsersStatsRepository) DecrementReactionsReceivedForUser(userId string) e
 			reactionsReceived = reactionsReceived - 1
 		WHERE userId = ?`)
 	if err != nil {
-		fmt.Printf("Error ocurred while preparing reactions received stat decrement for user %s: %v", userId, err)
+		fmt.Printf("Error ocurred while preparing reactions received stat decrement for user %s: %v\n", userId, err)
 		return err
 	}
 	defer stmt.Close()
 
 	_, err = stmt.Exec(userId)
 	if err != nil {
-		fmt.Printf("Error ocurred while decrementing reactions received stat for user %s: %v", userId, err)
+		fmt.Printf("Error ocurred while decrementing reactions received stat for user %s: %v\n", userId, err)
 		return err
 	}
 
@@ -194,14 +201,14 @@ func (r UsersStatsRepository) IncrementActiveDayStreakForUser(userId string) err
 			activeDayStreak = activeDayStreak + 1
 		WHERE userId = ?`)
 	if err != nil {
-		fmt.Printf("Error ocurred while preparing active day streak stat increment for user %s: %v", userId, err)
+		fmt.Printf("Error ocurred while preparing active day streak stat increment for user %s: %v\n", userId, err)
 		return err
 	}
 	defer stmt.Close()
 
 	_, err = stmt.Exec(userId)
 	if err != nil {
-		fmt.Printf("Error ocurred while incrementing active day streak stat for user %s: %v", userId, err)
+		fmt.Printf("Error ocurred while incrementing active day streak stat for user %s: %v\n", userId, err)
 		return err
 	}
 
@@ -214,15 +221,81 @@ func (r UsersStatsRepository) ResetActiveDayStreakForUser(userId string) error {
 			activeDayStreak = 0
 		WHERE userId = ?`)
 	if err != nil {
-		fmt.Printf("Error ocurred while preparing active day streak stat reset for user %s: %v", userId, err)
+		fmt.Printf("Error ocurred while preparing active day streak stat reset for user %s: %v\n", userId, err)
+		return err
+	}
+	defer stmt.Close()
+
+	retries := 5
+	for i := 0; i < retries; i++ {
+		_, err = stmt.Exec(userId)
+		if err != nil {
+			fmt.Printf("Error ocurred while resetting day streak stat for user %s: %v\nRetrying...", userId, err)
+		}
+		time.Sleep(time.Second * 2)
+	}
+
+	return nil
+}
+
+func (r UsersStatsRepository) UpdateLastActiveTimestamp(userId string, timestamp int64) error {
+	stmt, err := r.Conn.Db.Prepare(`
+		UPDATE UserStats SET 
+			lastActivityTimestamp = ?
+		WHERE userId = ?`)
+	if err != nil {
+		fmt.Printf("Error ocurred while preparing last active timestamp for user %s: %v\n", userId, err)
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(timestamp, userId)
+	if err != nil {
+		fmt.Printf("Error ocurred while updating the last active timestamp for user %s: %v\n", userId, err)
+		return err
+	}
+
+	return nil
+}
+
+func (r UsersStatsRepository) IncrementActivitiesTodayForUser(userId string) error {
+	stmt, err := r.Conn.Db.Prepare(`
+		UPDATE UserStats SET 
+			numberActivitiesToday = numberActivitiesToday + 1
+		WHERE userId = ?`)
+	if err != nil {
+		fmt.Printf("Error ocurred while preparing activities number increment for user %s: %v\n", userId, err)
 		return err
 	}
 	defer stmt.Close()
 
 	_, err = stmt.Exec(userId)
 	if err != nil {
-		fmt.Printf("Error ocurred while resetting active day streak stat for user %s: %v", userId, err)
+		fmt.Printf("Error ocurred while incrementing activities number stat for user %s: %v\n", userId, err)
 		return err
+	}
+
+	return nil
+}
+
+func (r UsersStatsRepository) ResetActivitiesTodayForUser(userId string) error {
+	stmt, err := r.Conn.Db.Prepare(`
+		UPDATE UserStats SET 
+			numberActivitiesToday = 0
+		WHERE userId = ?`)
+	if err != nil {
+		fmt.Printf("Error ocurred while preparing reset activities number for user %s: %v\n", userId, err)
+		return err
+	}
+	defer stmt.Close()
+
+	retries := 5
+	for i := 0; i < retries; i++ {
+		_, err = stmt.Exec(userId)
+		if err != nil {
+			fmt.Printf("Error ocurred while resetting activities number stat for user %s: %v\nRetrying...", userId, err)
+		}
+		time.Sleep(time.Second * 2)
 	}
 
 	return nil

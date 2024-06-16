@@ -2,6 +2,7 @@ package messageEvent
 
 import (
 	"fmt"
+	"time"
 
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/bwmarrin/discordgo"
@@ -25,6 +26,15 @@ func ReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 	err = globalsRepo.UserStatsRepository.IncrementReactionsReceivedForUser(messageOwnerUid)
 	if err != nil {
 		fmt.Printf("An error ocurred while updating user (%s) reaction count: %v", messageOwnerUid, err)
+	}
+
+	err = globalsRepo.UserStatsRepository.IncrementActivitiesTodayForUser(r.UserID)
+	if err != nil {
+		fmt.Printf("An error ocurred while incrementing user (%s) activities count: %v", r.UserID, err)
+	}
+	err = globalsRepo.UserStatsRepository.UpdateLastActiveTimestamp(r.UserID, time.Now().Unix())
+	if err != nil {
+		fmt.Printf("An error ocurred while udpating user (%s) last timestamp: %v", r.UserID, err)
 	}
 
 }
