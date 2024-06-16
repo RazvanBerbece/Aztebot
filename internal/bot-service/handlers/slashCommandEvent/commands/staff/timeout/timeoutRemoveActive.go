@@ -12,7 +12,7 @@ import (
 
 func HandleSlashTimeoutRemoveActive(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
-	targetUserId := i.ApplicationCommandData().Options[0].StringValue()
+	targetUserId := utils.GetDiscordIdFromMentionFormat(i.ApplicationCommandData().Options[0].StringValue())
 
 	// Input validation
 	if !utils.IsValidDiscordUserId(targetUserId) {

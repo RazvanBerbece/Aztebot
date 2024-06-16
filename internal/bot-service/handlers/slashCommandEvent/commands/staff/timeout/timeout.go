@@ -14,7 +14,7 @@ import (
 
 func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
-	targetUserId := i.ApplicationCommandData().Options[0].StringValue()
+	targetUserId := utils.GetDiscordIdFromMentionFormat(i.ApplicationCommandData().Options[0].StringValue())
 	reason := i.ApplicationCommandData().Options[1].StringValue()
 	sTimeLengthString := i.ApplicationCommandData().Options[2].StringValue()
 

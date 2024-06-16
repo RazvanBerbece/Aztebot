@@ -26,8 +26,8 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		Options: []*discordgo.ApplicationCommandOption{
 			{
 				Type:        discordgo.ApplicationCommandOptionString,
-				Name:        "user-id",
-				Description: "The Discord User ID of the user to see the role card for",
+				Name:        "user",
+				Description: "The Discord User to see the role card for",
 				Required:    true,
 			},
 		},
@@ -42,8 +42,8 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		Options: []*discordgo.ApplicationCommandOption{
 			{
 				Type:        discordgo.ApplicationCommandOptionString,
-				Name:        "user-id",
-				Description: "The Discord User ID of the user to see the profile card for",
+				Name:        "user",
+				Description: "The Discord User to see the profile card for",
 				Required:    true,
 			},
 		},
@@ -70,8 +70,8 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		Options: []*discordgo.ApplicationCommandOption{
 			{
 				Type:        discordgo.ApplicationCommandOptionString,
-				Name:        "user-id",
-				Description: "The Discord User ID of the user the warning is to be given to",
+				Name:        "user",
+				Description: "The Discord User the warning is given to",
 				Required:    true,
 			},
 			{
@@ -88,8 +88,8 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		Options: []*discordgo.ApplicationCommandOption{
 			{
 				Type:        discordgo.ApplicationCommandOptionString,
-				Name:        "user-id",
-				Description: "The Discord User ID of the user the warning was given to",
+				Name:        "user",
+				Description: "The Discord User the warning was given to",
 				Required:    true,
 			},
 		},
@@ -100,8 +100,8 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		Options: []*discordgo.ApplicationCommandOption{
 			{
 				Type:        discordgo.ApplicationCommandOptionString,
-				Name:        "user-id",
-				Description: "The Discord User ID of the user who was given the warnings",
+				Name:        "user",
+				Description: "The Discord User who was given the warnings",
 				Required:    true,
 			},
 		},
@@ -112,8 +112,8 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		Options: []*discordgo.ApplicationCommandOption{
 			{
 				Type:        discordgo.ApplicationCommandOptionString,
-				Name:        "user-id",
-				Description: "The Discord User ID of the user the timeout is given to",
+				Name:        "user",
+				Description: "The Discord User ID the timeout is given to",
 				Required:    true,
 			},
 			{
@@ -166,8 +166,8 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		Options: []*discordgo.ApplicationCommandOption{
 			{
 				Type:        discordgo.ApplicationCommandOptionString,
-				Name:        "user-id",
-				Description: "The Discord User ID of the user to see the associated timeouts for",
+				Name:        "user",
+				Description: "The Discord User to see the associated timeouts for",
 				Required:    true,
 			},
 		},
@@ -178,8 +178,8 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		Options: []*discordgo.ApplicationCommandOption{
 			{
 				Type:        discordgo.ApplicationCommandOptionString,
-				Name:        "user-id",
-				Description: "The Discord User ID of the user to remove the active timeout from",
+				Name:        "user",
+				Description: "The Discord User to remove the active timeout from",
 				Required:    true,
 			},
 		},

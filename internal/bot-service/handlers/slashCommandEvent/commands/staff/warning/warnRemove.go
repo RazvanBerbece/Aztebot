@@ -8,12 +8,13 @@ import (
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/bot-service/data/models"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
+	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
 
 func HandleSlashWarnRemoveOldest(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
-	targetUserId := i.ApplicationCommandData().Options[0].StringValue()
+	targetUserId := utils.GetDiscordIdFromMentionFormat(i.ApplicationCommandData().Options[0].StringValue())
 
 	warn, err := RemoveWarningFromUser(s, i, targetUserId)
 	if err != nil {
