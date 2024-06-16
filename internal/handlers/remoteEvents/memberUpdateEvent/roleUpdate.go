@@ -14,7 +14,7 @@ func MemberRoleUpdate(s *discordgo.Session, m *discordgo.GuildMemberUpdate) {
 		return
 	}
 
-	fmt.Printf("Handling role update for %s (updated roles: %s)", m.Member.User.Username, m.Roles)
+	fmt.Printf("Handling role update for %s (updated roles: %s)\n", m.Member.User.Username, m.Roles)
 
 	// Sync user in DB with the current Discord member state
 	err := member.SyncMember(s, m.GuildID, m.Member.User.ID, m.Member)
