@@ -1,12 +1,15 @@
 package member
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
+	"time"
 
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/bot-service/data/models"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
+	"github.com/RazvanBerbece/Aztebot/pkg/shared/dm"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
@@ -38,7 +41,16 @@ func KickMember(s *discordgo.Session, guildId string, userId string) error {
 		return err
 	}
 	// Delete member-related entries from the databases
-	err = globalsRepo.UserStatsRepository.DeleteUserStats(userId)
+	err = DeleteAllMemberData(userId)
+	if err != nil {
+		fmt.Printf("Error deleting member %s data from DB tables: %v", userId, err)
+		return err
+	}
+	return nil
+}
+
+func DeleteAllMemberData(userId string) error {
+	err := globalsRepo.UserStatsRepository.DeleteUserStats(userId)
 	if err != nil {
 		fmt.Printf("Error deleting member %s stats from DB: %v", userId, err)
 	}
@@ -49,6 +61,14 @@ func KickMember(s *discordgo.Session, guildId string, userId string) error {
 	err = globalsRepo.WarnsRepository.DeleteAllWarningsForUser(userId)
 	if err != nil {
 		fmt.Printf("Error deleting user %s warnings from DB: %v", userId, err)
+	}
+	err = globalsRepo.TimeoutsRepository.ClearTimeoutForUser(userId)
+	if err != nil {
+		fmt.Printf("Error deleting user %s active timeouts from DB: %v", userId, err)
+	}
+	err = globalsRepo.TimeoutsRepository.ClearArchivedTimeoutsForUser(userId)
+	if err != nil {
+		fmt.Printf("Error deleting user %s archived timeouts from DB: %v", userId, err)
 	}
 	return nil
 }
@@ -326,19 +346,80 @@ func GetMemberRankInLeaderboards(s *discordgo.Session, userId string) (map[strin
 
 }
 
-func GiveTimeoutToMemberWithId(s *discordgo.Session, i *discordgo.InteractionCreate, userId string, reason string, creationTimestamp int64, sTimeoutLength float64) error {
+func GiveTimeoutToMemberWithId(s *discordgo.Session, i *discordgo.InteractionCreate, guildId string, userId string, reason string, creationTimestamp int64, sTimeoutLength float64) error {
 
 	result := globalsRepo.TimeoutsRepository.GetTimeoutsCountForUser(userId)
 	if result > 0 {
 		return fmt.Errorf("a user cannot be given more than 1 timeout at a time")
 	}
 
+	// If the user is on their 10th timeout
+	numArchivedTimeouts := globalsRepo.TimeoutsRepository.GetArchivedTimeoutsCountForUser(userId)
+	if numArchivedTimeouts == 9 {
+		// ban them instead
+		err := s.GuildBanCreateWithReason(guildId, userId, "Received 10th and final timeout", 1)
+		if err != nil {
+			fmt.Println("Error banning user on 10th timeout: ", err)
+			return err
+		}
+		// and clean DB related entries
+		err = DeleteAllMemberData(userId)
+		if err != nil {
+			fmt.Println("Error deleting user data on 10th timeout: ", err)
+			return err
+		}
+	}
+
 	err := globalsRepo.TimeoutsRepository.SaveTimeout(userId, reason, creationTimestamp, int(sTimeoutLength))
 	if err != nil {
 		fmt.Printf("Error ocurred while storing timeout for user: %s", err)
-		return fmt.Errorf("ERROR GiveTimeoutToMemberWithId")
+		return fmt.Errorf(err.Error())
+	}
+
+	// Give actual Discord timeout to member
+	timeoutExpiryTimestamp := time.Now().Add(time.Second * time.Duration(sTimeoutLength))
+	err = s.GuildMemberTimeout(guildId, userId, &timeoutExpiryTimestamp)
+	if err != nil {
+		fmt.Println("Error timing out user: ", err)
+		return fmt.Errorf(err.Error())
 	}
 
 	return nil
+
+}
+
+func SendDirectMessageToMember(s *discordgo.Session, userId string, msg string) error {
+	errDm := dm.DmUser(s, userId, msg)
+	if errDm != nil {
+		fmt.Printf("Error sending DM to member with UID %s: %v\n", userId, errDm)
+		return errDm
+	}
+	return nil
+}
+
+func GetMemberTimeouts(userId string) (*dataModels.Timeout, []dataModels.ArchivedTimeout, error) {
+
+	// Result variables
+	var activeTimeoutResult *dataModels.Timeout = nil
+	var archivedTimeoutResults []dataModels.ArchivedTimeout = []dataModels.ArchivedTimeout{}
+
+	// Active timeout
+	activeTimeout, err := globalsRepo.TimeoutsRepository.GetUserTimeout(userId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			activeTimeoutResult = nil
+		} else {
+			return nil, nil, err
+		}
+	}
+	activeTimeoutResult = activeTimeout
+
+	// Archived timeouts
+	archivedTimeoutResults, err = globalsRepo.TimeoutsRepository.GetAllArchivedTimeoutsForUser(userId)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return activeTimeoutResult, archivedTimeoutResults, nil
 
 }

@@ -59,3 +59,21 @@ func SendEmbedToUser(session *discordgo.Session, originalMessage *discordgo.Inte
 	return nil
 
 }
+
+func DmUser(session *discordgo.Session, userId string, content string) error {
+
+	channel, err := session.UserChannelCreate(userId)
+	if err != nil {
+		fmt.Println("error creating DM channel: ", err)
+		return err
+	}
+
+	_, err = session.ChannelMessageSend(channel.ID, content)
+	if err != nil {
+		fmt.Println("error sending DM message: ", err)
+		return err
+	}
+
+	return nil
+
+}

@@ -80,6 +80,16 @@ func (r TimeoutsRepository) GetTimeoutsCountForUser(userId string) int {
 	return count
 }
 
+func (r TimeoutsRepository) GetArchivedTimeoutsCountForUser(userId string) int {
+	query := "SELECT COUNT(*) FROM TimeoutsArchive WHERE userId = ?"
+	var count int
+	err := r.Conn.Db.QueryRow(query, userId).Scan(&count)
+	if err != nil {
+		return -1
+	}
+	return count
+}
+
 func (r TimeoutsRepository) ClearTimeoutForUser(userId string) error {
 
 	query := "DELETE FROM Timeouts WHERE userId = ?"
@@ -87,6 +97,30 @@ func (r TimeoutsRepository) ClearTimeoutForUser(userId string) error {
 	_, err := r.Conn.Db.Exec(query, userId)
 	if err != nil {
 		return fmt.Errorf("error deleting user timeout: %w", err)
+	}
+
+	return nil
+}
+
+func (r TimeoutsRepository) ClearArchivedTimeout(archivedTimeoutId int64) error {
+
+	query := "DELETE FROM TimeoutsArchive WHERE id = ?"
+
+	_, err := r.Conn.Db.Exec(query, archivedTimeoutId)
+	if err != nil {
+		return fmt.Errorf("error deleting archived user timeout: %w", err)
+	}
+
+	return nil
+}
+
+func (r TimeoutsRepository) ClearArchivedTimeoutsForUser(userId string) error {
+
+	query := "DELETE FROM TimeoutsArchive WHERE userId = ?"
+
+	_, err := r.Conn.Db.Exec(query, userId)
+	if err != nil {
+		return fmt.Errorf("error deleting archived users' timeouts: %w", err)
 	}
 
 	return nil
@@ -149,5 +183,65 @@ func (r TimeoutsRepository) ArchiveTimeout(userId string, reason string, expiryT
 	}
 
 	return nil
+
+}
+
+func (r TimeoutsRepository) GetAllArchivedTimeouts() ([]dataModels.ArchivedTimeout, error) {
+
+	var timeouts []dataModels.ArchivedTimeout
+
+	rows, err := r.Conn.Db.Query("SELECT * FROM TimeoutsArchive ORDER BY expiryDate ASC")
+	if err != nil {
+		return nil, fmt.Errorf("GetAllArchivedTimeouts: %v", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var timeout dataModels.ArchivedTimeout
+		if err := rows.Scan(&timeout.Id, &timeout.UserId, &timeout.Reason, &timeout.ExpiryTimestamp); err != nil {
+			return nil, fmt.Errorf("GetAllArchivedTimeouts: %v", err)
+		}
+		timeouts = append(timeouts, timeout)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("GetAllArchivedTimeouts: %v", err)
+	}
+
+	// Check for zero rows
+	if len(timeouts) == 0 {
+		return []dataModels.ArchivedTimeout{}, nil
+	}
+
+	return timeouts, nil
+
+}
+
+func (r TimeoutsRepository) GetAllArchivedTimeoutsForUser(userId string) ([]dataModels.ArchivedTimeout, error) {
+
+	var timeouts []dataModels.ArchivedTimeout
+
+	rows, err := r.Conn.Db.Query("SELECT * FROM TimeoutsArchive WHERE userId = ? ORDER BY expiryDate ASC", userId)
+	if err != nil {
+		return nil, fmt.Errorf("GetAllArchivedTimeoutsForUser: %v", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var timeout dataModels.ArchivedTimeout
+		if err := rows.Scan(&timeout.Id, &timeout.UserId, &timeout.Reason, &timeout.ExpiryTimestamp); err != nil {
+			return nil, fmt.Errorf("GetAllArchivedTimeoutsForUser: %v", err)
+		}
+		timeouts = append(timeouts, timeout)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("GetAllArchivedTimeoutsForUser: %v", err)
+	}
+
+	// Check for zero rows
+	if len(timeouts) == 0 {
+		return []dataModels.ArchivedTimeout{}, nil
+	}
+
+	return timeouts, nil
 
 }

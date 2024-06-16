@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/member"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
@@ -48,7 +49,7 @@ func SyncUsersAtStartup(s *discordgo.Session) error {
 	}
 
 	// Cleanup
-	utils.CleanupRepositories(rolesRepository, usersRepository, userStatsRepository, nil)
+	utils.CleanupRepositories(rolesRepository, usersRepository, userStatsRepository, nil, nil)
 
 	fmt.Println("Finished Task SyncUsersAtStartup() at", time.Now())
 
@@ -76,17 +77,9 @@ func CleanupMemberAtStartup(s *discordgo.Session, uids []string) error {
 			_, err := s.GuildMember(globals.DiscordMainGuildId, uid)
 			if err != nil {
 				// if the member does not exist on the main server, delete from the database
-				// delete user stats
-				err := userStatsRepository.DeleteUserStats(uid)
+				err = member.DeleteAllMemberData(uid)
 				if err != nil {
-					fmt.Println("Failed Task CleanupMemberAtStartup() at", time.Now(), "with error", err)
-					return
-				}
-				// delete user
-				errUsers := usersRepository.DeleteUser(uid)
-				if errUsers != nil {
-					fmt.Println("Failed Task CleanupMemberAtStartup() at", time.Now(), "with error", errUsers)
-					return
+					fmt.Println("Error deleting hanging user data on startup sync: ", err)
 				}
 			}
 		}(i)
@@ -94,7 +87,7 @@ func CleanupMemberAtStartup(s *discordgo.Session, uids []string) error {
 	wg.Wait()
 
 	// Cleanup
-	utils.CleanupRepositories(nil, usersRepository, userStatsRepository, nil)
+	utils.CleanupRepositories(nil, usersRepository, userStatsRepository, nil, nil)
 
 	fmt.Println("Finished Task CleanupMemberAtStartup() at", time.Now())
 

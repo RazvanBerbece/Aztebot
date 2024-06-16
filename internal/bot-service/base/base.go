@@ -48,7 +48,9 @@ func (b *DiscordBotBase) AddHandlers(handlers []interface{}) {
 	// Allow specific state trackers
 	b.setBotStateTrackers()
 
-	// Register intents to allow bot operations on the Discord server (read chats, write messages, react, DM, etc.)
+	// Register intents and permissions
+	// to allow bot operations on the Discord server (read chats, write messages, react, DM, etc.)
+	b.setBotPermissions()
 	b.setBotIntents()
 
 	// Register slash commands based on app type
@@ -92,18 +94,27 @@ func (b *DiscordBotBase) Cleanup() {
 	aztebotSlashCommands.CleanupAztebotSlashCommands(b.botSession)
 }
 
-// Sets the required bot intents.
+// Sets the required bot intents and permissions.
 // TODO: Make these more granular depending on bot features
 func (b *DiscordBotBase) setBotIntents() {
 	b.botSession.Identify.Intents = discordgo.IntentsGuilds |
 		discordgo.IntentsGuildMessages |
 		discordgo.IntentsGuildMessageReactions |
-		discordgo.PermissionManageMessages |
-		discordgo.PermissionManageServer |
 		discordgo.IntentsDirectMessages |
 		discordgo.IntentsGuildVoiceStates |
 		discordgo.IntentsGuildMembers |
-		discordgo.IntentGuildVoiceStates
+		discordgo.IntentGuildVoiceStates |
+		discordgo.IntentsGuildBans |
+		discordgo.IntentsAllWithoutPrivileged
+}
+
+func (b *DiscordBotBase) setBotPermissions() {
+	b.botSession.Identify.Intents = discordgo.PermissionManageMessages |
+		discordgo.PermissionManageServer |
+		discordgo.PermissionManageRoles |
+		discordgo.PermissionManageChannels |
+		discordgo.PermissionModerateMembers |
+		discordgo.PermissionAll
 }
 
 func (b *DiscordBotBase) setBotStateTrackers() {
