@@ -100,8 +100,34 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 			{
 				Type:        discordgo.ApplicationCommandOptionString,
 				Name:        "duration",
-				Description: "`300`(5min), `600`(10min), `1800`(30min), `3600`(1hr), `86400`(1d), `259200`(3d))",
+				Description: "Select the duration of the timeout",
 				Required:    true,
+				Choices: []*discordgo.ApplicationCommandOptionChoice{
+					{
+						Name:  "5 minutes",
+						Value: "300",
+					},
+					{
+						Name:  "10 minutes",
+						Value: "600",
+					},
+					{
+						Name:  "30 minutes",
+						Value: "1800",
+					},
+					{
+						Name:  "1 hour",
+						Value: "3600",
+					},
+					{
+						Name:  "1 day",
+						Value: "86400",
+					},
+					{
+						Name:  "3 days",
+						Value: "259200",
+					},
+				},
 			},
 		},
 	},
@@ -129,6 +155,10 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 			},
 		},
 	},
+	{
+		Name:        "timeout_appeal",
+		Description: "Appeal your current active timeout (if you have one)",
+	},
 }
 
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -145,4 +175,5 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"timeout":               timeoutHandlers.HandleSlashTimeout,
 	"timeouts":              timeoutHandlers.HandleSlashTimeouts,
 	"timeout_remove_active": timeoutHandlers.HandleSlashTimeoutRemoveActive,
+	"timeout_appeal":        timeoutHandlers.HandleSlashTimeoutAppeal,
 }
