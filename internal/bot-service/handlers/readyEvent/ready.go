@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	cronFeature "github.com/RazvanBerbece/Aztebot/internal/bot-service/api/cron/feature"
-	cronUser "github.com/RazvanBerbece/Aztebot/internal/bot-service/api/cron/user"
+	cron "github.com/RazvanBerbece/Aztebot/internal/bot-service/api/tasks/cron"
+	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/tasks/startup"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
@@ -33,10 +33,10 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	// Other setups
 
 	// Initial sync of members on server with the database
-	go cronUser.SyncUsersAtStartup(s)
+	go startup.SyncUsersAtStartup(s)
 
 	// Initial cleanup of members from database against the Discord server
-	go cronUser.CleanupMemberAtStartup(s, uids)
+	go startup.CleanupMemberAtStartup(s, uids)
 
 	// Initial informative messages on certain channels
 	go SendInformationEmbedsToTextChannels(s)
@@ -48,8 +48,8 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	go UpdateVoiceSessionDurations(s)
 
 	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, XP gaining?, etc.)
-	cronFeature.ProcessUpdateActivityStreaks(24, 0, 0) // the hh:mm:ss timestamp in a day to run the cron at
-	cronFeature.ProcessRemoveExpiredWarns(2)           // run every n=2 months
+	cron.ProcessUpdateActivityStreaks(24, 0, 0) // the hh:mm:ss timestamp in a day to run the cron at
+	cron.ProcessRemoveExpiredWarns(2)           // run every n=2 months
 
 }
 

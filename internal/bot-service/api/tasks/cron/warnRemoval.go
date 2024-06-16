@@ -1,10 +1,9 @@
-package cronFeature
+package cron
 
 import (
 	"fmt"
 	"time"
 
-	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/cron"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
@@ -12,7 +11,7 @@ import (
 
 func ProcessRemoveExpiredWarns(months int) {
 
-	initialWarnRemovalDelay, warnRemovalTicker := cron.GetDelayAndTickerForWarnRemovalCron(months) // every n=2 months
+	initialWarnRemovalDelay, warnRemovalTicker := GetDelayAndTickerForWarnRemovalCron(months) // every n=2 months
 
 	go func() {
 
