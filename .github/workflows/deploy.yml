@@ -31,7 +31,7 @@ jobs:
     uses: ./.github/workflows/test.yml
     secrets: inherit
 
-  continuous-delivery:
+  continuous-deployment:
     environment: production
     needs: [continuous-integration]
     runs-on: ubuntu-latest
