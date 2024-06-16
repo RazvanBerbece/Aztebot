@@ -1,6 +1,7 @@
 package warning
 
 import (
+	"database/sql"
 	"fmt"
 	"time"
 
@@ -16,13 +17,24 @@ func HandleSlashWarnRemoveOldest(s *discordgo.Session, i *discordgo.InteractionC
 
 	warn, err := RemoveWarningFromUser(s, i, targetUserId)
 	if err != nil {
-		fmt.Printf("An error ocurred while removing warning from user: %v\n", err)
-		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{
-				Content: fmt.Sprintf("An error ocurred while removing warning from user with ID %s.", targetUserId),
-			},
-		})
+		if err == sql.ErrNoRows {
+			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+				Type: discordgo.InteractionResponseChannelMessageWithSource,
+				Data: &discordgo.InteractionResponseData{
+					Content: fmt.Sprintf("User with ID %s has no warnings to remove.", targetUserId),
+				},
+			})
+			return
+		} else {
+			fmt.Printf("An error ocurred while removing warning from user: %v\n", err)
+			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+				Type: discordgo.InteractionResponseChannelMessageWithSource,
+				Data: &discordgo.InteractionResponseData{
+					Content: fmt.Sprintf("An error ocurred while removing warning from user with ID %s.", targetUserId),
+				},
+			})
+			return
+		}
 	}
 
 	user, err := s.User(targetUserId)
