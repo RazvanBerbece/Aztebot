@@ -88,6 +88,10 @@ jobs:
           export GCE_PROJECT="${{ env.PROJECT_ID }}"
           export GCE_PROJECT_DOCKER_ARTIFACT_REGISTRY="${{ env.DOCKER_ARTIFACT_REPOSITORY }}"
       
+      - name: Remove previous deployment
+        run: |
+          kubectl delete deployment aztebot-bot-service-${{ steps.tag_version.outputs.previous_tag }}
+      
       - name: Create GKE Deployment for new image
         run: |
           kubectl create deployment aztebot-bot-service-${{ steps.tag_version.outputs.new_tag }} --image="${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}"
