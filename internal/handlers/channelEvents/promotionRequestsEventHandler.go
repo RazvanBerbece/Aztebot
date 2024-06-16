@@ -12,7 +12,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []string) {
+func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []string, audit bool) {
 
 	for xpEvent := range globalMessaging.PromotionRequestsChannel {
 
@@ -137,11 +137,11 @@ func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []
 
 			fmt.Printf("%s leveled up ! (%d -> %d) | New role: %s\n", userTag, userCurrentLevel, promotedLevel, promotedRole.DisplayName)
 
-			// Send notification to audit progression
-			go auditProgression(userId, promotedRole.DisplayName)
-
-			// Send direct message to user to announce level up
-			go announceLevelUp(userId, promotedLevel, promotedRole.DisplayName)
+			// Send notification and DM to audit progression
+			if audit {
+				go auditProgression(userId, promotedRole.DisplayName)
+				go announceLevelUp(userId, promotedLevel, promotedRole.DisplayName)
+			}
 		}
 
 	}
