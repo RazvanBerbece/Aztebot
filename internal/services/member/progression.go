@@ -70,11 +70,7 @@ func ProcessProgressionForMember(userId string, guildId string) error {
 	return nil
 }
 
-func GetRoleNameAndLevelFromStats(userId string, userXp float64, userNumberMessagesSent int, userTimeSpentInVc int) (string, int) {
-
-	if !IsVerified(userId) {
-		return "", 0
-	}
+func GetRoleNameAndLevelFromStats(userXp float64, userNumberMessagesSent int, userTimeSpentInVc int) (string, int) {
 
 	const sHour = 60 * 60
 

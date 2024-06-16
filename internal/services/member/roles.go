@@ -39,7 +39,7 @@ func GetMemberOrderRoles(userId string, defaultOrderRoleNames []string) ([]*data
 		return nil, err
 	}
 
-	var rolesResult []*dataModels.Role
+	rolesResult := []*dataModels.Role{}
 	for _, role := range roles {
 		if utils.StringInSlice(role.DisplayName, defaultOrderRoleNames) {
 			rolesResult = append(rolesResult, &role)
