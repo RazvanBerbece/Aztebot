@@ -19,8 +19,6 @@ services:
       ./.env
     build:
       dockerfile: ./cmd/Dockerfile
-    volumes: 
-      - "./logs:/app/logs"
 
 networks:
   default:
