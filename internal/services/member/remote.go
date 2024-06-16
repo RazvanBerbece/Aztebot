@@ -89,32 +89,57 @@ func IsBot(s *discordgo.Session, guildId string, userId string, debug bool) (*bo
 	return &isBot, nil
 }
 
-// Removes all roles on the actual Discord member.
+// Removes all roles (except non-DB ones) on the actual Discord member.
 func RemoveAllDiscordRolesFromMember(s *discordgo.Session, guildId string, userId string) error {
 
-	// Get the member's roles
+	// Get the member's assigned roles in Discord
 	member, err := s.GuildMember(guildId, userId)
 	if err != nil {
 		return err
 	}
 
+	var roleIdsToRestore []string
+
 	// Find all user's roles and delete them
 	for _, roleID := range member.Roles {
 
-		// 20 Mar 2024: Discord does not allow any way of removing the default Server Booster role from a guild member
-		// so we just ignore it like it doesn't exist and hope that it goes away. :thumbs_down
 		role, err := GetDiscordRole(s, guildId, roleID)
 		if err != nil {
 			fmt.Printf("Error retrieving role with ID %s: %v\n", roleID, err)
 			return err
 		}
+
+		// Don't delete roles which should be skipped
+		// like: server booster role, roles which are not in the DB (i.e added manually in Discord), etc.
+		roleExistsInDb := globalRepositories.RolesRepository.RoleByDisplayNameExists(role.Name)
+		if roleExistsInDb < 0 {
+			errMsg := fmt.Sprintf("An error ocurred while checking if role by displayName %s exists in the DB", role.Name)
+			fmt.Printf("%s\n", errMsg)
+			return fmt.Errorf(errMsg)
+		} else if roleExistsInDb == 0 {
+			// roles not in the DB need to be given back to user after refresh
+			roleIdsToRestore = append(roleIdsToRestore, roleID)
+		}
+
+		// 20 Mar 2024: Discord does not allow any way of removing the default Server Booster role from a guild member
+		// so we just ignore it like it doesn't exist and hope that it goes away. :thumbs_down
 		if role.Name == globalConfiguration.ServerBoosterDefaultRoleName {
+			roleIdsToRestore = append(roleIdsToRestore, roleID)
 			continue
 		}
 
 		err = s.GuildMemberRoleRemove(guildId, userId, roleID)
 		if err != nil {
 			fmt.Printf("Error removing role with ID %s: %v\n", roleID, err)
+			return err
+		}
+	}
+
+	// restore roles which should not be deleted
+	for _, roleId := range roleIdsToRestore {
+		err = s.GuildMemberRoleAdd(guildId, userId, roleId)
+		if err != nil {
+			fmt.Printf("Error adding role to Discord member: %v\n", err)
 			return err
 		}
 	}
@@ -300,7 +325,6 @@ func RefreshDiscordRolesForMember(s *discordgo.Session, guildId string, userId s
 	if err != nil {
 		return err
 	}
-	fmt.Println("Roles to add to Discord member:", user.CurrentRoleIds)
 	err = AddDiscordRolesToMember(s, globalConfiguration.DiscordMainGuildId, userId, utils.GetRoleIdsFromRoleString(user.CurrentRoleIds))
 	if err != nil {
 		fmt.Printf("An error ocurred while adding all roles from DB for member: %v\n", err)

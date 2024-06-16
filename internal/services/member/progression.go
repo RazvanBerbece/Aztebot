@@ -16,9 +16,7 @@ import (
 |-------------------|--------------|----------------|-------------------|
 | Theoricus         | 10,000 XP    | 20 HOURS       | 2,500 MESSAGES    |
 |-------------------|--------------|----------------|-------------------|
-| Practicus         | 15,000 XP    | 25 HOURS       | 3,500 MESSAGES    |
-|-------------------|--------------|----------------|-------------------|
-| Philosophus       | 20,000 XP    | 30 HOURS       | 5,000 MESSAGES    |
+| Philosophus       | 15,000 XP    | 30 HOURS       | 5,000 MESSAGES    |
 |-------------------|--------------|----------------|-------------------|
 | Second Order      												    |
 |-------------------|--------------|----------------|-------------------|
@@ -62,6 +60,7 @@ func ProcessProgressionForMember(userId string, guildId string) error {
 	globalMessaging.PromotionRequestsChannel <- events.PromotionRequestEvent{
 		GuildId:       guildId,
 		UserId:        userId,
+		UserTag:       user.DiscordTag,
 		CurrentLevel:  currentLevel,
 		CurrentXp:     xp,
 		MessagesSent:  messagesSent,

@@ -20,7 +20,6 @@ var EmbedPageSize int = 10
 var OrderRoleNames []string = []string{
 	"🔗 Zelator",
 	"📖 Theoricus",
-	"🎩 Practicus",
 	"📿 Philosophus",
 	"🔮 Adeptus Minor",
 	"〽️ Adeptus Major",
