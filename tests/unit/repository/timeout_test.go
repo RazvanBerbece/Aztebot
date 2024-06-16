@@ -22,7 +22,7 @@ func TestGetUserTimeout(t *testing.T) {
 		UserId:            idUserWithActiveTimeout,
 		Reason:            gofakeit.Sentence(gofakeit.Number(3, 15)),
 		CreationTimestamp: time.Now().Unix(),
-		SDuration:         gofakeit.RandomInt([]int{300, 600, 1800, 3600, 86400, 259200}),
+		SDuration:         gofakeit.RandomInt([]int{300, 600, 1800, 3600, 86400, 259200, 604800}),
 	}
 
 	entityId, err := testData.AddTimeoutForUser(*repoSource, &arrangedTimeout)
