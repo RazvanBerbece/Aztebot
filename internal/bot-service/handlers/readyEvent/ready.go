@@ -19,7 +19,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	logging.LogHandlerCall("Ready", "")
 
 	// Set initial status for the AzteBot
-	s.UpdateGameStatus(0, "Type /help")
+	s.UpdateGameStatus(0, "/help")
 
 	// Other setups
 
@@ -32,10 +32,10 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	}
 	ticker := time.NewTicker(time.Second * time.Duration(interval))
 	go func() {
+		// Define the repositories here (and establish the connections) in order to not flood the DB with connection attempts
 		rolesRepository := repositories.NewRolesRepository()
 		usersRepository := repositories.NewUsersRepository()
 		for range ticker.C {
-			// Run your periodic task here
 			UpdateUsersInCron(s, rolesRepository, usersRepository)
 		}
 	}()
@@ -80,7 +80,7 @@ func processMembers(s *discordgo.Session, members []*discordgo.Member, rolesRepo
 			continue
 		}
 		// For each member, sync their details (either add to DB or update)
-		err := utils.SyncUser(s, globals.DiscordMainGuildId, member.User.ID, member, rolesRepository, usersRepository)
+		err := utils.SyncUserPersistent(s, globals.DiscordMainGuildId, member.User.ID, member, rolesRepository, usersRepository)
 		if err != nil {
 			fmt.Printf("Error syncinc member %s: %v", member.User.Username, err)
 		}
