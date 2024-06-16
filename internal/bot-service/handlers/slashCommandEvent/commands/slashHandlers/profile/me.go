@@ -6,6 +6,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/member"
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/bot-service/data/models"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
@@ -81,7 +82,7 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 	}
 
 	// Setup user stats if the user doesn't have an entity in UserStats
-	_, errStats := globalsRepo.UserStatsRepository.GetStatsForUser(userId)
+	stats, errStats := globalsRepo.UserStatsRepository.GetStatsForUser(userId)
 	if errStats != nil {
 		if errStats == sql.ErrNoRows {
 			errStatsInit := globalsRepo.UserStatsRepository.SaveInitialUserStats(userId)
@@ -90,13 +91,6 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 				return nil
 			}
 		}
-	}
-
-	// Get user stats
-	stats, err := globalsRepo.UserStatsRepository.GetStatsForUser(userId)
-	if err != nil {
-		log.Printf("Cannot retrieve user %s stats from DB: %v", userId, err)
-		return nil
 	}
 
 	// Staff text segment (is user a member of staff?) in embed description
@@ -148,6 +142,33 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 
 	if userCreatedTimeString != "" && highestRole != nil {
 
+		// Process ranks in leaderboards
+		msgRankString := ""
+		reactRankString := ""
+		streakRankString := ""
+		vcRankString := ""
+		musicRankString := ""
+		ranks, err := member.GetMemberRankInLeaderboards(s, userId)
+		if err != nil {
+			log.Printf("Cannot retrieve user %s leaderboard ranks: %v", userId, err)
+			return nil
+		}
+		if msgRank, ok := ranks["msg"]; ok {
+			msgRankString = fmt.Sprintf(" (`🏆 #%d`)", msgRank)
+		}
+		if reactRank, ok := ranks["react"]; ok {
+			reactRankString = fmt.Sprintf(" (`🏆 #%d`)", reactRank)
+		}
+		if streakRank, ok := ranks["streak"]; ok {
+			streakRankString = fmt.Sprintf(" (`🏆 #%d`)", streakRank)
+		}
+		if vcRank, ok := ranks["vc"]; ok {
+			vcRankString = fmt.Sprintf(" (`🏆 #%d`)", vcRank)
+		}
+		if musicRank, ok := ranks["music"]; ok {
+			musicRankString = fmt.Sprintf(" (`🏆 #%d`)", musicRank)
+		}
+
 		if user.UserId == "526512064794066945" {
 			// The one and only, Edi
 			embed.AddField("👑 Azteca", "", false)
@@ -160,14 +181,14 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 		embed.
 			AddField(fmt.Sprintf("🩸 Aztec since:  `%s`", userCreatedTimeString), "", false).
 			AddField(fmt.Sprintf("⭐ Highest obtained role:  `%s`", highestRole.DisplayName), "", false).
-			AddField(fmt.Sprintf("🔄 Active day streak:  `%d`", stats.NumberActiveDayStreak), "", false).
+			AddField(fmt.Sprintf("🔄 Active day streak:  `%d`%s", stats.NumberActiveDayStreak, streakRankString), "", false).
 			AddLineBreakField().
-			AddField(fmt.Sprintf("✉️ Total messages sent:  `%d`", stats.NumberMessagesSent), "", false).
+			AddField(fmt.Sprintf("✉️ Total messages sent:  `%d`%s", stats.NumberMessagesSent, msgRankString), "", false).
 			AddField(fmt.Sprintf("⚙️ Total slash commands used:  `%d`", stats.NumberSlashCommandsUsed), "", false).
-			AddField(fmt.Sprintf("💯 Total reactions received:  `%d`", stats.NumberReactionsReceived), "", false).
+			AddField(fmt.Sprintf("💯 Total reactions received:  `%d`%s", stats.NumberReactionsReceived, reactRankString), "", false).
 			AddLineBreakField().
-			AddField(fmt.Sprintf("🎙️ Time spent in voice channels:  `%s`", timeSpentInVcs), "", false).
-			AddField(fmt.Sprintf("🎵 Time spent listening to music:  `%s`", timeSpentListeningMusic), "", false)
+			AddField(fmt.Sprintf("🎙️ Time spent in voice channels:  `%s`%s", timeSpentInVcs, vcRankString), "", false).
+			AddField(fmt.Sprintf("🎵 Time spent listening to music:  `%s`%s", timeSpentListeningMusic, musicRankString), "", false)
 
 	} else {
 		embed.AddField("Member hasn't verified yet.", "", false)
