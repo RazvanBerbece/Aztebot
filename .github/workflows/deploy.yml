@@ -41,9 +41,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
         with:
+          repository: RazvanBerbece/Aztebot-Infrastructure
+          path: Infrastructure
           token: ${{ secrets.GH_TOKEN }}
-          submodules: 'true'
 
       - name: Generate next release number
         id: tag_version
