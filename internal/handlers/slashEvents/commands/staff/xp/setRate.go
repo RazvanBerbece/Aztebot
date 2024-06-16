@@ -19,7 +19,7 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 	// Dirty Hack 25 Feb 2024
 	// It seems that it's not straightforward at all to get the display name of the argument option,
 	// so we resort to this for the meantime to get a nicely looking activity and multiplier name
-	activityName, multiplierName := getArgumentDisplayNames(activity, multiplierStringInput)
+	activityName, multiplierName := GetArgumentDisplayNames(activity, multiplierStringInput)
 
 	switch activity {
 	case "msg_send":
@@ -86,7 +86,7 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 
 	// Send notification to target staff channel to announce the global rate change
 	if channel, channelExists := globalConfiguration.NotificationChannels["notif-aztebotUpdatesChannel"]; channelExists {
-		go sendXpRateChangeNotification(channel.ChannelId, activityName, multiplierName)
+		go SendGlobalRateChangeNotification(channel.ChannelId, "XP", activityName, multiplierName)
 	}
 
 	// Send response embed
@@ -106,20 +106,20 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 
 }
 
-func sendXpRateChangeNotification(channelId string, activityName string, multiplierName string) {
+func SendGlobalRateChangeNotification(channelId string, rateName string, activityName string, multiplierName string) {
 
 	// Build global XP rate change embed
 	embed := embed.
 		NewEmbed().
-		SetTitle("🤖📣	Global XP Rate Change Announcement").
+		SetTitle(fmt.Sprintf("🤖📣	Global `%s` Rate Change Announcement", rateName)).
 		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
 		SetColor(000000).
 		SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg")
 
 	if multiplierName == "Default OTA Value" {
-		embed.AddField("", fmt.Sprintf("`%s` are now worth the default amount of experience points.", activityName), false)
+		embed.AddField("", fmt.Sprintf("`%s` are now worth the default amount of `%s`.", activityName, rateName), false)
 	} else {
-		embed.AddField("", fmt.Sprintf("`%s` are now worth `%s` as many experience points !", activityName, multiplierName), false)
+		embed.AddField("", fmt.Sprintf("`%s` are now worth `%s` as many `%s` !", activityName, multiplierName, rateName), false)
 	}
 
 	embed.AtTagEveryone()
@@ -132,7 +132,7 @@ func sendXpRateChangeNotification(channelId string, activityName string, multipl
 
 }
 
-func getArgumentDisplayNames(activityInput string, multiplierInput string) (string, string) {
+func GetArgumentDisplayNames(activityInput string, multiplierInput string) (string, string) {
 
 	var activityName string
 	var multiplierName string
