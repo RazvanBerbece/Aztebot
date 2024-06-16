@@ -224,6 +224,7 @@ func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
 		// Production text channels
 		textChannels = map[string]string{
 			"1176277764001767464": "info-music",
+			"1100486860058398770": "staff-rules",
 		}
 	}
 
@@ -244,6 +245,8 @@ func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
 				embedText = utils.GetTextFromFile("internal/bot-service/handlers/readyEvent/assets/defaultContent/default.txt")
 			case "info-music":
 				embedText = utils.GetTextFromFile("internal/bot-service/handlers/readyEvent/assets/defaultContent/music-info.txt")
+			case "staff-rules":
+				embedText = utils.GetTextFromFile("internal/bot-service/handlers/readyEvent/assets/defaultContent/staff-rules.txt")
 			}
 			embed := embed.NewEmbed().
 				SetTitle("🤖  Information Message").
