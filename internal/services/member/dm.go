@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/domain"
 	globalState "github.com/RazvanBerbece/Aztebot/internal/globals/state"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/dm"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
@@ -60,7 +60,7 @@ func SendDirectComplexEmbedToMember(s *discordgo.Session, userId string, embed e
 	}
 
 	// Keep paginated embeds in-memory to enable handling on button presses
-	globalState.EmbedsToPaginate[msg.ID] = dataModels.EmbedData{
+	globalState.EmbedsToPaginate[msg.ID] = domain.EmbedData{
 		ChannelId:   msg.ChannelID,
 		FieldData:   &originalAllFields, // all fields
 		CurrentPage: 1,                  // same for all complex paginated embeds

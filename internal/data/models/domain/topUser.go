@@ -1,4 +1,4 @@
-package dataModels
+package domain
 
 type TopUserMS struct {
 	DiscordTag   string

@@ -3,7 +3,7 @@ package readyEvent
 import (
 	"strings"
 
-	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models/dax"
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/domain"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 )
 
@@ -117,7 +117,7 @@ func LoadNotificationChannels() {
 			continue
 		}
 
-		globalConfiguration.NotificationChannels[*descriptor] = dataModels.Channel{
+		globalConfiguration.NotificationChannels[*descriptor] = domain.Channel{
 			IsVoice:    isVoice,
 			Descriptor: *descriptor,
 			ChannelId:  *channelId,

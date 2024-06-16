@@ -1,4 +1,4 @@
-package dataModels
+package domain
 
 type Channel struct {
 	IsVoice    bool

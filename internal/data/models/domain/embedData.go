@@ -1,4 +1,4 @@
-package dataModels
+package domain
 
 import (
 	"github.com/bwmarrin/discordgo"
