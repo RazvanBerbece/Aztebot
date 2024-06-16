@@ -7,7 +7,7 @@ import (
 )
 
 type DbWalletsRepository interface {
-	AwardFunds(userId string, funds float64) error
+	AddFundsToWalletForUser(userId string, funds float64) error
 	GetWalletIdForUser(userId string) (*string, error)
 }
 
