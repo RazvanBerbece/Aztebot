@@ -27,7 +27,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 	userId := member.User.ID
 
 	if vs.SelfStream {
-		// User started streaming
+		// User STARTED STREAMING
 		now := time.Now()
 		globals.StreamSessions[userId] = &now
 
@@ -42,7 +42,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 		}
 	} else {
 		if vs.ChannelID != "" && globals.StreamSessions[userId] == nil {
-			// User joined a voice channel
+			// User JOINED a VC but NOT STREAMING
 			globals.VoiceSessions[userId] = time.Now()
 
 			err = globalsRepo.UserStatsRepository.IncrementActivitiesTodayForUser(userId)
@@ -55,7 +55,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 				fmt.Printf("An error ocurred while udpating user (%s) last timestamp: %v", userId, err)
 			}
 		} else if vs.ChannelID != "" && globals.StreamSessions[userId] != nil {
-			// User stopped streaming
+			// User STOPPED STREAMING but STILL IN VC
 			delete(globals.StreamSessions, userId)
 		} else if vs.ChannelID == "" && globals.StreamSessions[userId] == nil {
 			// User left a voice channel

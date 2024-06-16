@@ -6,6 +6,7 @@ import (
 	"log"
 	"time"
 
+	dataModels "github.com/RazvanBerbece/Aztebot/internal/bot-service/data/models"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/bwmarrin/discordgo"
@@ -15,37 +16,38 @@ import (
 // as they appear on the Discord guild. It uses repositories injected via the argument list to prevent connection attempt floods.
 func SyncUserPersistent(s *discordgo.Session, guildId string, userId string, member *discordgo.Member, rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository) error {
 
-	user, err := usersRepository.GetUser(userId)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			log.Printf("Storing new user with id %s", userId)
-			user, err = usersRepository.SaveInitialUserDetails(member.User.Username, userId)
-			if err != nil {
-				log.Fatalf("Cannot store user %s with id %s: %v", member.User.Username, userId, err)
-				return err
-			}
-			errStats := userStatsRepository.SaveInitialUserStats(userId)
-			if errStats != nil {
-				log.Fatalf("Cannot store initial user %s stats: %v", member.User.Username, errStats)
-				return errStats
-			}
-		} else {
-			log.Fatalf("Cannot sync persistent users from Discord servers: %v", err)
+	var user *dataModels.User
+
+	userExistsResult, err := globalsRepo.UsersRepository.UserExists(userId)
+	if err != nil && err != sql.ErrNoRows {
+		log.Fatalf("Cannot retrieve user %s with id %s during bot startup sync time: %v", member.User.Username, userId, err)
+		return err
+	} else if err != nil && err == sql.ErrNoRows && !userExistsResult {
+		fmt.Printf("Adding new member %s to the OTA DB during bot startup sync\n", member.User.Username)
+		user, err = globalsRepo.UsersRepository.SaveInitialUserDetails(member.User.Username, userId)
+		if err != nil {
+			log.Fatalf("Cannot store initial user %s with id %s during bot startup sync: %v", member.User.Username, userId, err)
 			return err
+		}
+		errStats := userStatsRepository.SaveInitialUserStats(userId)
+		if errStats != nil {
+			log.Fatalf("Cannot store initial user stats during bot startup sync: %v", err)
+			return errStats
 		}
 	}
 
 	if user != nil {
 
 		// Setup user stats if the user doesn't have an entity in UserStats
-		_, errStats := userStatsRepository.GetStatsForUser(user.UserId)
-		if errStats != nil {
-			if errStats == sql.ErrNoRows {
-				errStatsInit := userStatsRepository.SaveInitialUserStats(userId)
-				if errStatsInit != nil {
-					log.Fatalf("Cannot store initial user %s stats: %v", member.User.Username, errStatsInit)
-					return errStatsInit
-				}
+		userExistsResult, err := globalsRepo.UsersRepository.UserExists(userId)
+		if err != nil && err != sql.ErrNoRows {
+			log.Fatalf("Cannot retrieve user stats %s with id %s during bot startup sync time: %v", member.User.Username, userId, err)
+			return err
+		} else if err != nil && err == sql.ErrNoRows && !userExistsResult {
+			errStatsInit := userStatsRepository.SaveInitialUserStats(userId)
+			if errStatsInit != nil {
+				log.Fatalf("Cannot store initial user %s stats during bot startup sync time: %v", member.User.Username, errStatsInit)
+				return errStatsInit
 			}
 		}
 
@@ -128,15 +130,15 @@ func SyncUserPersistent(s *discordgo.Session, guildId string, userId string, mem
 // as they appear on the Discord guild. This function uses the shared global DB connections.
 func SyncUser(s *discordgo.Session, guildId string, userId string, member *discordgo.Member) error {
 
-	user, err := globalsRepo.UsersRepository.GetUser(userId)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			fmt.Printf("Adding new member %s to the OTA DB\n", member.User.Username)
-			user, err = globalsRepo.UsersRepository.SaveInitialUserDetails(member.User.Username, userId)
-			if err != nil {
-				log.Fatalf("Cannot store user %s with id %s: %v", member.User.Username, userId, err)
-				return err
-			}
+	var user *dataModels.User
+
+	userExistsResult, err := globalsRepo.UsersRepository.UserExists(userId)
+	if err != nil && err == sql.ErrNoRows && !userExistsResult {
+		fmt.Printf("Adding new member %s to the OTA DB\n", member.User.Username)
+		user, err = globalsRepo.UsersRepository.SaveInitialUserDetails(member.User.Username, userId)
+		if err != nil {
+			log.Fatalf("Cannot store user %s with id %s: %v", member.User.Username, userId, err)
+			return err
 		}
 	}
 

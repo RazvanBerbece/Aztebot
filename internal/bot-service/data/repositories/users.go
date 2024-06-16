@@ -49,14 +49,21 @@ func (r UsersRepository) GetAllDiscordUids() ([]string, error) {
 	return userIds, nil
 }
 
+func (r UsersRepository) UserExists(userId string) (bool, error) {
+	query := "SELECT COUNT(*) FROM Users WHERE userId = ?"
+	var count int
+	err := r.Conn.Db.QueryRow(query, userId).Scan(&count)
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
+
 func (r UsersRepository) GetUser(userId string) (*dataModels.User, error) {
 
-	// Get assigned role IDs for given user from the DB
 	query := "SELECT * FROM Users WHERE userId = ?"
 	row := r.Conn.Db.QueryRow(query, userId)
 
-	// Scan the role IDs and process them into query arguments to use
-	// in the Roles table
 	var user dataModels.User
 	err := row.Scan(&user.Id,
 		&user.DiscordTag,
