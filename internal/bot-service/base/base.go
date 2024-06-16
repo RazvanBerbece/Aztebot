@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/LxrdVixxeN/azteca-discord/internal/bot-service/globals"
-	slashCommands "github.com/LxrdVixxeN/azteca-discord/internal/bot-service/handlers/slashCommandEvent"
+	"github.com/LxrdVixxeN/Aztebot/internal/bot-service/globals"
+	slashCommands "github.com/LxrdVixxeN/Aztebot/internal/bot-service/handlers/slashCommandEvent"
 	"github.com/bwmarrin/discordgo"
 )
 

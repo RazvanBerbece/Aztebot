@@ -1,7 +1,7 @@
 package messageEvent
 
 import (
-	"github.com/LxrdVixxeN/azteca-discord/internal/bot-service/logger"
+	"github.com/LxrdVixxeN/Aztebot/internal/bot-service/logger"
 	"github.com/bwmarrin/discordgo"
 )
 

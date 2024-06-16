@@ -1,4 +1,4 @@
-module github.com/LxrdVixxeN/azteca-discord
+module github.com/LxrdVixxeN/Aztebot
 
 go 1.20
 
