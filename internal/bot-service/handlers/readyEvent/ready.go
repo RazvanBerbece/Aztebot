@@ -263,6 +263,8 @@ func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
 
 func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 
+	time.Sleep(time.Minute * 3)
+
 	var musicChannels map[string]string
 	if globals.Environment == "staging" {
 		// Dev text channels
@@ -293,6 +295,10 @@ func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 
 		userId := voiceState.UserID
 		channelId := voiceState.ChannelID
+
+		if voiceState.Member.User.Bot {
+			continue
+		}
 
 		now := time.Now()
 		if utils.TargetChannelIsForMusicListening(musicChannels, channelId) {
