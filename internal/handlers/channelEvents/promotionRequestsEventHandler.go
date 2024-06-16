@@ -26,11 +26,6 @@ func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []
 
 		const sHour = 60 * 60
 
-		currentOrderRole, err := member.GetMemberOrderRole(userId, defaultOrderRoleNames)
-		if err != nil {
-			fmt.Printf("Error occurred while reading member order role from DB: %v\n", err)
-		}
-
 		// Check current stats against progression table
 		// Figure out the promoted role to be given
 		var promotedLevel int = 0
@@ -88,6 +83,12 @@ func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []
 				promotedLevel = 9
 				promotedRoleName = "⚔️ Ipsissimus"
 			}
+		}
+
+		currentOrderRole, err := member.GetMemberOrderRole(userId, defaultOrderRoleNames)
+		if err != nil {
+			fmt.Printf("Error occurred while reading member order role from DB: %v\n", err)
+			continue
 		}
 
 		// This mismatch resolution is a result of the fact that progression roles were given outside the rules of progression
@@ -157,10 +158,6 @@ func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []
 					fmt.Printf("Error occurred while appending role ID to member in DB: %v\n", err)
 				}
 			} else if promotedLevel > 1 {
-				currentOrderRole, err := member.GetMemberOrderRole(userId, defaultOrderRoleNames) // to remove
-				if err != nil {
-					fmt.Printf("Error occurred while reading member order role from DB: %v\n", err)
-				}
 				if currentOrderRole != nil {
 					// Only remove the current order role if one exists
 					err = globalRepositories.UsersRepository.RemoveUserRoleWithId(userId, currentOrderRole.Id)
