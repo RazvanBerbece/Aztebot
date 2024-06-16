@@ -112,7 +112,7 @@ func (r UserRepRepository) ResetRep(userId string) error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(1, userId)
+	_, err = stmt.Exec(userId)
 	if err != nil {
 		return err
 	}
