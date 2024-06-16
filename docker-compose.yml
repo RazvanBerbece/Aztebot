@@ -25,8 +25,8 @@ services:
   azteradio-service:
     platform: linux/amd64 # Necessary for now because there is no arm64 image available for ghcr.io/stegripe/rawon
     container_name: azteradio-service
-    env_file:
-      ./cmd/azteradio-service-rawon/.config.env
+    # env_file:
+    #   ./cmd/azteradio-service-rawon/.config.env
     build:
       dockerfile: ./cmd/azteradio-service-rawon/Dockerfile
 
@@ -37,8 +37,6 @@ services:
     #   ./cmd/aztemusic-service-rawon/1/.config.env
     build:
       dockerfile: ./cmd/aztemusic-service-rawon/1/Dockerfile
-    volumes:
-      - "./scripts:/app/scripts"
 
   # aztemusic-service-1:
   #   container_name: aztemusic-service-1
