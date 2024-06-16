@@ -31,10 +31,11 @@ func (r UsersStatsRepository) DeleteDuplicateEntries() error {
 }
 
 func (r UsersStatsRepository) UserStatsExist(userId string) int {
-	query := "SELECT COUNT(*) FROM Users WHERE userId = ?"
+	query := "SELECT COUNT(*) FROM UserStats WHERE userId = ?"
 	var count int
 	err := r.Conn.Db.QueryRow(query, userId).Scan(&count)
 	if err != nil {
+		fmt.Printf("An error ocurred while checking for user stats in OTA DB: %v\n", err)
 		return -1
 	}
 	return count

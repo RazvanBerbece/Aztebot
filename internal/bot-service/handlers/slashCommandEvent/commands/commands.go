@@ -263,6 +263,36 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 			},
 		},
 	},
+	{
+		Name:        "set-gender",
+		Description: "Sets your profile gender to the selected option.",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "gender",
+				Description: "Select the gender to set for your profile",
+				Required:    true,
+				Choices: []*discordgo.ApplicationCommandOptionChoice{
+					{
+						Name:  "Male",
+						Value: "male",
+					},
+					{
+						Name:  "Female",
+						Value: "female",
+					},
+					{
+						Name:  "Nonbinary",
+						Value: "nonbin",
+					},
+					{
+						Name:  "Other",
+						Value: "other",
+					},
+				},
+			},
+		},
+	},
 }
 
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -272,6 +302,7 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"me":                    profileSlashHandlers.HandleSlashMe,
 	"you":                   profileSlashHandlers.HandleSlashYou,
 	"sync":                  profileSlashHandlers.HandleSlashSync,
+	"set-gender":            profileSlashHandlers.HandleSlashSetGender,
 	"dice":                  gamesSlashHandlers.HandleSlashDice,
 	"help":                  serverSlashHandlers.HandleSlashAztebotHelp,
 	"top5user":              serverSlashHandlers.HandleSlashTop5Users,

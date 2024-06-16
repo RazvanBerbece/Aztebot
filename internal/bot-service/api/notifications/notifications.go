@@ -7,6 +7,18 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+func SendEmbedToTextChannel(s *discordgo.Session, channelId string, embed embed.Embed) error {
+
+	_, err := s.ChannelMessageSendEmbed(channelId, embed.MessageEmbed)
+	if err != nil {
+		fmt.Printf("Error sending embed to channel %s: %v", channelId, err)
+		return err
+	}
+
+	return nil
+
+}
+
 func SendNotificationToTextChannel(s *discordgo.Session, channelId string, notificationTitle string, fields []discordgo.MessageEmbedField, useThumbnail bool) error {
 
 	// Build notification embed
@@ -14,7 +26,7 @@ func SendNotificationToTextChannel(s *discordgo.Session, channelId string, notif
 		SetColor(000000)
 
 	// Don't show feedback bot emojis when there is no title,
-	// as usually a notification with n otitle is meant to be kept minimalistic
+	// as usually a notification with no title is meant to be kept minimalistic
 	if notificationTitle != "" {
 		embed.SetTitle(fmt.Sprintf("🤖ℹ️   %s", notificationTitle))
 	}

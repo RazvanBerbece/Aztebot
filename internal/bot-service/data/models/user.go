@@ -10,4 +10,5 @@ type User struct {
 	CurrentLevel      int
 	CurrentExperience float64
 	CreatedAt         *int64
+	Gender            int8
 }

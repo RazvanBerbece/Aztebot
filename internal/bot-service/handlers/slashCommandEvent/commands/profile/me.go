@@ -116,8 +116,22 @@ func GetProfileEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Me
 		}
 	}
 
+	var genderDisplayString = ""
+	switch user.Gender {
+	case 0:
+		genderDisplayString = " ♂"
+	case 1:
+		genderDisplayString = " ♀"
+	case 2:
+		genderDisplayString = " ⚥"
+	case 3:
+		genderDisplayString = " 🌈"
+	default:
+		// undefined gender - not friendly for displaying purposes
+	}
+
 	embed := embed.NewEmbed().
-		SetTitle(fmt.Sprintf("🤖   `%s`'s Profile Card", user.DiscordTag)).
+		SetTitle(fmt.Sprintf("🤖   `%s`'s Profile Card%s", user.DiscordTag, genderDisplayString)).
 		SetDescription(fmt.Sprintf("`%s%s CIRCLE%s`", orderRoleText, user.CurrentCircle, orderText)).
 		SetThumbnail(fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.png", userId, apiUser.Avatar)).
 		SetColor(000000).
