@@ -40,7 +40,7 @@ jobs:
         run: |
           touch .env
           echo "${{ secrets.ENV_FILE }}" >> .env
-          source .env
+          . .env
 
       - name: Generate next release number
         id: tag_version
@@ -73,7 +73,7 @@ jobs:
       - name: 'Docker build'
         run: |
           docker build \
-          --build-arg db_conn_string=${{ env.DB_ROOT_CONNSTRING }} \
+          --build-arg db_conn_string=${{ secrets.DB_ROOT_CONNSTRING }} \
           --tag "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}" -f cmd/bot-service/Dockerfile .
 
       - name: 'Docker push'
