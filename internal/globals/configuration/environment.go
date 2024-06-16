@@ -39,3 +39,5 @@ var NotificationChannelsPairs = strings.Split(os.Getenv("NOTIFICATION_CHANNELS")
 var GlobalCommands = strings.Split(os.Getenv("GLOBAL_COMMANDS"), ",")
 
 var JailedRoleName = os.Getenv("JAILED_ROLE_NAME")
+
+var ServerBoosterDefaultRoleName = os.Getenv("SERVER_BOOSTER_DEFAULT_ROLE_NAME")

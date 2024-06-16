@@ -55,7 +55,7 @@ func JailMember(s *discordgo.Session, guildId string, userId string, reason stri
 	}
 
 	// Remove all roles from Discord user to restrict access
-	err = RemoveAllDiscordUserRoles(s, guildId, userId)
+	err = RemoveAllDiscordRolesFromMember(s, guildId, userId)
 	if err != nil {
 		fmt.Printf("Failed to JailMember %s (Remove Discord Roles): %v\n", userId, err)
 		return nil, nil, err
@@ -69,7 +69,7 @@ func JailMember(s *discordgo.Session, guildId string, userId string, reason stri
 	}
 
 	// Give designated Jailed Discord role to member
-	err = GiveDiscordRoleToMember(s, guildId, userId, jailRoleName)
+	err = AddDiscordRoleToMember(s, guildId, userId, jailRoleName)
 	if err != nil {
 		fmt.Printf("Failed to JailMember %s (Add Jailee Role): %v\n", userId, err)
 		return nil, nil, err
@@ -139,7 +139,7 @@ func UnjailMember(s *discordgo.Session, guildId string, userId string, jailRoleN
 	}
 
 	// Give roles back to member to return permsisions
-	err = AddRolesToDiscordUser(s, guildId, userId, utils.GetRoleIdsFromRoleString(jailedUser.RoleIdsBeforeJail))
+	err = AddDiscordRolesToMember(s, guildId, userId, utils.GetRoleIdsFromRoleString(jailedUser.RoleIdsBeforeJail))
 	if err != nil {
 		fmt.Printf("Failed to UnjailMember (Add original roles back to Discord user) %s: %v\n", userId, err)
 		return nil, nil, err
