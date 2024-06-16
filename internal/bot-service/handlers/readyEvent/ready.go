@@ -230,7 +230,7 @@ func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
 			continue
 		}
 		if hasMessage {
-			// Do not send this default message
+			// Do not send this default message as it already exists
 			continue
 		} else {
 			// Send associated default message to given text channel
@@ -242,7 +242,7 @@ func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
 				embedText = utils.GetTextFromFile("internal/bot-service/handlers/readyEvent/assets/defaultContent/music-info.txt")
 			}
 			embed := embed.NewEmbed().
-				SetTitle("🤖 Information Message").
+				SetTitle("🤖  Information Message").
 				SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 				SetColor(000000).
 				AddField("", embedText, false).

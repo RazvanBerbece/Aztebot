@@ -1,12 +1,12 @@
-## Folosirea roboților `🎵 AzteMusic` pe server
+**Folosirea roboților `🎵 AzteMusic` pe server**
 După cum știți, Discord este de așa natură încât un bot de muzică nu se poate folosi pe mai mult de un canal de voce.
 Noi, dezvoltatorii acestui proiect, am luat în calcul acest punct de vedere și am venit cu o soluție.
 Am decis să creăm nu unul, ci 3 boți de ascultat muzică pentru toate canalele dedicate aferent.
 
-### Despre `📻 AzteRadio`
-AzteRadio-ul a fost conceput pentru ca oricine să poată intra 24/7 pe canalul `⁠📻︱AzteRadio`. Aici se difuzează toate piesele artistului Azteca.
+**Despre `📻 AzteRadio`**
+AzteRadio-ul a fost conceput pentru ca oricine să poată intra 24/7 pe canalul `⁠📻︱AzteRadio`. Aici se difuzează toate piesele artistului Aztecă.
 
-### Despre folosirea comenzilor `🎵 AzteMusic`
-Comenzile AzteMusic pot fi verificate cu comanda ”/help” pentru botii aferenti - `AzteMusic (1)`, `AzteMusic (2)`, `AzteMusic(3)`.
+**Despre folosirea comenzilor `🎵 AzteMusic`**
+Comenzile AzteMusic pot fi verificate cu comanda ”/help” pentru boții aferenți - `AzteMusic (1)`, `AzteMusic (2)`, `AzteMusic(3)`.
 
-Pentru a folosi comenzile `AzteMusic`, asigurati-va ca sunteti conectat pe un canal de voce si ca alegeti bot-ul de muzica corect din dropdown-ul aratat de Discord ca auto-complete cand scrieti comanda slash (e.g `/play` si alegeti `AzteMusic (1)`)
+Pentru a folosi comenzile `AzteMusic`, asigurați-va că sunteți conectat pe un canal de voce și că alegeți bot-ul de muzică corect din dropdown-ul arătat de Discord ca auto-complete când scrieți comanda slash (e.g `/play` și alegeți `AzteMusic (1)`).
