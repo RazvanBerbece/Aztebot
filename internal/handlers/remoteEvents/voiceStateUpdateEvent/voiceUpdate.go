@@ -103,7 +103,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 				Type:   "VOICE_ACTIVITY",
 			}
 
-			go memberService.AwardFunds(userId, globalConfiguration.CoinReward_InVc*secondsSpent)
+			go memberService.AwardFunds(s, userId, globalConfiguration.CoinReward_InVc*secondsSpent)
 
 			delete(globalState.VoiceSessions, userId)
 			delete(globalState.StreamSessions, userId)
@@ -153,7 +153,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 						Type:   "MUSIC_ACTIVITY",
 					}
 
-					go memberService.AwardFunds(userId, globalConfiguration.CoinReward_InMusic*secondsSpent)
+					go memberService.AwardFunds(s, userId, globalConfiguration.CoinReward_InMusic*secondsSpent)
 
 				}
 			} else {
@@ -174,7 +174,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 						Type:   "VOICE_ACTIVITY",
 					}
 
-					go memberService.AwardFunds(userId, globalConfiguration.CoinReward_InVc*secondsSpent)
+					go memberService.AwardFunds(s, userId, globalConfiguration.CoinReward_InVc*secondsSpent)
 				}
 			}
 			delete(globalState.MusicSessions, userId)
