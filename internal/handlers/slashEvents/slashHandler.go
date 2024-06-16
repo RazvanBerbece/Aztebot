@@ -124,10 +124,10 @@ func AddRegisteredSlashEventHandlers(s *discordgo.Session) {
 			fmt.Printf("An error ocurred while udpating user (%s) last timestamp: %v", ownerUserId, err)
 		}
 
-		// Publish experience grant message on the channel
 		globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 			UserId: ownerUserId,
 			Points: globalConfiguration.ExperienceReward_SlashCommandUsed,
+			Type:   "SLASH_ACTIVITY",
 		}
 
 		if handlerFunc, ok := commands.AztebotSlashCommandHandlers[i.ApplicationCommandData().Name]; ok {

@@ -56,6 +56,7 @@ func ReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 	globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{
 		UserId: messageOwnerUid,
 		Points: globalConfiguration.ExperienceReward_ReactionReceived,
+		Type:   "REACT_ACTIVITY",
 	}
 
 }
