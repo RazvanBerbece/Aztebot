@@ -2,6 +2,7 @@ package globals
 
 import (
 	"os"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
@@ -20,6 +21,8 @@ var DiscordGuildId = os.Getenv("DISCORD_GUILD_ID")
 var MySqlRootConnectionString = os.Getenv("DB_ROOT_CONNSTRING") // in MySQL format (i.e. `root_username:root_password@<unix/tcp>(host:port)/db_name`)
 
 // =============== RUNTIME VARIABLES (BOT APPLICATIONS) ===============
+var RestrictedCommands = strings.Split(os.Getenv("RESTRICTED_COMMANDS"), ",")
+var AllowedRoles = strings.Split(os.Getenv("ALLOWED_ROLES"), ",")
 
 // =============== RUNTIME VARIABLES (SLASH COMMANDS) ===============
 var AztebotRegisteredCommands []*discordgo.ApplicationCommand
