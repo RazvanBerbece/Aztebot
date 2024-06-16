@@ -6,14 +6,15 @@ import (
 )
 
 type NotificationEvent struct {
-	TargetChannelId string
-	Type            string
-	Title           *string
-	Fields          []discordgo.MessageEmbedField
-	Embed           *embed.Embed
-	ActionRow       *discordgo.ActionsRow
-	TextData        *string
-	UseThumbnail    *bool
-	AuthorName      *string
-	AuthorAvatarURL *string
+	TargetChannelId             string
+	Type                        string
+	Title                       *string
+	Fields                      []discordgo.MessageEmbedField
+	Embed                       *embed.Embed
+	ActionRow                   *discordgo.ActionsRow
+	TextData                    *string
+	UseThumbnail                *bool
+	AuthorName                  *string
+	AuthorAvatarURL             *string
+	DecorateWithTimestampFooter bool
 }

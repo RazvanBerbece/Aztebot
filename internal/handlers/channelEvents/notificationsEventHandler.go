@@ -17,7 +17,8 @@ func HandleNotificationEvents(s *discordgo.Session) {
 			err := notifications.SendDefaultEmbedToTextChannel(
 				s,
 				notificationEvent.TargetChannelId,
-				*notificationEvent.TextData)
+				*notificationEvent.TextData,
+				notificationEvent.DecorateWithTimestampFooter)
 			if err != nil {
 				fmt.Printf("Failed to process NotificationEvent (%s): %v\n", notificationEvent.Type, err)
 			}

@@ -22,9 +22,10 @@ func NewDiscordLogger(s *discordgo.Session, topic string) *DiscordChannelLogger 
 func (l DiscordChannelLogger) LogInfo(msg string) {
 	if channel, channelExists := globalConfiguration.NotificationChannels[l.Topic]; channelExists {
 		globalMessaging.NotificationsChannel <- events.NotificationEvent{
-			TargetChannelId: channel.ChannelId,
-			Type:            "DEFAULT",
-			TextData:        &msg,
+			TargetChannelId:             channel.ChannelId,
+			Type:                        "DEFAULT",
+			TextData:                    &msg,
+			DecorateWithTimestampFooter: true,
 		}
 	}
 }
