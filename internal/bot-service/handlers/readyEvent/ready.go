@@ -356,8 +356,10 @@ func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 
 	for !successfullyLoadedSessions {
 
+		time.Sleep(40 * time.Millisecond)
+
 		durationForLoadingSessions := time.Since(now)
-		if durationForLoadingSessions.Seconds() > 600 { // only try this for 10 minutes, then break and return
+		if durationForLoadingSessions.Seconds() > 5*60 { // only try this for 5 minutes, then break and return
 			loadingTimeIsUp = true
 			break
 		}
@@ -376,7 +378,6 @@ func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 				continue
 			}
 
-			now := time.Now()
 			if utils.TargetChannelIsForMusicListening(musicChannels, channelId) {
 				// If the voice state is purposed for music, initiate a music session at startup time
 				_, exists := globals.MusicSessions[userId]
