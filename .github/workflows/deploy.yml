@@ -76,7 +76,7 @@ jobs:
       
       - name: Deploy New Image to DKE
         run: |
-          kubectl apply -f deployment.yaml
+          kubectl apply -f deployment.yml
 
       - name: Show created Pods
         run: |
