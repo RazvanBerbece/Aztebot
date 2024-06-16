@@ -34,6 +34,24 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		Name:        "dice",
 		Description: "Roll a 6-sided dice and try your luck",
 	},
+	{
+		Name:        "warn",
+		Description: "Gives a warning (with a provided reason message) to the user with the given ID",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "user-id",
+				Description: "The Discord User ID of the user the warning is to be given to",
+				Required:    true,
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "reason",
+				Description: "The reason for which the warning was given (max. 500 characters)",
+				Required:    true,
+			},
+		},
+	},
 }
 
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -44,4 +62,5 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"sync":     slashHandlers.HandleSlashSync,
 	"top":      slashHandlers.HandleSlashTop,
 	"dice":     slashHandlers.HandleSlashDice,
+	"warn":     slashHandlers.HandleSlashWarn,
 }

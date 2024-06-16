@@ -41,6 +41,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	go SendInformationEmbedsToTextChannels(s)
 
 	// Check for users on voice channels and start their VC sessions
+	// TODO: FIX THIS (ON STARTUP IN PROD IT RECEIVES 0 STATES)
 	go RegisterUsersInVoiceChannelsAtStartup(s)
 
 	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, XP gaining?, etc.)
