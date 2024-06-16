@@ -12,24 +12,17 @@ import (
 
 func HandleSlashTop(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
-	embed := displayEmbedForTop(s)
-	if embed == nil {
-		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{
-				Content: "An error ocurred while trying to display the OTA leaderboard",
-			},
-		})
-	}
+	go processTopCommand(s, i)
+
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
-			Embeds: embed,
+			Content: "Processing `/top` command ...",
 		},
 	})
 }
 
-func displayEmbedForTop(s *discordgo.Session) []*discordgo.MessageEmbed {
+func processTopCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	embed := embed.NewEmbed().
 		SetTitle("🤖   OTA Server Leaderboard").
@@ -41,7 +34,6 @@ func displayEmbedForTop(s *discordgo.Session) []*discordgo.MessageEmbed {
 	topMessagesSent, err := globalsRepo.UserStatsRepository.GetTopUsersByMessageSent(topCount)
 	if err != nil {
 		log.Printf("Cannot retrieve OTA leaderboard top messages sent from the Discord API: %v", err)
-		return nil
 	}
 	embed.
 		AddLineBreakField().
@@ -58,12 +50,11 @@ func displayEmbedForTop(s *discordgo.Session) []*discordgo.MessageEmbed {
 	topTimeInVCs, err := globalsRepo.UserStatsRepository.GetTopUsersByTimeSpentInVC(topCount)
 	if err != nil {
 		log.Printf("Cannot retrieve OTA leaderboard top times spent in VC from the Discord API: %v", err)
-		return nil
 	}
 	embed.
 		AddLineBreakField().
 		AddField(fmt.Sprintf("🎙️ Top %d By Time Spent in Voice Channels", topCount), "", false)
-	if len(topMessagesSent) == 0 {
+	if len(topTimeInVCs) == 0 {
 		embed.AddField("", "No members in this category", false)
 	} else {
 		for idx, topUser := range topTimeInVCs {
@@ -72,5 +63,14 @@ func displayEmbedForTop(s *discordgo.Session) []*discordgo.MessageEmbed {
 		}
 	}
 
-	return []*discordgo.MessageEmbed{embed.MessageEmbed}
+	embeds := []*discordgo.MessageEmbed{embed.MessageEmbed}
+
+	// The edit webhook container holds the updated interaction response details (contents, embeds, etc.)
+	editContent := ""
+	editWebhook := discordgo.WebhookEdit{
+		Content: &editContent,
+		Embeds:  &embeds,
+	}
+
+	s.InteractionResponseEdit(i.Interaction, &editWebhook)
 }
