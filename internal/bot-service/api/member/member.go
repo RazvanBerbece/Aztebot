@@ -289,7 +289,24 @@ func AddRolesToDiscordUser(s *discordgo.Session, guildId string, userId string, 
 
 }
 
-func GetMemberRankInLeaderboards(s *discordgo.Session, userId string) (map[string]int, error) {
+func GetMemberXpRank(userId string) (*int, error) {
+
+	xpRank, err := globalsRepo.UserStatsRepository.GetUserXpRank(
+		userId,
+		globals.XpMessageWeight,
+		globals.XpSlashCommandWeight,
+		globals.XpReactionsReceivedWeight,
+		globals.XpTimeSpentVCWeight,
+		globals.XpTimeSpentMusicWeight)
+	if err != nil {
+		fmt.Printf("An error ocurred while retrieving leaderboard XP rank for user %s", userId)
+		return nil, err
+	}
+
+	return xpRank, nil
+}
+
+func GetMemberRankInLeaderboards(userId string) (map[string]int, error) {
 
 	results := make(map[string]int)
 
@@ -478,7 +495,12 @@ func GetXpForMember(s *discordgo.Session, userId string, statsOption *dataModels
 		stats.NumberSlashCommandsUsed,
 		stats.NumberReactionsReceived,
 		stats.TimeSpentInVoiceChannels,
-		stats.TimeSpentListeningToMusic)
+		stats.TimeSpentListeningToMusic,
+		globals.XpMessageWeight,
+		globals.XpSlashCommandWeight,
+		globals.XpReactionsReceivedWeight,
+		globals.XpTimeSpentVCWeight,
+		globals.XpTimeSpentMusicWeight)
 
 	return &totalExperience, nil
 

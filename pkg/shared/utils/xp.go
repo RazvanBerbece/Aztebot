@@ -5,20 +5,18 @@ func CalculateExperiencePointsFromStats(
 	slashCommandsUsed int,
 	reactionsReceived int,
 	tsVc int,
-	tsMusic int) int {
-
-	var MessageWeight float64 = 0.5
-	var SlashCommandWeight float64 = 0.45
-	var ReactionsReceivedWeight float64 = 0.33
-	var TimeSpentVCWeight float64 = 0.133
-	var TimeSpentMusicWeight float64 = 0.1
-
-	var totalExperience int = int(float64(messagesSent)*MessageWeight +
-		float64(slashCommandsUsed)*SlashCommandWeight +
-		float64(reactionsReceived)*ReactionsReceivedWeight +
-		float64(tsVc)*TimeSpentVCWeight +
-		float64(tsMusic)*TimeSpentMusicWeight)
+	tsMusic int,
+	messageWeight float64,
+	slashCommandWeight float64,
+	reactionsReceivedWeight float64,
+	timeSpentVCWeight float64,
+	timeSpentMusicWeight float64,
+) int {
+	var totalExperience int = int(float64(messagesSent)*messageWeight +
+		float64(slashCommandsUsed)*slashCommandWeight +
+		float64(reactionsReceived)*reactionsReceivedWeight +
+		float64(tsVc)*timeSpentVCWeight +
+		float64(tsMusic)*timeSpentMusicWeight)
 
 	return totalExperience
-
 }

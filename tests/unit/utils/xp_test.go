@@ -12,6 +12,11 @@ type TestStatsInput struct {
 	NumReactionsReceived int
 	TsVc                 int
 	TsMusic              int
+	MessageWeight        float64
+	SlashCommandWeight   float64
+	ReactionsWeight      float64
+	TsVcWeight           float64
+	TsMusicWeight        float64
 }
 
 func TestCalculateExperiencePointsFromStats(t *testing.T) {
@@ -26,6 +31,11 @@ func TestCalculateExperiencePointsFromStats(t *testing.T) {
 			NumReactionsReceived: 0,
 			TsVc:                 0,
 			TsMusic:              0,
+			MessageWeight:        0.5,
+			SlashCommandWeight:   0.45,
+			ReactionsWeight:      0.33,
+			TsVcWeight:           0.133,
+			TsMusicWeight:        0.1,
 		}, 0},
 		{TestStatsInput{
 			NumMessagesSent:      1,
@@ -33,6 +43,11 @@ func TestCalculateExperiencePointsFromStats(t *testing.T) {
 			NumReactionsReceived: 0,
 			TsVc:                 0,
 			TsMusic:              0,
+			MessageWeight:        0.5,
+			SlashCommandWeight:   0.45,
+			ReactionsWeight:      0.33,
+			TsVcWeight:           0.133,
+			TsMusicWeight:        0.1,
 		}, 0},
 		{TestStatsInput{
 			NumMessagesSent:      153,
@@ -40,11 +55,27 @@ func TestCalculateExperiencePointsFromStats(t *testing.T) {
 			NumReactionsReceived: 7,
 			TsVc:                 300,
 			TsMusic:              0,
+			MessageWeight:        0.5,
+			SlashCommandWeight:   0.45,
+			ReactionsWeight:      0.33,
+			TsVcWeight:           0.133,
+			TsMusicWeight:        0.1,
 		}, 123},
 	}
 
 	for _, c := range cases {
-		if output := utils.CalculateExperiencePointsFromStats(c.input.NumMessagesSent, c.input.NumSlashCommandsUsed, c.input.NumReactionsReceived, c.input.TsVc, c.input.TsMusic); output != c.expectedOutput {
+		if output := utils.CalculateExperiencePointsFromStats(
+			c.input.NumMessagesSent,
+			c.input.NumSlashCommandsUsed,
+			c.input.NumReactionsReceived,
+			c.input.TsVc,
+			c.input.TsMusic,
+			c.input.MessageWeight,
+			c.input.SlashCommandWeight,
+			c.input.ReactionsWeight,
+			c.input.TsVcWeight,
+			c.input.TsMusicWeight,
+		); output != c.expectedOutput {
 			t.Errorf("incorrect output: expected `%d` but got `%d`", c.expectedOutput, output)
 		}
 	}
