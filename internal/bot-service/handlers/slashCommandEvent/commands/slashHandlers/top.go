@@ -47,25 +47,24 @@ func processTopCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	// Top by messages sent
 	ProcessTopMessagesPartialEmbed(topCount, s, i.Interaction, embed)
+	updateInteraction(s, i.Interaction, embed)
 
 	// Top by time spent in VCs
 	ProcessTopVCSpentPartialEmbed(topCount, s, i.Interaction, embed)
+	updateInteraction(s, i.Interaction, embed)
 
 	// Top by active day streak
 	ProcessTopActiveDayStreakPartialEmbed(topCount, s, i.Interaction, embed)
+	updateInteraction(s, i.Interaction, embed)
 
 	// Top by reactions received
 	ProcessTopReactionsReceivedPartialEmbed(topCount, s, i.Interaction, embed)
-
-	updateInteraction(s, *i.Interaction, *embed)
+	updateInteraction(s, i.Interaction, embed)
 
 	globals.LastUsedTopTimestamp = time.Now()
 }
 
-func updateInteraction(s *discordgo.Session, i discordgo.Interaction, embed embed.Embed) {
-
-	// sleep to reduce rate usage
-	time.Sleep(1 * time.Second)
+func updateInteraction(s *discordgo.Session, i *discordgo.Interaction, embed *embed.Embed) {
 
 	embeds := []*discordgo.MessageEmbed{embed.MessageEmbed}
 
@@ -76,7 +75,7 @@ func updateInteraction(s *discordgo.Session, i discordgo.Interaction, embed embe
 		Embeds:  &embeds,
 	}
 
-	s.InteractionResponseEdit(&i, &editWebhook)
+	s.InteractionResponseEdit(i, &editWebhook)
 
 }
 
