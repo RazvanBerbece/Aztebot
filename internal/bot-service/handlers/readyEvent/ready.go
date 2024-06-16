@@ -18,23 +18,6 @@ import (
 // Called once the Discord servers confirm a succesful connection.
 func Ready(s *discordgo.Session, event *discordgo.Ready) {
 
-	// Available voice channels for the dev and prod servers
-	var voiceChannels map[string]string
-	if globals.Environment == "staging" {
-		// Dev text channels
-		voiceChannels = map[string]string{
-			"1173790229258326106": "radio",
-		}
-	} else {
-		// Production text channels
-		voiceChannels = map[string]string{
-			"1176204022399631381": "radio",
-			"1118202946455351388": "music-1",
-			"1118202975026937948": "music-2",
-			"1118202999504904212": "music-3",
-		}
-	}
-
 	logging.LogHandlerCall("Ready", "")
 
 	// Retrieve list of DB users at startup time (for convenience and some optimisation further down the line)
@@ -58,7 +41,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	go SendInformationEmbedsToTextChannels(s)
 
 	// Check for users on voice channels and start their VC sessions
-	go RegisterUsersInVoiceChannelsAtStartup(s, voiceChannels)
+	go RegisterUsersInVoiceChannelsAtStartup(s)
 
 	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, XP gaining?, etc.)
 	initialDelay, activityTicker := getDelayAndTickerForActivityStreakCron(24, 0, 0) // H, m, s
@@ -278,8 +261,58 @@ func SendInformationEmbedsToTextChannels(s *discordgo.Session) {
 
 }
 
-func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session, voiceChannels map[string]string) {
-	// TODO
+func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
+
+	var musicChannels map[string]string
+	if globals.Environment == "staging" {
+		// Dev text channels
+		musicChannels = map[string]string{
+			"1173790229258326106": "radio",
+		}
+	} else {
+		// Production text channels
+		musicChannels = map[string]string{
+			"1176204022399631381": "radio",
+			"1118202946455351388": "music-1",
+			"1118202975026937948": "music-2",
+			"1118202999504904212": "music-3",
+		}
+	}
+
+	guild, err := s.Guild(globals.DiscordMainGuildId)
+	if err != nil {
+		fmt.Println("Error retrieving guild:", err)
+		return
+	}
+
+	// For each active voice state in the guild
+	var sessionsAtStartup int = 0
+	for _, voiceState := range guild.VoiceStates {
+
+		userId := voiceState.UserID
+		channelId := voiceState.ChannelID
+
+		now := time.Now()
+		if utils.TargetChannelIsForMusicListening(musicChannels, channelId) {
+			// If the voice state is purposed for music, initiate a music session at startup time
+			globals.MusicSessions[userId] = map[string]*time.Time{
+				channelId: &now,
+			}
+		} else {
+			if voiceState.SelfStream {
+				// If the voice state is purposed for streaming, initiate a streaming session at startup time
+				globals.StreamSessions[userId] = &now
+			} else {
+				// If the voice state is purposed for just for listening on a voice channel, initiate a voice session at startup time
+				globals.VoiceSessions[userId] = now
+			}
+		}
+		sessionsAtStartup += 1
+
+	}
+
+	fmt.Printf("Found %d active voice states at bot startup time\n", sessionsAtStartup)
+
 }
 
 // Returns a delay and a ticket to use for the initial delay and then subsequent executions of the activity streak update cron.
