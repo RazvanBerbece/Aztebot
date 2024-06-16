@@ -47,9 +47,6 @@ func updateVoiceSessions(s *discordgo.Session) {
 		if err != nil {
 			continue
 		}
-		if authorIsBot == nil {
-			continue
-		}
 		if *authorIsBot {
 			continue
 		}
@@ -82,9 +79,6 @@ func updateStreamingSessions(s *discordgo.Session) {
 		if err != nil {
 			continue
 		}
-		if authorIsBot == nil {
-			continue
-		}
 		if *authorIsBot {
 			continue
 		}
@@ -115,9 +109,6 @@ func updateMusicSessions(s *discordgo.Session) {
 		// Ignore all bot sessions
 		authorIsBot, err := member.MemberIsBot(s, globals.DiscordMainGuildId, uid)
 		if err != nil {
-			continue
-		}
-		if authorIsBot == nil {
 			continue
 		}
 		if *authorIsBot {
