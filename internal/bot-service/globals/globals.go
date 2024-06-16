@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	dataModels "github.com/RazvanBerbece/Aztebot/internal/bot-service/data/models"
 	"github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
 )
@@ -35,7 +36,11 @@ var UpdateVoiceStateFrequency, UpdateVoiceStateFrequencyErr = strconv.Atoi(os.Ge
 
 var TimeoutClearFrequency, TimeoutClearFrequencyErr = strconv.Atoi(os.Getenv("TIMEOUT_CLEAR_FREQUENCY"))
 
+var NotificationChannelsPairs = strings.Split(os.Getenv("NOTIFICATION_CHANNELS"), ",")
+
 // =============== RUNTIME VARIABLES (BOT APPLICATIONS) ===============
+var NotificationChannels = make(map[string]dataModels.Channel)
+
 var VoiceSessions = make(map[string]time.Time)
 var StreamSessions = make(map[string]*time.Time)
 var MusicSessions = make(map[string]map[string]*time.Time)

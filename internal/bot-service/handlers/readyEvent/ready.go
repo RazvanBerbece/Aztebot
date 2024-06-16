@@ -15,6 +15,9 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 
 	logging.LogHandlerCall("Ready", "")
 
+	// Load static data once runtime is confirmed
+	go LoadStaticData()
+
 	// Retrieve list of DB users at startup time (for convenience and some optimisation further down the line)
 	uids, err := globalsRepo.UsersRepository.GetAllDiscordUids()
 	if err != nil {
