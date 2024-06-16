@@ -1,4 +1,4 @@
-# azteca-discord
+# Aztebot
 The ambitious and robust Discord bot which powers the <INSERT DISCORD NAME HERE ONCE WE KNOW IT> Discord community. Written in Go.
 
 Composing services:
@@ -29,6 +29,6 @@ The continuous deployment process has not been determined yet.
 
 # Contribution Guide
 ## Folder Structure
-1. `cmd` folder -- contains multiple folders, each one representing a service making the `azteca-discord` bot project. For example, the `bot-service` folder is the main entry point of the bot application (and it contains the Dockerfile associated with it) that starts the connection to Discord and actions on the various events emitted by it. More services can be added here by adding new folders (e.g.: `leveling-service/`) with `main.go` entry points and `Dockerfile`s which leverage these services.
+1. `cmd` folder -- contains multiple folders, each one representing a service making the `Aztebot` system. For example, the `bot-service` folder is the main entry point of the bot application (and it contains the Dockerfile associated with it) that starts the connection to Discord and actions on the various events emitted by it. More services can be added here by adding new folders (e.g.: `leveling-service/`) with `main.go` entry points and `Dockerfile`s which leverage these services.
 2. `internal` folder -- has multiple folders, each one containing the internal logic that each service needs. Each service internals subfolder contains everything from data models and migration histories, to loggers, to handlers and contexts.
 3. `pkg` folder -- contains util packages which could be leveraged across the entire project.
