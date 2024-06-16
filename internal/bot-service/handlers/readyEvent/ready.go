@@ -56,6 +56,6 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	cron.ProcessRemoveExpiredWarns(2)                          // run every n=2 months
 	cron.ClearExpiredTimeouts(s)                               // clear timeouts with freq from env var
 	cron.ProcessRemoveArchivedTimeouts(1)                      // run every n=1 month
-	cron.ProcessMonthlyLeaderboard(s, 22, 41, 30, false, true) // run on last day (current day for false flag) at given time
+	cron.ProcessMonthlyLeaderboard(s, 22, 42, 30, false, true) // run on last day (current day for false flag) at given time
 
 }
