@@ -26,7 +26,8 @@ var MySqlRootConnectionString = os.Getenv("DB_ROOT_CONNSTRING") // in MySQL form
 var RestrictedCommands = strings.Split(os.Getenv("RESTRICTED_COMMANDS"), ",")
 var AllowedRoles = strings.Split(os.Getenv("ALLOWED_ROLES"), ",")
 
-var UserSyncInterval, UserSyncIntervalErr = strconv.Atoi(os.Getenv("USER_SYNC_INTERVAL")) // in seconds
+var UserSyncInterval, UserSyncIntervalErr = strconv.Atoi(os.Getenv("USER_SYNC_INTERVAL"))          // in seconds
+var UserCleanupInterval, UserCleanupIntervalErr = strconv.Atoi(os.Getenv("USER_CLEANUP_INTERVAL")) // in seconds
 
 // =============== RUNTIME VARIABLES (SLASH COMMANDS) ===============
 var AztebotRegisteredCommands []*discordgo.ApplicationCommand

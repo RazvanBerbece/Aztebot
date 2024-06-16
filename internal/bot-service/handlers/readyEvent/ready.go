@@ -18,25 +18,44 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 
 	logging.LogHandlerCall("Ready", "")
 
+	// Define the repositories here for the cron functions (and reuse their connections)
+	// in order to not flood the DB with connection attempts
+	rolesRepository := repositories.NewRolesRepository()
+	usersRepository := repositories.NewUsersRepository()
+
 	// Set initial status for the AzteBot
 	s.UpdateGameStatus(0, "/help")
 
 	// Other setups
 
-	// Cron func to sync users and their DB entity
-	var interval int
+	// Cron funcs to sync users and their DB entity
+	var syncInterval int
+	var cleanupInterval int
 	if globals.UserSyncIntervalErr != nil {
-		interval = 60
+		syncInterval = 60
 	} else {
-		interval = globals.UserSyncInterval
+		syncInterval = globals.UserSyncInterval
 	}
-	ticker := time.NewTicker(time.Second * time.Duration(interval))
+	if globals.UserCleanupIntervalErr != nil {
+		cleanupInterval = 60
+	} else {
+		cleanupInterval = globals.UserCleanupInterval
+	}
+
+	syncTicker := time.NewTicker(time.Second * time.Duration(syncInterval))
+	cleanupTicker := time.NewTicker(time.Second * time.Duration(cleanupInterval))
+
+	// Periodic sync of the members on the server with the DB
 	go func() {
-		// Define the repositories here (and establish the connections) in order to not flood the DB with connection attempts
-		rolesRepository := repositories.NewRolesRepository()
-		usersRepository := repositories.NewUsersRepository()
-		for range ticker.C {
+		for range syncTicker.C {
 			UpdateUsersInCron(s, rolesRepository, usersRepository)
+		}
+	}()
+
+	// Periodic cleanup of users from the DB
+	go func() {
+		for range cleanupTicker.C {
+			CleanupUsersInCron(s, usersRepository)
 		}
 	}()
 
@@ -67,6 +86,42 @@ func UpdateUsersInCron(s *discordgo.Session, rolesRepository *repositories.Roles
 		// Process the next batch of members
 		processMembers(s, members, rolesRepository, usersRepository)
 	}
+
+	fmt.Println("Ran Task UpdateUsersInCron() at", time.Now())
+
+	return nil
+
+}
+
+func CleanupUsersInCron(s *discordgo.Session, usersRepository *repositories.UsersRepository) error {
+
+	// Retrieve all members from the DB
+	uids, err := usersRepository.GetAllDiscordUids()
+	if err != nil {
+		fmt.Println("Error retrieving user IDs from DB:", err)
+		return err
+	}
+
+	// For each tag in the DB, delete user from table
+	for _, uid := range uids {
+		_, err := s.GuildMember(globals.DiscordMainGuildId, uid)
+		if err != nil {
+			// if the member does not exist on the main server
+			if discordgoErr, ok := err.(*discordgo.RESTError); ok && discordgoErr.Message.Code == discordgo.ErrCodeUnknownMember {
+				// delete from the database
+				err := usersRepository.DeleteUser(uid)
+				if err != nil {
+					fmt.Printf("Error deleting left user with UID %s from DB: %v", uid, err)
+					return err
+				}
+			} else {
+				fmt.Println("Error retrieving member:", err)
+				return err
+			}
+		}
+	}
+
+	fmt.Println("Ran Task CleanupUsersInCron() at", time.Now())
 
 	return nil
 
