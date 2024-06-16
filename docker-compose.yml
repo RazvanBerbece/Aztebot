@@ -24,8 +24,6 @@ services:
   
   azteradio-service:
     container_name: azteradio-service
-    # env_file:
-    #   ./cmd/azteradio-service-rawon/.config.env
     build:
       dockerfile: ./cmd/azteradio-service/Dockerfile
 
