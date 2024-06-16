@@ -8,6 +8,6 @@ type User struct {
 	CurrentCircle     string
 	CurrentInnerOrder *int
 	CurrentLevel      int
-	CurrentExperience int
+	CurrentExperience float64
 	CreatedAt         *int64
 }

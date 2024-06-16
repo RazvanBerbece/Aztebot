@@ -152,17 +152,17 @@ func GetProfileEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Me
 		}
 
 		// Retrieve experience points for user
-		xp, err := member.GetXpForMember(s, userId, stats)
+		xp, err := member.GetMemberExperiencePoints(userId)
 		if err != nil {
 			log.Printf("Cannot retrieve user %s XP: %v", userId, err)
 			return nil
 		}
+		xpInt := int(*xp)
 		xpRank, rankErr := member.GetMemberXpRank(userId)
 		if rankErr != nil {
 			log.Printf("Cannot retrieve user %s XP rank: %v", userId, rankErr)
 			return nil
 		}
-		fmt.Println(xpRank)
 		xpRankString = fmt.Sprintf(" (`🏆 #%d`)", *xpRank)
 
 		// Add extra decorations to the embed (special users, staff members, etc.)
@@ -179,7 +179,7 @@ func GetProfileEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Me
 			AddField(fmt.Sprintf("🎙️ Time spent in voice channels:  `%s`%s", timeSpentInVcs, vcRankString), "", false).
 			AddField(fmt.Sprintf("🎵 Time spent listening to music:  `%s`%s", timeSpentListeningMusic, musicRankString), "", false).
 			AddLineBreakField().
-			AddField(fmt.Sprintf("💠 Total gained XP:  `%d`%s", *xp, xpRankString), "", false)
+			AddField(fmt.Sprintf("💠 Total gained XP:  `%d`%s", xpInt, xpRankString), "", false)
 
 	} else {
 		embed.AddField("Member hasn't verified yet.", "", false)

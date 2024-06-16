@@ -29,3 +29,9 @@ type TopUserRCT struct {
 	UserId            string
 	ReactionsReceived int
 }
+
+type TopUserXP struct {
+	DiscordTag string
+	UserId     string
+	XpGained   float64
+}

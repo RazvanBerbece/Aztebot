@@ -41,11 +41,11 @@ var NotificationChannelsPairs = strings.Split(os.Getenv("NOTIFICATION_CHANNELS")
 var GlobalCommands = strings.Split(os.Getenv("GLOBAL_COMMANDS"), ",")
 
 // =============== RUNTIME VARIABLES (BOT APPLICATIONS) ===============
-var XpMessageWeight float64 = 0.5
-var XpSlashCommandWeight float64 = 0.45
-var XpReactionsReceivedWeight float64 = 0.33
-var XpTimeSpentVCWeight float64 = 0.133
-var XpTimeSpentMusicWeight float64 = 0.1
+var ExperienceReward_MessageSent float64 = 0.5
+var ExperienceReward_SlashCommandUsed float64 = 0.45
+var ExperienceReward_ReactionReceived float64 = 0.33
+var ExperienceReward_InVc float64 = 0.133
+var ExperienceReward_InMusic float64 = 0.1
 
 var NotificationChannels = make(map[string]dataModels.Channel)
 
@@ -53,7 +53,9 @@ var VoiceSessions = make(map[string]time.Time)
 var StreamSessions = make(map[string]*time.Time)
 var MusicSessions = make(map[string]map[string]*time.Time)
 var DeafSessions = make(map[string]time.Time)
+
 var LastUsedTopTimestamp = time.Now().Add(-60 * time.Minute)
+var LastUsedRanksTimestamp = time.Now().Add(-60 * time.Minute)
 
 var ConfessionsToApprove = make(map[string]string)
 

@@ -57,8 +57,8 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		Description: "Get a help guide for the available AzteBot slash commands",
 	},
 	{
-		Name:        "top",
-		Description: "See the OTA leaderboard tops by activity category",
+		Name:        "top5user",
+		Description: "See the OTA leaderboard top 5s by activity category",
 	},
 	{
 		Name:        "dice",
@@ -200,6 +200,10 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 			},
 		},
 	},
+	{
+		Name:        "top",
+		Description: "Displays the global OTA leaderboard",
+	},
 }
 
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -211,6 +215,7 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"sync":                  profileSlashHandlers.HandleSlashSync,
 	"dice":                  gamesSlashHandlers.HandleSlashDice,
 	"help":                  serverSlashHandlers.HandleSlashAztebotHelp,
+	"top5user":              serverSlashHandlers.HandleSlashTop5Users,
 	"top":                   serverSlashHandlers.HandleSlashTop,
 	"confess":               supportSlashHandlers.HandleSlashConfess,
 	"warn":                  warningSlashHandlers.HandleSlashWarn,

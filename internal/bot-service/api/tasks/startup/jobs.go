@@ -1,6 +1,7 @@
 package startup
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"sync"
@@ -299,5 +300,66 @@ func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 		totalSessions := voiceSessionsAtStartup + streamSessionsAtStartup + musicSessionsAtStartup
 		fmt.Printf("[STARTUP] Found %d active voice states at bot startup time (%d voice, %d streaming, %d music, %d deafened)\n", totalSessions, voiceSessionsAtStartup, streamSessionsAtStartup, musicSessionsAtStartup, deafSessionsAtStartup)
 	}
+
+}
+
+func SyncExperiencePointsGainsAtStartup(s *discordgo.Session) {
+
+	usersRepository := repositories.NewUsersRepository()
+	userStatsRepository := repositories.NewUsersStatsRepository()
+
+	uids, err := usersRepository.GetAllDiscordUids()
+	if err != nil {
+		fmt.Println("[STARTUP] Failed Task SyncExperiencePointsGainsAtStartup() at", time.Now(), "with error", err)
+	}
+
+	// For all users in the database
+	fmt.Println("[STARTUP] Checkpoint Task SyncExperiencePointsGainsAtStartup() at", time.Now(), "-> Updating", len(uids), "XP gains")
+	for _, uid := range uids {
+
+		user, err := usersRepository.GetUser(uid)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				continue
+			}
+			fmt.Println("[STARTUP] Failed Task SyncExperiencePointsGainsAtStartup() at", time.Now(), "for UID", "with error", err)
+		}
+
+		stats, errStats := userStatsRepository.GetStatsForUser(uid)
+		if errStats != nil {
+			if errStats == sql.ErrNoRows {
+				continue
+			}
+			fmt.Println("[STARTUP] Failed Task SyncExperiencePointsGainsAtStartup() at", time.Now(), "for UID", "with error", errStats)
+		}
+
+		updatedXp := utils.CalculateExperiencePointsFromStats(
+			stats.NumberMessagesSent,
+			stats.NumberSlashCommandsUsed,
+			stats.NumberReactionsReceived,
+			stats.TimeSpentInVoiceChannels,
+			stats.TimeSpentListeningToMusic,
+			globals.ExperienceReward_MessageSent,
+			globals.ExperienceReward_SlashCommandUsed,
+			globals.ExperienceReward_ReactionReceived,
+			globals.ExperienceReward_InVc,
+			globals.ExperienceReward_InMusic)
+		user.CurrentExperience = float64(updatedXp)
+
+		// Update user entity with new XP value
+		_, err = usersRepository.UpdateUser(*user)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				continue
+			}
+			fmt.Println("[STARTUP] Failed Task SyncExperiencePointsGainsAtStartup() at", time.Now(), "for UID", "with error", err)
+		}
+
+	}
+
+	// Cleanup repos
+	utils.CleanupRepositories(nil, usersRepository, userStatsRepository, nil, nil)
+
+	fmt.Println("[STARTUP] Finished Task SyncExperiencePointsGainsAtStartup() at", time.Now())
 
 }

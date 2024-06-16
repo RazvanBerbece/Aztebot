@@ -4,30 +4,39 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/RazvanBerbece/Aztebot/internal/bot-service/api/member"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/bwmarrin/discordgo"
 )
 
 func Any(s *discordgo.Session, m *discordgo.MessageCreate) {
 
+	messageCreatorUserId := m.Author.ID
+
 	// Ignore all messages created by the bot itself
-	if m.Author.ID == s.State.User.ID {
+	if messageCreatorUserId == s.State.User.ID {
 		return
 	}
 
 	// Increase stats for user
-	err := globalsRepo.UserStatsRepository.IncrementMessagesSentForUser(m.Author.ID)
+	err := globalsRepo.UserStatsRepository.IncrementMessagesSentForUser(messageCreatorUserId)
 	if err != nil {
-		fmt.Printf("An error ocurred while updating user (%s) message count: %v", m.Author.ID, err)
+		fmt.Printf("An error ocurred while updating user (%s) message count: %v", messageCreatorUserId, err)
 	}
 
-	err = globalsRepo.UserStatsRepository.IncrementActivitiesTodayForUser(m.Author.ID)
+	err = globalsRepo.UserStatsRepository.IncrementActivitiesTodayForUser(messageCreatorUserId)
 	if err != nil {
-		fmt.Printf("An error ocurred while incrementing user (%s) activities count: %v", m.Author.ID, err)
+		fmt.Printf("An error ocurred while incrementing user (%s) activities count: %v", messageCreatorUserId, err)
 	}
-	err = globalsRepo.UserStatsRepository.UpdateLastActiveTimestamp(m.Author.ID, time.Now().Unix())
+	err = globalsRepo.UserStatsRepository.UpdateLastActiveTimestamp(messageCreatorUserId, time.Now().Unix())
 	if err != nil {
-		fmt.Printf("An error ocurred while udpating user (%s) last timestamp: %v", m.Author.ID, err)
+		fmt.Printf("An error ocurred while updating user (%s) last timestamp: %v", m.Author.ID, err)
+	}
+
+	// Grant experience points
+	currentXp, err := member.GrantMemberExperience(messageCreatorUserId, "MSG_REWARD", nil)
+	if err != nil {
+		fmt.Printf("An error ocurred while granting message rewards (%d) to user (%s): %v", currentXp, messageCreatorUserId, err)
 	}
 
 }

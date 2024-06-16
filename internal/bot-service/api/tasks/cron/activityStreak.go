@@ -43,18 +43,18 @@ func UpdateActivityStreaks(usersRepository *repositories.UsersRepository, userSt
 
 	uids, err := usersRepository.GetAllDiscordUids()
 	if err != nil {
-		fmt.Println("[CRON]Failed Task UpdateActivityStreaks() at", time.Now(), "with error", err)
+		fmt.Println("[CRON] Failed Task UpdateActivityStreaks() at", time.Now(), "with error", err)
 	}
 
 	// For all users in the database
-	fmt.Println("[CRON]Checkpoint Task UpdateActivityStreaks() at", time.Now(), "-> Updating", len(uids), "streaks")
+	fmt.Println("[CRON] Checkpoint Task UpdateActivityStreaks() at", time.Now(), "-> Updating", len(uids), "streaks")
 	for _, uid := range uids {
 		stats, err := userStatsRepository.GetStatsForUser(uid)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				continue
 			}
-			fmt.Println("[CRON]Failed Task UpdateActivityStreaks() at", time.Now(), "for UID", "with error", err)
+			fmt.Println("[CRON] Failed Task UpdateActivityStreaks() at", time.Now(), "for UID", "with error", err)
 		}
 
 		// lastActiveSince smaller than 24 (which means did an action in the last 24 hours)
@@ -73,19 +73,19 @@ func UpdateActivityStreaks(usersRepository *repositories.UsersRepository, userSt
 		if lastActiveSince.Hours() < 24 && stats.NumberActivitiesToday > activityThreshold {
 			err := userStatsRepository.IncrementActiveDayStreakForUser(uid)
 			if err != nil {
-				fmt.Println("[CRON]Failed Task UpdateActivityStreaks() at", time.Now(), "with error", err)
+				fmt.Println("[CRON] Failed Task UpdateActivityStreaks() at", time.Now(), "with error", err)
 			}
 		} else {
 			err := userStatsRepository.ResetActiveDayStreakForUser(uid)
 			if err != nil {
-				fmt.Println("[CRON]Failed Task UpdateActivityStreaks() at", time.Now(), "with error", err)
+				fmt.Println("[CRON] Failed Task UpdateActivityStreaks() at", time.Now(), "with error", err)
 			}
 		}
 
 		// Reset the activity count for the next day
 		err = userStatsRepository.ResetActivitiesTodayForUser(uid)
 		if err != nil {
-			fmt.Println("[CRON]Failed Task UpdateActivityStreaks() at", time.Now(), "with error", err)
+			fmt.Println("[CRON] Failed Task UpdateActivityStreaks() at", time.Now(), "with error", err)
 		}
 	}
 
