@@ -65,6 +65,10 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		Description: "Roll a 6-sided dice and try your luck.",
 	},
 	{
+		Name:        "sizzling",
+		Description: "Generates a slot machine to use on a text channel.",
+	},
+	{
 		Name:        "warn",
 		Description: "Gives a warning (with a provided reason message) to the user with the given ID.",
 		Options: []*discordgo.ApplicationCommandOption{
@@ -510,6 +514,7 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"you":                   profileSlashHandlers.HandleSlashYou,
 	"set-gender":            profileSlashHandlers.HandleSlashSetGender,
 	"dice":                  gamesSlashHandlers.HandleSlashDice,
+	"sizzling":              gamesSlashHandlers.HandleSlashNewSizzlingSlot,
 	"help":                  serverSlashHandlers.HandleSlashAztebotHelp,
 	"top5user":              serverSlashHandlers.HandleSlashTop5Users,
 	"top":                   serverSlashHandlers.HandleSlashTop,
