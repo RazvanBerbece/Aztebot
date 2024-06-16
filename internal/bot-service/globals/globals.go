@@ -31,6 +31,7 @@ var FavourableActivitiesThreshold, FavourableActivitiesThresholdErr = strconv.At
 // =============== RUNTIME VARIABLES (BOT APPLICATIONS) ===============
 var VoiceSessions = make(map[string]time.Time)
 var StreamSessions = make(map[string]*time.Time)
+var LastUsedTopTimestamp = time.Now().Add(-60 * time.Minute)
 
 // =============== RUNTIME VARIABLES (SLASH COMMANDS) ===============
 var AztebotRegisteredCommands []*discordgo.ApplicationCommand

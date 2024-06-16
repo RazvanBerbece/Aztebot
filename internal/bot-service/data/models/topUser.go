@@ -11,3 +11,9 @@ type TopUserVC struct {
 	UserId         string
 	TimeSpentInVCs int // in seconds
 }
+
+type TopUserADS struct {
+	DiscordTag string
+	UserId     string
+	Streak     int // in days
+}
