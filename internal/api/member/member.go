@@ -16,7 +16,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func IsStaff(userId string) bool {
+func IsStaff(userId string, staffRoles []string) bool {
 
 	roles, err := globalsRepo.UsersRepository.GetRolesForUser(userId)
 	if err != nil {
@@ -24,7 +24,7 @@ func IsStaff(userId string) bool {
 	}
 
 	for _, role := range roles {
-		if utils.RoleIsStaffRole(role.Id) {
+		if utils.StringInSlice(role.DisplayName, staffRoles) {
 			return true
 		}
 	}
@@ -52,23 +52,39 @@ func DeleteAllMemberData(userId string) error {
 	err := globalsRepo.UserStatsRepository.DeleteUserStats(userId)
 	if err != nil {
 		fmt.Printf("Error deleting member %s stats from DB: %v", userId, err)
+		return err
 	}
 	err = globalsRepo.UsersRepository.DeleteUser(userId)
 	if err != nil {
 		fmt.Printf("Error deleting user %s from DB: %v", userId, err)
+		return err
 	}
 	err = globalsRepo.WarnsRepository.DeleteAllWarningsForUser(userId)
 	if err != nil {
 		fmt.Printf("Error deleting user %s warnings from DB: %v", userId, err)
+		return err
 	}
 	err = globalsRepo.TimeoutsRepository.ClearTimeoutForUser(userId)
 	if err != nil {
 		fmt.Printf("Error deleting user %s active timeouts from DB: %v", userId, err)
+		return err
 	}
 	err = globalsRepo.TimeoutsRepository.ClearArchivedTimeoutsForUser(userId)
 	if err != nil {
 		fmt.Printf("Error deleting user %s archived timeouts from DB: %v", userId, err)
+		return err
 	}
+	err = globalsRepo.MonthlyLeaderboardRepository.DeleteEntry(userId)
+	if err != nil {
+		fmt.Printf("Error deleting user %s monthly leaderboard entry from DB: %v", userId, err)
+		return err
+	}
+	err = globalsRepo.JailRepository.RemoveUserFromJail(userId)
+	if err != nil {
+		fmt.Printf("Error deleting user %s jail entry from DB: %v", userId, err)
+		return err
+	}
+
 	return nil
 }
 
@@ -319,7 +335,7 @@ func AddRolesToDiscordUser(s *discordgo.Session, guildId string, userId string, 
 			}
 
 			// If a staff role, add a default 'STAFF' role as well
-			if utils.RoleIsStaffRole(roleId) {
+			if utils.StringInSlice(role.DisplayName, globals.StaffRoles) {
 				discordDefaultStaffRoleId := GetDiscordRoleIdForRoleWithName(s, guildId, "STAFF")
 				if discordDefaultStaffRoleId != nil {
 					err = s.GuildMemberRoleAdd(guildId, userId, *discordDefaultStaffRoleId)
@@ -523,19 +539,20 @@ func ClearMemberActiveTimeout(s *discordgo.Session, guildId string, userId strin
 
 }
 
+// TODO: Implement timeout appeals in private DMs between bot application and guild member.
 func AppealTimeout(guildId string, userId string) error {
 
 	activeTimeout, _, err := GetMemberTimeouts(userId)
 	if err != nil {
-		timeoutError := fmt.Errorf("an error ocurred while retrieving timeout data for user with ID %s: %v\n", userId, err)
+		timeoutError := fmt.Errorf("an error ocurred while retrieving timeout data for user with ID %s: %v", userId, err)
 		return timeoutError
 	}
 
 	if activeTimeout == nil {
-		return fmt.Errorf("no active timeout was found for user with ID `%s`\n", userId)
+		return fmt.Errorf("no active timeout was found for user with ID `%s`", userId)
 	}
 
-	// TODO
+	// TODO: Etc etc.
 
 	return nil
 
@@ -697,7 +714,6 @@ func SetGender(userId string, genderValue string) error {
 		if err != nil {
 			return err
 		}
-
 	}
 
 	return nil
@@ -708,7 +724,7 @@ func JailMember(s *discordgo.Session, guildId string, userId string, reason stri
 
 	var err error
 
-	// Make sure that a user can't be jailed twice
+	// Ensure that a user won't be jailed twice
 	isJailedResult := globalsRepo.JailRepository.UserIsJailed(userId)
 	if isJailedResult <= 0 {
 		if isJailedResult == -1 {

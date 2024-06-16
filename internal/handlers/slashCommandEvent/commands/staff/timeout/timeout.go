@@ -140,6 +140,7 @@ func sendTimeoutNotification(s *discordgo.Session, channelId string, targetUserI
 	}
 
 	notificationTitle := fmt.Sprintf("`/timeout` given to User with UID `%s`", targetUserId)
-	notifications.SendNotificationToTextChannel(s, channelId, notificationTitle, fields, true)
+
+	go notifications.SendNotificationToTextChannel(s, channelId, notificationTitle, fields, true)
 
 }

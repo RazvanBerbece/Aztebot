@@ -2,6 +2,7 @@ package rolesService
 
 import (
 	dataModels "github.com/RazvanBerbece/Aztebot/internal/data/models"
+	"github.com/RazvanBerbece/Aztebot/internal/globals"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 )
 
@@ -15,10 +16,10 @@ func GetHighestRoles(roles []dataModels.Role) (*dataModels.Role, *dataModels.Rol
 	var highestOrderRole *dataModels.Role
 
 	for idx, role := range roles {
-		if utils.RoleIsStaffRole(role.Id) && idx > highestStaffIdx {
+		if utils.StringInSlice(role.DisplayName, globals.StaffRoles) && idx > highestStaffIdx {
 			highestStaffIdx = idx
 			highestStaffRole = &roles[highestStaffIdx]
-		} else if !utils.RoleIsStaffRole(role.Id) && idx > highestOrderIdx {
+		} else if !utils.StringInSlice(role.DisplayName, globals.StaffRoles) && idx > highestOrderIdx {
 			highestOrderIdx = idx
 			highestOrderRole = &roles[highestOrderIdx]
 		}

@@ -74,6 +74,24 @@ func LoadStaticDiscordChannels() {
 		}
 	}
 
+	if globals.Environment == "staging" {
+		// Dev default text channels
+		globals.DefaultInformationChannels = map[string]string{
+			"1188135110042734613": "default",
+			"1194451477192773773": "staff-rules",
+			"1198686819928264784": "server-rules",
+			"1205859615406030868": "legends",
+		}
+	} else {
+		// Production default text channels
+		globals.DefaultInformationChannels = map[string]string{
+			"1176277764001767464": "info-music",
+			"1100486860058398770": "staff-rules",
+			"1100142572141281460": "server-rules",
+			"1100762035450544219": "legends",
+		}
+	}
+
 }
 
 // Load the available notification channels in the global map.

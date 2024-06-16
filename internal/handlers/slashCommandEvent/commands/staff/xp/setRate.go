@@ -120,7 +120,7 @@ func sendXpRateChangeNotification(s *discordgo.Session, channelId string, activi
 
 	embed.AtTagEveryone()
 
-	notifications.SendEmbedToTextChannel(s, channelId, *embed)
+	go notifications.SendEmbedToTextChannel(s, channelId, *embed)
 
 }
 
