@@ -91,7 +91,9 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 
 	// Send response embed
 	embed := embed.NewEmbed().
+		SetAuthor("AzteBot", "https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		SetTitle(fmt.Sprintf("🤖   Updated Global XP Rate For `%s`", activityName)).
+		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
 		SetColor(000000).
 		AddField(fmt.Sprintf("New gain rate is `%s`.", multiplierName), "", false)
 
@@ -110,6 +112,7 @@ func sendXpRateChangeNotification(channelId string, activityName string, multipl
 	embed := embed.
 		NewEmbed().
 		SetTitle("🤖📣	Global XP Rate Change Announcement").
+		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
 		SetColor(000000).
 		SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg")
 

@@ -14,4 +14,6 @@ type NotificationEvent struct {
 	ActionRow       *discordgo.ActionsRow
 	TextData        *string
 	UseThumbnail    *bool
+	AuthorName      *string
+	AuthorAvatarURL *string
 }

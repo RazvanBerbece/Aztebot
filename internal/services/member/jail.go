@@ -84,6 +84,7 @@ func JailMember(s *discordgo.Session, guildId string, userId string, reason stri
 
 	// Send notification about jailing on designated channel
 	notificationEmbed := embed.NewEmbed().
+		SetAuthor("AzteBot", "https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		SetTitle("👮🏽‍♀️⛓️    A New Prisoner Has Arrived").
 		AddField("Known As", user.DiscordTag, false).
 		AddField("Convicted Because", reason, false).
@@ -161,6 +162,7 @@ func UnjailMember(s *discordgo.Session, guildId string, userId string, jailRoleN
 
 	// Send notification about unjailing on designated channel
 	notificationEmbed := embed.NewEmbed().
+		SetAuthor("AzteBot", "https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		SetTitle("👮🏽‍♀️⛓️    A Prisoner Has Been Released !").
 		AddField("Known As", user.DiscordTag, false).
 		AddField("Convicted Because", jailedUser.Reason, false).

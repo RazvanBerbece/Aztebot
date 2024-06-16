@@ -19,7 +19,9 @@ func HandleNotificationEvents(s *discordgo.Session) {
 				notificationEvent.TargetChannelId,
 				*notificationEvent.Title,
 				notificationEvent.Fields,
-				*notificationEvent.UseThumbnail)
+				*notificationEvent.UseThumbnail,
+				notificationEvent.AuthorName,
+				notificationEvent.AuthorAvatarURL)
 			if err != nil {
 				fmt.Printf("Failed to process NotificationEvent (%s): %v\n", notificationEvent.Type, err)
 			}
@@ -38,7 +40,9 @@ func HandleNotificationEvents(s *discordgo.Session) {
 				*notificationEvent.Title,
 				notificationEvent.Fields,
 				*notificationEvent.ActionRow,
-				*notificationEvent.UseThumbnail)
+				*notificationEvent.UseThumbnail,
+				notificationEvent.AuthorName,
+				notificationEvent.AuthorAvatarURL)
 			if err != nil {
 				fmt.Printf("An error ocurred while sending confession approval notification: %v\n", err)
 				return

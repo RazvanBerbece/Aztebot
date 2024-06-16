@@ -129,6 +129,7 @@ func GetProfileEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Me
 		SetDescription(fmt.Sprintf("`%s%s CIRCLE%s`", orderRoleText, user.CurrentCircle, orderText)).
 		SetThumbnail(fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.png", userId, apiUser.Avatar)).
 		SetColor(000000).
+		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
 		AddLineBreakField()
 
 	if userCreatedTimeString != "" && highestOrderRole != nil {

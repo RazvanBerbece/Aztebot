@@ -30,7 +30,8 @@ func HandleSlashAztebotHelp(s *discordgo.Session, i *discordgo.InteractionCreate
 
 func sendHelpGuideToUser(userId string) string {
 
-	embed := embed.NewEmbed().
+	embedToSend := embed.NewEmbed().
+		SetAuthor("AzteBot", "https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		SetTitle("🤖   Command Guide").
 		SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		SetColor(000000)
@@ -50,22 +51,32 @@ func sendHelpGuideToUser(userId string) string {
 			}
 		}
 
-		if utils.StringInSlice(cmd.Name, globalConfiguration.RestrictedCommands) || utils.StringInSlice(cmd.Name, globalConfiguration.StaffCommands) {
-			// If a restricted or staff command, do not show
+		if utils.StringInSlice(cmd.Name, globalConfiguration.RestrictedCommands) {
+			// don't show restricted commands
 			if member.IsStaff(userId, globalConfiguration.StaffRoles) {
-				// unless a member of staff executed the command
-				embed.AddField(fmt.Sprintf("%s *(staff command)*", title), cmd.Description, false)
+				// unless a member of staff ran the /help handler
+				enrichedTitle := fmt.Sprintf("%s *(higher staff command)*", title)
+				embedToSend.AddField(enrichedTitle, cmd.Description, false)
+			} else {
+				continue
+			}
+		} else if utils.StringInSlice(cmd.Name, globalConfiguration.StaffCommands) {
+			if member.IsStaff(userId, globalConfiguration.StaffRoles) {
+				enrichedTitle := fmt.Sprintf("%s *(staff command)*", title)
+				embedToSend.AddField(enrichedTitle, cmd.Description, false)
 			} else {
 				continue
 			}
 		} else {
-			embed.AddField(title, cmd.Description, false)
+			embedToSend.AddField(title, cmd.Description, false)
 		}
 	}
 
+	paginationRow := embed.GetPaginationActionRowForEmbed(globalMessaging.PreviousPageOnEmbedEventId, globalMessaging.NextPageOnEmbedEventId)
 	globalMessaging.DirectMessagesChannel <- events.DirectMessageEvent{
-		UserId: userId,
-		Embed:  embed,
+		UserId:        userId,
+		Embed:         embedToSend,
+		PaginationRow: &paginationRow,
 	}
 
 	return "You should have received a help guide for the `AzteBot` in your DMs."
