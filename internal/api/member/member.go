@@ -259,7 +259,7 @@ func GiveDiscordRoleToMember(s *discordgo.Session, guildId string, userId string
 	// Add the role by role ID to the Discord member
 	err := s.GuildMemberRoleAdd(guildId, userId, *discordRoleId)
 	if err != nil {
-		fmt.Println("Error adding giving to Discord member:", err)
+		fmt.Println("Error giving role to Discord member:\n", err)
 		return err
 	}
 
@@ -278,7 +278,7 @@ func RemoveDiscordRoleFromMember(s *discordgo.Session, guildId string, userId st
 	// Remove the role by role ID from the Discord member
 	err := s.GuildMemberRoleRemove(guildId, userId, *discordRoleId)
 	if err != nil {
-		fmt.Println("Error adding giving to Discord member:", err)
+		fmt.Println("Error removing role from Discord member:\n", err)
 		return err
 	}
 
@@ -771,7 +771,7 @@ func UnjailMember(s *discordgo.Session, guildId string, userId string, jailRoleN
 	notificationEmbed := embed.NewEmbed().
 		SetTitle("👮🏽‍♀️⛓️    A Prisoner Has Been Released !").
 		AddField("Known As", user.DiscordTag, false).
-		AddField("Conviction Because", jailedUser.Reason, false).
+		AddField("Convicted Because", jailedUser.Reason, false).
 		AddField("Completed Release Task", jailedUser.TaskToComplete, false).
 		AddField("Convincted At", utils.FormatUnixAsString(jailedUser.JailedAt, "Mon, 02 Jan 2006 15:04:05 MST"), false)
 
