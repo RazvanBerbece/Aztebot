@@ -26,6 +26,9 @@ var MySqlRootConnectionString = os.Getenv("DB_ROOT_CONNSTRING") // in MySQL form
 var RestrictedCommands = strings.Split(os.Getenv("RESTRICTED_COMMANDS"), ",")
 var AllowedRoles = strings.Split(os.Getenv("ALLOWED_ROLES"), ",")
 
+var StaffCommands = strings.Split(os.Getenv("STAFF_COMMANDS"), ",")
+var StaffRoles = strings.Split(os.Getenv("STAFF_ROLES"), ",")
+
 var FavourableActivitiesThreshold, FavourableActivitiesThresholdErr = strconv.Atoi(os.Getenv("FAVOURABLE_ACTIVITIES_THRESHOLD"))
 
 var UpdateVoiceStateFrequency, UpdateVoiceStateFrequencyErr = strconv.Atoi(os.Getenv("UPDATE_VOICE_STATE_DURATIONS_FREQUENCY"))

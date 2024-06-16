@@ -26,13 +26,12 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	// Input validation
 	if !utils.IsValidDiscordUserId(targetUserId) {
 		errMsg := fmt.Sprintf("The provided `user-id` command argument is invalid. (term: `%s`)", targetUserId)
-		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
+		utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
 		return
 	}
-
 	if !utils.IsValidReasonMessage(reason) {
 		errMsg := fmt.Sprintf("The provided `reason` command argument is invalid. (term: `%s`)", reason)
-		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
+		utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
 		return
 	}
 

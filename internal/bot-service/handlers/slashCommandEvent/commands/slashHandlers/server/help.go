@@ -49,8 +49,8 @@ func sendHelpGuideToUser(s *discordgo.Session, i *discordgo.InteractionCreate, u
 			}
 		}
 
-		if utils.StringInSlice(cmd.Name, globals.RestrictedCommands) {
-			// If a restricted command, do not show
+		if utils.StringInSlice(cmd.Name, globals.RestrictedCommands) || utils.StringInSlice(cmd.Name, globals.StaffCommands) {
+			// If a restricted or staff command, do not show
 			if member.IsStaffMember(userId) {
 				// unless a member of staff executed the command
 				embed.AddField(fmt.Sprintf("%s *(staff command)*", title), cmd.Description, false)

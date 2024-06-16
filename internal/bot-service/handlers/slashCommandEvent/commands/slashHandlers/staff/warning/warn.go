@@ -18,6 +18,17 @@ func HandleSlashWarn(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	targetUserId := i.ApplicationCommandData().Options[0].StringValue()
 	reason := i.ApplicationCommandData().Options[1].StringValue()
 
+	if !utils.IsValidDiscordUserId(targetUserId) {
+		errMsg := fmt.Sprintf("The provided `user-id` command argument is invalid. (term: `%s`)", targetUserId)
+		utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
+		return
+	}
+	if !utils.IsValidReasonMessage(reason) {
+		errMsg := fmt.Sprintf("The provided `reason` command argument is invalid. (term: `%s`)", reason)
+		utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
+		return
+	}
+
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
