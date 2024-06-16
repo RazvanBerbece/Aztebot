@@ -196,11 +196,7 @@ func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, m
 			return err
 		}
 
-		err = syncProgressionForUser(s, guildId, userId, user.CurrentExperience, userStats.NumberMessagesSent, userStats.TimeSpentInVoiceChannels, defaultOrderRoleNames)
-		if err != nil {
-			log.Println("Error syncing progression for user", userId, err)
-			return err
-		}
+		go syncProgressionForUser(s, guildId, userId, user.CurrentExperience, userStats.NumberMessagesSent, userStats.TimeSpentInVoiceChannels, defaultOrderRoleNames)
 
 		return nil
 	}
@@ -226,7 +222,7 @@ func syncProgressionForUser(s *discordgo.Session, userGuildId string, userId str
 	}
 
 	// Solve mismatches where the member has a rank on the server but shouldn't
-	// according to the progression rules
+	// according to the progression rules (type 1, 2, 3)
 	if processedLevel == 0 && processedRoleName == "" && len(currentOrderRoles) > 0 {
 		// mismatch, need to reset
 		err := globalRepositories.UsersRepository.SetLevel(userId, processedLevel)
@@ -254,13 +250,10 @@ func syncProgressionForUser(s *discordgo.Session, userGuildId string, userId str
 		fmt.Printf("Mismatch (type 1) for %s resolved.\n", user.DiscordTag)
 
 		return nil
-	}
-
-	// Solve mismatches where the member has a rank on the server but their
-	// actual non-zero rank is different
-	if processedLevel > 0 && processedRoleName != "" && len(currentOrderRoles) == 1 {
+	} else if processedLevel > 0 && processedRoleName != "" && len(currentOrderRoles) == 1 {
 		if currentOrderRoles[0].DisplayName != processedRoleName {
-			// mismatch, need to reset
+			// Solve mismatches where the member has a rank on the server but their
+			// actual non-zero rank is different (type 2)
 			err := globalRepositories.UsersRepository.SetLevel(userId, processedLevel)
 			if err != nil {
 				fmt.Printf("Error occurred while setting member level in DB: %v\n", err)
@@ -296,12 +289,9 @@ func syncProgressionForUser(s *discordgo.Session, userGuildId string, userId str
 
 			return nil
 		}
-	}
-
-	// Solve mismatches where the member has multiple ranks on the server but their
-	// actual non-zero rank is different
-	if processedLevel > 0 && processedRoleName != "" && len(currentOrderRoles) > 1 {
-
+	} else if processedLevel > 0 && processedRoleName != "" && len(currentOrderRoles) > 1 {
+		// Solve mismatches where the member has multiple ranks on the server but their
+		// actual non-zero rank is different (type 3)
 		for _, role := range currentOrderRoles {
 			if role.DisplayName != processedRoleName {
 				err = globalRepositories.UsersRepository.RemoveUserRoleWithId(userId, role.Id)
