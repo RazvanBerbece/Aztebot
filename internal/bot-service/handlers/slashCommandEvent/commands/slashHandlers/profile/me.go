@@ -1,7 +1,6 @@
 package profile
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"time"
@@ -81,13 +80,8 @@ func GetProfileEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Me
 	// Setup user stats if the user doesn't have an entity in UserStats
 	stats, errStats := globalsRepo.UserStatsRepository.GetStatsForUser(userId)
 	if errStats != nil {
-		if errStats == sql.ErrNoRows {
-			errStatsInit := globalsRepo.UserStatsRepository.SaveInitialUserStats(userId)
-			if errStatsInit != nil {
-				log.Fatalf("Cannot store initial user %s stats: %v", user.DiscordTag, errStatsInit)
-				return nil
-			}
-		}
+		log.Fatalf("Cannot retrieve user %s stats: %v", user.DiscordTag, errStats)
+		return nil
 	}
 
 	// Process the time spent in VCs in a nice format
