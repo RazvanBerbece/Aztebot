@@ -71,7 +71,6 @@ jobs:
       - name: 'Docker build'
         run: |
           docker build \
-          --build-arg db_conn_string="${{ env.DB_ROOT_CONNSTRING_TCP_PRIVATE }}" \
           --tag "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}" -f cmd/bot-service/Dockerfile .
 
       - name: 'Docker push'

@@ -5,10 +5,6 @@ FROM golang:1.20
 
 WORKDIR /app
 
-# Required environment variables setup
-ARG db_conn_string
-ENV DB_ROOT_CONNSTRING="$db_conn_string"
-
 # Install project dependencies
 RUN apt-get update && apt-get install -y iputils-ping && apt install -y make
 COPY go.mod go.sum ./
