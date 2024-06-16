@@ -125,7 +125,7 @@ func SyncUserPersistent(s *discordgo.Session, guildId string, userId string, mem
 }
 
 // Takes in a discord member and syncs the database User with the current member details
-// as they appear on the Discord guild. This function creates new DB connections.
+// as they appear on the Discord guild. This function uses the shared global DB connections.
 func SyncUser(s *discordgo.Session, guildId string, userId string, member *discordgo.Member) error {
 
 	user, err := globalsRepo.UsersRepository.GetUser(userId)
@@ -201,12 +201,11 @@ func SyncUser(s *discordgo.Session, guildId string, userId string, member *disco
 			user.CurrentInnerOrder = &maxInnerOrderId
 		}
 
-		updatedUser, updateErr := globalsRepo.UsersRepository.UpdateUser(*user)
+		_, updateErr := globalsRepo.UsersRepository.UpdateUser(*user)
 		if updateErr != nil {
 			log.Println("Error updating user in DB:", err)
 			return err
 		}
-		fmt.Printf("Synced user %s\n", updatedUser.DiscordTag)
 
 		return nil
 	}

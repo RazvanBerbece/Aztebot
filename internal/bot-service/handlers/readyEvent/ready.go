@@ -2,12 +2,14 @@ package readyEvent
 
 import (
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/data/repositories"
 	"github.com/RazvanBerbece/Aztebot/internal/bot-service/globals"
 	globalsRepo "github.com/RazvanBerbece/Aztebot/internal/bot-service/globals/repo"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/logging"
+	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -20,6 +22,12 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	s.UpdateGameStatus(0, "/help")
 
 	// Other setups
+
+	// Initial sync of members on server with the database
+	go SyncUsersAtStartup(s, globalsRepo.RolesRepository, globalsRepo.UsersRepository, globalsRepo.UserStatsRepository)
+
+	// Initial cleanup of members from database against the Discord server
+	go CleanupMemberAtStartup(s, globalsRepo.UsersRepository, globalsRepo.UserStatsRepository)
 
 	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, XP gaining, etc.)
 	initialDelay, activityTicker := getDelayAndTickerForActivityStreakCron(24, 0, 0) // H, m, s
@@ -43,6 +51,84 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 			cleanupCronRepositories(nil, usersRepository, userStatsRepository)
 		}
 	}()
+
+}
+
+func SyncUsersAtStartup(s *discordgo.Session, rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository) error {
+
+	fmt.Println("Starting Task SyncUsersAtStartup() at", time.Now())
+
+	// Retrieve all members in the guild
+	members, err := s.GuildMembers(globals.DiscordMainGuildId, "", 1000)
+	if err != nil {
+		fmt.Println("Failed Task SyncUsersAtStartup() at", time.Now(), "with error", err)
+		return err
+	}
+
+	// Process the current batch of members
+	processMembers(s, members, rolesRepository, usersRepository, userStatsRepository)
+
+	// Paginate
+	for len(members) == 1000 {
+		// Set the 'After' parameter to the ID of the last member in the current batch
+		lastMemberID := members[len(members)-1].User.ID
+		members, err = s.GuildMembers(globals.DiscordMainGuildId, lastMemberID, 1000)
+		if err != nil {
+			fmt.Println("Failed Task SyncUsersAtStartup() at", time.Now(), "with error", err)
+			return err
+		}
+
+		// Process the next batch of members
+		processMembers(s, members, rolesRepository, usersRepository, userStatsRepository)
+	}
+
+	fmt.Println("Finished Task SyncUsersAtStartup() at", time.Now())
+
+	return nil
+
+}
+
+func CleanupMemberAtStartup(s *discordgo.Session, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository) error {
+
+	fmt.Println("Starting Task CleanupMemberAtStartup() at", time.Now())
+
+	// Retrieve all members from the DB
+	uids, err := usersRepository.GetAllDiscordUids()
+	if err != nil {
+		fmt.Println("Failed Task CleanupMemberAtStartup() at", time.Now(), "with error", err)
+		return err
+	}
+
+	// For each tag in the DB, delete user from table
+	uidsLength := len(uids)
+	var wg sync.WaitGroup
+	wg.Add(uidsLength)
+	for i := 0; i < uidsLength; i++ {
+		go func(i int) {
+			defer wg.Done()
+			uid := uids[i]
+			_, err := s.GuildMember(globals.DiscordMainGuildId, uid)
+			if err != nil {
+				// if the member does not exist on the main server, delete from the database
+				// delete user stats
+				err := userStatsRepository.DeleteUserStats(uid)
+				if err != nil {
+					fmt.Println("Failed Task CleanupUsersInCron() at", time.Now(), "with error", err)
+					return
+				}
+				// delete user
+				errUsers := usersRepository.DeleteUser(uid)
+				if errUsers != nil {
+					fmt.Println("Failed Task CleanupUsersInCron() at", time.Now(), "with error", errUsers)
+					return
+				}
+			}
+		}(i)
+	}
+
+	fmt.Println("Finished Task CleanupMemberAtStartup() at", time.Now())
+
+	return nil
 
 }
 
@@ -130,4 +216,19 @@ func cleanupCronRepositories(rolesRepository *repositories.RolesRepository, user
 		userStatsRepository.Conn.Db.Close()
 	}
 
+}
+
+func processMembers(s *discordgo.Session, members []*discordgo.Member, rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository) {
+	// Your logic to process members goes here
+	for _, member := range members {
+		// If it's a bot, skip
+		if member.User.Bot {
+			continue
+		}
+		// For each member, sync their details (either add to DB or update)
+		err := utils.SyncUserPersistent(s, globals.DiscordMainGuildId, member.User.ID, member, rolesRepository, usersRepository, userStatsRepository)
+		if err != nil {
+			fmt.Printf("Error syncinc member %s: %v", member.User.Username, err)
+		}
+	}
 }

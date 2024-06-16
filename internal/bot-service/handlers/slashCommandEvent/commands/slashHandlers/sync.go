@@ -61,12 +61,12 @@ func ProcessUserUpdate(userId string, s *discordgo.Session, event *discordgo.Int
 			}
 			roleDax, err := globalsRepo.RolesRepository.GetRole(userRoleObj.Name)
 			if err != nil {
-				log.Printf("Error getting role %s from DB: %v", userRoleObj.Name, err)
 				if err == sql.ErrNoRows {
 					// This will probably be a role which is assigned to the three orders or something, so we can ignore
 					// and move on to the other roles of the user
 					continue
 				} else {
+					log.Printf("Error getting role %s from DB: %v", userRoleObj.Name, err)
 					return err
 				}
 			} else {
