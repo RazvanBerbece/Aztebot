@@ -24,12 +24,12 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	// Other setups
 
 	// Initial sync of members on server with the database
-	go SyncUsersAtStartup(s, globalsRepo.RolesRepository, globalsRepo.UsersRepository, globalsRepo.UserStatsRepository)
+	go SyncUsersAtStartup(s)
 
 	// Initial cleanup of members from database against the Discord server
-	go CleanupMemberAtStartup(s, globalsRepo.UsersRepository, globalsRepo.UserStatsRepository)
+	go CleanupMemberAtStartup(s)
 
-	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, XP gaining, etc.)
+	// CRON FUNCTIONS FOR VARIOUS FEATURES (like activity streaks, XP gaining?, etc.)
 	initialDelay, activityTicker := getDelayAndTickerForActivityStreakCron(24, 0, 0) // H, m, s
 	go func() {
 
@@ -48,15 +48,20 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 			UpdateActivityStreaks(usersRepository, userStatsRepository)
 
 			// Cleanup DB connections after cron run
-			cleanupCronRepositories(nil, usersRepository, userStatsRepository)
+			cleanupRepositories(nil, usersRepository, userStatsRepository)
 		}
 	}()
 
 }
 
-func SyncUsersAtStartup(s *discordgo.Session, rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository) error {
+func SyncUsersAtStartup(s *discordgo.Session) error {
 
 	fmt.Println("Starting Task SyncUsersAtStartup() at", time.Now())
+
+	// Inject new connections
+	rolesRepository := repositories.NewRolesRepository()
+	usersRepository := repositories.NewUsersRepository()
+	userStatsRepository := repositories.NewUsersStatsRepository()
 
 	// Retrieve all members in the guild
 	members, err := s.GuildMembers(globals.DiscordMainGuildId, "", 1000)
@@ -82,15 +87,22 @@ func SyncUsersAtStartup(s *discordgo.Session, rolesRepository *repositories.Role
 		processMembers(s, members, rolesRepository, usersRepository, userStatsRepository)
 	}
 
+	// Cleanup
+	cleanupRepositories(rolesRepository, usersRepository, userStatsRepository)
+
 	fmt.Println("Finished Task SyncUsersAtStartup() at", time.Now())
 
 	return nil
 
 }
 
-func CleanupMemberAtStartup(s *discordgo.Session, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository) error {
+func CleanupMemberAtStartup(s *discordgo.Session) error {
 
 	fmt.Println("Starting Task CleanupMemberAtStartup() at", time.Now())
+
+	// Inject new connections
+	usersRepository := repositories.NewUsersRepository()
+	userStatsRepository := repositories.NewUsersStatsRepository()
 
 	// Retrieve all members from the DB
 	uids, err := usersRepository.GetAllDiscordUids()
@@ -125,6 +137,10 @@ func CleanupMemberAtStartup(s *discordgo.Session, usersRepository *repositories.
 			}
 		}(i)
 	}
+	wg.Wait()
+
+	// Cleanup
+	cleanupRepositories(nil, usersRepository, userStatsRepository)
 
 	fmt.Println("Finished Task CleanupMemberAtStartup() at", time.Now())
 
@@ -202,7 +218,7 @@ func getDelayAndTickerForActivityStreakCron(hour int, minute int, second int) (t
 
 }
 
-func cleanupCronRepositories(rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository) {
+func cleanupRepositories(rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository) {
 
 	if rolesRepository != nil {
 		rolesRepository.Conn.Db.Close()
