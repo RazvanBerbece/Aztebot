@@ -13,7 +13,6 @@ import (
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/logging"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
-	"github.com/schollz/progressbar/v3"
 )
 
 // Called once the Discord servers confirm a succesful connection.
@@ -119,7 +118,6 @@ func CleanupMemberAtStartup(s *discordgo.Session, uids []string) error {
 	uidsLength := len(uids)
 
 	// For each tag in the DB, delete user from table
-	progressBar := progressbar.Default(int64(uidsLength), "pruning hanging users...")
 	var wg sync.WaitGroup
 	wg.Add(uidsLength)
 	for i := 0; i < uidsLength; i++ {
@@ -142,7 +140,6 @@ func CleanupMemberAtStartup(s *discordgo.Session, uids []string) error {
 					return
 				}
 			}
-			progressBar.Add(1)
 		}(i)
 	}
 	wg.Wait()
