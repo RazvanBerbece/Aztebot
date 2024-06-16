@@ -121,11 +121,6 @@ jobs:
         run: |
           kubectl get pods
       
-      - name: Cleanup stale Artifact Registry images
-        run: |
-          cd Infrastructure/scripts
-          sh clear_stale_artifact_images.sh 1
-      
       - name: Create a new GitHub release
         uses: ncipollo/release-action@v1
         with:
@@ -133,4 +128,9 @@ jobs:
           tag: ${{ steps.tag_version.outputs.new_tag }}
           name: Release ${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
+      
+      - name: Cleanup stale Artifact Registry images
+        run: |
+          cd Infrastructure/scripts
+          sh clear_stale_artifact_images.sh 1
       
