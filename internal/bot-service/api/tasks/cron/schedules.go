@@ -30,8 +30,8 @@ func GetDelayAndTickerForMonthlyLeaderboardCron(lastDay bool, hourInDay int, min
 
 	// Get last day of current month
 	year, month, _ := now.Date()
-	nextMonth := time.Date(year, month+1, 1, hourInDay, minuteInDay, secondInDay, 0, now.Location())
-	lastDayOfMonth := nextMonth.AddDate(0, 0, -1)
+	firstOfMonth := time.Date(year, month, 1, hourInDay, minuteInDay, secondInDay, 0, now.Location())
+	lastDayOfMonth := firstOfMonth.AddDate(0, 1, -1)
 
 	// TODO: Remove this check once the feature is properly tested
 	if !lastDay {

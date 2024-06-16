@@ -14,6 +14,19 @@ import (
 
 func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 
+	var afkChannels map[string]string
+	if globals.Environment == "staging" {
+		// Dev afk channels
+		afkChannels = map[string]string{
+			"1176284686297874522": "afk",
+		}
+	} else {
+		// Production afk channels
+		afkChannels = map[string]string{
+			"1212508073101627412": "afk",
+		}
+	}
+
 	var musicChannels map[string]string
 	if globals.Environment == "staging" {
 		// Dev music channels
@@ -48,6 +61,18 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 	}
 
 	userId := member.User.ID
+
+	if vs.ChannelID != "" {
+		if _, isAfkChannel := afkChannels[vs.ChannelID]; isAfkChannel {
+			if isAfkChannel {
+				// Don't register audio sessions in the AFK zones
+				delete(globals.MusicSessions, userId)
+				delete(globals.VoiceSessions, userId)
+				delete(globals.StreamSessions, userId)
+				delete(globals.DeafSessions, userId)
+			}
+		}
+	}
 
 	if vs.SelfStream && vs.ChannelID != "" {
 		// User STARTED STREAMING

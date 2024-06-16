@@ -18,7 +18,8 @@ func ProcessMonthlyLeaderboard(s *discordgo.Session, hour int, minute int, secon
 
 	go func() {
 
-		fmt.Println("[SCHEDULED CRON] Scheduled Task ExtractMonthlyLeaderboardWinners() in <", initialMonthlyLeaderboardDelay.Hours(), "> days")
+		hoursAsDays := initialMonthlyLeaderboardDelay.Hours() / 24
+		fmt.Println("[SCHEDULED CRON] Scheduled Task ExtractMonthlyLeaderboardWinners() in <", hoursAsDays, "> days")
 		time.Sleep(initialMonthlyLeaderboardDelay)
 
 		// Inject new connections
