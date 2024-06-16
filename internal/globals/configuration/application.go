@@ -1,5 +1,10 @@
 package globalConfiguration
 
+// LOGGING
+var AuditMemberJoinsInChannel = true
+var AuditRoleUpdatesInChannel = true
+var AuditPromotionStateInChannel = true
+
 // EXPERIENCE RATES
 var DefaultExperienceReward_MessageSent float64 = 1.0
 var DefaultExperienceReward_SlashCommandUsed float64 = 0.9

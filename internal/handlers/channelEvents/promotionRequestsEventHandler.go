@@ -51,6 +51,16 @@ func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []
 		if processedLevel != 0 && processedRoleName != "" && processedLevel > user.CurrentLevel {
 
 			fmt.Printf("Promoting %s to level %d (role: %s)\n", user.DiscordTag, processedLevel, processedRoleName)
+			if globalConfiguration.AuditPromotionStateInChannel {
+				if channel, channelExists := globalConfiguration.NotificationChannels["notif-debug"]; channelExists {
+					content := fmt.Sprintf("Promoting %s to level %d (role: %s)\n", user.DiscordTag, processedLevel, processedRoleName)
+					globalMessaging.NotificationsChannel <- events.NotificationEvent{
+						TargetChannelId: channel.ChannelId,
+						Type:            "DEFAULT",
+						TextData:        &content,
+					}
+				}
+			}
 
 			// Give promoted level in DB
 			err := globalRepositories.UsersRepository.SetLevel(userId, processedLevel)
