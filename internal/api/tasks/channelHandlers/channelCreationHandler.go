@@ -12,6 +12,11 @@ func HandleChannelCreationMessages(s *discordgo.Session) {
 
 	for channelEvent := range globals.ChannelCreationsChannel {
 
+		// Limit dynamic channels to a maximum of ~25, to minimise the risk of DoS by spamming VCs
+		if globals.DynamicChannelsCount >= 25 {
+			continue
+		}
+
 		categoryId, err := server.GetCategoryIdForChannel(s, channelEvent.ParentGuildId, channelEvent.ParentChannelId)
 		if err != nil {
 			fmt.Printf("Failed to handle VC creation event (get parent category): %v\n", err)
@@ -24,6 +29,8 @@ func HandleChannelCreationMessages(s *discordgo.Session) {
 			fmt.Printf("Failed to handle VC creation event (create channel): %v\n", err)
 			continue
 		}
+
+		globals.DynamicChannelsCount += 1
 
 		// and move member to it
 		err = s.GuildMemberMove(channelEvent.ParentGuildId, channelEvent.ParentMemberId, &createdChannel.ID)
