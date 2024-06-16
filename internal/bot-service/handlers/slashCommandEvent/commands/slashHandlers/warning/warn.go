@@ -18,17 +18,28 @@ func HandleSlashWarn(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	targetUserId := i.ApplicationCommandData().Options[0].StringValue()
 	reason := i.ApplicationCommandData().Options[1].StringValue()
 
+	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Embeds: utils.SimpleEmbed("🤖   Slash Command Confirmation", "Processing `/warn` command..."),
+		},
+	})
+
 	timestamp := time.Now().Unix()
-	err := GiveWarnToUserWithId(s, i, targetUserId, reason, timestamp)
-	if err != nil {
-		fmt.Printf("An error ocurred while giving warning to user: %v\n", err)
-		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{
-				Content: fmt.Sprintf("An error ocurred while giving warning to user with ID %s.", targetUserId),
-			},
-		})
-	}
+	var err error
+	go func() {
+		err := GiveWarnToUserWithId(s, i, targetUserId, reason, timestamp)
+		if err != nil {
+			fmt.Printf("An error ocurred while giving warning to user: %v\n", err)
+			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+				Type: discordgo.InteractionResponseChannelMessageWithSource,
+				Data: &discordgo.InteractionResponseData{
+					Content: fmt.Sprintf("An error ocurred while giving warning to user with ID %s.", targetUserId),
+				},
+			})
+			return
+		}
+	}()
 
 	user, err := s.User(targetUserId)
 	if err != nil {
@@ -54,12 +65,13 @@ func HandleSlashWarn(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		AddField("Reason", reason, false).
 		AddField("Timestamp", warnCreatedAtString, false)
 
-	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Embeds: []*discordgo.MessageEmbed{embed.MessageEmbed},
-		},
-	})
+	// Final response
+	editContent := ""
+	editWebhook := discordgo.WebhookEdit{
+		Content: &editContent,
+		Embeds:  &[]*discordgo.MessageEmbed{embed.MessageEmbed},
+	}
+	s.InteractionResponseEdit(i.Interaction, &editWebhook)
 
 }
 

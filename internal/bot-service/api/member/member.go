@@ -26,15 +26,17 @@ func DemoteMember(s *discordgo.Session, guildId string, userId string) error {
 
 	// DEMOTE IN THE DB
 	var updatedCurrentRoleIds string = ""
-	var roleIds []int
+	var roleIdsPriorDemote []int
+	var roleIdsPostDemote []int
 	var roleBeforeDemotion dataModels.Role
-	var rolePostDemotion dataModels.Role
+	var rolePostDemotion *dataModels.Role
 	for _, role := range userRoles {
 		// If an Inner Circle role
 		if role.Id > 7 && role.Id < 18 {
 			if role.Id == 8 {
 				// If left end of inner circle
 				roleBeforeDemotion = role
+				roleIdsPriorDemote = append(roleIdsPriorDemote, role.Id)
 				continue
 			} else {
 				demotedRole, err := globalsRepo.RolesRepository.GetRoleById(role.Id - 1)
@@ -43,19 +45,22 @@ func DemoteMember(s *discordgo.Session, guildId string, userId string) error {
 					return err
 				}
 				updatedCurrentRoleIds += fmt.Sprintf("%d,", demotedRole.Id)
-				roleIds = append(roleIds, demotedRole.Id)
+				roleIdsPostDemote = append(roleIdsPostDemote, demotedRole.Id)
 				roleBeforeDemotion = role
-				rolePostDemotion = *demotedRole
+				rolePostDemotion = demotedRole
+				roleIdsPriorDemote = append(roleIdsPriorDemote, roleBeforeDemotion.Id)
 			}
 		} else {
 			updatedCurrentRoleIds += fmt.Sprintf("%d,", role.Id)
-			roleIds = append(roleIds, role.Id)
+			roleIdsPostDemote = append(roleIdsPostDemote, role.Id)
+			roleIdsPriorDemote = append(roleIdsPriorDemote, role.Id)
 		}
 	}
 	userToUpdate.CurrentRoleIds = updatedCurrentRoleIds
 
 	// Circle and Order (for Inner members)
-	currentCircle, currentOrder := utils.GetCircleAndOrderForGivenRoles(roleIds)
+	_, previousOrder := utils.GetCircleAndOrderForGivenRoles(roleIdsPriorDemote)
+	currentCircle, currentOrder := utils.GetCircleAndOrderForGivenRoles(roleIdsPostDemote)
 	userToUpdate.CurrentCircle = currentCircle
 	userToUpdate.CurrentInnerOrder = currentOrder
 
@@ -74,13 +79,49 @@ func DemoteMember(s *discordgo.Session, guildId string, userId string) error {
 			fmt.Println("Error removing role:", err)
 			return err
 		}
-		// Add new role (psot demotion)
-		newDiscordRoleId := GetDiscordRoleIdForRoleWithName(s, guildId, rolePostDemotion.DisplayName)
-		err = s.GuildMemberRoleAdd(guildId, userId, *newDiscordRoleId)
-		if err != nil {
-			fmt.Println("Error adding role:", err)
-			return err
+		// Add new role (post demotion) if necessary
+		if rolePostDemotion != nil {
+			newDiscordRoleId := GetDiscordRoleIdForRoleWithName(s, guildId, rolePostDemotion.DisplayName)
+			err = s.GuildMemberRoleAdd(guildId, userId, *newDiscordRoleId)
+			if err != nil {
+				fmt.Println("Error adding role:", err)
+				return err
+			}
 		}
+		// Remove old order role if necessary
+		if currentOrder != previousOrder {
+			var prevOrderValue int = *previousOrder
+			var discordOrderRoleIdToDelete *string
+			if prevOrderValue == 3 {
+				discordOrderRoleIdToDelete = GetDiscordRoleIdForRoleWithName(s, guildId, "---- Third Order ----")
+			} else if prevOrderValue == 2 {
+				discordOrderRoleIdToDelete = GetDiscordRoleIdForRoleWithName(s, guildId, "---- Second Order ----")
+			} else if prevOrderValue == 1 {
+				discordOrderRoleIdToDelete = GetDiscordRoleIdForRoleWithName(s, guildId, "---- First Order ----")
+			}
+			err = s.GuildMemberRoleRemove(guildId, userId, *discordOrderRoleIdToDelete)
+			if err != nil {
+				fmt.Println("Error removing role:", err)
+				return err
+			}
+			// Add new order role if necessary
+			if currentOrder != nil {
+				var discordOrderRoleIdToAdd *string
+				if *currentOrder == 3 {
+					discordOrderRoleIdToAdd = GetDiscordRoleIdForRoleWithName(s, guildId, "---- Third Order ----")
+				} else if *currentOrder == 2 {
+					discordOrderRoleIdToAdd = GetDiscordRoleIdForRoleWithName(s, guildId, "---- Second Order ----")
+				} else if *currentOrder == 1 {
+					discordOrderRoleIdToAdd = GetDiscordRoleIdForRoleWithName(s, guildId, "---- First Order ----")
+				}
+				err = s.GuildMemberRoleAdd(guildId, userId, *discordOrderRoleIdToAdd)
+				if err != nil {
+					fmt.Println("Error removing role:", err)
+					return err
+				}
+			}
+		}
+
 	}
 
 	return nil
