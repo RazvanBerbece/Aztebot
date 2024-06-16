@@ -25,7 +25,6 @@ func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []
 		var userTimeSpentInVc = xpEvent.TimeSpentInVc
 
 		if !member.IsVerified(userId) {
-			fmt.Println(userId, "not verified.")
 			continue
 		}
 
