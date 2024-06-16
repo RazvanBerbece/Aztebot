@@ -53,10 +53,10 @@ func LoadStaticDiscordChannels() {
 
 		// DEFAULT INFO TEXT CHANNELS
 		globalConfiguration.DefaultInformationChannels = map[string]string{
-			"1188135110042734613": "default",
 			"1194451477192773773": "staff-rules",
 			"1198686819928264784": "server-rules",
 			"1205859615406030868": "legends",
+			"1188135110042734613": "socials",
 		}
 
 		// CHANNELS WHICH ARE EXCEPTED FROM AUTOMATIC MESSAGE DELETIONS
@@ -96,6 +96,7 @@ func LoadStaticDiscordChannels() {
 			"1100486860058398770": "staff-rules",
 			"1100142572141281460": "server-rules",
 			"1219417926482788443": "legends",
+			"1168327391937044500": "socials",
 		}
 
 		// CHANNELS WHICH ARE EXCEPTED FROM AUTOMATIC MESSAGE DELETIONS
