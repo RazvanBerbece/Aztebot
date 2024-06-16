@@ -74,14 +74,12 @@ jobs:
         run: |
           docker build \
           --tag "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTEBOT_IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}" -f cmd/bot-service/Dockerfile .
-
           docker build \
           --tag "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTERADIO_IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}" -f cmd/azteradio-service-java/Dockerfile .
 
       - name: 'Docker push' (all)
         run: |
           docker push "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTEBOT_IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}"
-          
           docker push "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTERADIO_IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}"
       
       - name: Connect to GKE
@@ -98,19 +96,16 @@ jobs:
       - name: Remove previous deployments (all)
         run: |
           kubectl delete deployment --ignore-not-found=true aztebot-bot-service-${{ steps.tag_version.outputs.previous_tag }}
-          
           kubectl delete deployment --ignore-not-found=true azteradio-service-${{ steps.tag_version.outputs.previous_tag }}
       
       - name: Create GKE Deployments for new image (all)
         run: |
           kubectl create deployment aztebot-bot-service-${{ steps.tag_version.outputs.new_tag }} --image="${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTEBOT_IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}"
-          
           kubectl create deployment azteradio-service-${{ steps.tag_version.outputs.new_tag }} --image="${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTERADIO_IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}"
 
       - name: Scale deployments (all)
         run: |
           kubectl scale --replicas=1 deployment/aztebot-bot-service-${{ steps.tag_version.outputs.new_tag }}
-          
           kubectl scale --replicas=1 deployment/azteradio-service-${{ steps.tag_version.outputs.new_tag }}
 
       - name: Show created Pods (all)
