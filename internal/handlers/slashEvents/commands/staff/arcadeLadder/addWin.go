@@ -23,7 +23,7 @@ func HandleSlashArcadeWinner(s *discordgo.Session, i *discordgo.InteractionCreat
 		},
 	})
 
-	if globalAnnouncementsChannel, channelExists := globalConfiguration.NotificationChannels["notif-globalAnnouncements"]; channelExists {
+	if globalAnnouncementsChannel, channelExists := globalConfiguration.NotificationChannels["notif-eventAnnouncements"]; channelExists {
 		err := member.GiveArcadeWin(targetUserId, arcadeName, globalAnnouncementsChannel.ChannelId)
 		if err != nil {
 			utils.ErrorEmbedResponseEdit(s, i.Interaction, err.Error())
