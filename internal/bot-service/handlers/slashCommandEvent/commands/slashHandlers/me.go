@@ -104,6 +104,11 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 	daysVC, hoursVC, minutesVC, secondsVC := utils.HumanReadableTimeLength(float64(sTimeSpentInVc))
 	timeSpentInVcs := fmt.Sprintf("%dd, %dh:%dm:%ds", daysVC, hoursVC, minutesVC, secondsVC)
 
+	// Process the time spent listening to music a nice format
+	sTimeSpentListeningMusic := int64(stats.TimeSpentListeningToMusic)
+	daysMusic, hoursMusic, minutesMusic, secondsMusic := utils.HumanReadableTimeLength(float64(sTimeSpentListeningMusic))
+	timeSpentListeningMusic := fmt.Sprintf("%dd, %dh:%dm:%ds", daysMusic, hoursMusic, minutesMusic, secondsMusic)
+
 	// Get the profile picture url
 	// Fetch user information from Discord API.
 	apiUser, err := s.User(userId)
@@ -134,7 +139,7 @@ func displayEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Messa
 			AddField(fmt.Sprintf("💯 Total reactions received:  `%d`", stats.NumberReactionsReceived), "", false).
 			AddField(fmt.Sprintf("🔄 Active day streak:  `%d`", stats.NumberActiveDayStreak), "", false).
 			AddField(fmt.Sprintf("🎙️ Time spent in voice channels:  `%s`", timeSpentInVcs), "", false).
-			AddField(fmt.Sprintf("🎵 Time spent listening music:  `%s`", timeSpentInVcs), "", false)
+			AddField(fmt.Sprintf("🎵 Time spent listening music:  `%s`", timeSpentListeningMusic), "", false)
 
 	} else {
 		embed.AddField("Member hasn't verified yet.", "", false)
