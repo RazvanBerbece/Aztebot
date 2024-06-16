@@ -39,9 +39,6 @@ func Any(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	// Grant experience points
-	currentXp, err := member.GrantMemberExperience(messageCreatorUserId, "MSG_REWARD", nil)
-	if err != nil {
-		fmt.Printf("An error ocurred while granting message rewards (%d) to user (%s): %v\n", currentXp, messageCreatorUserId, err)
-	}
+	go member.GrantMemberExperience(messageCreatorUserId, "MSG_REWARD", nil)
 
 }

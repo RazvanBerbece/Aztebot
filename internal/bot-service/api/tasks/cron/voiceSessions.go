@@ -60,10 +60,7 @@ func updateVoiceSessions(s *discordgo.Session) {
 		}
 
 		// Grant experience points for time spent streaming
-		currentXp, err := member.GrantMemberExperience(uid, "IN_VC_REWARD", &secondsSpent)
-		if err != nil {
-			fmt.Printf("An error ocurred while granting streaming rewards (%d) to user (%s): %v", currentXp, uid, err)
-		}
+		go member.GrantMemberExperience(uid, "IN_VC_REWARD", &secondsSpent)
 
 		// Reset join time
 		now := time.Now()
@@ -92,10 +89,7 @@ func updateStreamingSessions(s *discordgo.Session) {
 		}
 
 		// Grant experience points for time spent streaming
-		currentXp, err := member.GrantMemberExperience(uid, "IN_VC_REWARD", &secondsSpent)
-		if err != nil {
-			fmt.Printf("An error ocurred while granting streaming rewards (%d) to user (%s): %v", currentXp, uid, err)
-		}
+		go member.GrantMemberExperience(uid, "IN_VC_REWARD", &secondsSpent)
 
 		// Reset join time
 		now := time.Now()
@@ -129,10 +123,7 @@ func updateMusicSessions(s *discordgo.Session) {
 				}
 
 				// Grant experience points for time spent listening to music
-				currentXp, err := member.GrantMemberExperience(uid, "IN_MUSIC_REWARD", &secondsSpent)
-				if err != nil {
-					fmt.Printf("An error ocurred while granting music listening rewards (%d) to user (%s): %v", currentXp, uid, err)
-				}
+				go member.GrantMemberExperience(uid, "IN_MUSIC_REWARD", &secondsSpent)
 
 				// Reset join time
 				now := time.Now()

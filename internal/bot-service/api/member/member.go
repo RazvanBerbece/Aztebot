@@ -479,9 +479,8 @@ func GetMemberExperiencePoints(userId string) (*float64, error) {
 
 }
 
+// TODO: This could implement a channel pub/sub so that it can ensure experience grants but also fire and forget
 func GrantMemberExperience(userId string, activityType string, multiplierOption *float64) (*float64, error) {
-
-	fmt.Printf("[RUNTIME] Started granting XP to %s for activity type %s\n", userId, activityType)
 
 	isMember := globalsRepo.UsersRepository.UserExists(userId)
 	if isMember < 0 {
@@ -538,8 +537,6 @@ func GrantMemberExperience(userId string, activityType string, multiplierOption 
 		fmt.Printf("An error ocurred while retrieving User (%s) from DB after adding XP. Member may have left the server.\n", userId)
 		return nil, err
 	}
-
-	fmt.Printf("[RUNTIME] Finished granting experience points (%.2f XP) to %s for activity type %s\n", xpAdded, userId, activityType)
 
 	return &user.CurrentExperience, nil
 
