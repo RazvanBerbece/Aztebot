@@ -18,6 +18,9 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	// Inject some dependencies at runtime
 	discordDebugChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
 
+	log := fmt.Sprintf("`%s` is now online", event.User.Username)
+	go discordDebugChannelLogger.LogInfo(log)
+
 	// Load static data once Discord API runtime features are confirmed
 	LoadStaticData()
 
