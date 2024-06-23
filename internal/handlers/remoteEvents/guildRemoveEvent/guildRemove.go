@@ -36,6 +36,5 @@ func GuildRemove(s *discordgo.Session, m *discordgo.GuildMemberRemove) {
 	delete(globalState.MusicSessions, userId)
 	delete(globalState.VoiceSessions, userId)
 	delete(globalState.StreamSessions, userId)
-	delete(globalState.DeafSessions, userId)
 
 }

@@ -27,7 +27,6 @@ func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 	var voiceSessionsAtStartup int = 0
 	var streamSessionsAtStartup int = 0
 	var musicSessionsAtStartup int = 0
-	var deafSessionsAtStartup int = 0
 
 	var loadedUsersFromVCs bool = false
 	var loadingTimeIsUp bool = false
@@ -43,6 +42,11 @@ func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 		}
 
 		for _, voiceState := range guild.VoiceStates {
+
+			// Ignore deafened members
+			if voiceState.Deaf || voiceState.SelfDeaf {
+				continue
+			}
 
 			userId := voiceState.UserID
 			channelId := voiceState.ChannelID
@@ -99,7 +103,7 @@ func RegisterUsersInVoiceChannelsAtStartup(s *discordgo.Session) {
 
 	if loadedUsersFromVCs || loadingTimeIsUp {
 		totalSessions := voiceSessionsAtStartup + streamSessionsAtStartup + musicSessionsAtStartup
-		fmt.Printf("[STARTUP] Found %d active voice states at bot startup time (%d voice, %d streaming, %d music, %d deafened)\n", totalSessions, voiceSessionsAtStartup, streamSessionsAtStartup, musicSessionsAtStartup, deafSessionsAtStartup)
+		fmt.Printf("[STARTUP] Found %d active voice states at bot startup time (%d voice, %d streaming, %d music)\n", totalSessions, voiceSessionsAtStartup, streamSessionsAtStartup, musicSessionsAtStartup)
 	}
 
 }
