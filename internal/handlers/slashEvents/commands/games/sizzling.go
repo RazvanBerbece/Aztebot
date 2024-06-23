@@ -21,11 +21,13 @@ var CurrentlyPlayingAudio = false
 
 func HandleSlashNewSizzlingSlot(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
-	// Load audio assets
-	err := loadSound(SizzlingSoundFilepath)
-	if err != nil {
-		utils.SendErrorEmbedResponse(s, i.Interaction, err.Error())
-		return
+	// Load audio assets if necessary
+	if len(SizzlingSoundDataBuffer) == 0 {
+		err := loadSound(SizzlingSoundFilepath)
+		if err != nil {
+			utils.SendErrorEmbedResponse(s, i.Interaction, err.Error())
+			return
+		}
 	}
 
 	// Initial state
