@@ -125,7 +125,9 @@ func (b *DiscordBotBase) setBotPermissions() {
 
 func (b *DiscordBotBase) setBotStateTrackers() {
 	b.botSession.StateEnabled = true
-	b.botSession.State.TrackVoice = true
-	b.botSession.State.TrackChannels = true
 	b.botSession.State.MaxMessageCount = 500
+	b.botSession.State.TrackChannels = true
+	b.botSession.State.TrackVoice = true
+	b.botSession.State.TrackMembers = true
+	b.botSession.State.TrackRoles = true
 }

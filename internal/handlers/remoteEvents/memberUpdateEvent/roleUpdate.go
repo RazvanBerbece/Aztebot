@@ -47,7 +47,7 @@ func MemberRoleUpdate(s *discordgo.Session, m *discordgo.GuildMemberUpdate) {
 			}
 		}
 		if len(previousRolesString) == 0 {
-			previousRolesString = "_none found._"
+			previousRolesString = "_none found in the state cache._"
 		}
 
 		// Get current member roles
