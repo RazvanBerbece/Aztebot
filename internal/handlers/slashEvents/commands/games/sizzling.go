@@ -77,11 +77,9 @@ func SlotEmbed(userDisplayName string) []*discordgo.MessageEmbed {
 
 	defaultSlotStateString := &strings.Builder{}
 	defaultSlotState := [][]string{
-		{utils.GetRandomFromArray(fruitEmojis), utils.GetRandomFromArray(fruitEmojis), utils.GetRandomFromArray(fruitEmojis), utils.GetRandomFromArray(fruitEmojis)},
-		{utils.GetRandomFromArray(fruitEmojis), utils.GetRandomFromArray(fruitEmojis), utils.GetRandomFromArray(fruitEmojis), utils.GetRandomFromArray(fruitEmojis)},
-		{utils.GetRandomFromArray(fruitEmojis), utils.GetRandomFromArray(fruitEmojis), utils.GetRandomFromArray(fruitEmojis), utils.GetRandomFromArray(fruitEmojis)},
-		{utils.GetRandomFromArray(fruitEmojis), utils.GetRandomFromArray(fruitEmojis), utils.GetRandomFromArray(fruitEmojis), utils.GetRandomFromArray(fruitEmojis)},
-		{utils.GetRandomFromArray(fruitEmojis), utils.GetRandomFromArray(fruitEmojis), utils.GetRandomFromArray(fruitEmojis), utils.GetRandomFromArray(fruitEmojis)},
+		{utils.GetRandomFromArray(fruitEmojis), utils.GetRandomFromArray(fruitEmojis), utils.GetRandomFromArray(fruitEmojis), utils.GetRandomFromArray(fruitEmojis), utils.GetRandomFromArray(fruitEmojis)},
+		{utils.GetRandomFromArray(fruitEmojis), utils.GetRandomFromArray(fruitEmojis), utils.GetRandomFromArray(fruitEmojis), utils.GetRandomFromArray(fruitEmojis), utils.GetRandomFromArray(fruitEmojis)},
+		{utils.GetRandomFromArray(fruitEmojis), utils.GetRandomFromArray(fruitEmojis), utils.GetRandomFromArray(fruitEmojis), utils.GetRandomFromArray(fruitEmojis), utils.GetRandomFromArray(fruitEmojis)},
 	}
 
 	table := tablewriter.NewWriter(defaultSlotStateString)
