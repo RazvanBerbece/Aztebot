@@ -28,6 +28,26 @@ func MemberRoleUpdate(s *discordgo.Session, m *discordgo.GuildMemberUpdate) {
 
 	// DEBUG
 	if globalConfiguration.AuditRoleUpdatesInChannel {
+
+		// Get previous member roles (if available)
+		var previousRoles []string = []string{}
+		var previousRolesString string = ""
+		if m.BeforeUpdate != nil {
+			previousRoles = m.BeforeUpdate.Roles
+			for idx, roleId := range previousRoles {
+				role, err := member.GetDiscordRole(s, m.GuildID, roleId)
+				if err != nil {
+					fmt.Printf("Error ocurred while retrieving Discord role: %v\n", err)
+				}
+				if idx < len(previousRoles)-1 {
+					previousRolesString += fmt.Sprintf("`%s`,", role.Name)
+				} else if idx == len(previousRoles)-1 {
+					previousRolesString += fmt.Sprintf("`%s`", role.Name)
+				}
+			}
+		}
+
+		// Get current member roles
 		currentRoles := m.Roles
 		currentRolesString := ""
 		for idx, roleId := range currentRoles {
@@ -42,10 +62,12 @@ func MemberRoleUpdate(s *discordgo.Session, m *discordgo.GuildMemberUpdate) {
 			}
 		}
 
-		// Audit update by logging in provided debug channel
-		logMsg := fmt.Sprintf("Handling role update for `%s` [`%s`] (updated roles: %s)", m.Member.User.Username, m.Member.User.ID, currentRolesString)
-		discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
-		go discordChannelLogger.LogInfo(logMsg)
+		if !utils.EqualSlices(previousRoles, currentRoles) {
+			// Audit update by logging in provided debug channel
+			logMsg := fmt.Sprintf("Handling role update for `%s` [`%s`]\nPrevious roles: %s\nUpdated roles: %s", m.Member.User.Username, m.Member.User.ID, previousRolesString, currentRolesString)
+			discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
+			go discordChannelLogger.LogInfo(logMsg)
+		}
 	}
 
 	// Sync user in DB with the current Discord member state
