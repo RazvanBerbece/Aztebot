@@ -46,6 +46,9 @@ func MemberRoleUpdate(s *discordgo.Session, m *discordgo.GuildMemberUpdate) {
 				}
 			}
 		}
+		if len(previousRolesString) == 0 {
+			previousRolesString = "_none found._"
+		}
 
 		// Get current member roles
 		currentRoles := m.Roles
@@ -64,7 +67,7 @@ func MemberRoleUpdate(s *discordgo.Session, m *discordgo.GuildMemberUpdate) {
 
 		if !utils.EqualSlices(previousRoles, currentRoles) {
 			// Audit update by logging in provided debug channel
-			logMsg := fmt.Sprintf("Handling role update for `%s` [`%s`]\nPrevious roles: %s\nUpdated roles: %s", m.Member.User.Username, m.Member.User.ID, previousRolesString, currentRolesString)
+			logMsg := fmt.Sprintf("Handling role update for `%s` [`%s`]\n\nPrevious roles: %s\n\nUpdated roles: %s", m.Member.User.Username, m.Member.User.ID, previousRolesString, currentRolesString)
 			discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
 			go discordChannelLogger.LogInfo(logMsg)
 		}
