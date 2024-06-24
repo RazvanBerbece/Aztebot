@@ -108,7 +108,7 @@ func (r UsersRepository) GetUser(userId string) (*dax.User, error) {
 		&user.Gender)
 
 	if err != nil {
-		return nil, fmt.Errorf("an error ocurred while retrieving user with ID `%s`", userId)
+		return nil, err
 	}
 
 	return &user, nil

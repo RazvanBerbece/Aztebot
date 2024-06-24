@@ -7,7 +7,6 @@ import (
 
 	repositories "github.com/RazvanBerbece/Aztebot/internal/data/repositories/aztebot"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
-	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 )
 
 func ProcessUpdateActivityStreaks(h int, m int, s int) {
@@ -24,7 +23,7 @@ func ProcessUpdateActivityStreaks(h int, m int, s int) {
 		userStatsRepository := repositories.NewUsersStatsRepository()
 
 		// The first run should happen at start-up, not after 24 hours
-		UpdateActivityStreaks(globalRepositories.UsersRepository, globalRepositories.UserStatsRepository)
+		UpdateActivityStreaks(usersRepository, userStatsRepository)
 
 		for range activityStreakTicker.C {
 			// Process

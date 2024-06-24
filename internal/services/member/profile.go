@@ -127,8 +127,10 @@ func VerifyMember(s *discordgo.Session, logger logging.Logger, usersRepository r
 			return err
 		}
 
-		unixNow := time.Now().Unix()
-		user.CreatedAt = &unixNow
+		if user.CreatedAt == nil {
+			unixNow := time.Now().Unix()
+			user.CreatedAt = &unixNow
+		}
 
 		// Newly verified user, so announce in global (if notification channel exists)
 		if globalConfiguration.GreetNewVerifiedUsersInChannel {
@@ -150,7 +152,11 @@ func VerifyMember(s *discordgo.Session, logger logging.Logger, usersRepository r
 		}
 
 		if globalConfiguration.AuditMemberVerificationsInChannel {
-			go logger.LogInfo(fmt.Sprintf("`%s` has completed their verification", user.DiscordTag))
+			if scope == "startup" {
+				go logger.LogInfo(fmt.Sprintf("`%s` has completed their verification during STARTUP", user.DiscordTag))
+			} else {
+				go logger.LogInfo(fmt.Sprintf("`%s` has completed their verification during BAU", user.DiscordTag))
+			}
 		}
 
 		_, updateErr := usersRepository.UpdateUser(*user)
