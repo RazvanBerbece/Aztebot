@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
+	repositories "github.com/RazvanBerbece/Aztebot/internal/data/repositories/aztebot"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
@@ -116,12 +117,12 @@ func GetRep(userId string) (int, error) {
 }
 
 // scope: 0 for startup sync; 1 otherwise
-func VerifyMember(s *discordgo.Session, logger logging.Logger, guildId string, userId string, scope string) error {
+func VerifyMember(s *discordgo.Session, logger logging.Logger, usersRepository repositories.UsersRepository, guildId string, userId string, scope string) error {
 
 	// Only verify members which haven't been verified yet (according to DB state)
 	if !IsVerified(userId) {
 
-		user, err := globalRepositories.UsersRepository.GetUser(userId)
+		user, err := usersRepository.GetUser(userId)
 		if err != nil {
 			return err
 		}
@@ -152,7 +153,7 @@ func VerifyMember(s *discordgo.Session, logger logging.Logger, guildId string, u
 			go logger.LogInfo(fmt.Sprintf("`%s` has completed their verification", user.DiscordTag))
 		}
 
-		_, updateErr := globalRepositories.UsersRepository.UpdateUser(*user)
+		_, updateErr := usersRepository.UpdateUser(*user)
 		if updateErr != nil {
 			log.Println("Error updating user in DB:", updateErr)
 			return err

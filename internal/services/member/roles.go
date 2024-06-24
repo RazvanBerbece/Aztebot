@@ -6,6 +6,7 @@ import (
 	"log"
 
 	dax "github.com/RazvanBerbece/Aztebot/internal/data/models/dax/aztebot"
+	repositories "github.com/RazvanBerbece/Aztebot/internal/data/repositories/aztebot"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -79,7 +80,7 @@ func RemoveAllMemberRoles(userId string) error {
 // Returns a string which contains a comma-separated list of role IDs (to be saved in the User entity in the DB),
 // an array of integers representing the role IDs as seen in the DB,
 // and and error, if applicable.
-func GetMemberRolesFromDiscordAsLocalIdList(s *discordgo.Session, guildId string, user dax.User, member discordgo.Member) (string, []int, error) {
+func GetMemberRolesFromDiscordAsLocalIdList(s *discordgo.Session, rolesRepository repositories.RolesRepository, guildId string, user dax.User, member discordgo.Member) (string, []int, error) {
 
 	var currentRoleIds string // string representing a list of role IDs (this is to be stored in the DB)
 	var roleIds []int         // integer list of the role IDs (like above, but an array of int IDs)
@@ -94,7 +95,7 @@ func GetMemberRolesFromDiscordAsLocalIdList(s *discordgo.Session, guildId string
 			return "", nil, err
 		}
 
-		roleDax, err := globalRepositories.RolesRepository.GetRole(userRoleObj.Name)
+		roleDax, err := rolesRepository.GetRole(userRoleObj.Name)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				// This will probably be a role which is assigned to the three orders or something, so we can ignore

@@ -74,14 +74,13 @@ func SyncMember(s *discordgo.Session, guildId string, userId string, member *dis
 
 		// UPDATE Roles and Role After-Effects
 		// Get current roles for user (as they appear on the Discord guild and found in the Roles DB)
-		currentRoleIds, roleIds, err := GetMemberRolesFromDiscordAsLocalIdList(s, guildId, *user, *member)
+		currentRoleIds, roleIds, err := GetMemberRolesFromDiscordAsLocalIdList(s, *globalRepositories.RolesRepository, guildId, *user, *member)
 		if err != nil {
 			log.Println("Error retrieving user's roles as DB data from the Discord Guild:", err)
 			return err
 		}
 
-		// `Aztec` verification -- user has Aztec role and is verified
-		err = VerifyMember(s, logging.NewDiscordLogger(s, "notif-debug"), guildId, userId, "default")
+		err = VerifyMember(s, logging.NewDiscordLogger(s, "notif-debug"), *globalRepositories.UsersRepository, guildId, userId, "default")
 		if err != nil {
 			log.Println("Error verifying user in sync function:", err)
 			return err
@@ -127,13 +126,13 @@ func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, m
 	var user *dax.User
 	var userStats *dax.UserStats
 
-	userExistsResult := globalRepositories.UsersRepository.UserExists(userId)
+	userExistsResult := usersRepository.UserExists(userId)
 	switch userExistsResult {
 	case -1:
 		fmt.Printf("Cannot check whether user %s (%s) exists in the DB during bot startup sync\n", member.User.Username, userId)
 	case 0:
 		var err error
-		user, err = globalRepositories.UsersRepository.SaveInitialUserDetails(member.User.Username, userId, nil)
+		user, err = usersRepository.SaveInitialUserDetails(member.User.Username, userId, nil)
 		if err != nil {
 			log.Fatalf("Cannot store initial user %s with id %s during bot startup sync: %v", member.User.Username, userId, err)
 			return err
@@ -147,27 +146,27 @@ func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, m
 	case 1:
 		// Already exists
 		var err error
-		user, err = globalRepositories.UsersRepository.GetUser(userId)
+		user, err = usersRepository.GetUser(userId)
 		if err != nil {
 			log.Fatalf("Error ocurred retrieving user from the DB: %v\n", err)
 			return err
 		}
 		// Check whether user has user stats entity
-		userStatsExistsResult := globalRepositories.UserStatsRepository.UserStatsExist(userId)
+		userStatsExistsResult := userStatsRepository.UserStatsExist(userId)
 		switch userStatsExistsResult {
 		case -1:
 			// Error ocurred
 			fmt.Printf("Cannot check whether user %s (%s) exists in the DB during bot startup sync\n", member.User.Username, userId)
 		case 0:
 			// Stats don't exist
-			err = globalRepositories.UserStatsRepository.SaveInitialUserStats(userId)
+			err = userStatsRepository.SaveInitialUserStats(userId)
 			if err != nil {
 				log.Printf("Failed to store initial user stats at startup: %v", err)
 				return err
 			}
 		case 1:
 			// Stats exist
-			userStats, err = globalRepositories.UserStatsRepository.GetStatsForUser(userId)
+			userStats, err = userStatsRepository.GetStatsForUser(userId)
 			if err != nil {
 				log.Fatalf("Error ocurred retrieving user stats from the DB: %v\n", err)
 				return err
@@ -181,13 +180,13 @@ func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, m
 
 		// Sync all other user details between the Discord server and the database (mostly updating the DB with Discord data)
 		// Get current roles from user (as they appear on the Discord guild)
-		currentRoleIds, roleIds, err := GetMemberRolesFromDiscordAsLocalIdList(s, guildId, *user, *member)
+		currentRoleIds, roleIds, err := GetMemberRolesFromDiscordAsLocalIdList(s, *rolesRepository, guildId, *user, *member)
 		if err != nil {
 			log.Println("Error retrieving user's roles as DB data from the Discord Guild:", err)
 			return err
 		}
 
-		err = VerifyMember(s, logging.NewDiscordLogger(s, "notif-debug"), guildId, userId, "startup")
+		err = VerifyMember(s, logging.NewDiscordLogger(s, "notif-debug"), *usersRepository, guildId, userId, "startup")
 		if err != nil {
 			log.Println("Error verifying user in sync function:", err)
 			return err
