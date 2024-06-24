@@ -80,7 +80,7 @@ func SyncMember(s *discordgo.Session, guildId string, userId string, member *dis
 			return err
 		}
 
-		err = VerifyMember(s, logging.NewDiscordLogger(s, "notif-debug"), *globalRepositories.UsersRepository, guildId, userId, "default")
+		err = ProcessMemberVerification(s, logging.NewDiscordLogger(s, "notif-debug"), *globalRepositories.UsersRepository, guildId, userId, roleIds, "default")
 		if err != nil {
 			log.Println("Error verifying user in sync function:", err)
 			return err
@@ -186,7 +186,7 @@ func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, m
 			return err
 		}
 
-		err = VerifyMember(s, logging.NewDiscordLogger(s, "notif-debug"), *usersRepository, guildId, userId, "startup")
+		err = ProcessMemberVerification(s, logging.NewDiscordLogger(s, "notif-debug"), *usersRepository, guildId, userId, roleIds, "startup")
 		if err != nil {
 			log.Println("Error verifying user in sync function:", err)
 			return err
@@ -227,7 +227,7 @@ func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, m
 func ResolveProgressionMismatchForMember(s *discordgo.Session, userGuildId string, userId string, userXp float64, userNumberMessagesSent int, userTimeSpentInVc int, defaultOrderRoleNames []string) error {
 
 	// don't sync progression for unverified users
-	if !IsVerified(userId) {
+	if !IsFullyVerified(userId) {
 		return nil
 	}
 

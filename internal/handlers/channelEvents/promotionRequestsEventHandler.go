@@ -25,7 +25,7 @@ func HandlePromotionRequestEvents(s *discordgo.Session, defaultOrderRoleNames []
 		var userNumberMessagesSent = xpEvent.MessagesSent
 		var userTimeSpentInVc = xpEvent.TimeSpentInVc
 
-		if !member.IsVerified(userId) {
+		if !member.IsFullyVerified(userId) {
 			continue
 		}
 

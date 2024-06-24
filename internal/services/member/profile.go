@@ -15,7 +15,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func IsVerified(userId string) bool {
+func IsFullyVerified(userId string) bool {
 
 	hasAtLeastOneRole := false
 	hasVerifiedRole := false
@@ -117,70 +117,67 @@ func GetRep(userId string) (int, error) {
 }
 
 // scope: 0 for startup sync; 1 otherwise
-func VerifyMember(s *discordgo.Session, logger logging.Logger, usersRepository repositories.UsersRepository, guildId string, userId string, scope string) error {
+func ProcessMemberVerification(s *discordgo.Session, logger logging.Logger, usersRepository repositories.UsersRepository, guildId string, userId string, currentRoleIds []int, scope string) error {
 
-	// Only verify members which haven't been verified yet (according to DB state)
-	if !IsVerified(userId) {
-
-		user, err := usersRepository.GetUser(userId)
-		if err != nil {
-			return err
-		}
-
-		if user.CreatedAt == nil {
-			unixNow := time.Now().Unix()
-			user.CreatedAt = &unixNow
-		}
-
-		// Newly verified user, so announce in global (if notification channel exists)
-		if globalConfiguration.GreetNewVerifiedUsersInChannel {
-			if channel, channelExists := globalConfiguration.NotificationChannels["notif-globalGeneralChat"]; channelExists {
-				var content string
-				if scope == "startup" {
-					// at start-up (persistent) sync
-					content = fmt.Sprintf("<@%s> has recently verified as an OTA community member! Say hello 🍻", user.UserId)
-				} else {
-					// at common sync (on role updates, etc.)
-					content = fmt.Sprintf("<@%s> has verified as an OTA community member! Say hello 🍻", user.UserId)
-				}
-				globalMessaging.NotificationsChannel <- events.NotificationEvent{
-					TargetChannelId: channel.ChannelId,
-					Type:            "DEFAULT",
-					TextData:        &content,
-				}
-			}
-		}
-
-		if globalConfiguration.AuditMemberVerificationsInChannel {
-			if scope == "startup" {
-				go logger.LogInfo(fmt.Sprintf("`%s` has completed their verification during STARTUP", user.DiscordTag))
-			} else {
-				go logger.LogInfo(fmt.Sprintf("`%s` has completed their verification during BAU", user.DiscordTag))
-			}
-		}
-
-		_, updateErr := usersRepository.UpdateUser(*user)
-		if updateErr != nil {
-			log.Println("Error updating user in DB:", updateErr)
-			return err
-		}
-
-		// Give verified role to member
-		err = AddDiscordRoleToMember(s, guildId, userId, "Aztec")
-		if err != nil {
-			log.Println("Error adding  user in DB:", err)
-			return err
-		}
-
-		return nil
-
+	user, err := usersRepository.GetUser(userId)
+	if err != nil {
+		return err
 	}
 
-	// Ensure that verified status is visible on Discord too
-	err := AddDiscordRoleToMember(s, guildId, userId, "Aztec")
-	if err != nil {
-		log.Println("Error adding  user in DB:", err)
-		return err
+	if user.CreatedAt == nil { // No member join timestamp
+		if !utils.IntInSlice(globalConfiguration.DefaultVerifiedRoleId, currentRoleIds) {
+			// ignore
+			return nil
+		} else { // Member obtained the verified role but not the timestamp
+
+			unixNow := time.Now().Unix()
+			user.CreatedAt = &unixNow
+
+			_, updateErr := usersRepository.UpdateUser(*user)
+			if updateErr != nil {
+				log.Println("Error updating user in DB:", updateErr)
+				return err
+			}
+
+			// Global channel announcement
+			if globalConfiguration.GreetNewVerifiedUsersInChannel {
+				if channel, channelExists := globalConfiguration.NotificationChannels["notif-globalGeneralChat"]; channelExists {
+					var content string
+					if scope == "startup" {
+						// at start-up (persistent) sync
+						content = fmt.Sprintf("<@%s> has recently been verified as an OTA community member! Say hello 🍻", user.UserId)
+					} else if scope == "default" {
+						// at common sync (on role updates, etc.)
+						content = fmt.Sprintf("<@%s> has just been verified as an OTA community member! Say hello 🍻", user.UserId)
+					}
+					globalMessaging.NotificationsChannel <- events.NotificationEvent{
+						TargetChannelId: channel.ChannelId,
+						Type:            "DEFAULT",
+						TextData:        &content,
+					}
+				}
+			}
+
+			// Auditing
+			if globalConfiguration.AuditMemberVerificationsInChannel {
+				if scope == "startup" {
+					go logger.LogInfo(fmt.Sprintf("`%s` has completed their verification during STARTUP", user.DiscordTag))
+				} else {
+					go logger.LogInfo(fmt.Sprintf("`%s` has completed their verification during BAU", user.DiscordTag))
+				}
+			}
+
+			err = AddDiscordRoleToMember(s, guildId, userId, globalConfiguration.DefaultVerifiedRoleName)
+			if err != nil {
+				log.Printf("Error adding verified role %s to user on Discord: %v\n", globalConfiguration.DefaultVerifiedRoleName, err)
+				return err
+			}
+		}
+	} else { // Existing member join timestamp
+		if !utils.IntInSlice(globalConfiguration.DefaultVerifiedRoleId, currentRoleIds) {
+			// Member has timestamp but not the actual role, consider as intentional and skip
+			return nil
+		}
 	}
 
 	return nil
