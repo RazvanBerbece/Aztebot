@@ -81,7 +81,7 @@ func SyncMember(s *discordgo.Session, guildId string, userId string, member *dis
 		}
 
 		// `Aztec` verification -- user has Aztec role and is verified
-		err = VerifyMember(logging.NewDiscordLogger(s, "notif-debug"), userId, "default")
+		err = VerifyMember(s, logging.NewDiscordLogger(s, "notif-debug"), guildId, userId, "default")
 		if err != nil {
 			log.Println("Error verifying user in sync function:", err)
 			return err
@@ -187,7 +187,7 @@ func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, m
 			return err
 		}
 
-		err = VerifyMember(logging.NewDiscordLogger(s, "notif-debug"), userId, "startup")
+		err = VerifyMember(s, logging.NewDiscordLogger(s, "notif-debug"), guildId, userId, "startup")
 		if err != nil {
 			log.Println("Error verifying user in sync function:", err)
 			return err

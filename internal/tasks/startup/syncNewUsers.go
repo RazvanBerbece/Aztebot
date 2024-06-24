@@ -60,9 +60,6 @@ func processMembers(s *discordgo.Session, members []*discordgo.Member, rolesRepo
 			continue
 		}
 		// For each member, sync their details (either add to DB or update)
-		err := memberService.SyncMemberPersistent(s, globalConfiguration.DiscordMainGuildId, member.User.ID, member, rolesRepository, usersRepository, userStatsRepository, defaultOrderRoleNames, syncProgression)
-		if err != nil && err.Error() != "no update was executed" {
-			fmt.Printf("Error syncing member %s: %v\n", member.User.Username, err)
-		}
+		go memberService.SyncMemberPersistent(s, globalConfiguration.DiscordMainGuildId, member.User.ID, member, rolesRepository, usersRepository, userStatsRepository, defaultOrderRoleNames, syncProgression)
 	}
 }

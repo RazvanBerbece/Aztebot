@@ -1,5 +1,9 @@
 package globalConfiguration
 
+// GENERAL
+var VerifiedRoleName = "Aztec"
+var GreetNewVerifiedUsersInChannel = false
+
 // LOGGING
 var AuditMemberJoinsInChannel = true
 var AuditMemberVerificationsInChannel = true
