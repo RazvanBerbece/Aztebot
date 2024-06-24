@@ -44,6 +44,12 @@ func MessageDelete(s *discordgo.Session, m *discordgo.MessageDelete) {
 		fmt.Printf("An error ocurred while removing message rewards (%d) from user (%s): %v\n", currentXp, deletedMessageAuthorId, err)
 	}
 
+	// Remove coins
+	err = globalRepositories.WalletsRepository.SubtractFundsFromWallet(deletedMessageAuthorId, globalConfiguration.CoinReward_MessageSent)
+	if err != nil {
+		fmt.Printf("An error ocurred while removing message reward coins (%d) from user (%s): %v\n", currentXp, deletedMessageAuthorId, err)
+	}
+
 }
 
 // TODO: Add MessageDeleteBulk handler ?

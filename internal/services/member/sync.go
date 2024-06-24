@@ -3,13 +3,10 @@ package member
 import (
 	"fmt"
 	"log"
-	"time"
 
 	dax "github.com/RazvanBerbece/Aztebot/internal/data/models/dax/aztebot"
-	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	repositories "github.com/RazvanBerbece/Aztebot/internal/data/repositories/aztebot"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
-	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/internal/services/logging"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
@@ -84,30 +81,10 @@ func SyncMember(s *discordgo.Session, guildId string, userId string, member *dis
 		}
 
 		// `Aztec` verification -- user has Aztec role and is verified
-		for _, roleId := range roleIds {
-			if roleId == 1 && user.CreatedAt == nil {
-
-				unixNow := time.Now().Unix()
-				user.CreatedAt = &unixNow
-
-				// Newly verified user, so announce in global (if notification channel exists)
-				if channel, channelExists := globalConfiguration.NotificationChannels["notif-globalGeneralChat"]; channelExists {
-					content := fmt.Sprintf("<@%s> has joined the OTA community! Say hello 🍻", user.UserId)
-					globalMessaging.NotificationsChannel <- events.NotificationEvent{
-						TargetChannelId: channel.ChannelId,
-						Type:            "DEFAULT",
-						TextData:        &content,
-					}
-				}
-
-				if globalConfiguration.AuditMemberVerificationsInChannel {
-					logMsg := fmt.Sprintf("`%s` has completed their verification", user.DiscordTag)
-					discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
-					go discordChannelLogger.LogInfo(logMsg)
-				}
-
-				break
-			}
+		err = VerifyMember(logging.NewDiscordLogger(s, "notif-debug"), userId, "default")
+		if err != nil {
+			log.Println("Error verifying user in sync function:", err)
+			return err
 		}
 
 		user.CurrentRoleIds = currentRoleIds
@@ -210,31 +187,10 @@ func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, m
 			return err
 		}
 
-		// `Aztec` verification -- user has Aztec role and is verified
-		for _, roleId := range roleIds {
-			if roleId == 1 && user.CreatedAt == nil {
-
-				unixNow := time.Now().Unix()
-				user.CreatedAt = &unixNow
-
-				// Newly verified user, so announce in global (if notification channel exists)
-				if channel, channelExists := globalConfiguration.NotificationChannels["notif-globalGeneralChat"]; channelExists {
-					content := fmt.Sprintf("<@%s> has recently joined the OTA community! Say hello 🍻", user.UserId)
-					globalMessaging.NotificationsChannel <- events.NotificationEvent{
-						TargetChannelId: channel.ChannelId,
-						Type:            "DEFAULT",
-						TextData:        &content,
-					}
-				}
-
-				if globalConfiguration.AuditMemberVerificationsInChannel {
-					logMsg := fmt.Sprintf("`%s` has completed their verification while the AzteBot was offline or restarting", user.DiscordTag)
-					discordChannelLogger := logging.NewDiscordLogger(s, "notif-debug")
-					go discordChannelLogger.LogInfo(logMsg)
-				}
-
-				break
-			}
+		err = VerifyMember(logging.NewDiscordLogger(s, "notif-debug"), userId, "startup")
+		if err != nil {
+			log.Println("Error verifying user in sync function:", err)
+			return err
 		}
 
 		user.CurrentRoleIds = currentRoleIds

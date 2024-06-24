@@ -47,4 +47,10 @@ func ReactionRemove(s *discordgo.Session, r *discordgo.MessageReactionRemove) {
 		fmt.Printf("An error ocurred while removing reaction received rewards (%d) from user (%s): %v\n", currentXp, messageOwnerUid, err)
 	}
 
+	// Remove coins
+	err = globalRepositories.WalletsRepository.SubtractFundsFromWallet(messageOwnerUid, globalConfiguration.CoinReward_ReactionReceived)
+	if err != nil {
+		fmt.Printf("An error ocurred while removing reaction receive coins (%d) from user (%s): %v\n", currentXp, messageOwnerUid, err)
+	}
+
 }

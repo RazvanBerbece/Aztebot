@@ -3,14 +3,19 @@ package member
 import (
 	"fmt"
 	"log"
+	"time"
 
+	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
+	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
+	"github.com/RazvanBerbece/Aztebot/internal/services/logging"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 )
 
 func IsVerified(userId string) bool {
 
-	hasMultipleRoles := false
+	hasAtLeastOneRole := false
 	hasVerifiedRole := false
 	hasCreatedAtTimestamp := false
 
@@ -22,7 +27,7 @@ func IsVerified(userId string) bool {
 	roleIds := utils.GetRoleIdsFromRoleString(user.CurrentRoleIds)
 
 	if len(roleIds) > 0 {
-		hasMultipleRoles = true
+		hasAtLeastOneRole = true
 	}
 
 	if user.CreatedAt != nil {
@@ -37,7 +42,7 @@ func IsVerified(userId string) bool {
 		}
 	}
 
-	return hasMultipleRoles && hasVerifiedRole && hasCreatedAtTimestamp
+	return hasAtLeastOneRole && hasVerifiedRole && hasCreatedAtTimestamp
 }
 
 func IsStaff(userId string, staffRoles []string) bool {
@@ -106,5 +111,52 @@ func GetRep(userId string) (int, error) {
 	}
 
 	return rep.Rep, nil
+
+}
+
+// scope: 0 for startup sync; 1 otherwise
+func VerifyMember(logger logging.Logger, userId string, scope string) error {
+
+	// Only verify members which haven't been verified yet
+	if !IsVerified(userId) {
+
+		user, err := globalRepositories.UsersRepository.GetUser(userId)
+		if err != nil {
+			return err
+		}
+
+		unixNow := time.Now().Unix()
+		user.CreatedAt = &unixNow
+
+		// Newly verified user, so announce in global (if notification channel exists)
+		if channel, channelExists := globalConfiguration.NotificationChannels["notif-globalGeneralChat"]; channelExists {
+			var content string
+			if scope == "startup" {
+				// at start-up (persistent) sync
+				content = fmt.Sprintf("<@%s> has recently verified as an OTA community member! Say hello 🍻", user.UserId)
+			} else {
+				// at common sync (on role updates, etc.)
+				content = fmt.Sprintf("<@%s> has verified as an OTA community member! Say hello 🍻", user.UserId)
+			}
+			globalMessaging.NotificationsChannel <- events.NotificationEvent{
+				TargetChannelId: channel.ChannelId,
+				Type:            "DEFAULT",
+				TextData:        &content,
+			}
+		}
+
+		if globalConfiguration.AuditMemberVerificationsInChannel {
+			go logger.LogInfo(fmt.Sprintf("`%s` has completed their verification", user.DiscordTag))
+		}
+
+		_, updateErr := globalRepositories.UsersRepository.UpdateUser(*user)
+		if updateErr != nil {
+			log.Println("Error updating user in DB:", updateErr)
+			return err
+		}
+
+	}
+
+	return nil
 
 }

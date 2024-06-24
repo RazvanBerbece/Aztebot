@@ -10,6 +10,7 @@ type DbWalletsRepository interface {
 	AddFundsToWalletForUser(userId string, funds float64) error
 	GetWalletIdForUser(userId string) (*string, error)
 	DeleteWalletForUser(userId string) error
+	SubtractFundsFromWallet(userId string, funds float64) error
 }
 
 type WalletsRepository struct {
@@ -70,4 +71,23 @@ func (r WalletsRepository) DeleteWalletForUser(userId string) error {
 
 	return nil
 
+}
+
+func (r WalletsRepository) SubtractFundsFromWallet(userId string, funds float64) error {
+
+	stmt, err := r.DbContext.SqlDb.Prepare(`
+	UPDATE Wallets SET 
+		funds = funds - ?
+	WHERE userId = ?`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(funds, userId)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
