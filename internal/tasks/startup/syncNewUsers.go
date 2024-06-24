@@ -31,9 +31,10 @@ func SyncMembersAtStartup(s *discordgo.Session, defaultOrderRoleNames []string, 
 	processMembers(s, members, rolesRepository, usersRepository, userStatsRepository, defaultOrderRoleNames, syncProgression)
 
 	// Paginate
-	for len(members) == 1000 {
+	for len(members) != 0 {
 		// Set the 'After' parameter to the ID of the last member in the current batch
 		lastMemberID := members[len(members)-1].User.ID
+
 		members, err = s.GuildMembers(globalConfiguration.DiscordMainGuildId, lastMemberID, 1000)
 		if err != nil {
 			fmt.Println("[STARTUP] Failed Task SyncMembersAtStartup() at", time.Now(), "with error", err)

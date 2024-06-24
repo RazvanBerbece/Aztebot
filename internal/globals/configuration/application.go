@@ -43,8 +43,6 @@ var CoinReward_InMusic float64 = 0.003
 const EmbedPageSize int = 10
 
 // PROGRESSION RELATED
-const SyncProgressionInMemberUpdates = true
-
 var OrderRoleNames []string = []string{
 	"🔗 Zelator",
 	"📖 Theoricus",
