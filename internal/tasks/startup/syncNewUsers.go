@@ -60,6 +60,9 @@ func processMembers(s *discordgo.Session, members []*discordgo.Member, rolesRepo
 			continue
 		}
 		// For each member, sync their details (either add to DB or update)
-		go memberService.SyncMemberPersistent(s, globalConfiguration.DiscordMainGuildId, member.User.ID, member, rolesRepository, usersRepository, userStatsRepository, defaultOrderRoleNames, syncProgression)
+		err := memberService.SyncMemberPersistent(s, globalConfiguration.DiscordMainGuildId, member.User.ID, member, rolesRepository, usersRepository, userStatsRepository, defaultOrderRoleNames, syncProgression)
+		if err != nil {
+			fmt.Printf("Error ocurred while processing batch of members for ID %s: %v", member.User.ID, err)
+		}
 	}
 }
