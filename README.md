@@ -17,7 +17,7 @@ In order to run the application, a few prerequisites must be met.
 1. Have the repository cloned locally.
 2. Have Docker installed.
 3. Have Make installed.
-4. Have a fully-configured `.env` file saved in the root of the repository. (contact [@RazvanBerbece](https://github.com/RazvanBerbece) for the configuration)
+4. Have a fully-configured `.env` file saved in the root of the repository. (an example environment configuration can be seen in [example.env](./.example.env))
 5. Additionally, for full local development capabilities and to run the database migrations on the development machine, have the [Aztebot-Infrastructure](https://github.com/RazvanBerbece/Aztebot-Infrastructure) repository cloned locally in a folder which also contains the `Aztebot` repository (**For example**, the folder `Project` should contain both the `Aztebot` and the `Aztebot-Infrastructure` repository folders) 
 
 ### Notes
