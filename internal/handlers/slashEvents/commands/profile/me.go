@@ -148,7 +148,7 @@ func GetProfileEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Me
 		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
 		AddLineBreakField()
 
-	if userCreatedTimeString != "" && highestOrderRole != nil {
+	if member.IsFullyVerified(userId) {
 
 		// Process ranks in leaderboards
 		msgRankString := ""
