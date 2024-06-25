@@ -196,8 +196,6 @@ func (r UsersRepository) UpdateUser(user dax.User) (*dax.User, error) {
 
 func (r UsersRepository) SetUserCreatedAt(userId string, timestamp int64) error {
 
-	fmt.Println(userId, timestamp)
-
 	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE Users SET 
 			createdAt = ?
@@ -207,12 +205,10 @@ func (r UsersRepository) SetUserCreatedAt(userId string, timestamp int64) error 
 	}
 	defer stmt.Close()
 
-	res, err := stmt.Exec(timestamp, userId)
+	_, err = stmt.Exec(timestamp, userId)
 	if err != nil {
 		return err
 	}
-
-	fmt.Println(res.RowsAffected())
 
 	return nil
 }
