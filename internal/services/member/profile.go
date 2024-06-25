@@ -116,8 +116,13 @@ func GetRep(userId string) (int, error) {
 
 }
 
-// scope: 0 for startup sync; 1 otherwise
-func ProcessMemberVerification(s *discordgo.Session, logger logging.Logger, usersRepository repositories.UsersRepository, guildId string, userId string, currentRoleIds []int, scope string) error {
+func ProcessMemberVerification(s *discordgo.Session, logger logging.Logger, usersRepository repositories.UsersRepository, jailRepository repositories.JailRepository, guildId string, userId string, currentRoleIds []int, scope string) error {
+
+	// Skip this if member is jailed
+	jailed, _ := jailRepository.GetJailedUser(userId)
+	if jailed != nil {
+		return nil
+	}
 
 	user, err := usersRepository.GetUser(userId)
 	if err != nil {
@@ -131,11 +136,9 @@ func ProcessMemberVerification(s *discordgo.Session, logger logging.Logger, user
 		} else { // Member obtained the verified role but not the timestamp
 
 			unixNow := time.Now().Unix()
-			user.CreatedAt = &unixNow
-
-			_, updateErr := usersRepository.UpdateUser(*user)
-			if updateErr != nil {
-				log.Println("Error updating user in DB:", updateErr)
+			err := usersRepository.SetUserCreatedAt(userId, unixNow)
+			if err != nil {
+				log.Println("Error updating user in DB:", err)
 				return err
 			}
 
@@ -165,12 +168,6 @@ func ProcessMemberVerification(s *discordgo.Session, logger logging.Logger, user
 				} else {
 					go logger.LogInfo(fmt.Sprintf("`%s` has completed their verification during BAU", user.DiscordTag))
 				}
-			}
-
-			err = AddDiscordRoleToMember(s, guildId, userId, globalConfiguration.DefaultVerifiedRoleName)
-			if err != nil {
-				log.Printf("Error adding verified role %s to user on Discord: %v\n", globalConfiguration.DefaultVerifiedRoleName, err)
-				return err
 			}
 		}
 	} else { // Existing member join timestamp

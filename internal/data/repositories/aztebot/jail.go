@@ -67,12 +67,9 @@ func (r JailRepository) RemoveUserFromJail(userId string) error {
 
 func (r JailRepository) GetJailedUser(userId string) (*dax.JailedUser, error) {
 
-	// Get assigned role IDs for given user from the DB
 	query := "SELECT * FROM Jail WHERE userId = ?"
 	row := r.Conn.SqlDb.QueryRow(query, userId)
 
-	// Scan the role IDs and process them into query arguments to use
-	// in the Roles table
 	var jailedUser dax.JailedUser
 	err := row.Scan(&jailedUser.UserId,
 		&jailedUser.Reason,

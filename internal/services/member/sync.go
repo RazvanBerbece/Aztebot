@@ -80,9 +80,16 @@ func SyncMember(s *discordgo.Session, guildId string, userId string, member *dis
 			return err
 		}
 
-		err = ProcessMemberVerification(s, logging.NewDiscordLogger(s, "notif-debug"), *globalRepositories.UsersRepository, guildId, userId, roleIds, "default")
+		err = ProcessMemberVerification(s, logging.NewDiscordLogger(s, "notif-debug"), *globalRepositories.UsersRepository, *globalRepositories.JailRepository, guildId, userId, roleIds, "default")
 		if err != nil {
 			log.Println("Error verifying user in sync function:", err)
+			return err
+		}
+
+		// Refresh user post-verification process
+		user, err = globalRepositories.UsersRepository.GetUser(userId)
+		if err != nil {
+			log.Fatalf("Error ocurred retrieving user from the DB: %v\n", err)
 			return err
 		}
 
@@ -121,7 +128,7 @@ func SyncMember(s *discordgo.Session, guildId string, userId string, member *dis
 
 // Takes in a discord member and syncs the database User with the current member details
 // as they appear on the Discord guild. It uses repositories injected via the argument list to prevent connection attempt floods.
-func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, member *discordgo.Member, rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository, defaultOrderRoleNames []string, syncProgression bool) error {
+func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, member *discordgo.Member, rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository, jailRepository *repositories.JailRepository, defaultOrderRoleNames []string, syncProgression bool) error {
 
 	var user *dax.User
 	var userStats *dax.UserStats
@@ -186,9 +193,16 @@ func SyncMemberPersistent(s *discordgo.Session, guildId string, userId string, m
 			return err
 		}
 
-		err = ProcessMemberVerification(s, logging.NewDiscordLogger(s, "notif-debug"), *usersRepository, guildId, userId, roleIds, "startup")
+		err = ProcessMemberVerification(s, logging.NewDiscordLogger(s, "notif-debug"), *usersRepository, *jailRepository, guildId, userId, roleIds, "startup")
 		if err != nil {
 			log.Println("Error verifying user in sync function:", err)
+			return err
+		}
+
+		// Refresh user post-verification process
+		user, err = globalRepositories.UsersRepository.GetUser(userId)
+		if err != nil {
+			log.Fatalf("Error ocurred retrieving user from the DB: %v\n", err)
 			return err
 		}
 

@@ -19,6 +19,7 @@ func SyncMembersAtStartup(s *discordgo.Session, defaultOrderRoleNames []string, 
 	rolesRepository := repositories.NewRolesRepository()
 	usersRepository := repositories.NewUsersRepository()
 	userStatsRepository := repositories.NewUsersStatsRepository()
+	jailRepository := repositories.NewJailRepository()
 
 	// Retrieve all members in the guild
 	members, err := s.GuildMembers(globalConfiguration.DiscordMainGuildId, "", 1000)
@@ -28,7 +29,7 @@ func SyncMembersAtStartup(s *discordgo.Session, defaultOrderRoleNames []string, 
 	}
 
 	// Process the current batch of members
-	processMembers(s, members, rolesRepository, usersRepository, userStatsRepository, defaultOrderRoleNames, syncProgression)
+	processMembers(s, members, rolesRepository, usersRepository, userStatsRepository, jailRepository, defaultOrderRoleNames, syncProgression)
 
 	// Paginate
 	for len(members) != 0 {
@@ -42,7 +43,7 @@ func SyncMembersAtStartup(s *discordgo.Session, defaultOrderRoleNames []string, 
 		}
 
 		// Process the next batch of members
-		processMembers(s, members, rolesRepository, usersRepository, userStatsRepository, defaultOrderRoleNames, syncProgression)
+		processMembers(s, members, rolesRepository, usersRepository, userStatsRepository, jailRepository, defaultOrderRoleNames, syncProgression)
 	}
 
 	// Cleanup
@@ -54,14 +55,14 @@ func SyncMembersAtStartup(s *discordgo.Session, defaultOrderRoleNames []string, 
 
 }
 
-func processMembers(s *discordgo.Session, members []*discordgo.Member, rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository, defaultOrderRoleNames []string, syncProgression bool) {
+func processMembers(s *discordgo.Session, members []*discordgo.Member, rolesRepository *repositories.RolesRepository, usersRepository *repositories.UsersRepository, userStatsRepository *repositories.UsersStatsRepository, jailRepository *repositories.JailRepository, defaultOrderRoleNames []string, syncProgression bool) {
 	for _, member := range members {
 		// If it's a bot, skip
 		if member.User.Bot {
 			continue
 		}
 		// For each member, sync their details (either add to DB or update)
-		err := memberService.SyncMemberPersistent(s, globalConfiguration.DiscordMainGuildId, member.User.ID, member, rolesRepository, usersRepository, userStatsRepository, defaultOrderRoleNames, syncProgression)
+		err := memberService.SyncMemberPersistent(s, globalConfiguration.DiscordMainGuildId, member.User.ID, member, rolesRepository, usersRepository, userStatsRepository, jailRepository, defaultOrderRoleNames, syncProgression)
 		if err != nil {
 			fmt.Printf("Error ocurred while processing batch of members for ID %s: %v", member.User.ID, err)
 		}

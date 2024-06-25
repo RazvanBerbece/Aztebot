@@ -3,7 +3,7 @@ package globalConfiguration
 // GENERAL
 const DefaultVerifiedRoleId = 1
 const DefaultVerifiedRoleName = "Aztec"
-const GreetNewVerifiedUsersInChannel = true
+const GreetNewVerifiedUsersInChannel = false
 
 // LOGGING
 const AuditMemberJoinsInChannel = true

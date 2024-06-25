@@ -194,6 +194,29 @@ func (r UsersRepository) UpdateUser(user dax.User) (*dax.User, error) {
 	return &user, nil
 }
 
+func (r UsersRepository) SetUserCreatedAt(userId string, timestamp int64) error {
+
+	fmt.Println(userId, timestamp)
+
+	stmt, err := r.Conn.SqlDb.Prepare(`
+		UPDATE Users SET 
+			createdAt = ?
+		WHERE userId = ?`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	res, err := stmt.Exec(timestamp, userId)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(res.RowsAffected())
+
+	return nil
+}
+
 func (r UsersRepository) AddUserExpriencePoints(userId string, experiencePoints float64) error {
 
 	stmt, err := r.Conn.SqlDb.Prepare(`
