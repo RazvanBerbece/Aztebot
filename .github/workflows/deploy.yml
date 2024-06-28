@@ -55,7 +55,7 @@ jobs:
 
       - name: Generate next release number
         id: tag_version
-        uses: mathieudutour/github-tag-action@v6.2
+        uses: mathieudutour/github-tag-action@1.0.1
         with:
           github_token: ${{ secrets.GH_TOKEN }}
           dry_run: true
@@ -122,7 +122,7 @@ jobs:
           kubectl get pods
       
       - name: Create a new GitHub release
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@v2.0.0
         with:
           token: ${{ secrets.GH_TOKEN }}
           tag: ${{ steps.tag_version.outputs.new_tag }}
