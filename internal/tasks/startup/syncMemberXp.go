@@ -28,6 +28,8 @@ func SyncExperiencePointsGainsAtStartup(s *discordgo.Session, uids []string) {
 			fmt.Println("[STARTUP] Failed Task SyncExperiencePointsGainsAtStartup() at", time.Now(), "for UID", "with error", err)
 		}
 
+		currentXp := user.CurrentExperience
+
 		stats, errStats := userStatsRepository.GetStatsForUser(uid)
 		if errStats != nil {
 			if errStats == sql.ErrNoRows {
@@ -48,7 +50,22 @@ func SyncExperiencePointsGainsAtStartup(s *discordgo.Session, uids []string) {
 			globalConfiguration.DefaultExperienceReward_InVc,
 			globalConfiguration.DefaultExperienceReward_InMusic)
 
-		user.CurrentExperience = computedXp
+		var xpToSet float64
+
+		// Reassign correct amount of XP given the stats and other stuff
+		if computedXp != currentXp {
+			// mismatch between current XP and computed XP for user
+			// note: always maximise the amount of XP users are assigned
+			if currentXp > computedXp {
+				xpToSet = currentXp // current XP would include XP gained through rate multipliers, etc..
+			} else {
+				xpToSet = computedXp
+			}
+		} else {
+			// no mismatch, good to assign the computed amount
+			xpToSet = computedXp
+		}
+		user.CurrentExperience = xpToSet
 
 		// Update user entity with new XP value
 		_, err = usersRepository.UpdateUser(*user)
