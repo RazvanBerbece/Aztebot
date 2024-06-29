@@ -413,24 +413,6 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		},
 	},
 	{
-		Name:        "add-xp",
-		Description: "Adds experience points to a user.",
-		Options: []*discordgo.ApplicationCommandOption{
-			{
-				Type:        discordgo.ApplicationCommandOptionString,
-				Name:        "user",
-				Description: "The user to give XP to.",
-				Required:    true,
-			},
-			{
-				Type:        discordgo.ApplicationCommandOptionString,
-				Name:        "xp",
-				Description: "How much XP to give to a user.",
-				Required:    true,
-			},
-		},
-	},
-	{
 		Name:        "add-coins",
 		Description: "Adds AzteCoins points to a user's wallet.",
 		Options: []*discordgo.ApplicationCommandOption{
@@ -551,7 +533,6 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"confess":               supportSlashHandlers.HandleSlashConfess,
 	"set-global-xp-rate":    xpSystemSlashHandlers.HandleSlashSetGlobalXpRateForActivity,
 	"set-stats":             xpSystemSlashHandlers.HandleSlashSetStats,
-	"add-xp":                xpSystemSlashHandlers.HandleSlashAddXp,
 	"warn":                  warningSlashHandlers.HandleSlashWarn,
 	"warn-remove-oldest":    warningSlashHandlers.HandleSlashWarnRemoveOldest,
 	"warns":                 warningSlashHandlers.HandleSlashWarns,

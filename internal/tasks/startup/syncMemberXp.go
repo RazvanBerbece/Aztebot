@@ -28,8 +28,6 @@ func SyncExperiencePointsGainsAtStartup(s *discordgo.Session, uids []string) {
 			fmt.Println("[STARTUP] Failed Task SyncExperiencePointsGainsAtStartup() at", time.Now(), "for UID", "with error", err)
 		}
 
-		currentXp := user.CurrentExperience
-
 		stats, errStats := userStatsRepository.GetStatsForUser(uid)
 		if errStats != nil {
 			if errStats == sql.ErrNoRows {
@@ -50,21 +48,7 @@ func SyncExperiencePointsGainsAtStartup(s *discordgo.Session, uids []string) {
 			globalConfiguration.DefaultExperienceReward_InVc,
 			globalConfiguration.DefaultExperienceReward_InMusic)
 
-		// XP can also be added via bonuses, so take that into consideration
-		// by picking the max between them
-		// todo: this could instead use an XpGrants table ?
-		var actualXp float64
-		if computedXp != currentXp {
-			// mismatch resolution
-			if currentXp > computedXp {
-				actualXp = currentXp // current XP would include awards, grants, etc.
-			} else {
-				actualXp = computedXp
-			}
-		} else {
-			actualXp = computedXp
-		}
-		user.CurrentExperience = actualXp
+		user.CurrentExperience = computedXp
 
 		// Update user entity with new XP value
 		_, err = usersRepository.UpdateUser(*user)
