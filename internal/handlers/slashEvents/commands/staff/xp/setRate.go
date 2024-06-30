@@ -111,7 +111,7 @@ func SendGlobalRateChangeNotification(channelId string, rateName string, activit
 	// Build global XP rate change embed
 	embed := embed.
 		NewEmbed().
-		SetAuthor("AzteBot Global Broadcaster").
+		SetAuthor("AzteBot Global Broadcaster", "https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		SetTitle(fmt.Sprintf("🤖📣	Gain Rate Boost Announcement - `%s`", rateName)).
 		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
 		SetColor(000000)
@@ -122,7 +122,7 @@ func SendGlobalRateChangeNotification(channelId string, rateName string, activit
 		embed.AddField("", fmt.Sprintf("Activities involving `%s` are now worth `%s` as many `%s` !", activityName, multiplierName, rateName), false)
 	}
 
-	embed.AtTagEveryone()
+	embed.AtTagEveryone(true)
 
 	globalMessaging.NotificationsChannel <- events.NotificationEvent{
 		TargetChannelId: channelId,

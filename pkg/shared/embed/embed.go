@@ -74,12 +74,21 @@ func (e *Embed) AddLineBreakField() *Embed {
 }
 
 // AtTagEveryone
-func (e *Embed) AtTagEveryone() *Embed {
-	e.Fields = append(e.Fields, &discordgo.MessageEmbedField{
-		Name:   "",
-		Value:  "||@everyone||",
-		Inline: false,
-	})
+func (e *Embed) AtTagEveryone(hidden bool) *Embed {
+
+	if hidden {
+		e.Fields = append(e.Fields, &discordgo.MessageEmbedField{
+			Name:   "",
+			Value:  "||@everyone||",
+			Inline: false,
+		})
+	} else {
+		e.Fields = append(e.Fields, &discordgo.MessageEmbedField{
+			Name:   "",
+			Value:  "@everyone",
+			Inline: false,
+		})
+	}
 
 	return e
 }
