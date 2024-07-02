@@ -127,6 +127,7 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 				Name:        "reason",
 				Description: "The reason for which the timeout was given (max. 500 characters)",
 				Required:    true,
+				MaxLength:   500,
 			},
 			{
 				Type:        discordgo.ApplicationCommandOptionString,
@@ -313,6 +314,7 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 				Name:        "reason",
 				Description: "The reason to jail the user for",
 				Required:    true,
+				MaxLength:   500,
 			},
 		},
 	},

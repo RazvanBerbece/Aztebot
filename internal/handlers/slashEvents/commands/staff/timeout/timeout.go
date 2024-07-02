@@ -27,11 +27,6 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		utils.SendCommandErrorEmbedResponse(s, i.Interaction, errMsg)
 		return
 	}
-	if !utils.IsValidReasonMessage(reason) {
-		errMsg := fmt.Sprintf("The provided `reason` command argument is invalid. (term: `%s`)", reason)
-		utils.SendCommandErrorEmbedResponse(s, i.Interaction, errMsg)
-		return
-	}
 
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
