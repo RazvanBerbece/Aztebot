@@ -1,13 +1,9 @@
 package messageEvent
 
 import (
-	"fmt"
-	"time"
-
 	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
-	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/internal/services/member"
 	"github.com/bwmarrin/discordgo"
 )
@@ -26,18 +22,10 @@ func Any(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	// Increase stats for user
-	err = globalRepositories.UserStatsRepository.IncrementMessagesSentForUser(messageCreatorUserId)
-	if err != nil {
-		fmt.Printf("An error ocurred while updating user (%s) message count: %v\n", messageCreatorUserId, err)
-	}
-
-	err = globalRepositories.UserStatsRepository.IncrementActivitiesTodayForUser(messageCreatorUserId)
-	if err != nil {
-		fmt.Printf("An error ocurred while incrementing user (%s) activities count: %v\n", messageCreatorUserId, err)
-	}
-	err = globalRepositories.UserStatsRepository.UpdateLastActiveTimestamp(messageCreatorUserId, time.Now().Unix())
-	if err != nil {
-		fmt.Printf("An error ocurred while updating user (%s) last timestamp: %v\n", m.Author.ID, err)
+	var activityType = "MSG"
+	globalMessaging.ActivityRegistrationsChannel <- events.ActivityEvent{
+		UserId: messageCreatorUserId,
+		Type:   &activityType,
 	}
 
 	// Publish experience grant message on the channel

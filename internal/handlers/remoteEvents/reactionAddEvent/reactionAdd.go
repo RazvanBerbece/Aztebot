@@ -2,7 +2,6 @@ package messageEvent
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
@@ -44,13 +43,8 @@ func ReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 		fmt.Printf("An error ocurred while updating user (%s) reaction count: %v", messageOwnerUid, err)
 	}
 
-	err = globalRepositories.UserStatsRepository.IncrementActivitiesTodayForUser(r.UserID)
-	if err != nil {
-		fmt.Printf("An error ocurred while incrementing user (%s) activities count: %v", r.UserID, err)
-	}
-	err = globalRepositories.UserStatsRepository.UpdateLastActiveTimestamp(r.UserID, time.Now().Unix())
-	if err != nil {
-		fmt.Printf("An error ocurred while udpating user (%s) last timestamp: %v", r.UserID, err)
+	globalMessaging.ActivityRegistrationsChannel <- events.ActivityEvent{
+		UserId: r.UserID,
 	}
 
 	globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{

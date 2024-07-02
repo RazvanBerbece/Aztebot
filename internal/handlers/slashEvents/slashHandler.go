@@ -3,12 +3,10 @@ package slashCommandEvent
 import (
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
-	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	actionEvent "github.com/RazvanBerbece/Aztebot/internal/handlers/remoteEvents/actionEvents"
 	"github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands"
 	"github.com/RazvanBerbece/Aztebot/internal/services/logging"
@@ -110,18 +108,10 @@ func AddRegisteredSlashEventHandlers(s *discordgo.Session) {
 
 		ownerUserId := i.Member.User.ID
 
-		err := globalRepositories.UserStatsRepository.IncrementSlashCommandsUsedForUser(ownerUserId)
-		if err != nil {
-			fmt.Printf("Error ocurred while incrementing slash commands for user %s: %v", ownerUserId, err)
-		}
-
-		err = globalRepositories.UserStatsRepository.IncrementActivitiesTodayForUser(ownerUserId)
-		if err != nil {
-			fmt.Printf("An error ocurred while incrementing user (%s) activities count: %v", ownerUserId, err)
-		}
-		err = globalRepositories.UserStatsRepository.UpdateLastActiveTimestamp(ownerUserId, time.Now().Unix())
-		if err != nil {
-			fmt.Printf("An error ocurred while udpating user (%s) last timestamp: %v", ownerUserId, err)
+		var activityType = "SLASH"
+		globalMessaging.ActivityRegistrationsChannel <- events.ActivityEvent{
+			UserId: ownerUserId,
+			Type:   &activityType,
 		}
 
 		globalMessaging.ExperienceGrantsChannel <- events.ExperienceGrantEvent{

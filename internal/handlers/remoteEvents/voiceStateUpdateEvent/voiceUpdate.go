@@ -84,14 +84,8 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 		now := time.Now()
 		globalState.StreamSessions[vs.UserID] = &now
 
-		err = globalRepositories.UserStatsRepository.IncrementActivitiesTodayForUser(vs.UserID)
-		if err != nil {
-			fmt.Printf("An error ocurred while incrementing user (%s) activities count: %v", vs.UserID, err)
-		}
-
-		err = globalRepositories.UserStatsRepository.UpdateLastActiveTimestamp(vs.UserID, now.Unix())
-		if err != nil {
-			fmt.Printf("An error ocurred while updating user (%s) last timestamp: %v", vs.UserID, err)
+		globalMessaging.ActivityRegistrationsChannel <- events.ActivityEvent{
+			UserId: vs.UserID,
 		}
 	} else if vs.ChannelID == "" && vs.SelfStream {
 		// The Discord API does something weird and sends SelfStream as true
@@ -134,14 +128,8 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 				globalState.VoiceSessions[vs.UserID] = time.Now()
 			}
 
-			err = globalRepositories.UserStatsRepository.IncrementActivitiesTodayForUser(vs.UserID)
-			if err != nil {
-				fmt.Printf("An error ocurred while incrementing user (%s) activities count: %v", vs.UserID, err)
-			}
-
-			err = globalRepositories.UserStatsRepository.UpdateLastActiveTimestamp(vs.UserID, time.Now().Unix())
-			if err != nil {
-				fmt.Printf("An error ocurred while updating user (%s) last timestamp: %v", vs.UserID, err)
+			globalMessaging.ActivityRegistrationsChannel <- events.ActivityEvent{
+				UserId: vs.UserID,
 			}
 		} else if vs.ChannelID != "" && globalState.StreamSessions[vs.UserID] != nil {
 			delete(globalState.StreamSessions, vs.UserID)

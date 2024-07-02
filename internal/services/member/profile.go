@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	dax "github.com/RazvanBerbece/Aztebot/internal/data/models/dax/aztebot"
 	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	repositories "github.com/RazvanBerbece/Aztebot/internal/data/repositories/aztebot"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
@@ -25,6 +26,33 @@ func IsFullyVerified(userId string) bool {
 	if err != nil {
 		log.Printf("Cannot retrieve user with id %s: %v", userId, err)
 	}
+
+	roleIds := utils.GetRoleIdsFromRoleString(user.CurrentRoleIds)
+
+	if len(roleIds) > 0 {
+		hasAtLeastOneRole = true
+	}
+
+	if user.CreatedAt != nil {
+		hasCreatedAtTimestamp = true
+	}
+
+	for _, roleId := range roleIds {
+		if roleId == 1 {
+			// role with ID = 1 is always the verified role
+			hasVerifiedRole = true
+			break
+		}
+	}
+
+	return (hasVerifiedRole || hasCreatedAtTimestamp) && hasAtLeastOneRole
+}
+
+func IsFullyVerifiedLocal(user dax.User) bool {
+
+	hasAtLeastOneRole := false
+	hasVerifiedRole := false
+	hasCreatedAtTimestamp := false
 
 	roleIds := utils.GetRoleIdsFromRoleString(user.CurrentRoleIds)
 

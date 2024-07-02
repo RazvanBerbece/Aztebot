@@ -148,7 +148,7 @@ func GetProfileEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Me
 		DecorateWithTimestampFooter("Mon, 02 Jan 2006 15:04:05 MST").
 		AddLineBreakField()
 
-	if member.IsFullyVerified(userId) {
+	if member.IsFullyVerifiedLocal(*user) {
 
 		// Process ranks in leaderboards
 		msgRankString := ""
@@ -178,13 +178,8 @@ func GetProfileEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Me
 			musicRankString = fmt.Sprintf(" (`🏆 #%d`)", musicRank)
 		}
 
-		// Retrieve experience points for user
-		xp, err := member.GetMemberExperiencePoints(userId)
-		if err != nil {
-			log.Printf("Cannot retrieve user %s XP: %v\n", userId, err)
-			return nil
-		}
-		xpInt := int(*xp)
+		// XP value and XP rank
+		xpInt := int(user.CurrentExperience)
 		xpRank, rankErr := member.GetMemberXpRank(userId)
 		if rankErr != nil {
 			log.Printf("Cannot retrieve user %s XP rank: %v\n", userId, rankErr)
