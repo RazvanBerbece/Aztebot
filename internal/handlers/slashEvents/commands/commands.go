@@ -515,6 +515,10 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 			},
 		},
 	},
+	{
+		Name:        "gain-rates",
+		Description: "Displays the current values of the reward gain rates per activity on the server.",
+	},
 }
 
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -531,6 +535,7 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"top":                   serverSlashHandlers.HandleSlashTop,
 	"monthly-leaderboard":   serverSlashHandlers.HandleSlashMonthlyLeaderboard,
 	"arcade-ladder":         serverSlashHandlers.HandleSlashArcadeLadder,
+	"gain-rates":            serverSlashHandlers.HandleSlashServerGainRates,
 	"arcade-winner":         arcadeLadderSlashHandlers.HandleSlashArcadeWinner,
 	"confess":               supportSlashHandlers.HandleSlashConfess,
 	"set-global-xp-rate":    xpSystemSlashHandlers.HandleSlashSetGlobalXpRateForActivity,
