@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
+	repositories "github.com/RazvanBerbece/Aztebot/internal/data/repositories/aztebot"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
@@ -24,6 +25,13 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 	switch activity {
 	case "msg_send":
 		if multiplierStringInput == "def" {
+			err := repositories.NewGlobalGainRatesRepository().UpdateXpGlobalGainRate(
+				globalConfiguration.ActivityId_MessageSend,
+				globalConfiguration.DefaultExperienceReward_MessageSent)
+			if err != nil {
+				fmt.Printf("Failed to update global XP gain rate for %s: %v\n", globalConfiguration.ActivityId_MessageSend, err)
+				return
+			}
 			globalConfiguration.ExperienceReward_MessageSent = globalConfiguration.DefaultExperienceReward_MessageSent
 		} else {
 			multiplier, convErr := utils.StringToFloat64(multiplierStringInput)
@@ -32,10 +40,24 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 				utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
 				return
 			}
+			err := repositories.NewGlobalGainRatesRepository().UpdateXpGlobalGainRate(
+				globalConfiguration.ActivityId_MessageSend,
+				globalConfiguration.DefaultExperienceReward_MessageSent**multiplier)
+			if err != nil {
+				fmt.Printf("Failed to update global XP gain rate for %s: %v\n", globalConfiguration.ActivityId_MessageSend, err)
+				return
+			}
 			globalConfiguration.ExperienceReward_MessageSent = globalConfiguration.DefaultExperienceReward_MessageSent * *multiplier
 		}
 	case "react_recv":
 		if multiplierStringInput == "def" {
+			err := repositories.NewGlobalGainRatesRepository().UpdateXpGlobalGainRate(
+				globalConfiguration.ActivityId_ReactionReceived,
+				globalConfiguration.DefaultExperienceReward_ReactionReceived)
+			if err != nil {
+				fmt.Printf("Failed to update global XP gain rate for %s: %v\n", globalConfiguration.ActivityId_ReactionReceived, err)
+				return
+			}
 			globalConfiguration.ExperienceReward_ReactionReceived = globalConfiguration.DefaultExperienceReward_ReactionReceived
 		} else {
 			multiplier, convErr := utils.StringToFloat64(multiplierStringInput)
@@ -44,10 +66,24 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 				utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
 				return
 			}
+			err := repositories.NewGlobalGainRatesRepository().UpdateXpGlobalGainRate(
+				globalConfiguration.ActivityId_ReactionReceived,
+				globalConfiguration.DefaultExperienceReward_ReactionReceived**multiplier)
+			if err != nil {
+				fmt.Printf("Failed to update global XP gain rate for %s: %v\n", globalConfiguration.ActivityId_ReactionReceived, err)
+				return
+			}
 			globalConfiguration.ExperienceReward_ReactionReceived = globalConfiguration.DefaultExperienceReward_ReactionReceived * *multiplier
 		}
 	case "slash_use":
 		if multiplierStringInput == "def" {
+			err := repositories.NewGlobalGainRatesRepository().UpdateXpGlobalGainRate(
+				globalConfiguration.ActivityId_SlashCommandUse,
+				globalConfiguration.DefaultExperienceReward_SlashCommandUsed)
+			if err != nil {
+				fmt.Printf("Failed to update global XP gain rate for %s: %v\n", globalConfiguration.ActivityId_SlashCommandUse, err)
+				return
+			}
 			globalConfiguration.ExperienceReward_SlashCommandUsed = globalConfiguration.DefaultExperienceReward_SlashCommandUsed
 		} else {
 			multiplier, convErr := utils.StringToFloat64(multiplierStringInput)
@@ -56,10 +92,24 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 				utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
 				return
 			}
+			err := repositories.NewGlobalGainRatesRepository().UpdateXpGlobalGainRate(
+				globalConfiguration.ActivityId_SlashCommandUse,
+				globalConfiguration.DefaultExperienceReward_SlashCommandUsed**multiplier)
+			if err != nil {
+				fmt.Printf("Failed to update global XP gain rate for %s: %v\n", globalConfiguration.ActivityId_SlashCommandUse, err)
+				return
+			}
 			globalConfiguration.ExperienceReward_SlashCommandUsed = globalConfiguration.DefaultExperienceReward_SlashCommandUsed * *multiplier
 		}
 	case "spent_vc":
 		if multiplierStringInput == "def" {
+			err := repositories.NewGlobalGainRatesRepository().UpdateXpGlobalGainRate(
+				globalConfiguration.ActivityId_TimeInVc,
+				globalConfiguration.DefaultExperienceReward_InVc)
+			if err != nil {
+				fmt.Printf("Failed to update global XP gain rate for %s: %v\n", globalConfiguration.ActivityId_TimeInVc, err)
+				return
+			}
 			globalConfiguration.ExperienceReward_InVc = globalConfiguration.DefaultExperienceReward_InVc
 		} else {
 			multiplier, convErr := utils.StringToFloat64(multiplierStringInput)
@@ -68,16 +118,37 @@ func HandleSlashSetGlobalXpRateForActivity(s *discordgo.Session, i *discordgo.In
 				utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
 				return
 			}
+			err := repositories.NewGlobalGainRatesRepository().UpdateXpGlobalGainRate(
+				globalConfiguration.ActivityId_TimeInVc,
+				globalConfiguration.DefaultExperienceReward_InVc**multiplier)
+			if err != nil {
+				fmt.Printf("Failed to update global XP gain rate for %s: %v\n", globalConfiguration.ActivityId_TimeInVc, err)
+				return
+			}
 			globalConfiguration.ExperienceReward_InVc = globalConfiguration.DefaultExperienceReward_InVc * *multiplier
 		}
 	case "spent_music":
 		if multiplierStringInput == "def" {
+			err := repositories.NewGlobalGainRatesRepository().UpdateXpGlobalGainRate(
+				globalConfiguration.ActivityId_TimeInMusic,
+				globalConfiguration.DefaultExperienceReward_InMusic)
+			if err != nil {
+				fmt.Printf("Failed to update global XP gain rate for %s: %v\n", globalConfiguration.ActivityId_TimeInMusic, err)
+				return
+			}
 			globalConfiguration.ExperienceReward_InMusic = globalConfiguration.DefaultExperienceReward_InMusic
 		} else {
 			multiplier, convErr := utils.StringToFloat64(multiplierStringInput)
 			if convErr != nil {
 				errMsg := fmt.Sprintf("The provided `multiplier` command argument is invalid. (term: `%s`)", multiplierName)
 				utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
+				return
+			}
+			err := repositories.NewGlobalGainRatesRepository().UpdateXpGlobalGainRate(
+				globalConfiguration.ActivityId_TimeInMusic,
+				globalConfiguration.DefaultExperienceReward_InMusic**multiplier)
+			if err != nil {
+				fmt.Printf("Failed to update global XP gain rate for %s: %v\n", globalConfiguration.ActivityId_TimeInMusic, err)
 				return
 			}
 			globalConfiguration.ExperienceReward_InMusic = globalConfiguration.DefaultExperienceReward_InMusic * *multiplier

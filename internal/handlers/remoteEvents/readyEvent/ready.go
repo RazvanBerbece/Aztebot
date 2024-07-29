@@ -24,6 +24,9 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	// Load static data once Discord API runtime features are confirmed
 	LoadStaticData()
 
+	// Sync activity gain rates at startup
+	go startup.SyncGlobalGainRates()
+
 	// Retrieve list of DB users at startup time (for convenience and some optimisation further down the line)
 	uids, err := globalRepositories.UsersRepository.GetAllDiscordUids()
 	if err != nil {
