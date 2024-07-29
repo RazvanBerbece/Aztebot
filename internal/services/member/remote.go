@@ -254,14 +254,20 @@ func AddDiscordRolesToMember(s *discordgo.Session, guildId string, userId string
 
 	// For each role
 	for _, roleId := range roleIds {
+
 		role, err := globalRepositories.RolesRepository.GetRoleById(roleId)
 		if err != nil {
 			fmt.Printf("Error ocurred while adding DB roles to Discord member: %v\n", err)
 			return err
 		}
 
-		// 20 Mar 2024: Same Server Booster trick as above
 		if role.DisplayName == globalConfiguration.ServerBoosterDefaultRoleName {
+			continue
+		}
+
+		// TODO 29 JUL
+		// Remove this code !!
+		if role.DisplayName == "Dominus" {
 			continue
 		}
 
