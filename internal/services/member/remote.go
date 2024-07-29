@@ -265,12 +265,6 @@ func AddDiscordRolesToMember(s *discordgo.Session, guildId string, userId string
 			continue
 		}
 
-		// TODO 29 JUL
-		// Remove this code !!
-		if role.DisplayName == "Dominus" {
-			continue
-		}
-
 		// Get the role ID by display name from Discord
 		discordRoleId := GetDiscordRoleIdForRoleWithName(s, guildId, role.DisplayName)
 		if discordRoleId != nil {
