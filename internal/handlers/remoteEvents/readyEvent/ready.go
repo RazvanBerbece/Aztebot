@@ -66,17 +66,17 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 	go cron.UpdateVoiceSessionDurations(s)
 
 	// CRON FEATS
-	cron.ProcessUpdateActivityStreaks(24, 0, 0)               // the hh:mm:ss timestamp in a day to run the cron at (i.e 24:00:00)
-	cron.ProcessMonthlyLeaderboard(s, 23, 55, 0, true, false) // run on last day of current month at given time (i.e 23:55:00)
+	go cron.ProcessUpdateActivityStreaks(24, 0, 0)               // the hh:mm:ss timestamp in a day to run the cron at (i.e 24:00:00)
+	go cron.ProcessMonthlyLeaderboard(s, 23, 55, 0, true, false) // run on last day of current month at given time (i.e 23:55:00)
 
 	// CRON RUNTIME & PERSISTENT ENTITY CLEANUPS
-	cron.ProcessClearExpiredTimeouts(s)
-	cron.ProcessCleanupUnusedDynamicChannels(s, globalConfiguration.DiscordMainGuildId)
-	cron.ProcessRemoveExpiredWarns()
-	cron.ProcessRemoveArchivedTimeouts()
+	go cron.ProcessClearExpiredTimeouts(s)
+	go cron.ProcessCleanupUnusedDynamicChannels(s, globalConfiguration.DiscordMainGuildId)
+	go cron.ProcessRemoveExpiredWarns()
+	go cron.ProcessRemoveArchivedTimeouts()
 
 	// CRON RUNTIME STATE CLEANUPS
-	cron.ClearOldPaginatedEmbeds(s)
-	cron.ClearOldUserRepDelays()
+	go cron.ClearOldPaginatedEmbeds(s)
+	go cron.ClearOldUserRepDelays()
 
 }
