@@ -80,32 +80,40 @@ func ExtractDailyLeaderboardWinners(s *discordgo.Session, guildId string, dailyL
 	// Award coins to winners
 	var dailyWinnerCoinRewardAmount float64 = 1000
 
-	globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
-		GuildId:  guildId,
-		UserId:   kingEntry.UserId,
-		Funds:    dailyWinnerCoinRewardAmount,
-		Activity: "LEADERBOARD-AWARD",
+	if kingEntry != nil {
+		globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+			GuildId:  guildId,
+			UserId:   kingEntry.UserId,
+			Funds:    dailyWinnerCoinRewardAmount,
+			Activity: "LEADERBOARD-AWARD",
+		}
 	}
 
-	globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
-		GuildId:  guildId,
-		UserId:   queenEntry.UserId,
-		Funds:    dailyWinnerCoinRewardAmount,
-		Activity: "LEADERBOARD-AWARD",
+	if queenEntry != nil {
+		globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+			GuildId:  guildId,
+			UserId:   queenEntry.UserId,
+			Funds:    dailyWinnerCoinRewardAmount,
+			Activity: "LEADERBOARD-AWARD",
+		}
 	}
 
-	globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
-		GuildId:  guildId,
-		UserId:   nonbinaryEntry.UserId,
-		Funds:    dailyWinnerCoinRewardAmount,
-		Activity: "LEADERBOARD-AWARD",
+	if nonbinaryEntry != nil {
+		globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+			GuildId:  guildId,
+			UserId:   nonbinaryEntry.UserId,
+			Funds:    dailyWinnerCoinRewardAmount,
+			Activity: "LEADERBOARD-AWARD",
+		}
 	}
 
-	globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
-		GuildId:  guildId,
-		UserId:   otherEntry.UserId,
-		Funds:    dailyWinnerCoinRewardAmount,
-		Activity: "LEADERBOARD-AWARD",
+	if otherEntry != nil {
+		globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+			GuildId:  guildId,
+			UserId:   otherEntry.UserId,
+			Funds:    dailyWinnerCoinRewardAmount,
+			Activity: "LEADERBOARD-AWARD",
+		}
 	}
 
 	// Send winner notification to designated channel

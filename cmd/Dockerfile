@@ -3,6 +3,8 @@
 # Base Image
 FROM golang:latest
 
+ENV TZ="Europe/London"
+
 WORKDIR /app
 
 # Install project dependencies
