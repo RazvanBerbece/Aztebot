@@ -100,11 +100,13 @@ func UserRepReact(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 			// Award coins for rep target and rep author
 			globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+				GuildId:  m.GuildID,
 				UserId:   targetUserId,
 				Funds:    5.0,
 				Activity: "REP-RECV",
 			}
 			globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+				GuildId:  m.GuildID,
 				UserId:   authorUserId,
 				Funds:    1.0,
 				Activity: "REP-GIVE",
@@ -157,11 +159,13 @@ func UserRepReact(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 			// Award coins for rep target and rep author
 			globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+				GuildId:  m.GuildID,
 				UserId:   targetUserId,
 				Funds:    5.0,
 				Activity: "REP-RECV",
 			}
 			globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+				GuildId:  m.GuildID,
 				UserId:   authorUserId,
 				Funds:    1.0,
 				Activity: "REP-GIVE",

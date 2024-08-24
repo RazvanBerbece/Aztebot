@@ -107,6 +107,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 			}
 
 			globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+				GuildId:  vs.GuildID,
 				UserId:   vs.UserID,
 				Funds:    globalConfiguration.CoinReward_InVc * secondsSpent,
 				Activity: "TIME-VC",
@@ -155,6 +156,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 					}
 
 					globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+						GuildId:  vs.GuildID,
 						UserId:   vs.UserID,
 						Funds:    globalConfiguration.CoinReward_InMusic * secondsSpent,
 						Activity: "TIME-MUSIC",
@@ -178,6 +180,7 @@ func VoiceStateUpdate(s *discordgo.Session, vs *discordgo.VoiceStateUpdate) {
 					}
 
 					globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+						GuildId:  vs.GuildID,
 						UserId:   vs.UserID,
 						Funds:    globalConfiguration.CoinReward_InVc * secondsSpent,
 						Activity: "TIME-VC",

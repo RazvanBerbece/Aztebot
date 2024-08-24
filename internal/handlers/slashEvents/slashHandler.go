@@ -121,6 +121,7 @@ func AddRegisteredSlashEventHandlers(s *discordgo.Session) {
 		}
 
 		globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+			GuildId:  i.GuildID,
 			UserId:   ownerUserId,
 			Funds:    1 * globalConfiguration.CoinReward_SlashCommandUsed,
 			Activity: "CMD-SEND",

@@ -20,3 +20,4 @@ var ArcadeLadderRepository = aztebotRepositories.NewArcadeLadderRepository()
 var UserRepRepository = aztebotRepositories.NewUserRepRepository()
 
 var WalletsRepository = aztemarketRepositories.NewWalletsRepository(globalConfiguration.MySqlAztemarketRootConnectionString)
+var CurrencySystemStateRepositoryRepository = aztemarketRepositories.NewCurrencySystemStateRepositoryRepository(globalConfiguration.MySqlAztemarketRootConnectionString)

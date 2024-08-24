@@ -19,7 +19,7 @@ var coinAwardSpecific_walletsRepository = aztemarketRepositories.NewWalletsRepos
 func HandleCoinAwardEvents(s *discordgo.Session, logger logging.Logger) {
 
 	for coinAwardEvent := range globalMessaging.CoinAwardsChannel {
-		go member.AwardFunds(s, *coinAwardSpecific_UsersRepository, coinAwardSpecific_walletsRepository, coinAwardEvent.UserId, coinAwardEvent.Funds, coinAwardEvent.Activity)
+		go member.AwardFunds(s, coinAwardEvent.GuildId, *coinAwardSpecific_UsersRepository, coinAwardSpecific_walletsRepository, coinAwardEvent.UserId, coinAwardEvent.Funds, coinAwardEvent.Activity)
 	}
 
 }

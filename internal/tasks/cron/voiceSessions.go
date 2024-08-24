@@ -68,6 +68,7 @@ func updateVoiceSessions(userStatsRepo *repositories.UsersStatsRepository) {
 
 		// Award coins
 		globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+			GuildId:  globalConfiguration.DiscordMainGuildId,
 			UserId:   uid,
 			Funds:    globalConfiguration.CoinReward_InVc * secondsSpent,
 			Activity: "TIME-VC",
@@ -99,6 +100,7 @@ func updateStreamingSessions(userStatsRepo *repositories.UsersStatsRepository) {
 
 		// Award coins
 		globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+			GuildId:  globalConfiguration.DiscordMainGuildId,
 			UserId:   uid,
 			Funds:    globalConfiguration.CoinReward_InVc * secondsSpent,
 			Activity: "TIME-VC",
@@ -137,6 +139,7 @@ func updateMusicSessions(userStatsRepo *repositories.UsersStatsRepository) {
 
 				// Award coins
 				globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+					GuildId:  globalConfiguration.DiscordMainGuildId,
 					UserId:   uid,
 					Funds:    globalConfiguration.CoinReward_InMusic * secondsSpent,
 					Activity: "TIME-MUSIC",

@@ -54,6 +54,7 @@ func HandleSlashAddCoins(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	}
 
 	globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+		GuildId:  i.GuildID,
 		UserId:   targetUserId,
 		Funds:    *fCoins,
 		Activity: "MANUAL-AWARD",

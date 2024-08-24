@@ -37,6 +37,7 @@ func Any(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	// Award coins for activity
 	globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+		GuildId:  m.GuildID,
 		UserId:   messageCreatorUserId,
 		Funds:    1 * globalConfiguration.CoinReward_MessageSent,
 		Activity: "MSG-SEND",

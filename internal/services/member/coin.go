@@ -6,12 +6,14 @@ import (
 
 	repositories "github.com/RazvanBerbece/Aztebot/internal/data/repositories/aztebot"
 	aztemarketRepositories "github.com/RazvanBerbece/Aztebot/internal/data/repositories/aztemarket"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
+	"github.com/RazvanBerbece/Aztebot/internal/services/economy"
 	"github.com/RazvanBerbece/Aztebot/internal/services/logging"
 	"github.com/bwmarrin/discordgo"
 )
 
 // By default logs errors and state to Discord.
-func AwardFunds(s *discordgo.Session, usersRepository repositories.UsersRepository, walletsRepository aztemarketRepositories.WalletsRepository, userId string, funds float64, activity string) error {
+func AwardFunds(s *discordgo.Session, guildId string, usersRepository repositories.UsersRepository, walletsRepository aztemarketRepositories.WalletsRepository, userId string, funds float64, activity string) error {
 
 	if funds < 0 || funds > 500000.0 {
 		return fmt.Errorf("cannot award funds to user with ID `%s`, because the number of awarded `funds` (`%.2f`) is invalid", userId, funds)
@@ -22,6 +24,25 @@ func AwardFunds(s *discordgo.Session, usersRepository repositories.UsersReposito
 		log := fmt.Sprintf("An error ocurred while awarding funds to user `%s`: %v\n", userId, err)
 		discordChannelLogger := logging.NewDiscordLogger(s, "notif-coinAwards")
 		go discordChannelLogger.LogError(log)
+		return err
+	}
+
+	economyService := economy.EconomyService{
+		CurrencySystemStateRepositoryRepository: globalRepositories.CurrencySystemStateRepositoryRepository,
+	}
+
+	err = economyService.AllocateFlowingCurrencyForGuild(guildId, funds)
+	if err != nil {
+		// Rollback
+		rollbackErr := walletsRepository.SubtractFundsFromWallet(userId, funds)
+		if rollbackErr != nil {
+			log := fmt.Sprintf("An error ocurred while subtracting funds from user `%s`: %v\n", userId, rollbackErr)
+			discordChannelLogger := logging.NewDiscordLogger(s, "notif-economyDebug")
+			go discordChannelLogger.LogError(log)
+			return rollbackErr
+		}
+		discordChannelLogger := logging.NewDiscordLogger(s, "notif-economyDebug")
+		go discordChannelLogger.LogError(err.Error())
 		return err
 	}
 
