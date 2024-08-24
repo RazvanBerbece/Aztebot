@@ -7,7 +7,7 @@ import (
 	dax "github.com/RazvanBerbece/Aztebot/internal/data/models/dax/aztemarket"
 )
 
-type DbCurrencySystemStateRepositoryRepository interface {
+type DbCurrencySystemStateRepository interface {
 	CreateCurrencySystem(guildId string,
 		currencyName string,
 		totalCurrencyAvailable float64,
@@ -21,19 +21,19 @@ type DbCurrencySystemStateRepositoryRepository interface {
 	DeleteCurrencySystem(guildId string) error
 }
 
-type CurrencySystemStateRepositoryRepository struct {
+type CurrencySystemStateRepository struct {
 	DbContext databaseconn.AztemarketDbContext
 }
 
-func NewCurrencySystemStateRepositoryRepository(connString string) CurrencySystemStateRepositoryRepository {
-	repo := CurrencySystemStateRepositoryRepository{databaseconn.AztemarketDbContext{
+func NewCurrencySystemStateRepository(connString string) CurrencySystemStateRepository {
+	repo := CurrencySystemStateRepository{databaseconn.AztemarketDbContext{
 		ConnectionString: connString,
 	}}
 	repo.DbContext.Connect()
 	return repo
 }
 
-func (r CurrencySystemStateRepositoryRepository) CreateCurrencySystem(guildId string,
+func (r CurrencySystemStateRepository) CreateCurrencySystem(guildId string,
 	currencyName string,
 	totalCurrencyAvailable float64,
 	totalCurrencyInFlow float64,
@@ -72,7 +72,7 @@ func (r CurrencySystemStateRepositoryRepository) CreateCurrencySystem(guildId st
 
 }
 
-func (r CurrencySystemStateRepositoryRepository) DeleteCurrencySystem(guildId string) error {
+func (r CurrencySystemStateRepository) DeleteCurrencySystem(guildId string) error {
 
 	query := "DELETE FROM CurrencySystemState WHERE guildId = ?"
 
@@ -85,7 +85,7 @@ func (r CurrencySystemStateRepositoryRepository) DeleteCurrencySystem(guildId st
 
 }
 
-func (r CurrencySystemStateRepositoryRepository) ReplenishCurrencyForGuild(guildId string, currencyAmount float64) error {
+func (r CurrencySystemStateRepository) ReplenishCurrencyForGuild(guildId string, currencyAmount float64) error {
 
 	stmt, err := r.DbContext.SqlDb.Prepare(`
 	UPDATE CurrencySystemState SET 
@@ -105,7 +105,7 @@ func (r CurrencySystemStateRepositoryRepository) ReplenishCurrencyForGuild(guild
 
 }
 
-func (r CurrencySystemStateRepositoryRepository) GetCurrencyStateForGuild(guildId string) (*dax.CurrencySystemState, error) {
+func (r CurrencySystemStateRepository) GetCurrencyStateForGuild(guildId string) (*dax.CurrencySystemState, error) {
 
 	query := "SELECT * FROM CurrencySystemState WHERE guildId = ?"
 	row := r.DbContext.SqlDb.QueryRow(query, guildId)
@@ -125,7 +125,7 @@ func (r CurrencySystemStateRepositoryRepository) GetCurrencyStateForGuild(guildI
 
 }
 
-func (r CurrencySystemStateRepositoryRepository) AllocateFlowingCurrencyForGuild(guildId string, currencyAmount float64) error {
+func (r CurrencySystemStateRepository) AllocateFlowingCurrencyForGuild(guildId string, currencyAmount float64) error {
 
 	stmt, err := r.DbContext.SqlDb.Prepare(`
 	UPDATE CurrencySystemState SET 
@@ -145,7 +145,7 @@ func (r CurrencySystemStateRepositoryRepository) AllocateFlowingCurrencyForGuild
 	return nil
 }
 
-func (r CurrencySystemStateRepositoryRepository) DeallocateFlowingCurrencyForGuild(guildId string, currencyAmount float64) error {
+func (r CurrencySystemStateRepository) DeallocateFlowingCurrencyForGuild(guildId string, currencyAmount float64) error {
 	stmt, err := r.DbContext.SqlDb.Prepare(`
 	UPDATE CurrencySystemState SET 
 		totalCurrencyInFlow = totalCurrencyInFlow - ?,

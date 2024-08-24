@@ -6,14 +6,13 @@ import (
 
 	repositories "github.com/RazvanBerbece/Aztebot/internal/data/repositories/aztebot"
 	aztemarketRepositories "github.com/RazvanBerbece/Aztebot/internal/data/repositories/aztemarket"
-	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/internal/services/economy"
 	"github.com/RazvanBerbece/Aztebot/internal/services/logging"
 	"github.com/bwmarrin/discordgo"
 )
 
 // By default logs errors and state to Discord.
-func AwardFunds(s *discordgo.Session, guildId string, usersRepository repositories.UsersRepository, walletsRepository aztemarketRepositories.WalletsRepository, userId string, funds float64, activity string) error {
+func AwardFunds(s *discordgo.Session, guildId string, economicsRepository aztemarketRepositories.DbCurrencySystemStateRepository, usersRepository repositories.UsersRepository, walletsRepository aztemarketRepositories.WalletsRepository, userId string, funds float64, activity string) error {
 
 	_, err := walletsRepository.GetWalletIdForUser(userId)
 	if err != nil {
@@ -32,7 +31,7 @@ func AwardFunds(s *discordgo.Session, guildId string, usersRepository repositori
 	}
 
 	// Check that the economy pot permits the coin award
-	economicSystem, err := globalRepositories.CurrencySystemStateRepositoryRepository.GetCurrencyStateForGuild(guildId)
+	economicSystem, err := economicsRepository.GetCurrencyStateForGuild(guildId)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log := "No economic system available for this guild. Make sure you create one before awarding currency for activities by using the `/economy-create` command."
@@ -62,7 +61,7 @@ func AwardFunds(s *discordgo.Session, guildId string, usersRepository repositori
 	}
 
 	economyService := economy.EconomyService{
-		CurrencySystemStateRepositoryRepository: globalRepositories.CurrencySystemStateRepositoryRepository,
+		CurrencySystemStateRepository: economicsRepository,
 	}
 
 	err = economyService.AllocateFlowingCurrencyForGuild(guildId, funds)

@@ -14,12 +14,13 @@ import (
 // as there can be many awards due to voice tick rewards, hence lots of egress traffic to the MySQL instance
 
 var coinAwardSpecific_UsersRepository = aztebotRepositories.NewUsersRepository()
-var coinAwardSpecific_walletsRepository = aztemarketRepositories.NewWalletsRepository(globalConfiguration.MySqlAztemarketRootConnectionString)
+var coinAwardSpecific_WalletsRepository = aztemarketRepositories.NewWalletsRepository(globalConfiguration.MySqlAztemarketRootConnectionString)
+var coinAwardSpecific_EconomyRepository = aztemarketRepositories.NewCurrencySystemStateRepository(globalConfiguration.MySqlAztemarketRootConnectionString)
 
 func HandleCoinAwardEvents(s *discordgo.Session, logger logging.Logger) {
 
 	for coinAwardEvent := range globalMessaging.CoinAwardsChannel {
-		go member.AwardFunds(s, coinAwardEvent.GuildId, *coinAwardSpecific_UsersRepository, coinAwardSpecific_walletsRepository, coinAwardEvent.UserId, coinAwardEvent.Funds, coinAwardEvent.Activity)
+		go member.AwardFunds(s, coinAwardEvent.GuildId, coinAwardSpecific_EconomyRepository, *coinAwardSpecific_UsersRepository, coinAwardSpecific_WalletsRepository, coinAwardEvent.UserId, coinAwardEvent.Funds, coinAwardEvent.Activity)
 	}
 
 }
