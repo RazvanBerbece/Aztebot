@@ -201,7 +201,7 @@ func GetProfileEmbedForUser(s *discordgo.Session, userId string) []*discordgo.Me
 			AddField(fmt.Sprintf("🎙️ Time spent in voice channels:  `%s`%s", timeSpentInVcs, vcRankString), "", false).
 			AddField(fmt.Sprintf("🎵 Time spent listening to music:  `%s`%s", timeSpentListeningMusic, musicRankString), "", false).
 			AddLineBreakField().
-			AddField(fmt.Sprintf("💠 Total gained XP:  `%d`%s", xpInt, xpRankString), "", false)
+			AddField(fmt.Sprintf("💠 Total gained XP:  `%d` [Lvl: `%d`]%s", xpInt, user.CurrentLevel, xpRankString), "", false)
 
 	} else {
 		embed.AddField("Member hasn't verified yet.", "", false)
