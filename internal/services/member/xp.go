@@ -117,6 +117,24 @@ func GrantMemberExperience(userId string, points float64) (float64, error) {
 			fmt.Printf("An error ocurred while granting monthly leaderboard XP to user: %v\n", err)
 			return -1, err
 		}
+
+		// Also store records for the daily leaderboard
+		dailyEntryExists := globalRepositories.DailyLeaderboardRepository.EntryExists(userId)
+		if dailyEntryExists <= 0 {
+			if dailyEntryExists == -1 {
+				return -1, fmt.Errorf("daily leaderboard entry to was not found in the DB; likely an error has ocurred")
+			}
+			// Entry doesn't exist for member, so create one
+			err := globalRepositories.DailyLeaderboardRepository.AddLeaderboardEntry(userId, user.Gender)
+			if err != nil {
+				return -1, err
+			}
+		}
+		err = globalRepositories.DailyLeaderboardRepository.AddLeaderboardExpriencePoints(userId, points)
+		if err != nil {
+			fmt.Printf("An error ocurred while granting daily leaderboard XP to user: %v\n", err)
+			return -1, err
+		}
 	}
 
 	// Kickstart automatic progression process
@@ -160,19 +178,36 @@ func RemoveMemberExperience(userId string, activityType string) (*float64, error
 		return nil, err
 	}
 
-	// Also remove points from the monthly leaderboard
-	monthlyEntryExists := globalRepositories.MonthlyLeaderboardRepository.EntryExists(userId)
-	if monthlyEntryExists <= 0 {
-		if monthlyEntryExists == -1 {
-			return nil, fmt.Errorf("monthly leaderboard entry to was not found in the DB; likely an error has ocurred")
+	// Also remove points from the monthly and daily leaderboards
+	if !IsStaff(userId, globalConfiguration.StaffRoles) {
+		monthlyEntryExists := globalRepositories.MonthlyLeaderboardRepository.EntryExists(userId)
+		if monthlyEntryExists <= 0 {
+			if monthlyEntryExists == -1 {
+				return nil, fmt.Errorf("monthly leaderboard entry to was not found in the DB; likely an error has ocurred")
+			}
 		}
-	}
 
-	if monthlyEntryExists == 1 {
-		err = globalRepositories.MonthlyLeaderboardRepository.RemoveUserExpriencePoints(userId, xpToRemove)
-		if err != nil {
-			fmt.Printf("An error ocurred while removing monthly leaderboard XP from user: %v\n", err)
-			return nil, err
+		if monthlyEntryExists == 1 {
+			err = globalRepositories.MonthlyLeaderboardRepository.RemoveUserExpriencePoints(userId, xpToRemove)
+			if err != nil {
+				fmt.Printf("An error ocurred while removing monthly leaderboard XP from user: %v\n", err)
+				return nil, err
+			}
+		}
+
+		dailyEntryExists := globalRepositories.DailyLeaderboardRepository.EntryExists(userId)
+		if dailyEntryExists <= 0 {
+			if dailyEntryExists == -1 {
+				return nil, fmt.Errorf("daily leaderboard entry to was not found in the DB; likely an error has ocurred")
+			}
+		}
+
+		if dailyEntryExists == 1 {
+			err = globalRepositories.DailyLeaderboardRepository.RemoveUserExpriencePoints(userId, xpToRemove)
+			if err != nil {
+				fmt.Printf("An error ocurred while removing daily leaderboard XP from user: %v\n", err)
+				return nil, err
+			}
 		}
 	}
 
