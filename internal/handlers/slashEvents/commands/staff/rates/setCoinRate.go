@@ -1,11 +1,10 @@
-package coinSlashHandlers
+package gainRatesSlashHandlers
 
 import (
 	"fmt"
 
 	repositories "github.com/RazvanBerbece/Aztebot/internal/data/repositories/aztebot"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
-	xpSystemSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/xp"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
@@ -17,7 +16,7 @@ func HandleSlashSetGlobalCoinRateForActivity(s *discordgo.Session, i *discordgo.
 	multiplierStringInput := i.ApplicationCommandData().Options[1].StringValue()
 
 	// Dirty Hack 14 Jun 2024 (still the case...)
-	activityName, multiplierName := xpSystemSlashHandlers.GetArgumentDisplayNames(activity, multiplierStringInput)
+	activityName, multiplierName := GetArgumentDisplayNames(activity, multiplierStringInput)
 
 	switch activity {
 	case "msg_send":
@@ -154,7 +153,7 @@ func HandleSlashSetGlobalCoinRateForActivity(s *discordgo.Session, i *discordgo.
 
 	// Send notification to target staff channel to announce the global rate change
 	if channel, channelExists := globalConfiguration.NotificationChannels["notif-aztebotUpdatesChannel"]; channelExists {
-		go xpSystemSlashHandlers.SendGlobalRateChangeNotification(channel.ChannelId, "🪙 AzteCoins", activityName, multiplierName)
+		go SendGlobalRateChangeNotification(channel.ChannelId, "🪙 AzteCoins", activityName, multiplierName)
 	}
 
 	// Send response embed

@@ -8,6 +8,7 @@ import (
 	coinSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/coin"
 	jailSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/jail"
 	massPingSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/massPing"
+	gainRatesSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/rates"
 	repSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/rep"
 	timeoutSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/timeout"
 	warningSlashHandlers "github.com/RazvanBerbece/Aztebot/internal/handlers/slashEvents/commands/staff/warning"
@@ -519,40 +520,53 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 		Name:        "gain-rates",
 		Description: "Displays the current values of the reward gain rates per activity on the server.",
 	},
+	{
+		Name:        "reset-gain-rates",
+		Description: "Resets all gain rates for this server.",
+	},
 }
 
 var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
-	"ping":                  slashUtils.HandleSlashPingAztebot,
-	"my-roles":              profileSlashHandlers.HandleSlashMyRoles,
-	"roles":                 profileSlashHandlers.HandleSlashYouRoles,
-	"me":                    profileSlashHandlers.HandleSlashMe,
-	"you":                   profileSlashHandlers.HandleSlashYou,
-	"set-gender":            profileSlashHandlers.HandleSlashSetGender,
-	"dice":                  gamesSlashHandlers.HandleSlashDice,
-	"sizzling":              gamesSlashHandlers.HandleSlashNewSizzlingSlot,
-	"help":                  serverSlashHandlers.HandleSlashAztebotHelp,
-	"top5user":              serverSlashHandlers.HandleSlashTop5Users,
-	"top":                   serverSlashHandlers.HandleSlashTop,
-	"monthly-leaderboard":   serverSlashHandlers.HandleSlashMonthlyLeaderboard,
-	"arcade-ladder":         serverSlashHandlers.HandleSlashArcadeLadder,
-	"gain-rates":            serverSlashHandlers.HandleSlashServerGainRates,
-	"arcade-winner":         arcadeLadderSlashHandlers.HandleSlashArcadeWinner,
-	"confess":               supportSlashHandlers.HandleSlashConfess,
-	"set-global-xp-rate":    xpSystemSlashHandlers.HandleSlashSetGlobalXpRateForActivity,
-	"set-stats":             xpSystemSlashHandlers.HandleSlashSetStats,
-	"warn":                  warningSlashHandlers.HandleSlashWarn,
-	"warn-remove-oldest":    warningSlashHandlers.HandleSlashWarnRemoveOldest,
-	"warns":                 warningSlashHandlers.HandleSlashWarns,
+	"ping": slashUtils.HandleSlashPingAztebot,
+	"help": serverSlashHandlers.HandleSlashAztebotHelp,
+
+	"my-roles":   profileSlashHandlers.HandleSlashMyRoles,
+	"roles":      profileSlashHandlers.HandleSlashYouRoles,
+	"me":         profileSlashHandlers.HandleSlashMe,
+	"you":        profileSlashHandlers.HandleSlashYou,
+	"set-gender": profileSlashHandlers.HandleSlashSetGender,
+
+	"dice":     gamesSlashHandlers.HandleSlashDice,
+	"sizzling": gamesSlashHandlers.HandleSlashNewSizzlingSlot,
+	"confess":  supportSlashHandlers.HandleSlashConfess,
+
+	"top5user":            serverSlashHandlers.HandleSlashTop5Users,
+	"top":                 serverSlashHandlers.HandleSlashTop,
+	"monthly-leaderboard": serverSlashHandlers.HandleSlashMonthlyLeaderboard,
+	"arcade-ladder":       serverSlashHandlers.HandleSlashArcadeLadder,
+
+	"add-coins":            coinSlashHandlers.HandleSlashAddCoins,
+	"set-stats":            xpSystemSlashHandlers.HandleSlashSetStats,
+	"reset-rep":            repSlashHandlers.HandleSlashResetRep,
+	"arcade-winner":        arcadeLadderSlashHandlers.HandleSlashArcadeWinner,
+	"mass-dm-announcement": massPingSlashHandlers.HandleSlashMassDm,
+
+	"warn":               warningSlashHandlers.HandleSlashWarn,
+	"warn-remove-oldest": warningSlashHandlers.HandleSlashWarnRemoveOldest,
+	"warns":              warningSlashHandlers.HandleSlashWarns,
+
 	"timeout":               timeoutSlashHandlers.HandleSlashTimeout,
 	"timeouts":              timeoutSlashHandlers.HandleSlashTimeouts,
 	"timeout-remove-active": timeoutSlashHandlers.HandleSlashTimeoutRemoveActive,
 	"timeout-appeal":        timeoutSlashHandlers.HandleSlashTimeoutAppeal,
-	"jail":                  jailSlashHandlers.HandleSlashJail,
-	"unjail":                jailSlashHandlers.HandleSlashUnjail,
-	"jail-view":             jailSlashHandlers.HandleSlashJailView,
-	"jailed-user":           jailSlashHandlers.HandleSlashJailedUser,
-	"add-coins":             coinSlashHandlers.HandleSlashAddCoins,
-	"set-global-coin-rate":  coinSlashHandlers.HandleSlashSetGlobalCoinRateForActivity,
-	"reset-rep":             repSlashHandlers.HandleSlashResetRep,
-	"mass-dm-announcement":  massPingSlashHandlers.HandleSlashMassDm,
+
+	"jail":        jailSlashHandlers.HandleSlashJail,
+	"unjail":      jailSlashHandlers.HandleSlashUnjail,
+	"jail-view":   jailSlashHandlers.HandleSlashJailView,
+	"jailed-user": jailSlashHandlers.HandleSlashJailedUser,
+
+	"gain-rates":           gainRatesSlashHandlers.HandleSlashServerGainRates,
+	"set-global-coin-rate": gainRatesSlashHandlers.HandleSlashSetGlobalCoinRateForActivity,
+	"set-global-xp-rate":   gainRatesSlashHandlers.HandleSlashSetGlobalXpRateForActivity,
+	"reset-gain-rates":     gainRatesSlashHandlers.HandleSlashResetGainRates,
 }

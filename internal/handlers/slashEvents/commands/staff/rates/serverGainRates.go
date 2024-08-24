@@ -1,4 +1,4 @@
-package serverSlashHandlers
+package gainRatesSlashHandlers
 
 import (
 	"fmt"
