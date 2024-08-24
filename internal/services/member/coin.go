@@ -19,7 +19,23 @@ func AwardFunds(s *discordgo.Session, guildId string, usersRepository repositori
 		return fmt.Errorf("cannot award funds to user with ID `%s`, because the number of awarded `funds` (`%.2f`) is invalid", userId, funds)
 	}
 
-	err := walletsRepository.AddFundsToWalletForUser(userId, funds)
+	// Check that the economy pot permits the coin award
+	economicSystem, err := globalRepositories.CurrencySystemStateRepositoryRepository.GetCurrencyStateForGuild(guildId)
+	if err != nil {
+		log := fmt.Sprintf("An error ocurred while awarding funds to user `%s`: %v\n", userId, err)
+		discordChannelLogger := logging.NewDiscordLogger(s, "notif-coinAwards")
+		go discordChannelLogger.LogError(log)
+		return err
+	}
+
+	if economicSystem.TotalCurrencyAvailable < funds {
+		log := fmt.Sprintf("Currency `%s` ran out of available global units for acitivty awards", economicSystem.CurrencyName)
+		discordChannelLogger := logging.NewDiscordLogger(s, "notif-coinAwards")
+		go discordChannelLogger.LogError(log)
+		return err
+	}
+
+	err = walletsRepository.AddFundsToWalletForUser(userId, funds)
 	if err != nil {
 		log := fmt.Sprintf("An error ocurred while awarding funds to user `%s`: %v\n", userId, err)
 		discordChannelLogger := logging.NewDiscordLogger(s, "notif-coinAwards")
@@ -39,7 +55,7 @@ func AwardFunds(s *discordgo.Session, guildId string, usersRepository repositori
 			log := fmt.Sprintf("An error ocurred while subtracting funds from user `%s`: %v\n", userId, rollbackErr)
 			discordChannelLogger := logging.NewDiscordLogger(s, "notif-economyDebug")
 			go discordChannelLogger.LogError(log)
-			return rollbackErr
+			return err
 		}
 		discordChannelLogger := logging.NewDiscordLogger(s, "notif-economyDebug")
 		go discordChannelLogger.LogError(err.Error())
