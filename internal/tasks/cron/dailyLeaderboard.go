@@ -10,6 +10,7 @@ import (
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
+	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -168,15 +169,13 @@ func sendDailyLeaderboardWinnerNotification(s *discordgo.Session, channelId stri
 		othersName = othersApiUser.Username
 	}
 
-	now := time.Now()
-	month := now.Format("January")
-	year := now.Year()
-	leaderboardMonthString := fmt.Sprintf("%s, %d", month, year)
+	now := time.Now().Unix()
+	leaderboardDailyString := utils.FormatUnixAsString(now, "Mon, 02 Jan 2006")
 
 	// Build winners embed
 	embed := embed.
 		NewEmbed().
-		SetTitle(fmt.Sprintf("🤖📣 Daily Leaderboard Winners Announcement, `%s` 📣📣", leaderboardMonthString)).
+		SetTitle(fmt.Sprintf("🤖📣 Daily Leaderboard Winners Announcement, `%s` 📣📣", leaderboardDailyString)).
 		SetDescription("The following OTA members have been the most active users today by engaging in conversations, receiving awards and spending time in voice channels.").
 		SetColor(000000).
 		SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
