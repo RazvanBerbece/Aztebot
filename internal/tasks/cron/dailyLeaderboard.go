@@ -15,7 +15,7 @@ import (
 
 // Process the daily leaderboard results at the given h:m:s timestamp.
 // dryrun defines whether this will clear out the monthlyLeaderboard table after execution. if false, it will leave the table in place.
-func ProcessDailyLeaderboard(s *discordgo.Session, hour int, minute int, second int, dryrun bool) {
+func ProcessDailyLeaderboard(s *discordgo.Session, guildId string, hour int, minute int, second int, dryrun bool) {
 
 	initialDailyLeaderboardDelay, dailyLeaderboardTicker := GetDelayAndTickerForDailyActivityLeaderboard(hour, minute, second)
 
@@ -28,16 +28,16 @@ func ProcessDailyLeaderboard(s *discordgo.Session, hour int, minute int, second 
 		dailyLeaderboardRepository := repositories.NewDailyLeaderboardRepository()
 
 		// The first run should happen at start-up, not after n days
-		ExtractDailyLeaderboardWinners(s, dailyLeaderboardRepository, dryrun)
+		ExtractDailyLeaderboardWinners(s, guildId, dailyLeaderboardRepository, dryrun)
 
 		for range dailyLeaderboardTicker.C {
 			// Process
-			ExtractDailyLeaderboardWinners(s, dailyLeaderboardRepository, dryrun)
+			ExtractDailyLeaderboardWinners(s, guildId, dailyLeaderboardRepository, dryrun)
 		}
 	}()
 }
 
-func ExtractDailyLeaderboardWinners(s *discordgo.Session, dailyLeaderboardRepository *repositories.DailyLeaderboardRepository, dryrun bool) {
+func ExtractDailyLeaderboardWinners(s *discordgo.Session, guildId string, dailyLeaderboardRepository *repositories.DailyLeaderboardRepository, dryrun bool) {
 
 	fmt.Println("[CRON] Starting Task ExtractDailyLeaderboardWinners() at", time.Now())
 
@@ -75,6 +75,37 @@ func ExtractDailyLeaderboardWinners(s *discordgo.Session, dailyLeaderboardReposi
 	}
 	if len(otherEntries) > 0 {
 		otherEntry = &otherEntries[0]
+	}
+
+	// Award coins to winners
+	var dailyWinnerCoinRewardAmount float64 = 1000
+
+	globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+		GuildId:  guildId,
+		UserId:   kingEntry.UserId,
+		Funds:    dailyWinnerCoinRewardAmount,
+		Activity: "LEADERBOARD-AWARD",
+	}
+
+	globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+		GuildId:  guildId,
+		UserId:   queenEntry.UserId,
+		Funds:    dailyWinnerCoinRewardAmount,
+		Activity: "LEADERBOARD-AWARD",
+	}
+
+	globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+		GuildId:  guildId,
+		UserId:   nonbinaryEntry.UserId,
+		Funds:    dailyWinnerCoinRewardAmount,
+		Activity: "LEADERBOARD-AWARD",
+	}
+
+	globalMessaging.CoinAwardsChannel <- events.CoinAwardEvent{
+		GuildId:  guildId,
+		UserId:   otherEntry.UserId,
+		Funds:    dailyWinnerCoinRewardAmount,
+		Activity: "LEADERBOARD-AWARD",
 	}
 
 	// Send winner notification to designated channel

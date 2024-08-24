@@ -75,18 +75,19 @@ func (r MonthlyLeaderboardRepository) ClearLeaderboard() error {
 	return nil
 }
 
-func (r MonthlyLeaderboardRepository) AddLeaderboardExpriencePoints(userId string, experiencePoints float64) error {
+func (r MonthlyLeaderboardRepository) AddLeaderboardExpriencePoints(userId string, experiencePoints float64, category int) error {
 
 	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE MonthlyLeaderboard SET 
-			xpEarnedInCurrentMonth = xpEarnedInCurrentMonth + ?
+			xpEarnedInCurrentMonth = xpEarnedInCurrentMonth + ?,
+			category = ?
 		WHERE userId = ?`)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(experiencePoints, userId)
+	_, err = stmt.Exec(experiencePoints, category, userId)
 	if err != nil {
 		return err
 	}

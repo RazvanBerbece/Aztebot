@@ -349,7 +349,11 @@ var AztebotSlashCommands = []*discordgo.ApplicationCommand{
 	},
 	{
 		Name:        "monthly-leaderboard",
-		Description: "Displays a high level view of the monthly leaderboard for the current month.",
+		Description: "Displays a high level view of the monthly activity leaderboard for the current month.",
+	},
+	{
+		Name:        "daily-leaderboard",
+		Description: "Displays a high level view of the daily activity leaderboard for the current day.",
 	},
 	{
 		Name:        "arcade-ladder",
@@ -540,10 +544,12 @@ var AztebotSlashCommandHandlers = map[string]func(s *discordgo.Session, i *disco
 	"sizzling": gamesSlashHandlers.HandleSlashNewSizzlingSlot,
 	"confess":  supportSlashHandlers.HandleSlashConfess,
 
-	"top5user":            serverSlashHandlers.HandleSlashTop5Users,
-	"top":                 serverSlashHandlers.HandleSlashTop,
+	"top5user":      serverSlashHandlers.HandleSlashTop5Users,
+	"top":           serverSlashHandlers.HandleSlashTop,
+	"arcade-ladder": serverSlashHandlers.HandleSlashArcadeLadder,
+
+	"daily-leaderboard":   serverSlashHandlers.HandleSlashDailyLeaderboard,
 	"monthly-leaderboard": serverSlashHandlers.HandleSlashMonthlyLeaderboard,
-	"arcade-ladder":       serverSlashHandlers.HandleSlashArcadeLadder,
 
 	"add-coins":            coinSlashHandlers.HandleSlashAddCoins,
 	"set-stats":            xpSystemSlashHandlers.HandleSlashSetStats,

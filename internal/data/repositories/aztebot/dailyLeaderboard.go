@@ -75,18 +75,19 @@ func (r DailyLeaderboardRepository) ClearLeaderboard() error {
 	return nil
 }
 
-func (r DailyLeaderboardRepository) AddLeaderboardExpriencePoints(userId string, experiencePoints float64) error {
+func (r DailyLeaderboardRepository) AddLeaderboardExpriencePoints(userId string, experiencePoints float64, category int) error {
 
 	stmt, err := r.Conn.SqlDb.Prepare(`
 		UPDATE DailyLeaderboard SET 
-			xpEarnedInCurrentDay = xpEarnedInCurrentDay + ?
+			xpEarnedInCurrentDay = xpEarnedInCurrentDay + ?,
+			category = ?
 		WHERE userId = ?`)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(experiencePoints, userId)
+	_, err = stmt.Exec(experiencePoints, category, userId)
 	if err != nil {
 		return err
 	}

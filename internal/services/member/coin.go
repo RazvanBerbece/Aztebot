@@ -22,7 +22,13 @@ func AwardFunds(s *discordgo.Session, guildId string, usersRepository repositori
 	// Check that the economy pot permits the coin award
 	economicSystem, err := globalRepositories.CurrencySystemStateRepositoryRepository.GetCurrencyStateForGuild(guildId)
 	if err != nil {
-		log := fmt.Sprintf("An error ocurred while awarding funds to user `%s`: %v\n", userId, err)
+		if err == sql.ErrNoRows {
+			log := "No economic system available for this guild. Make sure you create one before awarding currency for activities by using the `/economy-create` command."
+			discordChannelLogger := logging.NewDiscordLogger(s, "notif-coinAwards")
+			go discordChannelLogger.LogError(log)
+			return err
+		}
+		log := fmt.Sprintf("An error ocurred while retrieving economic system for fund awarding to user `%s`: %v\n", userId, err)
 		discordChannelLogger := logging.NewDiscordLogger(s, "notif-coinAwards")
 		go discordChannelLogger.LogError(log)
 		return err

@@ -112,7 +112,7 @@ func GrantMemberExperience(userId string, points float64) (float64, error) {
 				return -1, err
 			}
 		}
-		err = globalRepositories.MonthlyLeaderboardRepository.AddLeaderboardExpriencePoints(userId, points)
+		err = globalRepositories.MonthlyLeaderboardRepository.AddLeaderboardExpriencePoints(userId, points, int(user.Gender))
 		if err != nil {
 			fmt.Printf("An error ocurred while granting monthly leaderboard XP to user: %v\n", err)
 			return -1, err
@@ -130,7 +130,7 @@ func GrantMemberExperience(userId string, points float64) (float64, error) {
 				return -1, err
 			}
 		}
-		err = globalRepositories.DailyLeaderboardRepository.AddLeaderboardExpriencePoints(userId, points)
+		err = globalRepositories.DailyLeaderboardRepository.AddLeaderboardExpriencePoints(userId, points, int(user.Gender))
 		if err != nil {
 			fmt.Printf("An error ocurred while granting daily leaderboard XP to user: %v\n", err)
 			return -1, err
