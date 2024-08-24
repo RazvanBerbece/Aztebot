@@ -3,6 +3,7 @@ package xpSystemSlashHandlers
 import (
 	"fmt"
 
+	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
@@ -17,12 +18,6 @@ func HandleSlashSetStats(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	reactionsReceived := i.ApplicationCommandData().Options[3].StringValue()
 	timeVc := i.ApplicationCommandData().Options[4].StringValue()
 	timeMusic := i.ApplicationCommandData().Options[5].StringValue()
-
-	user, err := globalRepositories.UsersRepository.GetUser(targetUserId)
-	if err != nil {
-		utils.SendErrorEmbedResponse(s, i.Interaction, err.Error())
-		return
-	}
 
 	messagesSentInt, convErr := utils.StringToInt(messagesSent)
 	if convErr != nil {
@@ -59,9 +54,58 @@ func HandleSlashSetStats(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		return
 	}
 
-	err = globalRepositories.UserStatsRepository.SetStats(targetUserId, *messagesSentInt, *slashUsedInt, *reactReceivedInt, *timeVcFloat, *timeMusicFloat)
+	err := globalRepositories.UserStatsRepository.SetStats(targetUserId, *messagesSentInt, *slashUsedInt, *reactReceivedInt, *timeVcFloat, *timeMusicFloat)
 	if err != nil {
 		utils.SendErrorEmbedResponse(s, i.Interaction, fmt.Sprintf("an error ocurred while setting stats for user: %v", err))
+		return
+	}
+
+	user, err := globalRepositories.UsersRepository.GetUser(targetUserId)
+	if err != nil {
+		utils.SendErrorEmbedResponse(s, i.Interaction, fmt.Sprintf("an error ocurred while setting stats for user: %v", err))
+		return
+	}
+
+	userStats, err := globalRepositories.UserStatsRepository.GetStatsForUser(targetUserId)
+	if err != nil {
+		utils.SendErrorEmbedResponse(s, i.Interaction, fmt.Sprintf("an error ocurred while setting stats for user: %v", err))
+		return
+	}
+
+	// Update XP after setting stats
+	computedXp := utils.CalculateExperiencePointsFromStats(
+		userStats.NumberMessagesSent,
+		userStats.NumberSlashCommandsUsed,
+		userStats.NumberReactionsReceived,
+		userStats.TimeSpentInVoiceChannels,
+		userStats.TimeSpentListeningToMusic,
+		globalConfiguration.DefaultExperienceReward_MessageSent,
+		globalConfiguration.DefaultExperienceReward_SlashCommandUsed,
+		globalConfiguration.DefaultExperienceReward_ReactionReceived,
+		globalConfiguration.DefaultExperienceReward_InVc,
+		globalConfiguration.DefaultExperienceReward_InMusic)
+
+	var xpToSet float64
+
+	// Reassign correct amount of XP given the stats and other stuff
+	if computedXp != user.CurrentExperience {
+		// mismatch between current XP and computed XP for user
+		// note: always maximise the amount of XP users are assigned
+		if user.CurrentExperience > computedXp {
+			xpToSet = user.CurrentExperience // current XP would include XP gained through rate multipliers, etc..
+		} else {
+			xpToSet = computedXp
+		}
+	} else {
+		// no mismatch, good to assign the computed amount
+		xpToSet = computedXp
+	}
+	user.CurrentExperience = xpToSet
+
+	// Update user entity with new XP value
+	_, err = globalRepositories.UsersRepository.UpdateUser(*user)
+	if err != nil {
+		utils.SendErrorEmbedResponse(s, i.Interaction, fmt.Sprintf("Failed to update the user XP after a stat set: %v", err.Error()))
 		return
 	}
 
