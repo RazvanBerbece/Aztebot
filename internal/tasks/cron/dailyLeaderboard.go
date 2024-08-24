@@ -14,7 +14,7 @@ import (
 )
 
 // Process the daily leaderboard results at the given h:m:s timestamp.
-// dryrun defines whether this will clear out the monthlyLeaderboard table after execution. if false, it will leave the table in place.
+// dryrun defines whether this will clear out the daily leaderboard table after execution. if false, it will remove all existing entries on op finish.
 func ProcessDailyLeaderboard(s *discordgo.Session, guildId string, hour int, minute int, second int, dryrun bool) {
 
 	initialDailyLeaderboardDelay, dailyLeaderboardTicker := GetDelayAndTickerForDailyActivityLeaderboard(hour, minute, second)
@@ -109,7 +109,7 @@ func ExtractDailyLeaderboardWinners(s *discordgo.Session, guildId string, dailyL
 	}
 
 	// Send winner notification to designated channel
-	if channel, channelExists := globalConfiguration.NotificationChannels["notif-globalAnnouncements"]; channelExists {
+	if channel, channelExists := globalConfiguration.NotificationChannels["notif-aztebotUpdatesChannel"]; channelExists {
 		go sendDailyLeaderboardWinnerNotification(s, channel.ChannelId, kingEntry, queenEntry, nonbinaryEntry, otherEntry)
 	}
 
