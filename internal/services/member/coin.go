@@ -29,7 +29,7 @@ func AwardFunds(s *discordgo.Session, guildId string, usersRepository repositori
 	}
 
 	if economicSystem.TotalCurrencyAvailable < funds {
-		log := fmt.Sprintf("Currency `%s` ran out of available global units for acitivty awards", economicSystem.CurrencyName)
+		log := fmt.Sprintf("Currency `%s` ran out of available global units for activity awards", economicSystem.CurrencyName)
 		discordChannelLogger := logging.NewDiscordLogger(s, "notif-coinAwards")
 		go discordChannelLogger.LogError(log)
 		return err
