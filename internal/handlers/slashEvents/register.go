@@ -12,7 +12,7 @@ import (
 
 func RegisterSlashEventHandlers(s *discordgo.Session, mainGuildOnly bool) error {
 
-	fmt.Printf("[STARTUP] Overwriting %d slash commands...\n", len(commands.AztebotSlashCommands))
+	fmt.Printf("[STARTUP] Bulk overwriting %d guild-sepcific slash commands...\n", len(commands.AztebotSlashCommands))
 
 	err := RegisterGuildSlashCommands(s, globalConfiguration.DiscordAztebotAppId, mainGuildOnly, &globalConfiguration.DiscordMainGuildId)
 	if err != nil {
