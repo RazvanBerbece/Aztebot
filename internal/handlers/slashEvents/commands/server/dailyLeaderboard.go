@@ -121,22 +121,22 @@ func DailyLeaderboardCommandResultsEmbed(s *discordgo.Session, i *discordgo.Inte
 
 	if kingsUid != "" {
 		fieldValue := fmt.Sprintf("Accumulated a total of 💠 `%d` XP !", int64(kingEntry.XpEarnedInCurrentMonth))
-		embed.AddField(fmt.Sprintf("♂ Best so far, `<@%s>`", kingsUid), fieldValue, false)
+		embed.AddField(fmt.Sprintf("♂ Best so far, <@%s>", kingsUid), fieldValue, false)
 	}
 
 	if queensUid != "" {
 		fieldValue := fmt.Sprintf("Accumulated a total of 💠 `%d` XP !", int64(queenEntry.XpEarnedInCurrentMonth))
-		embed.AddField(fmt.Sprintf("♀ Best so far, `<@%s>`", queensUid), fieldValue, false)
+		embed.AddField(fmt.Sprintf("♀ Best so far, <@%s>", queensUid), fieldValue, false)
 	}
 
 	if nonbinsUid != "" {
 		fieldValue := fmt.Sprintf("Accumulated a total of 💠 `%d` XP !", int64(nonbinaryEntry.XpEarnedInCurrentMonth))
-		embed.AddField(fmt.Sprintf("⚥ Best so far, `<@%s>`", nonbinsUid), fieldValue, false)
+		embed.AddField(fmt.Sprintf("⚥ Best so far, <@%s>", nonbinsUid), fieldValue, false)
 	}
 
 	if othersUid != "" {
 		fieldValue := fmt.Sprintf("Accumulated a total of 💠 `%d` XP !", int64(otherEntry.XpEarnedInCurrentMonth))
-		embed.AddField(fmt.Sprintf("🌈 Best so far, `<@%s>`", othersUid), fieldValue, false)
+		embed.AddField(fmt.Sprintf("🌈 Best so far, <@%s>", othersUid), fieldValue, false)
 	}
 
 	return []*discordgo.MessageEmbed{embed.MessageEmbed}
