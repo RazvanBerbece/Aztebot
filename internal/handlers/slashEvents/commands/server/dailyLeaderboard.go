@@ -82,38 +82,21 @@ func DailyLeaderboardCommandResultsEmbed(s *discordgo.Session, i *discordgo.Inte
 		otherEntry = &otherEntries[0]
 	}
 
-	// Get winner discord names for display purposes
-	var kingsName string = ""
-	var queensName string = ""
-	var nonbinsName string = ""
-	var othersName string = ""
+	var kingsUid string = ""
+	var queensUid string = ""
+	var nonbinsUid string = ""
+	var othersUid string = ""
 	if kingEntry != nil {
-		kingApiUser, err := s.User(kingEntry.UserId)
-		if err != nil {
-			fmt.Printf("An error ocurred while retrieving king's API profile: %v", err)
-		}
-		kingsName = kingApiUser.Username
+		kingsUid = kingEntry.UserId
 	}
 	if queenEntry != nil {
-		queenApiUser, err := s.User(queenEntry.UserId)
-		if err != nil {
-			fmt.Printf("An error ocurred while retrieving queen's API profile: %v", err)
-		}
-		queensName = queenApiUser.Username
+		queensUid = queenEntry.UserId
 	}
 	if nonbinaryEntry != nil {
-		nonbinApiUser, err := s.User(nonbinaryEntry.UserId)
-		if err != nil {
-			fmt.Printf("An error ocurred while retrieving nonbinary's API profile: %v", err)
-		}
-		nonbinsName = nonbinApiUser.Username
+		nonbinsUid = nonbinaryEntry.UserId
 	}
 	if otherEntry != nil {
-		othersApiUser, err := s.User(otherEntry.UserId)
-		if err != nil {
-			fmt.Printf("An error ocurred while retrieving other's API profile: %v", err)
-		}
-		othersName = othersApiUser.Username
+		othersUid = otherEntry.UserId
 	}
 
 	now := time.Now().Unix()
@@ -131,31 +114,30 @@ func DailyLeaderboardCommandResultsEmbed(s *discordgo.Session, i *discordgo.Inte
 		AddLineBreakField()
 
 	// If no valid entries found
-	if kingsName == "" && queensName == "" && nonbinsName == "" && othersName == "" {
+	if kingsUid == "" && queensUid == "" && nonbinsUid == "" && othersUid == "" {
 		embed.AddField("", "There are no valid daily leaderboard entries at the moment.", false)
 		return []*discordgo.MessageEmbed{embed.MessageEmbed}
 	}
 
-	if kingsName != "" {
+	if kingsUid != "" {
 		fieldValue := fmt.Sprintf("Accumulated a total of 💠 `%d` XP !", int64(kingEntry.XpEarnedInCurrentMonth))
-		embed.AddField(fmt.Sprintf("♂ Best so far, `%s`", kingsName), fieldValue, false)
+		embed.AddField(fmt.Sprintf("♂ Best so far, `<@%s>`", kingsUid), fieldValue, false)
 	}
 
-	if queensName != "" {
+	if queensUid != "" {
 		fieldValue := fmt.Sprintf("Accumulated a total of 💠 `%d` XP !", int64(queenEntry.XpEarnedInCurrentMonth))
-		embed.AddField(fmt.Sprintf("♀ Best so far, `%s`", queensName), fieldValue, false)
+		embed.AddField(fmt.Sprintf("♀ Best so far, `<@%s>`", queensUid), fieldValue, false)
 	}
 
-	if nonbinsName != "" {
+	if nonbinsUid != "" {
 		fieldValue := fmt.Sprintf("Accumulated a total of 💠 `%d` XP !", int64(nonbinaryEntry.XpEarnedInCurrentMonth))
-		embed.AddField(fmt.Sprintf("⚥ Best so far, `%s`", nonbinsName), fieldValue, false)
+		embed.AddField(fmt.Sprintf("⚥ Best so far, `<@%s>`", nonbinsUid), fieldValue, false)
 	}
 
-	if othersName != "" {
+	if othersUid != "" {
 		fieldValue := fmt.Sprintf("Accumulated a total of 💠 `%d` XP !", int64(otherEntry.XpEarnedInCurrentMonth))
-		embed.AddField(fmt.Sprintf("🌈 Best so far, `%s`", othersName), fieldValue, false)
+		embed.AddField(fmt.Sprintf("🌈 Best so far, `<@%s>`", othersUid), fieldValue, false)
 	}
 
 	return []*discordgo.MessageEmbed{embed.MessageEmbed}
-
 }
