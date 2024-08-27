@@ -35,12 +35,23 @@ func HandleNotificationEvents(s *discordgo.Session) {
 				fmt.Printf("Failed to process NotificationEvent (%s): %v\n", notificationEvent.Type, err)
 			}
 		case "EMBED_PASSTHROUGH":
-			err := notifications.SendEmbedToTextChannel(
-				s,
-				notificationEvent.TargetChannelId,
-				*notificationEvent.Embed)
-			if err != nil {
-				fmt.Printf("Failed to process NotificationEvent (%s): %v\n", notificationEvent.Type, err)
+			if notificationEvent.TextData != nil {
+				err := notifications.SendEmbedWithTextResponseToTextChannel(
+					s,
+					*notificationEvent.TextData,
+					notificationEvent.TargetChannelId,
+					*notificationEvent.Embed)
+				if err != nil {
+					fmt.Printf("Failed to process NotificationEvent (%s): %v\n", notificationEvent.Type, err)
+				}
+			} else {
+				err := notifications.SendEmbedToTextChannel(
+					s,
+					notificationEvent.TargetChannelId,
+					*notificationEvent.Embed)
+				if err != nil {
+					fmt.Printf("Failed to process NotificationEvent (%s): %v\n", notificationEvent.Type, err)
+				}
 			}
 		case "EMBED_WITH_ACTION_ROW":
 			approvalMessageId, err := notifications.SendNotificationWithActionRowToTextChannel(

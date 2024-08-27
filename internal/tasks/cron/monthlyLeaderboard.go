@@ -103,12 +103,14 @@ func sendMonthlyLeaderboardWinnerNotification(s *discordgo.Session, channelId st
 	var queensName string = ""
 	var nonbinsName string = ""
 	var othersName string = ""
+	var mentionsLine string = ""
 	if king != nil {
 		kingApiUser, err := s.User(king.UserId)
 		if err != nil {
 			fmt.Printf("An error ocurred while retrieving king's API profile: %v", err)
 		}
 		kingsName = kingApiUser.Username
+		mentionsLine += fmt.Sprintf("<@%s> ", king.UserId)
 	}
 	if queen != nil {
 		queenApiUser, err := s.User(queen.UserId)
@@ -116,6 +118,7 @@ func sendMonthlyLeaderboardWinnerNotification(s *discordgo.Session, channelId st
 			fmt.Printf("An error ocurred while retrieving queen's API profile: %v", err)
 		}
 		queensName = queenApiUser.Username
+		mentionsLine += fmt.Sprintf("<@%s> ", queen.UserId)
 	}
 	if nonbinary != nil {
 		nonbinApiUser, err := s.User(nonbinary.UserId)
@@ -123,6 +126,7 @@ func sendMonthlyLeaderboardWinnerNotification(s *discordgo.Session, channelId st
 			fmt.Printf("An error ocurred while retrieving nonbinary's API profile: %v", err)
 		}
 		nonbinsName = nonbinApiUser.Username
+		mentionsLine += fmt.Sprintf("<@%s> ", nonbinary.UserId)
 	}
 	if other != nil {
 		othersApiUser, err := s.User(other.UserId)
@@ -130,6 +134,7 @@ func sendMonthlyLeaderboardWinnerNotification(s *discordgo.Session, channelId st
 			fmt.Printf("An error ocurred while retrieving other's API profile: %v", err)
 		}
 		othersName = othersApiUser.Username
+		mentionsLine += fmt.Sprintf("<@%s>", other.UserId)
 	}
 
 	now := time.Now()
@@ -171,10 +176,13 @@ func sendMonthlyLeaderboardWinnerNotification(s *discordgo.Session, channelId st
 		AddLineBreakField().
 		AtTagEveryone(true)
 
+	hiddenMentionsLine := fmt.Sprintf("||%s||", mentionsLine)
+
 	globalMessaging.NotificationsChannel <- events.NotificationEvent{
 		TargetChannelId: channelId,
 		Type:            "EMBED_PASSTHROUGH",
 		Embed:           embed,
+		TextData:        &hiddenMentionsLine,
 	}
 
 }

@@ -67,7 +67,7 @@ func Ready(s *discordgo.Session, event *discordgo.Ready) {
 
 	// CRON FEATS
 	go cron.ProcessUpdateActivityStreaks(23, 59, 0) // the hh:mm:ss timestamp in a day to run the cron at (i.e 24:00:00)
-	go cron.ProcessDailyLeaderboard(s, globalConfiguration.DiscordMainGuildId, 23, 59, 0, false)
+	go cron.ProcessDailyLeaderboard(s, globalConfiguration.DiscordMainGuildId, 23, 59, 55, false)
 	go cron.ProcessMonthlyLeaderboard(s, 23, 59, 0, true, false) // run on last day of current month at given time (i.e 23:55:00)
 
 	// CRON RUNTIME & PERSISTENT ENTITY CLEANUPS

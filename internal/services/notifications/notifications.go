@@ -40,6 +40,21 @@ func SendEmbedToTextChannel(s *discordgo.Session, channelId string, embed embed.
 
 }
 
+func SendEmbedWithTextResponseToTextChannel(s *discordgo.Session, text string, channelId string, embed embed.Embed) error {
+
+	_, err := s.ChannelMessageSendComplex(channelId, &discordgo.MessageSend{
+		Content: text,
+		Embed:   embed.MessageEmbed,
+	})
+	if err != nil {
+		fmt.Printf("Error sending embed to channel %s: %v", channelId, err)
+		return err
+	}
+
+	return nil
+
+}
+
 func SendNotificationWithFieldsToTextChannel(s *discordgo.Session, channelId string, notificationTitle string, fields []discordgo.MessageEmbedField, useThumbnail bool, authorName *string, authorAvatarUrl *string) error {
 
 	// Build notification embed

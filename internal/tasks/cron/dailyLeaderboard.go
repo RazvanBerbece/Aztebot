@@ -140,12 +140,14 @@ func sendDailyLeaderboardWinnerNotification(s *discordgo.Session, channelId stri
 	var queensName string = ""
 	var nonbinsName string = ""
 	var othersName string = ""
+	var mentionsLine string = ""
 	if king != nil {
 		kingApiUser, err := s.User(king.UserId)
 		if err != nil {
 			fmt.Printf("An error ocurred while retrieving king's API profile: %v", err)
 		}
 		kingsName = kingApiUser.Username
+		mentionsLine += fmt.Sprintf("<@%s> ", king.UserId)
 	}
 	if queen != nil {
 		queenApiUser, err := s.User(queen.UserId)
@@ -153,6 +155,7 @@ func sendDailyLeaderboardWinnerNotification(s *discordgo.Session, channelId stri
 			fmt.Printf("An error ocurred while retrieving queen's API profile: %v", err)
 		}
 		queensName = queenApiUser.Username
+		mentionsLine += fmt.Sprintf("<@%s> ", queen.UserId)
 	}
 	if nonbinary != nil {
 		nonbinApiUser, err := s.User(nonbinary.UserId)
@@ -160,6 +163,7 @@ func sendDailyLeaderboardWinnerNotification(s *discordgo.Session, channelId stri
 			fmt.Printf("An error ocurred while retrieving nonbinary's API profile: %v", err)
 		}
 		nonbinsName = nonbinApiUser.Username
+		mentionsLine += fmt.Sprintf("<@%s> ", nonbinary.UserId)
 	}
 	if other != nil {
 		othersApiUser, err := s.User(other.UserId)
@@ -167,6 +171,7 @@ func sendDailyLeaderboardWinnerNotification(s *discordgo.Session, channelId stri
 			fmt.Printf("An error ocurred while retrieving other's API profile: %v", err)
 		}
 		othersName = othersApiUser.Username
+		mentionsLine += fmt.Sprintf("<@%s>", other.UserId)
 	}
 
 	now := time.Now().Unix()
@@ -183,22 +188,22 @@ func sendDailyLeaderboardWinnerNotification(s *discordgo.Session, channelId stri
 
 	if kingsName != "" {
 		fieldValue := fmt.Sprintf("Accumulated a total of 💠 `%d` XP !", int64(king.XpEarnedInCurrentMonth))
-		embed.AddField(fmt.Sprintf("♂ King of The Month, `%s`", kingsName), fieldValue, false)
+		embed.AddField(fmt.Sprintf("♂ King of The Day, `%s`", kingsName), fieldValue, false)
 	}
 
 	if queensName != "" {
 		fieldValue := fmt.Sprintf("Accumulated a total of 💠 `%d` XP !", int64(queen.XpEarnedInCurrentMonth))
-		embed.AddField(fmt.Sprintf("♀ Queen of The Month, `%s`", queensName), fieldValue, false)
+		embed.AddField(fmt.Sprintf("♀ Queen of The Day, `%s`", queensName), fieldValue, false)
 	}
 
 	if nonbinsName != "" {
 		fieldValue := fmt.Sprintf("Accumulated a total of 💠 `%d` XP !", int64(nonbinary.XpEarnedInCurrentMonth))
-		embed.AddField(fmt.Sprintf("⚥ Nonbinary of The Month, `%s`", nonbinsName), fieldValue, false)
+		embed.AddField(fmt.Sprintf("⚥ Nonbinary of The Day, `%s`", nonbinsName), fieldValue, false)
 	}
 
 	if othersName != "" {
 		fieldValue := fmt.Sprintf("Accumulated a total of 💠 `%d` XP !", int64(other.XpEarnedInCurrentMonth))
-		embed.AddField(fmt.Sprintf("🌈 Others of The Month, `%s`", othersName), fieldValue, false)
+		embed.AddField(fmt.Sprintf("🌈 Others of The Day, `%s`", othersName), fieldValue, false)
 	}
 
 	// Tag everyone to propagate announcement
@@ -206,10 +211,13 @@ func sendDailyLeaderboardWinnerNotification(s *discordgo.Session, channelId stri
 		AddLineBreakField().
 		AtTagEveryone(true)
 
+	hiddenMentionsLine := fmt.Sprintf("||%s||", mentionsLine)
+
 	globalMessaging.NotificationsChannel <- events.NotificationEvent{
 		TargetChannelId: channelId,
 		Type:            "EMBED_PASSTHROUGH",
 		Embed:           embed,
+		TextData:        &hiddenMentionsLine,
 	}
 
 }
