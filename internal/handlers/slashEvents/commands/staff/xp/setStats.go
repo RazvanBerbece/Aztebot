@@ -26,7 +26,7 @@ func HandleSlashSetStats(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		return
 	}
 
-	slashUsedInt, convErr := utils.StringToInt(messagesSent)
+	slashUsedInt, convErr := utils.StringToInt(slashUsed)
 	if convErr != nil {
 		errMsg := fmt.Sprintf("The provided `slash-cmd-used` command argument is invalid. (term: `%s`)", slashUsed)
 		utils.SendErrorEmbedResponse(s, i.Interaction, errMsg)
