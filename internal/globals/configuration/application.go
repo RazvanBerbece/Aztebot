@@ -3,7 +3,7 @@ package globalConfiguration
 // GENERAL
 const DefaultVerifiedRoleId = 1
 const DefaultVerifiedRoleName = "Aztec"
-const GreetNewVerifiedUsersInChannel = true
+const GreetNewVerifiedUsersInChannel = false
 
 const ActivityId_MessageSend = "msg_send"
 const ActivityId_SlashCommandUse = "slash_command_used"
