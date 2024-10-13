@@ -230,3 +230,7 @@ func (r TimeoutsRepository) GetAllArchivedTimeoutsForUser(userId string) ([]dax.
 	return timeouts, nil
 
 }
+func (r TimeoutsRepository) UpdateAdminTimeoutCount(adminId string) error {
+	_, err := r.Conn.SqlDb.Exec("INSERT INTO ActivitateAdmin (admin_id, timeout_count) VALUES (?, 1) ON DUPLICATE KEY UPDATE timeout_count = timeout_count + 1", adminId)
+	return err
+}

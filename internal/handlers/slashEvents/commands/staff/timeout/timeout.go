@@ -7,12 +7,14 @@ import (
 	"github.com/RazvanBerbece/Aztebot/internal/data/models/events"
 	globalConfiguration "github.com/RazvanBerbece/Aztebot/internal/globals/configuration"
 	globalMessaging "github.com/RazvanBerbece/Aztebot/internal/globals/messaging"
+	globalRepositories "github.com/RazvanBerbece/Aztebot/internal/globals/repositories"
 	"github.com/RazvanBerbece/Aztebot/internal/services/member"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/embed"
 	"github.com/RazvanBerbece/Aztebot/pkg/shared/utils"
 	"github.com/bwmarrin/discordgo"
 )
 
+// HandleSlashTimeout processes the timeout slash command
 func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	targetUserId := utils.GetDiscordIdFromMentionFormat(i.ApplicationCommandData().Options[0].StringValue())
@@ -37,7 +39,7 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	user, err := s.User(targetUserId)
 	if err != nil {
-		errMsg := fmt.Sprintf("An error ocurred while retrieving user with ID %s provided in the slash command.", targetUserId)
+		errMsg := fmt.Sprintf("An error occurred while retrieving user with ID %s provided in the slash command.", targetUserId)
 		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
 		return
 	}
@@ -61,9 +63,15 @@ func HandleSlashTimeout(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	err = member.GiveTimeoutToMemberWithId(s, globalConfiguration.DiscordMainGuildId, targetUserId, reason, timestamp, *sTimeLength)
 	if err != nil {
-		errMsg := fmt.Sprintf("Error ocurred giving timeout to user with UID `%s`: `%s`", targetUserId, err)
+		errMsg := fmt.Sprintf("Error occurred giving timeout to user with UID `%s`: `%s`", targetUserId, err)
 		utils.ErrorEmbedResponseEdit(s, i.Interaction, errMsg)
 		return
+	}
+
+	// Update the admin's timeout count in the database
+	err = globalRepositories.TimeoutsRepository.UpdateAdminTimeoutCount(i.Member.User.Username)
+	if err != nil {
+		fmt.Printf("Failed to update timeout count for admin %s: %v\n", commandOwnerUserId, err)
 	}
 
 	// Build a DM to send to the target user detailing the timeout
@@ -111,7 +119,7 @@ func sendTimeoutNotification(s *discordgo.Session, channelId string, targetUserI
 	// Get command owner discord name
 	cmdOwner, err := s.User(commandOwnerUserId)
 	if err != nil {
-		fmt.Printf("An error ocurred while retrieving command owner with ID: %v", err)
+		fmt.Printf("An error occurred while retrieving command owner with ID: %v", err)
 	}
 
 	fields := []discordgo.MessageEmbedField{
@@ -147,5 +155,4 @@ func sendTimeoutNotification(s *discordgo.Session, channelId string, targetUserI
 		Fields:          fields,
 		UseThumbnail:    &useThumbnail,
 	}
-
 }
